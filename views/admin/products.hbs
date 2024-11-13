@@ -72,6 +72,12 @@
                             name="message" id="message" value="{{message}}">
                     </tr>
                 </thead>
+<script>
+    // Wait for 2 seconds and then clear the message
+    setTimeout(function() {
+        document.getElementById('message').value = ''; // Clear the message
+    }, 2000); // 2000 milliseconds = 2 seconds
+</script>
                 <tbody>
                     {{#each products}}
                     <tr>
@@ -172,7 +178,8 @@
                     <!-- New Image Upload -->
                     <div class="mb-3">
                         <label for="images" class="form-label">Upload New Images</label>
-                        <input type="file" name="images" class="form-control" multiple>
+                        <input type="file" name="images" class="form-control" multiple onchange="previewImages(event)">
+                        <div id="imagePreviews" class="d-flex flex-wrap gap-3 mt-3"></div>
                     </div>
 
                     <!-- Hidden field to track deleted images -->
@@ -186,11 +193,88 @@
             </div>
         </div>
     </div>
-</div>
-{{/each}}
-
+</div>{{/each}}
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    // Attach event listeners when a modal is shown
+    document.body.addEventListener('show.bs.modal', function (e) {
+        const modal = e.target; // The modal that is being opened
+
+        // Ensure the modal is of the product edit type
+        if (modal.classList.contains('modal') && modal.id.startsWith('editProductModal')) {
+            deleteImageEvent(modal); // Pass the modal element to the function
+            if (!modal.hasAttribute('data-listener-attached')) {
+                handleImagePreview(modal); // Handle the image preview functionality for this modal
+                modal.setAttribute('data-listener-attached', 'true'); // Mark the modal as having the listener attached
+            }
+        }
+    });
+});
+
+function deleteImageEvent(modal) {
+    const deleteButtons = modal.querySelectorAll('.delete-image-btn');
+    
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const imagePath = this.getAttribute('data-image');
+            const deletedImagesInput = modal.querySelector('input[name="deletedImages"]');
+
+            // Create a hidden input if it doesn't exist to store deleted image paths
+            if (!deletedImagesInput) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'deletedImages';
+                input.value = ''; // Initial empty value
+                modal.querySelector('form').appendChild(input); // Append to the form inside the modal
+            }
+
+            // Append the deleted image path to the hidden input
+            let currentDeletedImages = deletedImagesInput.value;
+            if (currentDeletedImages) {
+                currentDeletedImages += ',' + imagePath;
+            } else {
+                currentDeletedImages = imagePath;
+            }
+            deletedImagesInput.value = currentDeletedImages;
+
+            // Remove the image preview from the modal
+            this.closest('.position-relative').remove();
+        });
+    });
+}
+
+function handleImagePreview(modal) {
+    const inputFile = modal.querySelector('input[type="file"]');
+    const previewContainer = modal.querySelector('#existingImages');
+
+    if (inputFile) {
+        inputFile.addEventListener('change', function (e) {
+            // Clear the preview container before adding new images
+            previewContainer.innerHTML = '';
+
+            const files = e.target.files;
+            for (let file of files) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = e.target.result;
+                    imgElement.classList.add('img-thumbnail');
+                    imgElement.style.width = '100px';
+                    imgElement.style.height = 'auto';
+                    previewContainer.appendChild(imgElement);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+}
+
+</script>
+
+
+
+{{!-- <script>
     document.addEventListener('DOMContentLoaded', function () {
     // Attach event listeners when a modal is shown
     document.body.addEventListener('show.bs.modal', function (e) {
@@ -237,7 +321,7 @@ function deleteImageEvent(modal) {
     });
 }
 
-</script>
+</script> --}}
 </body>
 
 </html>
