@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WATCHES PREMIUM</title>
+    <link rel="stylesheet" href="/user/login.css">
+      <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+
+    <script>
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        function googleSignIn() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    // Send user data to backend
+                    fetch('/auth/google', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            uid: user.uid,
+                            displayName: user.displayName,
+                            email: user.email
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.href = '/user/home'; // Redirect to the dashboard or any secure page
+                            } else {
+                                console.error('Error:', data.message);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                })
+                .catch((error) => {
+                    console.error('Error signing in with Google:', error);
+                });
+        }
+    </script>
+</head>
+
+<body>
+    <div style="height: 450px;" class="container">
+        <h1 style="margin-left: 40%;">Log In</h1>
+        <form method="post" action="/login">
+            <input type="text" style="margin-top:-10px; font-weight:bold; border-width:0px; color:red; font-size:14px;"
+                id="message" value="{{{message}}}" readonly>
+
+            <script>
+                // Wait until the DOM is fully loaded
+                document.addEventListener("DOMContentLoaded", function () {
+                    const messageInput = document.getElementById("message");
+
+                    // Check if there's a message, then clear it after 3 seconds
+                    if (messageInput && messageInput.value) {
+                        setTimeout(() => {
+                            messageInput.value = ""; // Clear the message
+                        }, 2000); // 3000ms = 3 seconds
+                    }
+                });
+            </script>
+            <input name="email" id="email" type="email" placeholder="Email">
+            <input name="password" id="password" type="password" placeholder="Password">
+            <a style="color: white;text-decoration:none;margin-left:81%;font-size:14px"
+                href="/forgotpassword">forgot password</a>
+
+            <input class="btn" type="submit" value="Login">
+            <a style="margin-left: 30%;" class="link" href="/signup">Don't have an account? Sign up</a>
+
+            <!-- Google Sign-In Button -->
+               <div style="margin-left: 188px;border-radius:20px;margin-top:20px">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png" style="width: 25px;border-radius:25px;margin-left:160px">
+        <a href="/auth/google" style="color: white; text-decoration:none;margin-left:5px;"><p style="margin-top:-24px;margin-left:210px">Continue with google</p></a>
+      </div>
+
+
+            <script>
+                function handleCredentialResponse(response) {
+                    fetch('/auth/google', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ token: response.credential })
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.href = '/home'; // Redirect on success
+                            } else {
+                                alert("Google sign-in failed.");
+                            }
+                        })
+                        .catch(error => console.error("Error during sign-in:", error));
+                }
+            </script>
+
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('form').addEventListener('submit', formValidate);
+
+            const message = document.getElementById('message').value;
+
+
+        });
+
+        function formValidate(e) {
+            e.preventDefault();
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+
+            if (email === "" || password === "") {
+                Swal.fire({
+                    icon: "error",
+                    text: "Email and passwords are required",
+                });
+                return false;
+            }
+            e.target.submit();
+            return true;
+        }
+    </script>
+</body>
+
+</html>

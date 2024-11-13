@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Category</title>
+    <link rel="stylesheet" href="/admin/addcategory.css">
+    	<link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Category</h1>
+        <form action="/admin/editcategory/{{category._id}}" method="post">
+                <input type="text" style="border-width: 0px; color:red;font-weight:bold;width:70%" name="message" id="message"  value="{{message}}" >
+
+            <div class="form-group">
+                <label for="brand">Brand</label>
+                <input type="text" id="brand" name="brand" value="{{category.brand}}" required>
+
+            </div>
+
+            <div class="form-group">
+                <label for="bandcolor">Band Color</label>
+                <input type="text" id="bandcolor" name="bandcolor" value="{{category.bandcolor}}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="stock">Stock</label>
+                <input type="number" id="stock" name="stock" value="{{category.stock}}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status" name="status" required>
+                    <option value="Available">Available</option>
+                    <option value="Out of Stock">Out of Stock</option>
+                </select>
+            </div>
+
+            <div class="button-group">
+                <button type="submit">Add Category</button>
+            </div>
+        </form>
+
+    </div>
+
+    <script>
+    // Clear the message after 3 seconds
+    setTimeout(() => {
+        const messageField = document.getElementById('message');
+        if (messageField) {
+            messageField.value = ''; // Clear the message field
+        }
+    }, 2000); // Adjust the time (in milliseconds) as needed
+</script> 
+</body>
+</html>

@@ -1,0 +1,165 @@
+{{!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+    <link rel="stylesheet" href="/admin/editproducts.css">
+    <!-- Include Cropper.js -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+</head>
+<body>
+    <style>
+        .existing-image {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+    <div style="margin-top: 400px;" class="container">
+        <h1>Edit Product</h1>
+        <form id="editProductForm" action="/admin/editproducts/{{product._id}}" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name">Product Name</label>
+                <input type="text" id="name" name="name" value="{{product.name}}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category</label>
+                <input type="text" id="category" name="category" value="{{product.category}}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="stock">Stock</label>
+                <input type="number" id="stock" name="stock" value="{{product.stock}}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" id="price" name="price" value="{{product.price}}" required>
+            </div>
+
+            <!-- Existing images section with delete option -->
+            <div class="form-group">
+                <h3>Existing Images</h3>
+                <div id="existingImages">
+                    {{#each product.images}}
+                    <div class="image-container">
+                        <img src="/{{this}}" alt="Product Image" class="existing-image">
+                        <button type="button" class="delete-image-btn" data-image="{{this}}">Delete</button>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+
+            <!-- New Image upload and crop section -->
+            <div class="form-group">
+                <label for="images">Upload New Images (You can upload multiple)</label>
+                <input type="file" id="imageInput" accept="image/*" multiple>
+            </div>
+
+            <!-- Preview section for new images -->
+            <div class="preview-container">
+                <h3>New Image Preview and Crop</h3>
+                <div class="img-preview"></div>
+                <canvas id="imageCanvas"></canvas> <!-- Fixed canvas syntax -->
+            </div>
+
+            <div class="button-group">
+                <button type="submit">Update Product</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Include Cropper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const previewContainer = document.querySelector('.img-preview');
+        const form = document.getElementById('editProductForm');
+        let cropperInstances = {};  // To store cropper instances for multiple images
+
+        // Collect deleted images
+        let deletedImages = [];
+
+        // Handle deletion of existing images
+        document.querySelectorAll('.delete-image-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const image = this.getAttribute('data-image');
+                deletedImages.push(image);  // Store the image path in the array
+                this.closest('.image-container').remove();  // Remove the image from the preview
+            });
+        });
+
+        // When new images are selected
+        imageInput.addEventListener('change', function (e) {
+            const files = e.target.files;
+            previewContainer.innerHTML = '';  // Clear previous preview
+
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+
+                reader.onload = function (event) {
+                    const imgElement = document.createElement('img');
+                    imgElement.id = 'imageToCrop' + index;
+                    imgElement.src = event.target.result;
+
+                    // Add image to the preview container
+                    previewContainer.appendChild(imgElement);
+
+                    // Initialize cropper for each image
+                    if (cropperInstances[index]) {
+                        cropperInstances[index].destroy();
+                    }
+                    
+                    cropperInstances[index] = new Cropper(imgElement, {
+                        aspectRatio: 1, // Square aspect ratio
+                        preview: '.img-preview',
+                    });
+                };
+
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            // Prepare formData to send cropped images and deleted images
+            const formData = new FormData(form);
+
+            // Append deleted images
+            deletedImages.forEach(image => {
+                formData.append('deletedImages', image);
+            });
+
+            // Loop through all cropper instances and append each cropped image
+            let cropPromises = Object.keys(cropperInstances).map(index => {
+                return new Promise((resolve) => {
+                    cropperInstances[index].getCroppedCanvas().toBlob((blob) => {
+                        formData.append('newImages', blob, 'croppedImage' + index + '.png');
+                        resolve();
+                    });
+                });
+            });
+
+            // Wait for all cropped images to be processed, then submit form
+            Promise.all(cropPromises).then(() => {
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    window.location.href = '/admin/products'; // Redirect on success
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+    </script>
+</body>
+</html> --}}

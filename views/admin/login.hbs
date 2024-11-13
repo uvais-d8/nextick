@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WATCHES PERMIUM</title>
+  <link rel="stylesheet" href="/admin/login.css"> 
+  <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+    
+
+</head>
+<body>
+  <div class="container">
+    <h1>Log In</h1>
+    <form method="post" action="/admin/login">
+      <input type="text" id="message" value="{{{message}}}" hidden>
+      <input name="email" type="email" id="email" placeholder="Email"> 
+      <input name="password" type="password" id="password" placeholder="Password" > 
+      <input class="btn" type="submit" value="log in">
+     </form>
+  </div>
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+      <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    document.querySelector('form').addEventListener('submit', formValidate);
+
+const message=document.getElementById('message').value;
+
+ if(message){
+   console.log("user already exists")
+        Swal.fire(message);
+    }
+});
+
+function formValidate(e){ 
+    e.preventDefault();
+    var email = document.getElementById('email').value;
+    var password = document.getElementById('password').value;
+
+    if (email === '' || password === "" ) {
+        Swal.fire({
+            icon: "error",
+            text: "Email and passwords are required",
+        });
+        return false;
+    }
+    e.target.submit();
+    return true;
+}
+    </script>
+</body>
+</html>

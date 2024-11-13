@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description"
+		content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
+	<style>
+		.btnnn:hover {
+			background-color: brown;
+		}
+	</style>
+	<!-- title -->
+	<title>Check Out</title>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+	<!-- favicon -->
+	<link rel="shortcut icon" type="image/png" href="assets/img/favicon.png">
+	<!-- google font -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+	<!-- fontawesome -->
+	<link rel="stylesheet" href="/assets/css/all.min.css">
+	<!-- bootstrap -->
+	<link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+	<!-- owl carousel -->
+	<link rel="stylesheet" href="/assets/css/owl.carousel.css">
+	<!-- magnific popup -->
+	<link rel="stylesheet" href="/assets/css/magnific-popup.css">
+	<!-- animate css -->
+	<link rel="stylesheet" href="/assets/css/animate.css">
+	<!-- mean menu css -->
+	<link rel="stylesheet" href="/assets/css/meanmenu.min.css">
+	<!-- main style -->
+	<link rel="stylesheet" href="/assets/css/main.css">
+	<!-- responsive -->
+	<link rel="stylesheet" href="/assets/css/responsive.css">
+	<style>
+		#box:hover {
+			box-shadow: 0 0 15px 9px #ffdb92ba;
+
+		}
+	</style>
+</head>
+
+<body>
+
+	<!--PreLoader-->
+	<div class="loader">
+		<div class="loader-inner">
+			<div class="circle"></div>
+		</div>
+	</div>
+	<!--PreLoader Ends-->
+
+	<!-- header -->
+	<div class="top-header-area" id="sticker">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 col-sm-12 text-center">
+					<div class="main-menu-wrap">
+						<!-- logo -->
+						<div class="site-logo">
+							<a href="/home">
+								<h4 style="font-weight: bold; color:white">WATCH PREMIUM</h4>
+							</a>
+						</div>
+						<!-- logo -->
+
+						<!-- menu start -->
+						<nav class="main-menu">
+							<ul>
+								<li><a href="/home">Home</a>
+								</li>
+								<li><a href="/about">About</a></li>
+								<li><a href="/products">Products</a></li>
+
+								<ul class="sub-menu">
+									<li><a href="/news.hbs">News</a></li>
+									<li><a href="/single-news.hbs">Single News</a></li>
+								</ul>
+								</li>
+								<li><a href="/contact">Contact</a></li>
+
+								<ul class="sub-menu">
+									<li>
+										<form class="a" method="get" action="/shop">Shop</form>
+									</li>
+									<li><a href="/checkout.hbs">Check Out</a></li>
+									<li><a href="/single-product.hbs">Single Product</a></li>
+									<li><a href="/cart.hbs">Cart</a></li>
+								</ul>
+								</li>
+								<li>
+									<form method="post" action="/logout">
+										<button class="a" type="submit"
+											style="color:white; background: none; border: none;cursor: pointer; font-weight:bold">Log
+											Out
+										</button>
+									</form>
+								</li>
+								<li>
+									<div class="header-icons">
+										<a class="shopping-cart" href="/cart"><i
+												class="fas fa-shopping-cart"></i></a>
+										<a class="mobile-hide search-bar-icon" href="#"><i
+												class="fas fa-search"></i></a>
+										<a class="mobile-hide search-bar-icon" href="/profile"><i
+												class="fas fa-user"></i></a>
+									</div>
+								</li>
+							</ul>
+						</nav>
+						<a class="mobile-show search-bar-icon" href="#"><i class="fas fa-search"></i></a>
+						<div class="mobile-menu"></div>
+						<!-- menu end -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end header -->
+
+	<!-- search area -->
+	<div class="search-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<span class="close-btn"><i class="fas fa-window-close"></i></span>
+					<div class="search-bar">
+						<div class="search-bar-tablecell">
+							<h3>Search For:</h3>
+							<input type="text" placeholder="Keywords">
+							<button type="submit">Search <i class="fas fa-search"></i></button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end search arewa -->
+
+	<!-- breadcrumb-section -->
+	<div class="breadcrumb-section breadcrumb-bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 offset-lg-2 text-center">
+					<div class="breadcrumb-text">
+						<p>Fresh and Organic</p>
+						<h1>Check Out Product</h1>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end breadcrumb section -->
+	<div class="container">
+		<div class="row">
+			{{#each alladdresses}}
+			<div class="col-md-4">
+				<main id="box" style="margin-top:40px;">
+					<section id="box"
+						style="background-color: rgb(242, 242, 242); padding:20px; border-radius:6px; cursor: pointer;"
+						class="section account-settings"
+						onclick="handleCardClick('{{this.firstname}}', '{{this.lastname}}', '{{this.address}}', '{{this.phone}}', '{{this.email}}', '{{this.place}}', '{{this.city}}','{{this.pincode}}','{{this.district}}')">
+						<h3>Saved Address</h3>
+						<form id="savedAddressForm">
+							<div class="form-group">
+								<label id="addressId" hidden>{{this._id}}</label>
+								<label id="firstname-label" for="name">First Name: {{this.firstname}}</label><br>
+								<label id="lastname-label" for="name">Last Name: {{this.lastname}}</label><br>
+								<label id="address-label" for="address">Address: {{this.address}}</label><br>
+								<label id="phone-label" for="phone">Phone No: {{this.phone}}</label><br>
+								<label id="email-label" for="email">Email: {{this.email}}</label><br>
+								<label id="place-label" for="place">Place: {{this.place}}</label><br>
+								<label id="city-label" for="city">City: {{this.city}}</label><br>
+								<label id="pincode-label" for="pincode">Pin Code: {{this.pincode}}</label><br>
+								<label id="district-label" for="district">District: {{this.district}}</label><br>
+
+							</div>
+						</form>
+					</section>
+				</main>
+
+			</div>
+			{{/each}}
+		</div>
+		<!-- check out section -->
+
+		<div class="checkout-section mt-150 mb-150">
+			<div class="container">
+				<div class="row">
+					<!-- Left Side: Checkout Accordion -->
+					<div class="col-lg-8">
+						<div class="checkout-accordion-wrap">
+							<div class="accordion" id="accordionExample">
+								<div class="card single-accordion">
+									<div class="card-header" id="headingOne">
+										<h5 class="mb-0">
+											<button class="btn btn-link" type="button" data-toggle="collapse"
+												data-target="#collapseOne" aria-expanded="true"
+												aria-controls="collapseOne">
+												Shipping Address
+											</button>
+										</h5>
+									</div>
+									<div id="collapseOne" class="collapse show" aria-labelledby="headingOne"
+										data-parent="#accordionExample">
+										<div class="card-body">
+											<div class="billing-address-form">
+												<!-- Shipping Address Form -->
+												<form method="post" action="/placeOrder" id="orderForm">
+
+													<label for="firstname"><b>First Name</b></label>
+													<p><input id="firstname" name="firstname" type="text" required>
+													</p>
+
+													<label for="lastname"><b>Last Name</b></label>
+													<p><input id="lastname" name="lastname" type="text" required>
+													</p>
+
+													<label for="email"><b>Email</b></label>
+													<p><input id="email" name="email" type="email" required></p>
+
+													<label for="address"><b>Address</b></label>
+													<p><input id="address" name="address" type="text" required></p>
+
+													<label for="phone"><b>Phone</b></label>
+													<p><input id="phone" name="phone" type="tel" required></p>
+
+													<label for="pincode"><b>Pin code</b></label>
+													<p><input id="pincode" name="pincode" type="number" required></p>
+
+													<label for="district"><b>District</b></label>
+													<p><input id="district" name="district" type="text" required></p>
+
+
+													<label for="paymentMethod"><b>Payment Method</b></label>
+													<select id="paymentMethod" name="paymentMethod" required>
+														<option value="cod">COD</option>
+														<option value="upi">UPI</option>
+													</select>
+
+													<!-- Hidden fields for cart and total amounts -->
+													<input type="hidden" name="subtotal" value="{{subtotal}}">
+													<input type="hidden" name="shippingRate" value="{{shippingRate}}">
+													<input type="hidden" name="total" value="{{total}}">
+													<input type="hidden" name="addressId" value="{{addresses._id}}">
+
+
+													{{!-- <a href="/user/address"
+														style="margin-left:80%;width: 130px; height:40px; color:rgb(0, 0, 0);font-weight:bold;border-width:0px;margin-top:20px">Change
+														Address</a> --}}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Right Side: Order Details -->
+					<div class="col-lg-4">
+						<div class="order-details-wrap">
+							<table style="width: max-content;" class="order-details">
+								<thead>
+									<tr>
+										<th><b>Your Order Details</b></th>
+										<th><b>Price</b></th>
+										<th><b>Qty</b></th>
+										<th><b>total</b></th>
+
+									</tr>
+								</thead>
+								<tbody class="order-details-body">
+									{{#each carts}}
+									<tr>
+										<td class="item-name">{{this.name}}</td>
+										<td class="item-price">{{this.price}}</td>
+										<td class="item-quantity">{{this.quantity}}</td>
+										<td class="item-total">{{multiply this.price this.quantity}}</td>
+										<td class="item-image" hidden>{{this.image}}</td>
+									</tr>
+									{{/each}}
+								</tbody>
+
+								<tbody class="checkout-details">
+									<tr>
+										<td><b>Subtotal</b></td>
+										<td><b></b></td>
+										<td><b></b></td>
+										<td><b>{{subtotal}}</b></td>
+									</tr>
+									<tr>
+										<td><b>Shipping</b></td>
+										<td><b></b></td>
+										<td><b></b></td>
+										<td><b>{{shippingRate}}</b></td>
+									</tr>
+									<tr>
+										<td><b>Total</b></td>
+										<td><b></b></td>
+										<td><b></b></td>
+										<td><b>{{total}}</b></td>
+									</tr>
+								</tbody>
+							</table>
+							<button type="submit" class="btnnn"
+								style="width: 150px; height:50px; background-color:orange;border-radius:29px ;color:white;font-weight:bold;border-width:0px;margin-top:20px">Place
+								Order</button>
+
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- end check out section -->
+
+	<!-- logo carousel -->
+	<div class="logo-carousel-section">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="logo-carousel-inner">
+
+						<div class="single-logo-item">
+							<img style="margin-top: 50px;"
+								src="https://logos-world.net/wp-content/uploads/2020/04/Louis-Vuitton-Logo.png" alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="margin-top: 10px"
+								src="https://parspng.com/wp-content/uploads/2022/10/pumapng.parspng.com_-300x300.png"
+								alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="height:120px;width:120px;margin-top:36px"
+								src="https://cdn2.iconfinder.com/data/icons/apple-tv-1/512/apple_logo-512.png" alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="margin-top: 17px;height:175px"
+								src="https://images.samsung.com/is/image/samsung/assets/global/about-us/brand/logo/256_144_2.png?$512_N_PNG$"
+								alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="margin-top: 45px"
+								src="https://download.logo.wine/logo/Citizen_Watch/Citizen_Watch-Logo.wine.png" alt="">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end logo carousel -->
+
+	<!-- footer -->
+	<div class="footer-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box about-widget">
+						<h2 class="widget-title">About us</h2>
+						<p>Ut enim ad minim veniam perspiciatis unde omnis iste natus error sit voluptatem
+							accusantium
+							doloremque laudantium, totam rem aperiam, eaque ipsa quae.</p>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box get-in-touch">
+						<h2 class="widget-title">Get in Touch</h2>
+						<ul>
+							<li>34/8, East Hukupara, Gifirtok, Sadan.</li>
+							<li>support@fruitkha.com</li>
+							<li>+00 111 222 3333</li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box pages">
+						<h2 class="widget-title">Pages</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="about.html">About</a></li>
+							<li><a href="services.html">Shop</a></li>
+							<li><a href="news.html">News</a></li>
+							<li><a href="contact.html">Contact</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box subscribe">
+						<h2 class="widget-title">Subscribe</h2>
+						<p>Subscribe to our mailing list to get the latest updates.</p>
+						<form action="index.html">
+							<input type="email" placeholder="Email">
+							<button type="submit"><i class="fas fa-paper-plane"></i></button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end footer -->
+
+	<!-- copyright -->
+	<div class="copyright">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6 col-md-12">
+					<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights
+						Reserved.<br>
+						Distributed By - <a href="https://themewagon.com/">Themewagon</a>
+					</p>
+				</div>
+				<div class="col-lg-6 text-right col-md-12">
+					<div class="social-icons">
+						<ul>
+							<li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end copyright -->
+
+	<script>
+		document.getElementById('orderForm').addEventListener('submit', async function (event) {
+			event.preventDefault(); // Prevent default form submission
+			console.log('hai')
+
+			const items = Array.from(document.querySelectorAll('.order-details-body tr')).map(row => ({
+				name: row.querySelector('.item-name').textContent,
+				price: parseFloat(row.querySelector('.item-price').textContent),
+				quantity: parseInt(row.querySelector('.item-quantity').textContent),
+				total: parseFloat(row.querySelector('.item-total').textContent),
+				images: row.querySelector('.item-image').textContent,
+			}));
+
+			const orderData = {
+				items: items,
+				paymentMethod: document.getElementById('paymentMethod').value,
+				subtotal: parseFloat(document.querySelector('input[name="subtotal"]').value),
+				shippingRate: parseFloat(document.querySelector('input[name="shippingRate"]').value),
+				total: parseFloat(document.querySelector('input[name="total"]').value),
+				addressId: document.getElementById('addressId').textContent,
+			};
+
+			console.log(orderData)
+
+			try {
+				const response = await fetch('/user/placeOrder', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(orderData)
+				});
+
+				const result = await response.json();
+				if (result.success) {
+					Swal.fire({
+						title: 'Success!',
+						text: 'Your order placed successfully.',
+						icon: 'success',
+						confirmButtonText: 'OK'
+					}).then(() => {
+						// Redirect to orders page after clicking "OK"
+						window.location.href = '/user/orderss';
+					});
+				} else {
+					alert('Failed to place order.');
+				}
+			} catch (error) {
+				console.error('Error placing order:', error);
+			}
+
+		});
+	</script>
+
+	<script>
+		function handleCardClick(firstname, lastname, address, phone, email, place, city, pincode, district) {
+			// Populate the shipping address form with the selected address
+			document.getElementById('firstname').value = firstname;
+			document.getElementById('lastname').value = lastname;
+			document.getElementById('address').value = address;
+			document.getElementById('phone').value = phone;
+			document.getElementById('email').value = email;
+			document.getElementById('place').value = place;
+			document.getElementById('city').value = city;
+			document.getElementById('pincode').value = pincode;
+			document.getElementById('district').value = district;
+
+		}
+
+	</script>
+	<!-- jquery -->
+	<script src="/assets/js/jquery-1.11.3.min.js"></script>
+	<!-- bootstrap -->
+	<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+	<!-- count down -->
+	<script src="/assets/js/jquery.countdown.js"></script>
+	<!-- isotope -->
+	<script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
+	<!-- waypoints -->
+	<script src="/assets/js/waypoints.js"></script>
+	<!-- owl carousel -->
+	<script src="/assets/js/owl.carousel.min.js"></script>
+	<!-- magnific popup -->
+	<script src="/assets/js/jquery.magnific-popup.min.js"></script>
+	<!-- mean menu -->
+	<script src="/assets/js/jquery.meanmenu.min.js"></script>
+	<!-- sticker js -->
+	<script src="/assets/js/sticker.js"></script>
+	<!-- main js -->
+	<script src="/assets/js/main.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WATCHES PREMIUM</title>
+  <link rel="stylesheet" href="/user/signup.css">
+    <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+
+</head>
+
+<body>
+  <div class="container">
+    <h1>Sign Up</h1>
+    <form method="post" action="/signup" onsubmit="return validateForm()">
+      <input type="text" id="message" style="color: red; border-width:0px; font-weight:bold; font-size:15px;"
+        name="message" value="{{message}}" readonly>
+
+      <input type="text" id="username" name="username" placeholder="Username">
+
+      <input type="email" id="email" name="email" placeholder="Email">
+
+      <input type="password" id="password" name="password" placeholder="Password">
+
+      <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password">
+
+      <input class="btn" type="submit" value="Sign up">
+      <p>Already have an account? <a class="link" href="/login">Log in</a></p>
+
+      <div style="margin-left: 180px;border-radius:20px">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png" style="width: 25px;border-radius:25px">
+        <a href="/auth/google" style="color: white; text-decoration:none;margin-left:5px;"><p style="margin-top:-24px;margin-left:200px">Continue with google</p></a>
+      </div>
+
+      <script>
+        function handleCredentialResponse(response) {
+          fetch('/auth/google', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token: response.credential })
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                window.location.href = '/home'; // Redirect on success
+              } else {
+                alert("Google sign-in failed.");
+              }
+            })
+            .catch(error => console.error("Error during sign-in:", error));
+        }
+      </script>
+
+    </form>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelector('form').addEventListener('submit', formValidate);
+
+      const message = document.getElementById('message').value;
+
+      if (message) {
+        console.log("user already exists")
+        { { !--Swal.fire(message); --} }
+      }
+    });
+
+    function formValidate(e) {
+      e.preventDefault();
+      var email = document.getElementById('email').value;
+      var password = document.getElementById('password').value;
+      
+      if (email === "" || password === "") {
+        Swal.fire({
+          icon: "error",
+          text: "Email and passwords are required",
+        });
+        return false;
+      }
+      e.target.submit();
+      return true;
+    }
+  </script>
+  <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('form').addEventListener('submit', formValidate);
+
+            const message = document.getElementById('message').value;
+
+           
+        });
+
+        function formValidate(e) {
+            e.preventDefault();
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+
+            if (email === "" || password === "") {
+                Swal.fire({
+                    icon: "error",
+                    text: "Email and passwords are required",
+                });
+                return false;
+            }
+            e.target.submit();
+            return true;
+        }
+    </script>
+      <script>
+        // Wait until the DOM is fully loaded
+        document.addEventListener("DOMContentLoaded", function () {
+          const messageInput = document.getElementById("message");
+
+          // Check if there's a message and then clear it after showing once
+          if (messageInput.value) {
+            setTimeout(() => {
+              messageInput.value = ""; // Clear the message after a delay
+            }, 2000); // Adjust delay as needed (e.g., 3000ms = 3 seconds)
+          }
+        });
+      </script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</body>
+
+</html>

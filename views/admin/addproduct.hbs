@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WATCHES PREMIUM</title>
+    <link rel="stylesheet" href="/admin/editproducts.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
+    	<link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .button-group {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .button-group button {
+            padding: 10px 15px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .button-group button:hover {
+            background: #0056b3;
+        }
+
+        .image-previews {
+            display: flex;
+            flex-direction: column; /* Column for better vertical alignment */
+            margin-top: 20px;
+        }
+
+        .image-preview {
+            position: relative;
+            margin-bottom: 15px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            text-align: center; /* Centering text and button */
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: auto;
+        }
+
+        .crop-button {
+            position: relative;
+            bottom: 5px;
+            padding: 8px 12px;
+            background: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 5px; /* Space above the button */
+        }
+
+        .crop-button:hover {
+            background: #218838;
+        }
+
+        .instructions {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+            text-align: center; /* Center the instructions */
+        }
+    </style>
+</head>
+
+<body style="background-color: rgba(0, 12, 48, 0.91);">
+    <div class="container">
+        <h1>Add New Product</h1>
+        <form action="/admin/addproducts" method="post" enctype="multipart/form-data">
+            <input type="text" style="font-size:17px;border-width: 0px; color:red;font-weight:bold;width:100%;" name="message" id="message"  value="{{message}}" >
+
+            <div class="form-group">
+                <label for="name">Product Name</label>
+                <input type="text" id="name" name="name" >
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category</label>
+                <input type="text" id="category" name="category" >
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" id="description" name="description" >
+            </div>
+
+            <div class="form-group">
+                <label for="stock">Stock</label>
+                <input type="number" id="stock" name="stock" >
+            </div>
+
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" id="price" name="price" >
+            </div>
+
+            <div class="form-group">
+                <label for="images">Upload Images (minimum 3)</label>
+                <input type="file" id="images" name="images" accept="image/*" multiple >
+            </div>
+
+            <div class="button-group">
+                <button type="submit">Add Product</button>
+            </div>
+        </form>
+
+        <div class="image-previews"></div>
+        <div class="instructions">
+            <p>Crop the uploaded images. You can crop multiple times, but only the latest cropped image will be displayed.</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script>
+        const imagesInput = document.getElementById('images');
+        const previewsContainer = document.querySelector('.image-previews');
+        let cropper;
+
+        imagesInput.addEventListener('change', function (e) {
+            const files = e.target.files;
+            previewsContainer.innerHTML = ''; // Clear previous previews
+
+            if (cropper) {
+                cropper.destroy(); // Destroy previous cropper instance if it exists
+            }
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = event.target.result;
+
+                    // Create a wrapper for the preview
+                    const previewContainer = document.createElement('div');
+                    previewContainer.className = 'image-preview';
+                    previewsContainer.appendChild(previewContainer);
+                    previewContainer.appendChild(imgElement);
+
+                    // Create a cropper instance
+                    cropper = new Cropper(imgElement, {
+                        aspectRatio: 1, // Adjust the aspect ratio as needed
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        ready: function () {
+                            // Create crop button
+                            const cropButton = document.createElement('button');
+                            cropButton.textContent = 'Crop Image';
+                            cropButton.className = 'crop-button';
+                            previewContainer.appendChild(cropButton);
+
+                            cropButton.addEventListener('click', async () => {
+                                // Remove previous cropped image if exists
+                                const existingPreview = previewsContainer.querySelector('.cropped-image');
+                                if (existingPreview) {
+                                    existingPreview.remove();
+                                }
+
+                                const canvas = cropper.getCroppedCanvas({
+                                    width: 300, // Set desired width
+                                    height: 300 // Set desired height
+                                });
+
+                                // Convert the cropped canvas to a Blob
+                                canvas.toBlob(async (blob) => {
+                                    const newFile = new File([blob], file.name, {
+                                        type: file.type,
+                                        lastModified: Date.now()
+                                    });
+
+                                    // Create a new FileReader to display the cropped image
+                                    const newReader = new FileReader();
+                                    newReader.onload = function (newEvent) {
+                                        const imgPreview = document.createElement('img');
+                                        imgPreview.src = newEvent.target.result;
+                                        imgPreview.className = 'cropped-image'; // Class for identification
+                                        imgPreview.style.width = '100%'; // Set a width for the preview
+                                        imgPreview.style.height = '100px'; // Set a fixed height for uniformity
+                                        previewContainer.appendChild(imgPreview);
+                                    };
+
+                                    newReader.readAsDataURL(newFile);
+                                }, file.type);
+                            });
+                        }
+                    });
+                };
+
+                reader.readAsDataURL(file);
+            });
+        });
+    </script>
+     <script>
+    // Clear the message after 3 seconds
+    setTimeout(() => {
+        const messageField = document.getElementById('message');
+        if (messageField) {
+            messageField.value = ''; // Clear the message field
+        }
+    }, 2000); // Adjust the time (in milliseconds) as needed
+</script> 
+
+</body>
+
+</html>

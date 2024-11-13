@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description"
+		content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
+
+	<!-- title -->
+	<title>WATCH PREMIUM</title>
+
+	<!-- favicon -->
+	<link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+	<!-- google font -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+	<!-- fontawesome -->
+	<link rel="stylesheet" href="/assets/css/all.min.css">
+	<!-- bootstrap -->
+	<link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+	<!-- owl carousel -->
+	<link rel="stylesheet" href="/assets/css/owl.carousel.css">
+	<!-- magnific popup -->
+	<link rel="stylesheet" href="/assets/css/magnific-popup.css">
+	<!-- animate css -->
+	<link rel="stylesheet" href="/assets/css/animate.css">
+	<!-- mean menu css -->
+	<link rel="stylesheet" href="/assets/css/meanmenu.min.css">
+	<!-- main style -->
+	<link rel="stylesheet" href="/assets/css/main.css">
+	<!-- responsive -->
+	<link rel="stylesheet" href="/assets/css/responsive.css">
+	<style>
+		.add {
+			width: 150px;
+			border-width: 0px;
+			height: 46px;
+			border-radius: 4px;
+			color: rgb(0, 0, 0);
+			background-color: rgba(243, 138, 0, 0.916);
+			font-weight: bold;
+			border-radius: 2px;
+			width: 20px;
+		}
+
+		.banner {
+			width: 100%;
+			height: 500px;
+			background: linear-gradient(45deg, #ee0a0abb, #5d5d5c);
+			position: relative;
+		}
+	</style>
+</head>
+
+<body>
+
+	<!--PreLoader-->
+	<div class="loader">
+		<div class="loader-inner">
+			<div class="circle"></div>
+		</div>
+	</div>
+	<!--PreLoader Ends-->
+
+	<!-- header -->
+	<div class="top-header-area" id="sticker">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 col-sm-12 text-center">
+					<div class="main-menu-wrap">
+						<!-- logo -->
+						<div class="site-logo">
+							<a href="/home">
+								<h4 style="font-weight: bold; color:white">WATCH PREMIUM</h4>
+							</a>
+						</div>
+						<!-- logo -->
+
+						<!-- menu start -->
+						<nav class="main-menu">
+							<ul>
+								<li class="current-list-item"><a href="/home">Home</a>
+								</li>
+								<li><a href="/about">About</a></li>
+								<li><a href="/products">Products</a></li>
+
+								<ul class="sub-menu">
+									<li><a href="/news.hbs">News</a></li>
+									<li><a href="/single-news.hbs">Single News</a></li>
+								</ul>
+								</li>
+								<li><a href="/contact">Contact</a></li>
+
+								<ul class="sub-menu">
+									<li>
+										<form class="a" method="get" action="/shop">Shop</form>
+									</li>
+									<li><a href="/checkout.hbs">Check Out</a></li>
+									<li><a href="/single-product.hbs">Single Product</a></li>
+									<li><a href="/cart.hbs">Cart</a></li>
+								</ul>
+								</li>
+								<li>
+									<form method="post" action="/logout">
+										<button class="a" type="submit"
+											style="color:white; background: none; border: none;cursor: pointer; font-weight:bold">Log
+											Out
+										</button>
+									</form>
+								</li>
+								<li>
+									<div class="header-icons">
+										<a class="shopping-cart" href="/cart"><i
+												class="fas fa-shopping-cart"></i></a>
+										<a class="mobile-hide search-bar-icon" href="#"><i
+												class="fas fa-search"></i></a>
+										<a class="mobile-hide search-bar-icon" href="/profile"><i
+												class="fas fa-user"></i></a>
+									</div>
+								</li>
+
+							</ul>
+						</nav>
+						<a class="mobile-show search-bar-icon" href="#"><i class="fas fa-search"></i></a>
+						<div class="mobile-menu"></div>
+
+
+						<!-- menu end -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end header -->
+
+	<!-- search area -->
+	<div class="search-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<span class="close-btn"><i class="fas fa-window-close"></i></span>
+					<div class="search-bar">
+						<div class="search-bar-tablecell">
+							<h3>Search For:</h3>
+							<input type="text" placeholder="Keywords">
+							<button type="submit">Search <i class="fas fa-search"></i></button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end search area -->
+
+	<!-- home page slider -->
+	<div class="homepage-slider">
+		<!-- single home slider -->
+		<div class="single-homepage-slider homepage-bg-1">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12 col-lg-7 offset-lg-1 offset-xl-0">
+						<div class="hero-text">
+							<div class="hero-text-tablecell">
+								<p class="subtitle">smart & style</p>
+								<h1>Smart choices, smarter watches</h1>
+								<div class="hero-btns">
+									<a href="/products" class="boxed-btn">New Collection</a>
+									<a href="/contact" class="bordered-btn">Contact Us</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- single home slider -->
+		<div class="single-homepage-slider homepage-bg-2">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-10 offset-lg-1 text-center">
+						<div class="hero-text">
+							<div class="hero-text-tablecell">
+								<p class="subtitle">Track & connect</p>
+								<h1>Wear the future, today</h1>
+								<div class="hero-btns">
+									<a href="/shop.hbs" class="boxed-btn">Visit Shop</a>
+									<a href="/contact.hbs" class="bordered-btn">Contact Us</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- single home slider -->
+		<div class="single-homepage-slider homepage-bg-3">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-10 offset-lg-1 text-right">
+						<div class="hero-text">
+							<div class="hero-text-tablecell">
+								<p class="subtitle">Mega Sale Going On!</p>
+								<h1>Get December Discount</h1>
+								<div class="hero-btns">
+									<a href="/shop.hbs" class="boxed-btn">Visit Shop</a>
+									<a href="/contact.hbs" class="bordered-btn">Contact Us</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end home page slider -->
+
+	<!-- features list section -->
+	<div class="list-section pt-80 pb-80">
+		<div class="container">
+
+			<div class="row">
+				<div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+					<div class="list-box d-flex align-items-center">
+						<div class="list-icon">
+							<i class="fas fa-shipping-fast"></i>
+						</div>
+						<div class="content">
+							<h3>Free Shipping</h3>
+							<p>When order over $100</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+					<div class="list-box d-flex align-items-center">
+						<div class="list-icon">
+							<i class="fas fa-phone-volume"></i>
+						</div>
+						<div class="content">
+							<h3>24/7 Support</h3>
+							<p>Get support all day</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-6">
+					<div class="list-box d-flex justify-content-start align-items-center">
+						<div class="list-icon">
+							<i class="fas fa-sync"></i>
+						</div>
+						<div class="content">
+							<h3>Refund</h3>
+							<p>Get refund within 3 days!</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<!-- end features list section -->
+
+	<!-- product section -->
+	<div class="product-section mt-150 mb-150">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 offset-lg-2 text-center">
+					<div class="section-title">
+						<h3><span class="orange-text">Our</span> Products</h3>
+						<p>Discover cutting-edge smartwatches that blend style, functionality, and innovation—perfect
+							for staying connected and elevating your lifestyle</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				{{#each products}}
+				<div class="col-lg-4 col-md-6 text-center">
+					<div class="single-product-item">
+						<div class="product-image">
+							<a href="/product/{{_id}}">
+								<img style="height: 270px;" src="/{{this.images.[0]}}" alt="{{this.name}}">
+								<!-- Display the first image -->
+							</a>
+						</div>
+						<h3>{{this.name}}</h3>
+						<p class="product-price"><span>20% off today</span> {{this.price}}$</p>
+						<form action="/addtocart" method="post">
+							<input type="hidden" name="productId" value="{{this._id}}">
+							<input type="hidden" name="quantity" value="{{this.quantity}}">
+							<div style="margin-left:30%">
+								<button
+									style="background-color: transparent;border: none;padding: 0;margin: 0;cursor: pointer;display: flex;align-items: center;font: inherit;color: inherit;outline:none "
+									type="submit" class="cart-btn">
+									<a class="cart-btn"><i class="fas fa-shopping-cart"> Add to Cart</i></a>
+								</button>
+							</div> 
+
+						</form>
+					</div>
+				</div>
+				{{/each}}
+
+			</div>
+		</div>
+	</div>
+	<!-- cart banner section -->
+	<section class="cart-banner pt-100 pb-100">
+		<div class="container">
+			<div class="row clearfix">
+				<!--Image Column-->
+				<div class="image-column col-lg-6">
+					<div class="image">
+						<div class="price-box">
+							<div class="inner-price">
+								<span class="price">
+									<strong>20%</strong> <br> on one product
+								</span>
+							</div>
+						</div>
+						<img src="https://engineeringproductdesign.com/wp-content/uploads/apple_watches_microphone.png"
+							alt="">
+					</div>
+				</div>
+				<!--Content Column-->
+				<div class="content-column col-lg-6">
+					<h3><span class="orange-text">Deal</span> of the month</h3>
+					<h4>Get 20% off on our best-selling smartwatches!</h4>
+					<div class="text">Upgrade your style and functionality while stocks last.
+						Free shipping on orders over $50!
+						Don't miss out—shop now and embrace the future!</div>
+					<!--Countdown Timer-->
+					<div class="time-counter">
+						<div class="time-countdown clearfix">
+							<div class="counter-column">
+								<div class="inner"><span class="count" id="days">00</span> Days</div>
+							</div>
+							<div class="counter-column">
+								<div class="inner"><span class="count" id="hours">00</span> Hours</div>
+							</div>
+							<div class="counter-column">
+								<div class="inner"><span class="count" id="minutes">00</span> Mins</div>
+							</div>
+							<div class="counter-column">
+								<div class="inner"><span class="count" id="seconds">00</span> Secs</div>
+							</div>
+						</div>
+					</div>
+					<a href="/cart" class="cart-btn mt-3"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- end cart banner section -->
+
+    <style>
+        
+        .banner {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #574a2d, #dbb434);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .content-wrapper {
+            display: flex;
+            height: 100%;
+        }
+        .text-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .banner p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .cta-button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #ec8525;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: scale(0.9);
+            align-self: flex-start;
+			margin-left: 30%;
+        }
+        .cta-button:hover {
+            background-color: #031125ed;
+			color: orange;
+			border-width: 2px;
+			border-color: orange;
+            transform: scale(1.05);
+        }
+        .watch-showcase {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+        .watch-3d {
+            width: 205px;
+            height: 205px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotate 15s infinite linear;
+        }
+        .watch-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            background: url() no-repeat center/cover;
+            border: 2px solid #ecf0f1;
+            border-radius: 9px;
+        }
+        .front { transform: translateZ(100px); }
+        .back { transform: rotateY(180deg) translateZ(100px); }
+        .right { transform: rotateY(90deg) translateZ(100px); }
+        .left { transform: rotateY(-90deg) translateZ(100px); }
+        .top { transform: rotateX(90deg) translateZ(100px); }
+        .bottom { transform: rotateX(-90deg) translateZ(100px); }
+        @keyframes rotate {
+            1% { transform: rotateY(0); }
+            100% { transform: rotateY(360deg); }
+        }
+        .feature-selector {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .feature-button {
+            padding: 5px 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 15px;
+        }
+        .feature-button:hover, .feature-button.active {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+
+    <div class="banner">
+        <div class="content-wrapper">
+            <div class="text-content">
+                <h1 style="margin-left: 30%; color:rgb(255, 255, 255);font-size:47px">The Future on Your<span style="color: orange;"> Wrist</span></h1>
+                <p style="margin-left: 30%;font-weight:bold;color:white">Experience cutting-edge technology with our smartwatches</p>
+                <a href="/products" class="cta-button">Shop Now</a>
+            </div>
+            <div class="watch-showcase">
+                <div class="watch-3d">
+                    <div class="watch-face front" style="background-image: url(https://www.fastrack.in/dw/image/v2/BKDD_PRD/on/demandware.static/-/Sites-titan-master-catalog/default/dw43dda5a9/images/Fastrack/Catalog/38074AP03_1.jpg?sw=600&sh=600);"></div>
+                    <div class="watch-face back" style="background-image: url(https://m.media-amazon.com/images/I/61XESKwObcL.jpg);"></div>
+                    <div class="watch-face right" style="background-image: url(https://rukminim2.flixcart.com/image/850/1000/xif0q/smartwatch/f/5/c/1-33-android-ios-yuy-244y-t800-ultra-smartwatch-1-9-hd-display-original-imagppngdqwucrum.jpeg?q=90&crop=false);"></div>
+                    <div class="watch-face left" style="background-image: url(https://www.zebrs.com/uploads/zebrs/products/untitled-design-402111_l.jpg);"></div>
+                    <div class="watch-face top" style="background-image: url(https://www.jarir.com/cdn-cgi/image/fit=contain,width=350,height=auto,quality=85,metadata=none/https://ak-asset.jarir.com/akeneo-prod/asset/m1/delta/558306.jpg);"></div>
+                    <div class="watch-face bottom" style="background-image: url(https://rukminim2.flixcart.com/image/850/1000/xif0q/smartwatch/y/q/1/-original-imagmwgxvhfv7hdt.jpeg?q=90&crop=false);"></div>
+              
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const title = document.querySelector('.banner h1');
+            const subtitle = document.querySelector('.banner p');
+            const cta = document.querySelector('.cta-button');
+            const featureButtons = document.querySelectorAll('.feature-button');
+            const watch3d = document.querySelector('.watch-3d');
+
+            // Animate text and button
+            setTimeout(() => {
+                title.style.opacity = '1';
+                title.style.transform = 'translateY(0)';
+            }, 500);
+
+            setTimeout(() => {
+                subtitle.style.opacity = '1';
+                subtitle.style.transform = 'translateY(0)';
+            }, 1000);
+
+            setTimeout(() => {
+                cta.style.opacity = '1';
+                cta.style.transform = 'scale(1)';
+            }, 1500);
+
+            // Feature selector functionality
+            featureButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    featureButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    const feature = button.getAttribute('data-feature');
+                    updateWatchFace(feature);
+                });
+            });
+
+            function updateWatchFace(feature) {
+                const faces = watch3d.querySelectorAll('.watch-face');
+                faces.forEach(face => {
+                    face.style.background = `url('/placeholder.svg?height=200&width=200&text=${feature}') no-repeat center/cover`;
+                    face.textContent = feature;
+                });
+
+                // Update subtitle text
+                subtitle.textContent = `Experience ${feature.toLowerCase()} tracking with our smartwatches`;
+
+                // Pause and resume rotation animation
+                watch3d.style.animationPlayState = 'paused';
+                setTimeout(() => {
+                    watch3d.style.animationPlayState = 'running';
+                }, 100);
+            }
+
+            // Interactive 3D rotation on mouse move
+            const banner = document.querySelector('.banner');
+            banner.addEventListener('mousemove', (e) => {
+                const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+                const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+                watch3d.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+            });
+
+            banner.addEventListener('mouseleave', () => {
+                watch3d.style.transform = 'rotateY(0) rotateX(0)';
+            });
+        });
+    </script>
+
+	<script>
+		// Set the target date and time
+		const targetDate = new Date("2024/12/01 00:00:00").getTime();
+
+		function updateCountdown() {
+			const now = new Date().getTime();
+			const timeRemaining = targetDate - now;
+
+			// Calculate days, hours, minutes, and seconds
+			const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 20));
+			const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+			const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+			const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+			// Display the results
+			document.getElementById("days").innerText = days;
+			document.getElementById("hours").innerText = hours;
+			document.getElementById("minutes").innerText = minutes;
+			document.getElementById("seconds").innerText = seconds;
+
+			// Check if the countdown has ended
+			if (timeRemaining < 0) {
+				clearInterval(countdownInterval);
+				document.getElementById("days").innerText = "00";
+				document.getElementById("hours").innerText = "00";
+				document.getElementById("minutes").innerText = "00";
+				document.getElementById("seconds").innerText = "00";
+				alert("Countdown has ended!");
+			}
+		}
+
+		// Update the countdown every second
+		const countdownInterval = setInterval(updateCountdown, 1000);
+	</script>
+	<!-- testimonail-section -->
+	<div class="testimonail-section mt-150 mb-150">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-10 offset-lg-1 text-center">
+					<div class="testimonial-sliders">
+						<div class="single-testimonial-slider">
+							<div class="client-avater">
+								<img src="/assets/img/avaters/avatar1.png" alt="">
+							</div>
+							<div class="client-meta">
+								<h3>Saira Hakim <span>Local shop owner</span></h3>
+								<p class="testimonial-body">
+									" Sed ut perspiciatis unde omnis iste natus error veritatis et quasi architecto
+									beatae vitae dict eaque ipsa quae ab illo inventore Sed ut perspiciatis unde omnis
+									iste natus error sit voluptatem accusantium "
+								</p>
+								<div class="last-icon">
+									<i class="fas fa-quote-right"></i>
+								</div>
+							</div>
+						</div>
+						<div class="single-testimonial-slider">
+							<div class="client-avater">
+								<img src="/assets/img/avaters/avatar2.png" alt="">
+							</div>
+							<div class="client-meta">
+								<h3>David Niph <span>Local shop owner</span></h3>
+								<p class="testimonial-body">
+									" Sed ut perspiciatis unde omnis iste natus error veritatis et quasi architecto
+									beatae vitae dict eaque ipsa quae ab illo inventore Sed ut perspiciatis unde omnis
+									iste natus error sit voluptatem accusantium "
+								</p>
+								<div class="last-icon">
+									<i class="fas fa-quote-right"></i>
+								</div>
+							</div>
+						</div>
+						<div class="single-testimonial-slider">
+							<div class="client-avater">
+								<img src="/assets/img/avaters/avatar3.png" alt="">
+							</div>
+							<div class="client-meta">
+								<h3>Jacob Sikim <span>Local shop owner</span></h3>
+								<p class="testimonial-body">
+									" Sed ut perspiciatis unde omnis iste natus error veritatis et quasi architecto
+									beatae vitae dict eaque ipsa quae ab illo inventore Sed ut perspiciatis unde omnis
+									iste natus error sit voluptatem accusantium "
+								</p>
+								<div class="last-icon">
+									<i class="fas fa-quote-right"></i>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end testimonail-section -->
+
+	<!-- advertisement section -->
+	<div class="abt-section mb-150">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6 col-md-12">
+					<div class="abt-bg">
+						<a href="https://youtu.be/fOHj5kGU4fY" class="video-play-btn popup-youtube"><i
+								class="fas fa-play"></i></a>
+					</div>
+				</div>
+				<div class="col-lg-6 col-md-12">
+					<div class="abt-text">
+						<p class="top-sub">Since Year 2005</p>
+						<h2>We are <span class="orange-text">Watch Premium</span></h2>
+						<p>Welcome to our smart watch e-commerce store! Explore our curated collection of stylish and
+							innovative smartwatches designed to enhance your connectivity and lifestyle. Enjoy seamless
+							shopping, great deals, and exceptional customer service. Your perfect smart companion
+							awaits!</p>
+						<p> Enjoy a user-friendly shopping experience, exclusive deals, and dedicated customer support.
+							Discover the perfect smartwatch that fits your lifestyle and stay connected in style!</p>
+						<a href="/about.hbs" class="boxed-btn mt-4">know more</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end advertisement section -->
+
+	<!-- shop banner -->
+	<section
+		style="background-image: url(https://png.pngtree.com/thumb_back/fw800/background/20231006/pngtree-d-rendering-of-a-yellow-modern-smartwatch-mockup-with-duotone-style-image_13596416.png);"
+		class="shop-banner">
+		<div class="container">
+			<h3>December sale is on! <br> with big <span class="orange-text">Discount...</span></h3>
+			<div class="sale-percent"><span>Sale! <br> Upto</span>20% <span>off</span></div>
+			<a href="/shop.hbs" class="cart-btn btn-lg">Shop Now</a>
+		</div>
+	</section>
+	<!-- end shop banner -->
+
+	<!-- latest news -->
+	<div class="latest-news pt-150 pb-150">
+		<div class="container">
+
+			<div class="row">
+				<div class="col-lg-8 offset-lg-2 text-center">
+					<div class="section-title">
+						<h3><span class="orange-text">LUXURY</span> ITEMS</h3>
+						<p>here are some luxury items .its little bit expensive..but its you migth like</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-4 col-md-6">
+					<div class="single-latest-news">
+						<a href="/single-news.hbs">
+							<div class="latest-news-bg news-bg-1"></div>
+						</a>
+						<div class="news-text-box">
+							<h3><a href="/single-news.hbs">Louis Vuitton Tambour Horizon</a></h3>
+							<p class="blog-meta">
+								<span class="author"><i class="fas fa-user"></i> Admin</span>
+								<span class="date"><i class="fas fa-calendar"></i> 27 December, 2019</span>
+							</p>
+							<p class="excerpt">The Louis Vuitton Tambour Horizon is a luxury smartwatch with a stylish
+								round design and vibrant AMOLED touchscreen. It runs on Wear OS, offering customizable
+								watch faces, notifications, and fitness tracking. With Bluetooth and Wi-Fi connectivity,
+								it seamlessly combines fashion and functionality for the modern lifestyle.</p>
+							<a href="/single-news.hbs" class="read-more-btn">read more <i
+									class="fas fa-angle-right"></i></a>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-6">
+					<div class="single-latest-news">
+						<a href="/single-news.hbs">
+							<div class="latest-news-bg news-bg-2"></div>
+						</a>
+						<div class="news-text-box">
+							<h3><a href="/single-news.hbs">Garmin Refreshes Smart Watch</a></h3>
+							<p class="blog-meta">
+								<span class="author"><i class="fas fa-user"></i> Admin</span>
+								<span class="date"><i class="fas fa-calendar"></i> 27 December, 2019</span>
+							</p>
+							<p class="excerpt">Garmin has released a major upgrade to its MARQ lineup of luxury
+								smartwatches, which could offer stiff competition to Apple’s foray into the
+								adventure-grade luxury smartwatch segment. The latest slew of updates to the durable,
+								high-end smartwatches includes an improved display, better battery life, and a host of
+								new features. </p>
+							<a href="/single-news.hbs" class="read-more-btn">read more <i
+									class="fas fa-angle-right"></i></a>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-6 offset-md-3 offset-lg-0">
+					<div class="single-latest-news">
+						<a href="/single-news.hbs">
+							<div class="latest-news-bg news-bg-3"></div>
+						</a>
+						<div class="news-text-box">
+							<h3><a href="/single-news.hbs">TAG Heuer® Connected watch</a></h3>
+							<p class="blog-meta">
+								<span class="author"><i class="fas fa-user"></i> Admin</span>
+								<span class="date"><i class="fas fa-calendar"></i> 27 December, 2019</span>
+							</p>
+							<p class="excerpt">TAG Heuer Connected watch combines luxury and technology in a sleek
+								design. Featuring a customizable dial and premium materials, it offers advanced fitness
+								tracking, heart rate monitoring, and smartphone notifications. This smartwatch caters to
+								both watch enthusiasts and tech-savvy users, seamlessly blending style.</p>
+							<a href="/single-news.hbs" class="read-more-btn">read more <i
+									class="fas fa-angle-right"></i></a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12 text-center">
+					<a href="/news.hbs" class="boxed-btn">More News</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end latest news -->
+
+	<!-- logo carousel -->
+	<div class="logo-carousel-section">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="logo-carousel-inner">
+
+						<div class="single-logo-item">
+							<img style="margin-top: 50px;"
+								src="https://logos-world.net/wp-content/uploads/2020/04/Louis-Vuitton-Logo.png" alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="margin-top: 10px"
+								src="https://parspng.com/wp-content/uploads/2022/10/pumapng.parspng.com_-300x300.png"
+								alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="height:120px;width:120px;margin-top:36px"
+								src="https://cdn2.iconfinder.com/data/icons/apple-tv-1/512/apple_logo-512.png" alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="margin-top: 17px;height:175px"
+								src="https://images.samsung.com/is/image/samsung/assets/global/about-us/brand/logo/256_144_2.png?$512_N_PNG$"
+								alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="margin-top: 45px"
+								src="https://download.logo.wine/logo/Citizen_Watch/Citizen_Watch-Logo.wine.png" alt="">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end logo carousel -->
+
+	<!-- footer -->
+	<div class="footer-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box about-widget">
+						<h2 class="widget-title">About us</h2>
+						<p>Discover an exclusive selection of premium watches on our e-commerce website, featuring
+							luxury brands and unique designs. Enjoy seamless shopping, secure payment options, and
+							exceptional customer service for your perfect timepiece.</p>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box get-in-touch">
+						<h2 class="widget-title">Get in Touch</h2>
+						<ul>
+							<li>34/8, malappuram, kerala, india.</li>
+							<li>support@watchpremium.com</li>
+							<li>+75 94 0606 96</li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box pages">
+						<h2 class="widget-title">Pages</h2>
+						<ul>
+							<li><a href="/home.hbs">Home</a></li>
+							<li><a href="/about.hbs">About</a></li>
+							<li><a href="/services.hbs">Shop</a></li>
+							<li><a href="/news.hbs">News</a></li>
+							<li><a href="/contact.hbs">Contact</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box subscribe">
+						<h2 class="widget-title">Subscribe</h2>
+						<p>Subscribe to our mailing list to get the latest updates.</p>
+						<form action="user/home">
+							<input type="email" placeholder="Email">
+							<button type="submit"><i class="fas fa-paper-plane"></i></button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end footer -->
+
+	<!-- copyright -->
+	<div class="copyright">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6 col-md-12">
+					<p>Copyrights &copy; 2005 - <a href="https://imransdesign.com/">Muhammed Uvais</a>, All Rights
+						Reserved.<br>
+						Distributed By - <a href="https://themewagon.com/">Watch Premium</a>
+					</p>
+				</div>
+				<div class="col-lg-6 text-right col-md-12">
+					<div class="social-icons">
+						<ul>
+							<li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end copyright -->
+
+	<!-- jquery -->
+	<script src="/assets/js/jquery-1.11.3.min.js"></script>
+	<!-- bootstrap -->
+	<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+	<!-- count down -->
+	<script src="/assets/js/jquery.countdown.js"></script>
+	<!-- isotope -->
+	<script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
+	<!-- waypoints -->
+	<script src="/assets/js/waypoints.js"></script>
+	<!-- owl carousel -->
+	<script src="/assets/js/owl.carousel.min.js"></script>
+	<!-- magnific popup -->
+	<script src="/assets/js/jquery.magnific-popup.min.js"></script>
+	<!-- mean menu -->
+	<script src="/assets/js/jquery.meanmenu.min.js"></script>
+	<!-- sticker js -->
+	<script src="/assets/js/sticker.js"></script>
+	<!-- main js -->
+	<script src="/assets/js/main.js"></script>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const banner = document.querySelector('.banner');
+			const title = document.querySelector('.banner h1');
+			const subtitle = document.querySelector('.banner p');
+			const cta = document.querySelector('.cta-button');
+			const watches = document.querySelectorAll('.watch');
+			const particles = document.querySelector('.particles');
+
+			// Animate text and button
+			setTimeout(() => {
+				title.style.opacity = '1';
+				title.style.transform = 'translateY(0)';
+			}, 500);
+
+			setTimeout(() => {
+				subtitle.style.opacity = '1';
+				subtitle.style.transform = 'translateY(0)';
+			}, 1000);
+
+			setTimeout(() => {
+				cta.style.opacity = '1';
+				cta.style.transform = 'scale(1)';
+			}, 1500);
+
+			// Animate watches
+			watches.forEach((watch, index) => {
+				setTimeout(() => {
+					watch.style.opacity = '1';
+					watch.style.transform = 'translateY(0)';
+				}, 2000 + index * 300);
+			});
+
+			// Create particle effect
+			for (let i = 0; i < 50; i++) {
+				createParticle();
+			}
+
+			function createParticle() {
+				const particle = document.createElement('div');
+				particle.style.position = 'absolute';
+				particle.style.width = '2px';
+				particle.style.height = '2px';
+				particle.style.background = 'white';
+				particle.style.borderRadius = '50%';
+				particle.style.opacity = Math.random();
+				particle.style.left = Math.random() * 100 + '%';
+				particle.style.top = Math.random() * 300 + 'px';
+				particles.appendChild(particle);
+
+				animateParticle(particle);
+			}
+
+			function animateParticle(particle) {
+				let posX = parseFloat(particle.style.left);
+				let posY = parseFloat(particle.style.top);
+				let speed = Math.random() * 1 + 0.5;
+
+				function update() {
+					posY -= speed;
+					if (posY < -10) {
+						posY = 310;
+						posX = Math.random() * 100;
+					}
+					particle.style.left = posX + '%';
+					particle.style.top = posY + 'px';
+					requestAnimationFrame(update);
+				}
+
+				update();
+			}
+
+			// Interactive watch hover effect
+			watches.forEach(watch => {
+				watch.addEventListener('mouseover', () => {
+					const name = watch.getAttribute('data-name');
+					subtitle.textContent = `Featuring the ${name}`;
+					subtitle.style.color = '#4CAF50';
+				});
+
+				watch.addEventListener('mouseout', () => {
+					subtitle.textContent = 'Discover our revolutionary smartwatches';
+					subtitle.style.color = 'white';
+				});
+			});
+		});
+	</script>
+
+
+</body>
+
+</html>

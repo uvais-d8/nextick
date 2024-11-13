@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+        content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
+
+    <!-- title -->
+    <title>WATCH PREMIUM</title>
+
+    <!-- favicon -->
+    <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+    <!-- google font -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+    <!-- fontawesome -->
+    <link rel="stylesheet" href="/assets/css/all.min.css">
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+    <!-- owl carousel -->
+    <link rel="stylesheet" href="/assets/css/owl.carousel.css">
+    <!-- magnific popup -->
+    <link rel="stylesheet" href="/assets/css/magnific-popup.css">
+    <!-- animate css -->
+    <link rel="stylesheet" href="/assets/css/animate.css">
+    <!-- mean menu css -->
+    <link rel="stylesheet" href="/assets/css/meanmenu.min.css">
+    <!-- main style -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <!-- responsive -->
+    <link rel="stylesheet" href="/assets/css/responsive.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<body>
+
+    <style>
+        a{
+            text-decoration: none;
+        }
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5a623;
+            --background-color: #f9f9f9;
+            --text-color: #333;
+            --border-color: #e0e0e0;
+        }
+
+        .box:hover {
+            border-color: #f5a623;
+            background-color: red;
+        }
+
+        .box {
+            background-color: green;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        main {
+            padding: 2rem 0;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section {
+            background-color: red;
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-color);
+        }
+
+        .profile-info h1 {
+            margin: 0 0 0.5rem 0;
+        }
+
+        .profile-info p {
+            margin: 0;
+            color: #666;
+        }
+
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section h2 {
+            margin-top: 0;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .order-history {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .order {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-details {
+            flex-grow: 1;
+        }
+
+        .order-status {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .account-settings form {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: var(--secondary-color);
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #ffc400;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+            margin-top: 2rem;
+        }
+
+        .box:hover {
+            background-color: red;
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .order {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .order-status {
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+
+    <!--PreLoader-->
+    <div class="loader">
+        <div class="loader-inner">
+            <div class="circle"></div>
+        </div>
+    </div>
+    <!--PreLoader Ends-->
+
+    <!-- header -->
+    <div class="top-header-area" id="sticker">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 col-sm-12 text-center">
+                    <div class="main-menu-wrap">
+                        <!-- logo -->
+                        <div class="site-logo">
+                            <a href="/home">
+                                <h4 style="font-weight: bold; color:white">WATCH PREMIUM</h4>
+                            </a>
+                        </div>
+                        <!-- logo -->
+
+                        <!-- menu start -->
+                        <nav class="main-menu">
+                            <ul>
+                                <li><a href="/home">Home</a>
+                                </li>
+                                <li><a href="/about">About</a></li>
+                                <li><a href="/products">Products</a></li>
+
+                                <ul class="sub-menu">
+                                    <li><a href="/news.hbs">News</a></li>
+                                    <li><a href="/single-news.hbs">Single News</a></li>
+                                </ul>
+                                </li>
+                                <li><a href="/contact">Contact</a></li>
+
+                                <ul class="sub-menu">
+                                    <li>
+                                        <form class="a" method="get" action="/shop">Shop</form>
+                                    </li>
+                                    <li><a href="/checkout.hbs">Check Out</a></li>
+                                    <li><a href="/single-product.hbs">Single Product</a></li>
+                                    <li><a href="/cart.hbs">Cart</a></li>
+                                </ul>
+                                </li>
+                                <li>
+                                    <form method="post" action="/logout">
+                                        <button class="a" type="submit"
+                                            style="color:white; background: none; border: none;cursor: pointer; font-weight:bold">Log
+                                            Out
+                                        </button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <div class="header-icons">
+                                        <a class="shopping-cart" href="/cart"><i
+                                                class="fas fa-shopping-cart"></i></a>
+                                        <a class="mobile-hide search-bar-icon" href="#"><i
+                                                class="fas fa-search"></i></a>
+                                        <a class="mobile-hide search-bar-icon" href="/profile"><i
+                                                class="fas fa-user"></i></a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </nav>
+                        <a class="mobile-show search-bar-icon" href="#"><i class="fas fa-search"></i></a>
+                        <div class="mobile-menu"></div>
+                        <!-- menu end -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end header -->
+
+    <!-- search area -->
+    <div class="search-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <span class="close-btn"><i class="fas fa-window-close"></i></span>
+                    <div class="search-bar">
+                        <div class="search-bar-tablecell">
+                            <h3>Search For:</h3>
+                            <input type="text" placeholder="Keywords">
+                            <button type="submit">Search <i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end search arewa -->
+
+    <!-- breadcrumb-section -->
+    <div class="breadcrumb-section breadcrumb-bg">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 offset-lg-2 text-center">
+                    <div class="breadcrumb-text">
+                        <p>We sale fresh fruits</p>
+                        <h1>Your Addresses</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end breadcrumb section -->
+    <div class="container">
+        <div class="row">
+            {{#each addresses}}
+            <div class="col-md-4">
+                <main id="box" style="margin-top:40px ;">
+                    <section id="box" style="background-color: rgb(242, 242, 242);" class="section account-settings">
+                        <h3>saved address</h3>
+                        <form>
+                            <div class="form-group">
+                                <label for="name">First Name :{{this.firstname}}</label>
+                                <label for="name">Last Name :{{this.lastname}}</label>
+                                <label for="name">Address :{{this.address}}</label>
+                                <label for="name">Phone No:{{this.phone}}</label>
+                                <label for="name">Email :{{this.email}}</label>
+                                <label for="name">Place:{{this.place}}</label>
+                                <label for="name">City:{{this.city}}</label>
+                                <label for="name">pin Code:{{this.pincode}}</label>
+                                <label for="name">District:{{this.district}}</label>
+
+                            </div>
+                        </form>
+
+                        <!-- Trigger Button -->
+                        <button style="width: 70px;height:35px;margin-left:58%" type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            data-bs-target="#editAddressModal">
+                            <b>Edit</b>
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="editAddressModal" tabindex="-1"
+                            aria-labelledby="editAddressModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- Form fields for editing address -->
+                                        <form method="post" action="/user/editaddress/{{id}}">
+                                            <div class="mb-3">
+                                                <label for="firstname" class="form-label">First Name</label>
+                                                <input name="firstname" type="text" class="form-control" id="firstname" value="{{this.firstname}}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="lastname" class="form-label">Last Name</label>
+                                                <input name="lastname" type="text" class="form-control" id="lastname" value="{{this.lastname}}"  required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="address" class="form-label">Address</label>
+                                                <input name="address" type="text" class="form-control" id="address" value="{{this.address}}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="phone" class="form-label">Phone No</label>
+                                                <input name="phone" type="tel" class="form-control" id="phone" value="{{this.phone}}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="email" class="form-label">Email</label>
+                                                <input name="email" type="email" class="form-control" id="email" value="{{this.email}}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="place" class="form-label">Place</label>
+                                                <input name="place" type="text" class="form-control" id="place" value="{{this.place}}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="city" class="form-label">City</label>
+                                                <input name="city" type="text" class="form-control" id="city" value="{{this.city}}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="pincode" class="form-label">Pin Code</label>
+                                                <input name="pincode" type="text" class="form-control" id="pincode" value="{{this.pincode}}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="district" class="form-label">District</label>
+                                                <input name="district" type="text" class="form-control" id="district" value="{{this.firstname}}" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-warning">Save Changes</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form style="margin-top: 5px;" class="address-remove"
+                            action="/user/address/{{this._id}}?_method=DELETE" method="POST">
+                            <button type="submit"
+                                style="font-size:18px;width:70px;margin-left: 81%;height: 35px;font-size:13px;margin-top:-40px"
+                                class="btn btn-warning removecart" data-id={{this._id}}><b>Delete</b></button>
+                        </form>
+                </main>
+
+            </div>
+            {{/each}}
+        </div>
+    </div>
+
+
+    <main style="margin-top:40px ;" class="container row">
+        <section style="background-color: rgb(242, 242, 242);" class="section account-settings col-lg-12">
+            <h3>Update Address</h3>
+            <form method="post" action="/addaddress">
+                <div class="d-flex">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <input type="text" id="firstname" name="firstname" placeholder="First Name">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="lastname" name="lastname" placeholder="Last Name">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="address" name="address" placeholder="Address">
+                        </div>
+                        <div class="form-group">
+                            <input id="phone" name="phone" placeholder="Phone No">
+                        </div>
+                        <div class="form-group">
+                            <input style="width: 100%;" type="number" id="pincode" name="pincode"
+                                placeholder="Pin code">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <input type="email" id="email" name="email" placeholder="Email">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="place" name="place" placeholder="Place">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="city" name="city" placeholder="City">
+                        </div>
+
+                        <div class="form-group">
+                            <input type="text" id="district" name="district" placeholder="District">
+                        </div>
+                        <button class="w-100" type="submit">add Address</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <!-- footer -->
+    <div class="footer-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-box about-widget">
+                        <h2 class="widget-title">About us</h2>
+                        <p>Discover an exclusive selection of premium watches on our e-commerce website, featuring
+                            luxury brands and unique designs. Enjoy seamless shopping, secure payment options, and
+                            exceptional customer service for your perfect timepiece.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-box get-in-touch">
+                        <h2 class="widget-title">Get in Touch</h2>
+                        <ul>
+                            <li>34/8, malappuram, kerala, india.</li>
+                            <li>support@watchpremium.com</li>
+                            <li>+75 94 0606 96</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-box pages">
+                        <h2 class="widget-title">Pages</h2>
+                        <ul>
+                            <li><a href="/home.hbs">Home</a></li>
+                            <li><a href="/about.hbs">About</a></li>
+                            <li><a href="/services.hbs">Shop</a></li>
+                            <li><a href="/news.hbs">News</a></li>
+                            <li><a href="/contact.hbs">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-box subscribe">
+                        <h2 class="widget-title">Subscribe</h2>
+                        <p>Subscribe to our mailing list to get the latest updates.</p>
+                        <form action="/home.hbs">
+                            <input type="email" placeholder="Email">
+                            <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end footer -->
+
+    <!-- copyright -->
+    <div class="copyright">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-md-12">
+                    <p>Copyrights &copy; 2005 - <a href="https://imransdesign.com/">Muhammed Uvais</a>, All Rights
+                        Reserved.<br>
+                        Distributed By - <a href="https://themewagon.com/">Watch Premium</a>
+                    </p>
+                </div>
+                <div class="col-lg-6 text-right col-md-12">
+                    <div class="social-icons">
+                        <ul>
+                            <li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                            <li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                            <li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                            <li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+                            <li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end copyright -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/jquery-1.11.3.min.js"></script>
+    <!-- bootstrap -->
+    <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+    <!-- count down -->
+    <script src="/assets/js/jquery.countdown.js"></script>
+    <!-- isotope -->
+    <script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
+    <!-- waypoints -->
+    <script src="/assets/js/waypoints.js"></script>
+    <!-- owl carousel -->
+    <script src="/assets/js/owl.carousel.min.js"></script>
+    <!-- magnific popup -->
+    <script src="/assets/js/jquery.magnific-popup.min.js"></script>
+    <!-- mean menu -->
+    <script src="/assets/js/jquery.meanmenu.min.js"></script>
+    <!-- sticker js -->
+    <script src="/assets/js/sticker.js"></script>
+    <!-- main js -->
+    <script src="/assets/js/main.js"></script>
+</body>
+
+</html>

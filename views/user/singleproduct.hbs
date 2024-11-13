@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description"
+		content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
+
+	<!-- title -->
+	<title>Single Product</title>
+
+	<!-- favicon -->
+	<link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+	<!-- google font -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+	<!-- fontawesome -->
+	<link rel="stylesheet" href="/assets/css/all.min.css">
+	<!-- bootstrap -->
+	<link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+	<!-- owl carousel -->
+	<link rel="stylesheet" href="/assets/css/owl.carousel.css">
+	<!-- magnific popup -->
+	<link rel="stylesheet" href="/assets/css/magnific-popup.css">
+	<!-- animate css -->
+	<link rel="stylesheet" href="/assets/css/animate.css">
+	<!-- mean menu css -->
+	<link rel="stylesheet" href="/assets/css/meanmenu.min.css">
+	<!-- main style -->
+	<link rel="stylesheet" href="/assets/css/main.css">
+	<!-- responsive -->
+	<link rel="stylesheet" href="/assets/css/responsive.css">
+
+
+
+</head>
+
+<body>
+
+	<!--PreLoader-->
+	<div class="loader">
+		<div class="loader-inner">
+			<div class="circle"></div>
+		</div>
+	</div>
+	<!--PreLoader Ends-->
+
+	<!-- header -->
+	<div class="top-header-area" id="sticker">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 col-sm-12 text-center">
+					<div class="main-menu-wrap">
+						<!-- logo -->
+						<div class="site-logo">
+							<a href="/home">
+								<h4 style="font-weight: bold; color:white">WATCH PREMIUM</h4>
+							</a>
+						</div>
+
+						<!-- menu start -->
+						<nav class="main-menu">
+							<ul>
+								<li><a href="/home">Home</a></li>
+								<li><a href="/about">About</a></li>
+								<li class="current-list-item"><a href="/products">Products</a></li>
+								<li><a href="/contact">Contact</a></li>
+								<li>
+									<form method="post" action="/logout">
+										<button class="a" type="submit"
+											style="color:white; background: none; border: none;cursor: pointer; font-weight:bold">Log
+											Out
+										</button>
+									</form>
+								</li>
+								<li>
+									<div class="header-icons">
+										<a class="shopping-cart" href="/cart"><i
+												class="fas fa-shopping-cart"></i></a>
+										<a class="mobile-hide search-bar-icon" href="#"><i
+												class="fas fa-search"></i></a>
+										<a class="mobile-hide search-bar-icon" href="/profile"><i
+												class="fas fa-user"></i></a>
+									</div>
+								</li>
+							</ul>
+						</nav>
+						<a class="mobile-show search-bar-icon" href="#"><i class="fas fa-search"></i></a>
+						<div class="mobile-menu"></div>
+						<!-- menu end -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end header -->
+
+	<!-- search area -->
+	<div class="search-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<span class="close-btn"><i class="fas fa-window-close"></i></span>
+					<div class="search-bar">
+						<div class="search-bar-tablecell">
+							<h3>Search For:</h3>
+							<input type="text" placeholder="Keywords">
+							<button type="submit">Search <i class="fas fa-search"></i></button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end search arewa -->
+
+	<!-- breadcrumb-section -->
+	<div class="breadcrumb-section breadcrumb-bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 offset-lg-2 text-center">
+					<div class="breadcrumb-text">
+						<p><a href="/home">Home</a> > <a href="/products">Products</a> > <span>Single
+								Product</span>
+						</p>
+						<h1>Single Product</h1>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end breadcrumb section -->
+	<style>
+		#imagezoom {
+			width: 470px;
+			height: 490px;
+			border: 30px solid;
+			border-color: white;
+			position: relative;
+		}
+
+		#imagezoom img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			object-position: 0 0;
+		}
+
+		#imagezoom::after {
+			display: var(--display);
+			content: "";
+			width: 100%;
+			height: 100%;
+			background-image: var(--url);
+			background-size: 200%;
+			/* Adjust this to control the zoom level */
+			background-position: var(--zoom-x) var(--zoom-y);
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
+	</style>
+	<!-- single product -->
+	<div class="single-product mt-150 mb-150">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-5">
+			
+					<div id="imagezoom" style="--zoom-x: 0%; --zoom-y: 0%; --display: none;">
+
+						<script>
+							// Wait until the DOM is fully loaded
+							document.addEventListener("DOMContentLoaded", function () {
+								// Get the source of the main image
+								const mainImageSrc = document.getElementById("mainImage").src;
+
+								// Get the imagezoom div
+								const imageZoomDiv = document.getElementById("imagezoom");
+
+								// Set the CSS variable --url to the main image's source
+								imageZoomDiv.style.setProperty('--url', `url(${mainImageSrc})`);
+							});
+						</script>
+
+						{{!-- --url: url(/uploads/1730645488669-540328970.webp); --}}
+
+						<script>
+							// Wait until the DOM is fully loaded
+							document.addEventListener("DOMContentLoaded", function () {
+								// Get the source of the main image
+								const mainImageSrc = document.getElementById(/{{product.images.[0]}}).src;
+
+							// Get the imagezoom div
+							const imageZoomDiv = document.getElementById(/{{product.images.[0]}});
+
+							// Set the CSS variable --url to the main image's source
+							imageZoomDiv.style.setProperty('--url', `url(${product.images.[0]})`);
+    });
+						</script>
+
+						<img src="/{{product.images.[0]}}" alt="{{product.name}}" class="slider-image" id="mainImage"
+							style="width: 100%; height: auto;">
+						<img src="/{{product.images.[1]}}" alt="{{product.name}}" class="slider-image"
+							style="width: 100%; height: auto; display: none;">
+						<img src="/{{product.images.[2]}}" alt="{{product.name}}" class="slider-image"
+							style="width: 100%; height: auto; display: none;">
+					</div>
+					<script>
+						let imagezoom = document.getElementById("imagezoom");
+
+						imagezoom.addEventListener("mousemove", (event) => {
+							imagezoom.style.setProperty('--display', 'block');
+
+							let pointer = {
+								x: (event.offsetX * 100) / imagezoom.offsetWidth,
+								y: (event.offsetY * 100) / imagezoom.offsetHeight
+							};
+
+							imagezoom.style.setProperty('--zoom-x', pointer.x + '%');
+							imagezoom.style.setProperty('--zoom-y', pointer.y + '%');
+						});
+
+						imagezoom.addEventListener("mouseout", () => {
+							imagezoom.style.setProperty("--display", "none");
+						});
+					</script>
+
+
+
+					<button style="margin-left: 180px;" class="btn btn-warning" id="prev" onclick="changeSlide(-1)">
+						< </button>
+							<button class="btn btn-warning" style="margin-left: 5px;" id="next"
+								onclick="changeSlide(1)"> > </button>
+
+				</div>
+
+				<script>
+					let image = document.getElementById('imagePath').value;
+					document.getElementById('imagezoom').style.backgroundImage = `/${image}`;
+				</script>
+
+
+
+				<script>
+					let currentSlide = 0;
+					const images = document.querySelectorAll('.slider-image');
+
+					function showSlide(index) {
+						images.forEach((img, i) => {
+							img.style.display = (i === index) ? 'block' : 'none';
+						});
+					}
+
+					function changeSlide(step) {
+						currentSlide = (currentSlide + step + images.length) % images.length;
+						showSlide(currentSlide);
+					}
+
+					showSlide(currentSlide);
+				</script>
+
+
+				<div class="col-md-7">
+					<div class="single-product-content">
+						<h3>{{product.name}}</h3>
+						<p class="single-product-pricing">
+							<span>Discount: {{#if product.discount}}%{{product.discount}} off{{/if}}</span>
+							${{product.price}}
+						</p>
+						<p><strong>Colors:</strong> red, black, white</p>
+						<p class="card-text stock">
+							Stock:
+							{{#if product.stock}}
+							<span style="font-weight:bold;color: green;" class="in-stock">{{product.stock}}
+								Available</span>
+							{{else}}
+							<span style="font-weight:bold;color: red;" class="out-of-stock">Out of Stock</span>
+							{{/if}}
+						</p>
+						<div class="single-product-form">
+							<form action="/addtocart" method="post"> <!-- Changed to POST -->
+								<input type="hidden" name="productId" value="{{product._id}}">
+								<input type="number" name="quantity" value="1" min="1" max="11"
+									onchange="checkCartLimit(this)" required>
+								<button
+									style="width:150px; border-width:0px; height: 46px; border-radius:4px; color:white; background-color:rgba(208, 139, 11, 0.916); font-weight:bold"
+									type="submit" class="cart-btn">
+									<i class="fas fa-shopping-cart">Add to Cart</i>
+								</button>
+							</form>
+
+						</div>
+
+						<div class="single-product-reviews">
+							<h4>Customer Reviews:</h4>
+							{{#each product.reviews}}
+							<p><strong>{{this.name}}:</strong> "{{this.comment}}"</p>
+							{{/each}}
+						</div>
+
+						<h4>Share:</h4>
+						<ul class="product-share">
+							<li><a href=""><i class="fab fa-facebook-f"></i></a></li>
+							<li><a href=""><i class="fab fa-twitter"></i></a></li>
+							<li><a href=""><i class="fab fa-google-plus-g"></i></a></li>
+							<li><a href=""><i class="fab fa-linkedin"></i></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end single product -->
+
+	<!-- more products -->
+	<div class="more-products mb-150">
+		<div class="container">
+			<div class="container mt-5">
+				<h2> Products</h2>
+
+				<div style="background-color: rgb(255, 255, 255); border-radius:11px" class="row">
+					{{#each products}}
+					<div style="background-color: rgb(255, 255, 255); border-radius:11px" class="col-md-4 mb-4">
+						<a href="/product/{{this._id}}" style="text-decoration: none; color: inherit;">
+							<div style="background-color: rgb(251, 251, 251); border-radius:6px" class="card">
+								<img src="/{{this.images.[0]}}" class="card-img-top" alt="{{this.name}}"
+									style="height: 200px; object-fit: cover;">
+
+								<div class="card-body">
+									<h5 class="card-title">{{this.name}}</h5>
+									<p class="card-text">Category: {{this.category}}</p>
+
+									<!-- Price and Discount -->
+									<p class="card-text">
+										Price: ₹<span>{{this.price}}</span>
+										{{#if this.discount}}
+										<span class="discount">(Discount: ₹{{this.discount}})</span>
+										{{/if}}
+									</p>
+
+									<!-- Stock Information -->
+									<p class="card-text stock">
+										Stock:
+										{{#if this.stock}}
+										<span class="in-stock">{{this.stock}} Available</span>
+										{{else}}
+										<span class="out-of-stock">Out of Stock</span>
+										{{/if}}
+									</p>
+
+									<!-- Ratings -->
+									<p class="card-text">
+										Rating:
+										<span class="rating">
+											{{#each this.rating}}★{{/each}}
+										</span>
+										<span class="review-count">({{this.reviews.length}} Reviews)</span>
+									</p>
+								</div>
+							</div>
+						</a>
+					</div>
+					{{/each}}
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+	<!-- end more products -->
+
+
+	<span id="error" hidden>
+		{{message}}
+	</span>
+	<script defer>
+		document.addEventListener("DOMContentLoaded", function () {
+			const errorElement = document.getElementById("error");
+			const message = errorElement ? errorElement.innerText : "";
+
+			// Check if message is not empty
+			if (message.trim()) {
+				Swal.fire({
+					icon: 'error',
+					title: 'Oops...',
+					text: message,
+					confirmButtonText: 'OK'
+				});
+			}
+		});
+	</script>
+
+
+	<!-- logo carousel -->
+	<div class="logo-carousel-section">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="logo-carousel-inner">
+
+						<div class="single-logo-item">
+							<img style="margin-top: 50px;"
+								src="https://logos-world.net/wp-content/uploads/2020/04/Louis-Vuitton-Logo.png" alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="margin-top: 10px"
+								src="https://parspng.com/wp-content/uploads/2022/10/pumapng.parspng.com_-300x300.png"
+								alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="height:120px;width:120px;margin-top:36px"
+								src="https://cdn2.iconfinder.com/data/icons/apple-tv-1/512/apple_logo-512.png" alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="margin-top: 17px;height:175px"
+								src="https://images.samsung.com/is/image/samsung/assets/global/about-us/brand/logo/256_144_2.png?$512_N_PNG$"
+								alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="margin-top: 45px"
+								src="https://download.logo.wine/logo/Citizen_Watch/Citizen_Watch-Logo.wine.png" alt="">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end logo carousel -->
+
+	<!-- footer -->
+	<div class="footer-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box about-widget">
+						<h2 class="widget-title">About us</h2>
+						<p>Ut enim ad minim veniam perspiciatis unde omnis iste natus error sit voluptatem accusantium
+							doloremque laudantium, totam rem aperiam, eaque ipsa quae.</p>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box get-in-touch">
+						<h2 class="widget-title">Get in Touch</h2>
+						<ul>
+							<li>34/8, East Hukupara, Gifirtok, Sadan.</li>
+							<li>support@fruitkha.com</li>
+							<li>+00 111 222 3333</li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box pages">
+						<h2 class="widget-title">Pages</h2>
+						<ul>
+							<li><a href="/index.hbs">Home</a></li>
+							<li><a href="/about.hbs">About</a></li>
+							<li><a href="/services.hbs">Shop</a></li>
+							<li><a href="/news.hbs">News</a></li>
+							<li><a href="/contact.hbs">Contact</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box subscribe">
+						<h2 class="widget-title">Subscribe</h2>
+						<p>Subscribe to our mailing list to get the latest updates.</p>
+						<form action="/index.hbs">
+							<input type="email" placeholder="Email">
+							<button type="submit"><i class="fas fa-paper-plane"></i></button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end footer -->
+
+	<!-- copyright -->
+	<div class="copyright">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6 col-md-12">
+					<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights
+						Reserved.<br>
+						Distributed By - <a href="https://themewagon.com/">Themewagon</a>
+					</p>
+				</div>
+				<div class="col-lg-6 text-right col-md-12">
+					<div class="social-icons">
+						<ul>
+							<li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end copyright -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<!-- jquery -->
+	<script src="/assets/js/jquery-1.11.3.min.js"></script>
+	<!-- bootstrap -->
+	<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+	<!-- count down -->
+	<script src="/assets/js/jquery.countdown.js"></script>
+	<!-- isotope -->
+	<script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
+	<!-- waypoints -->
+	<script src="/assets/js/waypoints.js"></script>
+	<!-- owl carousel -->
+	<script src="/assets/js/owl.carousel.min.js"></script>
+	<!-- magnific popup -->
+	<script src="/assets/js/jquery.magnific-popup.min.js"></script>
+	<!-- mean menu -->
+	<script src="/assets/js/jquery.meanmenu.min.js"></script>
+	<!-- sticker js -->
+	<script src="/assets/js/sticker.js"></script>
+	<!-- main js -->
+	<script src="/assets/js/main.js"></script>
+	<script>
+		fetch('/your-api-endpoint', {
+			method: 'POST',
+			body: JSON.stringify({ /* your data here */ }),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+			.then(response => response.json())
+			.then(data => {
+				if (data.error) {
+					swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: data.message
+					});
+				} else {
+					// Proceed with the rest of your logic if no error
+				}
+			})
+			.catch(error => console.error('Error:', error));
+
+	</script>
+	<script>
+		function checkCartLimit(input) {
+			const quantity = parseInt(input.value);
+
+			if (quantity > 9) {
+				Swal.fire({
+					title: 'Cart Limit Exceeded!',
+					text: 'Your cart limit has been reached. You cannot add more than 10 items of this product..',
+					icon: 'warning',
+					confirmButtonText: 'OK'
+				}).then(() => {
+					// Redirect to orders page after clicking "OK"
+					window.location.href = '/user/product/:id';
+				});
+			} else {
+				// Only submit the form if the quantity is within the valid range
+				{ { !--input.form.submit(); --} }
+				console.log("error")
+			}
+		}
+
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,223 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #002952b6;
+    color: white;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #ffffff;
+}
+.logo {
+    font-weight: bold;
+    font-size: 24px;
+    color: #000000;
+}
+.header-icons {
+    display: flex;
+    gap: 20px;
+}
+.header-icon {
+    width: 24px;
+    height: 24px;
+    background-color: #000000;
+    border-radius: 50%;
+}
+.main-content {
+    padding: 20px;
+}
+h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+.controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.dropdown, .sort-button {
+    padding: 10px;
+    background-color: #002952b6;
+    border: none;
+    color: white;
+    border-radius: 5px;
+}
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+th, td {
+    padding: 15px;
+    text-align: left;
+}
+th {
+    background-color: #0f1629;
+}
+tr {
+    background-color: #1c2237;
+}
+.status {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+}
+.status-active {
+    color: #4caf50;
+}
+.status-blocked {
+    color: #f44336;
+}
+.action-button {
+    padding: 5px 15px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+.block-button {
+    background-color: #f44336;
+}
+.unblock-button {
+    background-color: #ffc107;
+    color: black;
+}
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+.pagination-button {
+    background-color: transparent;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+:root {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #002952b6;
+    --text-primary: #ffffff;
+    --text-secondary: #ffffff;
+    --accent-1: #ffffff;
+    --accent-2: #ffffff;
+    --accent-3: #fd0b0bb3;
+}
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+.dashboard {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    height: 100vh;
+}
+.sidebar {
+    background-color: var(--bg-secondary);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    color: var(--accent-1);
+}
+.nav-item {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+}
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.nav-item.active {
+    background-color: var(--accent-1);
+    color: var(--bg-primary);
+    color: rgb(0, 0, 0);
+}
+.main-content {
+    padding: 2rem;
+    overflow-y: auto;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+.header h1 {
+    font-size: 2rem;
+    background: linear-gradient(45deg, var(--accent-1), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+.card {
+    background-color: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+.card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: var(--accent-2);
+}
+.card p {
+    font-size: 2rem;
+    font-weight: bold;
+}
+.graph-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+}
+.graph {
+    background-color: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    height: 300px;
+}
+.graph h3 {
+    margin-bottom: 1rem;
+    color: var(--accent-3);
+}
+.graph-placeholder {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(45deg, var(--accent-1), var(--accent-2), var(--accent-3));
+    border-radius: 8px;
+    opacity: 0.7;
+}
+@keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+.pulse {
+    animation: pulse 2s infinite ease-in-out;
+}

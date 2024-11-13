@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WATCHES PREMIUM</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/admin/products.css">
+    <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+
+</head>
+
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="logo">WATCH PREMIUM</div>
+            <nav>
+                <a class="a" href="/admin/dashboard">
+                    <div class="nav-item">Dashboard</div>
+                </a>
+                <a class="a" href="/admin/userpage">
+                    <div class="nav-item">Users</div>
+                    <a class="a" href="/admin/products">
+                        <div class="nav-item active">Products</div>
+                    </a>
+                    <a class="a" href="/admin/category">
+                        <div class="nav-item">Category</div>
+                    </a>
+                    <a class="a" href="/admin/orders">
+                        <div class="nav-item">Orders</div>
+                    </a>
+                    <a class="a" href="/admin/inventory">
+                        <div class="nav-item">Inventory</div>
+                    </a>
+                    <a class="a" href="/admin/coupon">
+                        <div class="nav-item">coupons</div>
+                    </a>
+                    <a class="a" href="/admin/dashboard">
+                        <div class="nav-item">Offers</div>
+                    </a>
+                    <a class="a" href="/admin/dashboard">
+                        <div class="nav-item">Sales Report</div>
+                    </a>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <div class="controls">
+                <h1 style="font-size:43px;">PRODUCTS MANAGEMENT</h1>
+                <a href="/admin/addproduct"><button style="background-color: rgba(17, 65, 108, 0.861);" class="add-products">ADD
+                        PRODUCTS</button></a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Stock</th>
+                        <th>Price</th>
+                        <th>edit</th>
+                        <th>action</th>
+                    </tr>
+                    <tr>
+                        <input type="text"
+                            style="border-width: 0px; color:red;font-weight:bold;width:100%;background-color:rgba(14, 14, 28, 0.976)"
+                            name="message" id="message" value="{{message}}">
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each products}}
+                    <tr>
+                        <td><img src="/{{this.images.[0]}}" alt="{{this.name}}" style="width: 100px; height: 100px;">
+                        </td>
+                        <td>{{this.name}}</td>
+                        <td>{{this.category}}</td>
+                        <td>{{this.stock}}</td>
+                        <td>{{this.price}}</td>
+                        <td>
+                            <button type="button" class="btn btn-" style="height: 40px;BACKGROUND-COLOR:rgba(255, 166, 0, 0.771)" data-bs-toggle="modal"
+                                data-bs-target="#editProductModal-{{_id}}">
+                                EDIT
+                            </button>
+
+                        </td>
+                        <td>
+                            {{#if this.islisted}}
+                            <form action="/admin/products/unlist/{{this._id}}" method="POST">
+                                <button style="color:white;background-color: rgba(0, 174, 0, 0.671);height:40px;width:100px"
+                                    class="action-button unblock-button">
+                                    LISTED
+                                </button>
+                            </form>
+                            {{else}}
+                            <form action="/admin/products/list/{{this._id}}" method="POST">
+                                <button style="color:white;background-color: rgba(255, 0, 0, 0.622);height:40px" class="action-button block-button">
+                                    UNLISTED
+                                </button>
+                            </form>
+                            {{/if}}
+                        </td>
+
+                    </tr>
+                    {{/each}}
+                </tbody>
+
+            </table>
+            <div class="swipe-indicator">
+                < swipe>
+            </div>
+        </main>
+    </div>
+
+  {{#each products}}
+<!-- Edit Product Modal -->
+<div class="modal fade" id="editProductModal-{{_id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Product</h5>
+
+                {{#if modalError}}
+                    <div class="error-message">{{modalError}}</div>
+                {{/if}}
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editProductForm-{{_id}}" action="/admin/editproducts/{{_id}}" method="POST" enctype="multipart/form-data" class="p-4 border rounded">
+                    <!-- Product Name -->
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Product Name</label>
+                        <input type="text" id="name" name="name" value="{{name}}" class="form-control" required>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <input type="text" id="category" name="category" value="{{category}}" class="form-control" required>
+                    </div>
+
+                    <!-- Stock -->
+                    <div class="mb-3">
+                        <label for="stock" class="form-label">Stock</label>
+                        <input type="number" id="stock" name="stock" value="{{stock}}" class="form-control" required>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="number" id="price" name="price" value="{{price}}" class="form-control" required>
+                    </div>
+
+                    <!-- Existing Images -->
+                    <div class="mb-3">
+                        <h5>Existing Images</h5>
+                        <div id="existingImages" class="d-flex flex-wrap gap-3">
+                            {{#each images}}
+                                <div class="position-relative" id="image-{{this}}">
+                                    <img src="/{{this}}" alt="Product Image" class="img-thumbnail" style="width: 100px; height: auto;">
+                                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 delete-image-btn" data-image="{{this}}">Delete</button>
+                                </div>
+                            {{/each}}
+                        </div>
+                    </div>
+
+                    <!-- New Image Upload -->
+                    <div class="mb-3">
+                        <label for="images" class="form-label">Upload New Images</label>
+                        <input type="file" name="images" class="form-control" multiple>
+                    </div>
+
+                    <!-- Hidden field to track deleted images -->
+                    <input type="hidden" id="deletedImages" name="deletedImages" value="">
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{/each}}
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    // Attach event listeners when a modal is shown
+    document.body.addEventListener('show.bs.modal', function (e) {
+        const modal = e.target; // The modal that is being opened
+        
+        // Ensure the modal is of the product edit type
+        if (modal.classList.contains('modal') && modal.id.startsWith('editProductModal')) {
+            deleteImageEvent(modal); // Pass the modal element to the function
+        }
+    });
+});
+
+function deleteImageEvent(modal) {
+    // Now that we have the modal, we can safely attach event listeners to the delete buttons inside it
+    const deleteButtons = modal.querySelectorAll('.delete-image-btn');
+    
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const imagePath = this.getAttribute('data-image');
+            const deletedImagesInput = document.getElementById('deletedImages');
+
+            // Create a hidden input if it doesn't exist to store deleted image paths
+            if (!deletedImagesInput) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'deletedImages';
+                input.id = 'deletedImages';
+                input.value = ''; // Initial empty value
+                modal.querySelector('form').appendChild(input); // Append to the form inside the modal
+            }
+
+            // Append the deleted image path to the hidden input
+            let currentDeletedImages = deletedImagesInput.value;
+            if (currentDeletedImages) {
+                currentDeletedImages += ',' + imagePath;
+            } else {
+                currentDeletedImages = imagePath;
+            }
+            deletedImagesInput.value = currentDeletedImages;
+
+            // Remove the image preview from the modal
+            this.closest('.position-relative').remove();
+        });
+    });
+}
+
+</script>
+</body>
+
+</html>

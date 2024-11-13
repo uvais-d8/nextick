@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description"
+		content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
+
+	<!-- title -->
+	<title>Orders</title>
+
+	<!-- favicon -->
+	<link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+	<!-- google font -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+	<!-- fontawesome -->
+	<link rel="stylesheet" href="/assets/css/all.min.css">
+	<!-- bootstrap -->
+	<link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+	<!-- owl carousel -->
+	<link rel="stylesheet" href="/assets/css/owl.carousel.css">
+	<!-- magnific popup -->
+	<link rel="stylesheet" href="/assets/css/magnific-popup.css">
+	<!-- animate css -->
+	<link rel="stylesheet" href="/assets/css/animate.css">
+	<!-- mean menu css -->
+	<link rel="stylesheet" href="/assets/css/meanmenu.min.css">
+	<!-- main style -->
+	<link rel="stylesheet" href="/assets/css/main.css">
+	<!-- responsive -->
+	<link rel="stylesheet" href="/assets/css/responsive.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+
+	<style>
+		/* Custom Styles */
+		/* Same as your existing styles */
+
+		/* Modal styles (optional custom styles) */
+		.modal-header {
+			background-color: #f5a623;
+			color: white;
+		}
+
+		.modal-footer .btn-secondary {
+			background-color: #e0e0e0;
+		}
+
+		.modal-footer .btn-danger {
+			background-color: #e74c3c;
+		}
+
+		:root {
+			--primary-color: #4a90e2;
+			--secondary-color: #f5a623;
+			--background-color: #f9f9f9;
+			--text-color: #333;
+			--border-color: #e0e0e0;
+		}
+
+		.but {
+			background-color: rgb(255, 162, 0);
+			border-width: 0px;
+			font-size: 14px;
+			width: 100px;
+			height: 45px;
+			border-radius: 5px;
+			font-weight: bold;
+			margin-top: 10px;
+
+		}
+
+		.but:hover {
+			background-color: #c27f11;
+			border-radius: 5px;
+			font-color: rgb(255, 145, 0);
+
+		}
+
+		.butt {
+			font-size: 14px;
+			width: 100px;
+			height: 50px;
+			border-radius: 5px;
+			font-weight: bold;
+			color: rgb(234, 232, 232);
+		}
+
+		.butt:hover {
+			font-size: 17px;
+			border-radius: 5px;
+			font-color: rgb(255, 136, 0);
+
+		}
+
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			line-height: 1.6;
+			color: var(--text-color);
+			background-color: var(--background-color);
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 0 20px;
+		}
+
+		header {
+			background-color: #fff;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			position: sticky;
+			top: 0;
+			z-index: 1000;
+		}
+
+		nav {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 1rem 0;
+		}
+
+		.logo {
+			font-size: 1.5rem;
+			font-weight: bold;
+			color: var(--primary-color);
+			text-decoration: none;
+		}
+
+		.nav-links {
+			display: flex;
+			gap: 1rem;
+		}
+
+		.nav-links a {
+			color: var(--text-color);
+			text-decoration: none;
+			transition: color 0.3s ease;
+		}
+
+		.nav-links a:hover {
+			color: var(--primary-color);
+		}
+
+		main {
+			padding: 2rem 0;
+		}
+
+		.profile-header {
+			display: flex;
+			align-items: center;
+			gap: 2rem;
+			margin-bottom: 2rem;
+		}
+
+		.profile-avatar {
+			width: 150px;
+			height: 150px;
+			border-radius: 50%;
+			object-fit: cover;
+			border: 4px solid var(--primary-color);
+		}
+
+		.profile-info h1 {
+			margin: 0 0 0.5rem 0;
+		}
+
+		.profile-info p {
+			margin: 0;
+			color: #666;
+		}
+
+		.section {
+			background-color: #fff;
+			border-radius: 8px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			padding: 2rem;
+			margin-bottom: 2rem;
+		}
+
+		.section h2 {
+			margin-top: 0;
+			border-bottom: 2px solid var(--border-color);
+			padding-bottom: 0.5rem;
+			margin-bottom: 1rem;
+		}
+
+		.order-history {
+			display: grid;
+			gap: 1rem;
+		}
+
+		.order {
+			border: 1px solid var(--border-color);
+			border-radius: 4px;
+			padding: 1rem;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.order-details {
+			flex-grow: 1;
+		}
+
+		.order-status {
+			font-weight: bold;
+			color: var(--secondary-color);
+		}
+
+		.account-settings form {
+			display: grid;
+			gap: 1rem;
+		}
+
+		.form-group {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.form-group label {
+			margin-bottom: 0.5rem;
+		}
+
+		.form-group input {
+			padding: 0.5rem;
+			border: 1px solid var(--border-color);
+			border-radius: 4px;
+		}
+
+		footer {
+			background-color: #333;
+			color: #fff;
+			text-align: center;
+			padding: 1rem 0;
+			margin-top: 2rem;
+		}
+
+		@media (max-width: 768px) {
+			.profile-header {
+				flex-direction: column;
+				text-align: center;
+			}
+
+			.order {
+				flex-direction: column;
+				align-items: flex-start;
+			}
+
+			.order-status {
+				margin-top: 0.5rem;
+			}
+		}
+
+		.top-header-area .main-menu a {
+			color: white;
+		}
+
+		main {
+			padding: 2rem 0;
+		}
+
+		.order-history {
+			background-color: white;
+			border-radius: 8px;
+			padding: 2rem;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		}
+
+		.order {
+			display: flex;
+			justify-content: space-between;
+			padding: 1rem;
+			margin-bottom: 1rem;
+			border: 1px solid #e0e0e0;
+			border-radius: 5px;
+			background-color: #fff;
+		}
+
+		.order img {
+			max-width: 100px;
+			height: auto;
+		}
+
+		.order-details {
+			flex-grow: 1;
+		}
+
+		.order-status {
+			font-weight: bold;
+			color: #f5a623;
+		}
+
+		.order-actions button {
+			background-color: #e7a83c;
+			color: white;
+			border: none;
+			padding: 0.5rem 1rem;
+			border-radius: 5px;
+			cursor: pointer;
+			width: 110px;
+		}
+
+		.order-actions button:hover {
+			background-color: #c0872b;
+		}
+
+		.order-remove button {
+			background-color: #f39c12;
+			border-radius: 5px;
+			padding: 0.5rem 1rem;
+			cursor: pointer;
+		}
+
+		.order-remove button:hover {
+			background-color: #db7217;
+		}
+	</style>
+</head>
+
+<body>
+
+	<!--PreLoader-->
+	<div class="loader">
+		<div class="loader-inner">
+			<div class="circle"></div>
+		</div>
+	</div>
+	<!--PreLoader Ends-->
+
+	<!-- header -->
+	<div class="top-header-area" id="sticker">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 col-sm-12 text-center">
+					<div class="main-menu-wrap">
+						<!-- logo -->
+						<div class="site-logo">
+							<a href="/home">
+								<h4 style="font-weight: bold; color:white">WATCH PREMIUM</h4>
+							</a>
+						</div>
+						<!-- logo -->
+
+						<!-- menu start -->
+						<nav class="main-menu">
+							<ul>
+								<li><a href="/home">Home</a>
+								</li>
+								<li><a href="/about">About</a></li>
+								<li><a href="/products">Products</a></li>
+
+								<ul class="sub-menu">
+									<li><a href="/news.hbs">News</a></li>
+									<li><a href="/single-news.hbs">Single News</a></li>
+								</ul>
+								</li>
+								<li><a href="/contact">Contact</a></li>
+
+								<ul class="sub-menu">
+									<li>
+										<form class="a" method="get" action="/shop">Shop</form>
+									</li>
+									<li><a href="/checkout.hbs">Check Out</a></li>
+									<li><a href="/single-product.hbs">Single Product</a></li>
+									<li><a href="/cart.hbs">Cart</a></li>
+								</ul>
+								</li>
+								<li>
+									<form method="post" action="/logout">
+										<button class="a" type="submit"
+											style="color:white; background: none; border: none;cursor: pointer; font-weight:bold">Log
+											Out
+										</button>
+									</form>
+								</li>
+								<li>
+									<div class="header-icons">
+										<a class="shopping-cart" href="/cart"><i
+												class="fas fa-shopping-cart"></i></a>
+										<a class="mobile-hide search-bar-icon" href="#"><i
+												class="fas fa-search"></i></a>
+										<a style="color: orange;" class="mobile-hide search-bar-icon"
+											href="/profile"><i class="fas fa-user"></i></a>
+									</div>
+								</li>
+							</ul>
+						</nav>
+						<a class="mobile-show search-bar-icon" href="#"><i class="fas fa-search"></i></a>
+						<div class="mobile-menu"></div>
+						<!-- menu end -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end header -->
+
+	<!-- search area -->
+	<div class="search-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<span class="close-btn"><i class="fas fa-window-close"></i></span>
+					<div class="search-bar">
+						<div class="search-bar-tablecell">
+							<h3>Search For:</h3>
+							<input type="text" placeholder="Keywords">
+							<button type="submit">Search <i class="fas fa-search"></i></button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end search arewa -->
+
+	<!-- breadcrumb-section -->
+	<div class="breadcrumb-section breadcrumb-bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 offset-lg-2 text-center">
+					<div class="breadcrumb-text">
+						<p>We sale quality Items Only</p>
+						<h1>Your Orders</h1>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end breadcrumb section -->
+	<!-- Modal for Confirmation -->
+	<div class="modal fade" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="cancelModalLabel">Confirm Cancellation</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p id="modalMessage"></p>
+					<p><strong>This action cannot be undone!</strong></p>
+					<p id="errorMessage" style="color: red; display: none;">An error occurred. Please try again.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-warning" id="confirmCancelBtn">Yes, Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- Orders History Section -->
+	<main class="section order-history">
+		<h3>Orders History</h3>
+		{{#each orders}}
+		{{#each items}}
+		<div class="order">
+			<div class="order-details">
+				<div class="client-avatar">
+					<img src="/{{this.images}}" alt="{{this.name}}">
+				</div>
+				<h4>{{name}}</h4>
+				<p><b>Order Date: {{../time}}</b></p>
+				<p><b>Amount: ${{total}}</b></p>
+				<p><b>Quantity: {{quantity}}</b></p>
+
+			</div>
+			<div class="order-actions">
+				<button class="but" data-toggle="modal" data-target="#cancelModal"
+					onclick="setItemToCancel('{{../_id}}', '{{this._id}}', 'item')">Cancel Item</button>
+				<p style="margin-left: -20px;margin-top:20px; font-size:13px;color:rgb(111, 111, 111);font-weight:bold">Item Status: {{status}}</p>
+				<form method="get" action="/ordertracking/{{id}}" >
+				<input type="submit" style="color:black;font-size:12px;font-weight:bold;background-color:white" value="view more" ><b></b>
+</form>
+			</div>
+
+		</div>
+		{{/each}}
+
+		<button class="but" data-toggle="modal" data-target="#cancelModal"
+			onclick="setItemToCancel('{{this._id}}', null, 'order')">Cancel Order</button>
+		{{/each}}
+	</main>
+
+
+	<div class="logo-carousel-section">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="logo-carousel-inner">
+
+						<div class="single-logo-item">
+							<img style="margin-top: 50px;"
+								src="https://logos-world.net/wp-content/uploads/2020/04/Louis-Vuitton-Logo.png" alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="margin-top: 10px"
+								src="https://parspng.com/wp-content/uploads/2022/10/pumapng.parspng.com_-300x300.png"
+								alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="height:120px;width:120px;margin-top:36px"
+								src="https://cdn2.iconfinder.com/data/icons/apple-tv-1/512/apple_logo-512.png" alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="margin-top: 17px;height:175px"
+								src="https://images.samsung.com/is/image/samsung/assets/global/about-us/brand/logo/256_144_2.png?$512_N_PNG$"
+								alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="margin-top: 45px"
+								src="https://download.logo.wine/logo/Citizen_Watch/Citizen_Watch-Logo.wine.png" alt="">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- footer -->
+	<div class="footer-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box about-widget">
+						<h2 class="widget-title">About us</h2>
+						<p>Ut enim ad minim veniam perspiciatis unde omnis iste natus error sit voluptatem accusantium
+							doloremque laudantium, totam rem aperiam, eaque ipsa quae.</p>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box get-in-touch">
+						<h2 class="widget-title">Get in Touch</h2>
+						<ul>
+							<li>34/8, East Hukupara, Gifirtok, Sadan.</li>
+							<li>support@fruitkha.com</li>
+							<li>+00 111 222 3333</li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box pages">
+						<h2 class="widget-title">Pages</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="about.html">About</a></li>
+							<li><a href="services.html">Shop</a></li>
+							<li><a href="news.html">News</a></li>
+							<li><a href="contact.html">Contact</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box subscribe">
+						<h2 class="widget-title">Subscribe</h2>
+						<p>Subscribe to our mailing list to get the latest updates.</p>
+						<form action="index.html">
+							<input type="email" placeholder="Email">
+							<button type="submit"><i class="fas fa-paper-plane"></i></button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end footer -->
+
+	<!-- copyright -->
+	<div class="copyright">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6 col-md-12">
+					<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights
+						Reserved.<br>
+						Distributed By - <a href="https://themewagon.com/">Themewagon</a>
+					</p>
+				</div>
+				<div class="col-lg-6 text-right col-md-12">
+					<div class="social-icons">
+						<ul>
+							<li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end copyright -->
+	<!-- jquery -->
+	<script src="/assets/js/jquery-1.11.3.min.js"></script>
+	<!-- bootstrap -->
+	<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+	<!-- count down -->
+	<script src="/assets/js/jquery.countdown.js"></script>
+	<!-- isotope -->
+	<script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
+	<!-- waypoints -->
+	<script src="/assets/js/waypoints.js"></script>
+	<!-- owl carousel -->
+	<script src="/assets/js/owl.carousel.min.js"></script>
+	<!-- magnific popup -->
+	<script src="/assets/js/jquery.magnific-popup.min.js"></script>
+	<!-- mean menu -->
+	<script src="/assets/js/jquery.meanmenu.min.js"></script>
+	<!-- sticker js -->
+	<script src="/assets/js/sticker.js"></script>
+	<!-- main js -->
+	<script src="/assets/js/main.js"></script>
+
+	<script>
+		document.getElementById('confirmCancelBtn').addEventListener('click', function () {
+			location.reload();  // Refresh the page
+		});
+	</script>
+	<script>
+		// Variables to hold IDs and type of cancel action
+		var itemToCancelId = null;
+		var orderToCancelId = null;
+		var cancelType = null;
+
+		// Set item to cancel (order or item) and store IDs
+		function setItemToCancel(orderId, itemId, type) {
+			orderToCancelId = orderId;
+			itemToCancelId = itemId;
+			cancelType = type;
+			// Dynamically update the modal text
+			document.querySelector("#modalMessage").innerHTML = `Are you sure you want to cancel this ${type}?`;
+		}
+
+		// Confirm cancel action
+		document.getElementById('confirmCancelBtn').addEventListener('click', function () {
+			let url = '';
+			let requestBody = {};
+
+			if (cancelType === 'order') {
+				// Cancel entire order
+				url = `/user/orders/${orderToCancelId}`;
+				requestBody = { status: 'cancelled' };
+			} else if (cancelType === 'item') {
+				// Cancel a specific item in the order
+				url = `/user/orders/${orderToCancelId}/items/${itemToCancelId}`;
+				requestBody = { status: 'cancelled' };
+			}
+
+			// Send PATCH request to update status to "cancelled"
+			fetch(url, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(requestBody),
+			})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						// Refresh the page or update the UI to reflect the cancellation
+						window.location.reload();
+					} else {
+						// Display error message in the modal
+						document.getElementById('errorMessage').style.display = 'block';
+					}
+				})
+				.catch(error => {
+					console.error('Error updating status:', error);
+					document.getElementById('errorMessage').style.display = 'block';
+				});
+
+			// Close modal after action
+			$('#cancelModal').modal('hide');
+		});
+
+	</script>
+
+
+</body>
+
+</html>

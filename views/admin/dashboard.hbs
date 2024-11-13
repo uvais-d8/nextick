@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WATCHES PERMIUM</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+	<link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+
+    <link rel="stylesheet" href="/admin/dashboard.css">
+
+</head>
+
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="logo">WATCH PREMIUM</div>
+            <nav>
+                <a class="a" href="/admin/dashboard">
+                    <div class="nav-item active">Dashboard</div>
+                </a>
+                <a class="a" href="/admin/userpage">
+                    <div class="nav-item">Users</div>
+                    <a class="a" href="/admin/products">
+                        <div class="nav-item">Products</div>
+                    </a>
+                    <a class="a" href="/admin/category">
+                        <div class="nav-item">Category</div>
+                    </a>
+                    <a class="a" href="/admin/orders">
+                        <div class="nav-item">Orders</div>
+                    </a>
+                     <a class="a" href="/admin/inventory">
+                        <div class="nav-item">Inventory</div>
+                    </a>
+                    <a class="a" href="/admin/coupon">
+                        <div class="nav-item">coupons</div>
+                    </a>
+                    <a class="a" href="/admin/dashboard">
+                        <div class="nav-item">Offers</div>
+                    </a>
+                    <a class="a" href="/admin/dashboard">
+                        <div class="nav-item">Sales Report</div>
+                    </a>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header class="header">
+                <h1 style="font-size:43px;">DASHBOARD OVERVIEW</h1>
+                <form method="post" action="/admin/logout"><input type="submit" value="log out" class="btnn"></form>
+            </header>
+            <section class="card-container">
+                <div class="card">
+                    <h3>Total Users</h3>
+                    <p>15,687</p>
+                </div>
+                <div class="card">
+                    <h3>Total Orders</h3>
+                    <p>2,456</p>
+                </div>
+                <div class="card">
+                    <h3>Total Products</h3>
+                    <p>1,234</p>
+                </div>
+                <div class="card">
+                    <h3>Total Revenue</h3>
+                    <p>$89,456</p>
+                </div>
+            </section>
+            <section class="graph-container">
+                <div class="graph">
+                    <h3>Sales Overview</h3>
+                    <div class="graph-placeholder pulse"></div>
+                </div>
+                <div class="graph">
+                    <h3>Top Categories</h3>
+                    <div class="graph-placeholder pulse"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>
