@@ -30,9 +30,9 @@ const searchProducts = async (req, res) => {
 };
 const updateUsername = async (req, res) => {
   try {
-    const { userId,  newName, newPhone } = req.body;
-    console.log(req.body)
-    
+    const { userId, newName, newPhone } = req.body;
+    console.log(req.body);
+
     // Check if newName is provided
     if (!newName) {
       return res.status(400).json({ error: "New name is required" });
@@ -45,7 +45,7 @@ const updateUsername = async (req, res) => {
       { new: true } // Return the updated user document
     );
 
-    console.log(updatedUser)
+    console.log(updatedUser);
 
     // If the user is not found, return an error
     if (!updatedUser) {
@@ -57,21 +57,16 @@ const updateUsername = async (req, res) => {
       message: "Username and phone number updated successfully",
       user: updatedUser
     });
-
   } catch (error) {
     // Log the error message for debugging
     console.error("Error:", error);
 
     // Send an error response to the client
-    return res.status(500).json({ error: "Server error. Please try again later." });
+    return res
+      .status(500)
+      .json({ error: "Server error. Please try again later." });
   }
 };
-
-
-
-
-
-
 const editaddress = async (req, res) => {
   const { id } = req.params; // Extract the id from route parameters
   console.log("id is:", id);
@@ -193,7 +188,6 @@ const sendotptoemail = async (req, res) => {
     res.redirect("/forgotpassword");
   }
 };
-
 // Function to verify OTP entered by user
 const verifyotpemail = async (req, res) => {
   const { otp } = req.body;
@@ -222,7 +216,6 @@ const loadnewpassword = (req, res) => {
   res.render("newpassword", { message: req.session.message || null });
   req.session.message = null; // Clear message after rendering
 };
-
 const setnewpassword = async (req, res) => {
   const newPassword = req.body.newPassword; // Assuming new password
   const confirmPassword = req.body.confirmPassword; // Confirm password
@@ -236,7 +229,8 @@ const setnewpassword = async (req, res) => {
   // Password complexity (Optional): e.g., at least one letter, one number, one special character
   const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/;
   if (!passwordPattern.test(newPassword)) {
-    req.session.message = "Password must include a uppercase letter, lowercase letter,and a number.";
+    req.session.message =
+      "Password must include a uppercase letter, lowercase letter,and a number.";
     return res.redirect("/newpassword");
   }
 
@@ -248,7 +242,8 @@ const setnewpassword = async (req, res) => {
 
   // Check if user passed OTP verification
   if (!req.session.userEmail) {
-    req.session.message = "Session expired. Please start the reset process again.";
+    req.session.message =
+      "Session expired. Please start the reset process again.";
     return res.redirect("/newpassword");
   }
 
@@ -280,15 +275,37 @@ const setnewpassword = async (req, res) => {
 };
 
 const placeOrder = async (req, res) => {
-  const { addressId, email, phone, paymentMethod, items, total } = req.body;
-
-  console.log("req.body", req.body);
-
+  const {
+    email,
+    phone,
+    paymentMethod,
+    items,
+    total,
+    pincode,
+    district,
+    firstname,
+    place,
+    city,
+    lastname,
+    address
+  } = req.body;
+  console.log(
+    "helloo",
+    email,
+    phone,
+    paymentMethod,
+    items,
+    total,
+    pincode,
+    district,
+    firstname,
+    lastname,
+    address
+  );
   const userId = req.session.userId;
 
   try {
-    // Map `items` to match the order schema structure
-
+    // Prepare items for order
     const cartItems = items.map(item => ({
       name: item.name,
       price: item.price,
@@ -297,44 +314,47 @@ const placeOrder = async (req, res) => {
       images: item.images
     }));
 
-    const address = await addressmodel.findById(addressId);
+    let shippingAddress;
 
-    // Create a new order with mapped items
+    // if (addressId) {
+    //   // If `addressId` is provided, use the selected address
+    //   const existingAddress = await addressmodel.findById(addressId);
+    //   if (!existingAddress) {
+    //     return res.status(400).json({ success: false, message: "Invalid address ID." });
+    //   }
+    // shippingAddress = existingAddress;
+    // } else {
+    // Otherwise, use the newly entered address fields
+    // }
+
+    // Create a new order
     const newOrder = new ordersSchema({
-      userId: userId,
+      userId,
       items: cartItems,
       paymentMethod,
       shippingAddress: {
-        firstname: address.firstname,
-        lastname: address.lastname,
-        address: address.address,
-        phone: address.phone,
-        email: email,
-        place: address.place,
-        city: address.city,
-        pincode: address.pincode,
-        district: address.district
+        firstname,
+        lastname,
+        address,
+        phone,
+        email,
+        place,
+        city,
+        pincode,
+        district
       },
       orderTotal: total
     });
 
-    console.log(newOrder);
-
     // Save the order to the database
     await newOrder.save();
-
-    // Retrieve the order details
-    // const ordersList = await ordersSchema.find({}).populate("shippingAddress");
-
-    // Render the order page with the orders list
-    // console.log("Order placed successfully");
-
     return res.json({ success: true });
   } catch (error) {
     console.error("Error placing order:", error);
     res.status(500).json({ success: false, message: "Failed to place order." });
   }
 };
+
 const loadorderss = async (req, res) => {
   try {
     const orders = await ordersSchema.find({});
@@ -520,7 +540,9 @@ const registerUser = async (req, res) => {
       // req.session.message =
       //   "Error sending verification email. Please try again.";
       console.log("Error sending verification email. Please try again.");
-      return res.redirect("/signup",{message:"Error sending verification email. Please try again"});
+      return res.redirect("/signup", {
+        message: "Error sending verification email. Please try again"
+      });
     }
 
     // Store OTP and user data in session
@@ -804,13 +826,15 @@ const removecart = async (req, res) => {
 
 const removeorder = async (req, res) => {
   const { orderId } = req.params;
-
+  console.log("helloo");
   try {
     // Find the order and update the status to "canceled"
     const updatedOrder = await ordersSchema.findByIdAndUpdate(
       orderId,
+      console.log(orderId),
       { status: "canceled" },
-      { new: true }
+      { new: true },
+      console.log("canceled")
     );
 
     if (!updatedOrder) {
@@ -827,16 +851,16 @@ const removeorder = async (req, res) => {
     res.status(500).json({ success: false, message: "Error canceling order." });
   }
 };
-// For removing a specific item from the order
+
 const removeItem = async (req, res) => {
   const { orderId, itemId } = req.params;
-
   try {
     // Find the order and update the item status to "canceled"
     const updatedOrder = await ordersSchema.findOneAndUpdate(
       { _id: orderId, "items._id": itemId }, // Find the specific item
       { $set: { "items.$.status": "canceled" } }, // Update item's status
-      { new: true }
+      { new: true },
+      console.log("item canceled successfuly")
     );
 
     if (!updatedOrder) {
@@ -956,7 +980,6 @@ const checkout = async (req, res) => {
     const addresses = await addressmodel.findOne({ user: userId });
 
     const carts = await cartmodal.find({});
-    console.log(carts);
     const subtotal = carts.reduce(
       (acc, cart) => acc + cart.price * cart.quantity,
       0
@@ -1049,62 +1072,87 @@ const filtered = async (req, res) => {
 };
 const changepassword = async (req, res) => {
   const { currentPassword, newpassword, confirmpassword } = req.body;
+  const userId = req.session.userId;
 
-  // Ensure the user has passed the OTP verification step
+  const user = await userSchema.findOne({ _id: userId });
+  const addresses = await addressmodel.findOne({ user: userId });
+
   if (!req.session.userId) {
     req.session.message =
       "Session expired. Please start the reset process again.";
     return res.redirect("/profile");
   }
 
-  // Ensure that the new password and confirm password match
-  if (newpassword !== confirmpassword) {
-    req.session.message = "New password and confirm password do not match.";
-    return res.redirect("/profile");
-  }
-
   try {
-    const userId = req.session.userId;
-
-    // Find the user by the email saved in the session
-    const user = await userSchema.findOne({ _id: userId });
-    console.log("user ithaan:", user);
     if (!user) {
       req.session.message = "User not found.";
       return res.redirect("/profile");
     }
 
-    // Verify current password
     const isPasswordMatch = await bcrypt.compare(
       currentPassword,
       user.password
     );
     if (!isPasswordMatch) {
-      req.session.message = "Current password is incorrect.";
-      return res.redirect("/profile");
+      return res.render("profile", {
+        user,
+        addresses,
+        message: "Current password is incorrect."
+      });
     }
 
-    // Generate salt and hash the new password
+    if (newpassword !== confirmpassword) {
+      return res.render("profile", {
+        user,
+        addresses,
+        message: "New password and confirm password do not match."
+      });
+    }
+
+    if (newpassword.length < 6) {
+      return res.render("profile", {
+        user,
+        addresses,
+        message: "Password must be at least 6 characters long."
+      });
+    }
+
+    const uppercasePattern = /[A-Z]/;
+    const lowercasePattern = /[a-z]/;
+    const numberPattern = /[0-9]/;
+
+    if (
+      !uppercasePattern.test(newpassword) ||
+      !lowercasePattern.test(newpassword) ||
+      !numberPattern.test(newpassword)
+    ) {
+      return res.render("profile", {
+        user,
+        addresses,
+        message:
+          "Password must contain at least one uppercase letter, one lowercase letter, and one number."
+      });
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newpassword, salt);
-
-    // Update the password in the database
     user.password = hashedPassword;
     await user.save();
 
-    // Clear session data related to password reset for security
-    req.session.userEmail = null;
-    req.session.message = "Password updated successfully..";
-
-    // Redirect to the login page after successful password reset
-    res.redirect("/login");
+    // Set success message in session
+    req.session.successMessage = "Password updated successfully.";
+    res.render("profile", {
+      user,
+      addresses,
+      success: "Password updated successfully"
+    });
   } catch (error) {
     console.error("Error changing password:", error);
     req.session.message = "Failed to update password. Please try again.";
     res.redirect("/profile");
-    req.session.message = null;
   }
 };
+
 const resendotpemail = async (req, res) => {
   console.log(req.session.userEmail);
   try {

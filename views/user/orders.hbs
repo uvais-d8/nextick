@@ -650,11 +650,11 @@
 
 			if (cancelType === 'order') {
 				// Cancel entire order
-				url = `/user/orders/${orderToCancelId}`;
+				url = `/orders/${orderToCancelId}`;
 				requestBody = { status: 'cancelled' };
 			} else if (cancelType === 'item') {
 				// Cancel a specific item in the order
-				url = `/user/orders/${orderToCancelId}/items/${itemToCancelId}`;
+				url = `/orders/${orderToCancelId}/items/${itemToCancelId}`;
 				requestBody = { status: 'cancelled' };
 			}
 

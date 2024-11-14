@@ -78,19 +78,6 @@
                         <td>$ {{total}}</td>
                         <td>{{quantity}}</td>
                         <td>
-                            {{!-- <form method="POST" action="/admin/updatestatus">
-                                <select
-                                    style="color: rgb(0, 0, 0);background-color:rgb(206, 206, 206);border-color:rgb(0, 0, 0)"
-                                    name="status" required onchange="this.form.submit()">
-                                    <option value=""><b>{{status}}</b></option>
-                                    <option value="scheduled"><b>Scheduled</b></option>
-                                    <option value="pending"><b>Pending</b></option>
-                                    <option value="delivered"><b>Delivered</b></option>
-                                    <option value="shipped"><b>Shipped</b></option>
-                                    <option value="canceled"><b>Canceled</b></option>
-                                </select>
-                                <input type="hidden" name="orderId" value="{{../_id}}">
-                            </form> --}}
 
                             <form method="POST" action="/admin/updatestatus">
                                 <select

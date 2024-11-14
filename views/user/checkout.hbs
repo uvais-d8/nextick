@@ -104,8 +104,7 @@
 								</li>
 								<li>
 									<div class="header-icons">
-										<a class="shopping-cart" href="/cart"><i
-												class="fas fa-shopping-cart"></i></a>
+										<a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
 										<a class="mobile-hide search-bar-icon" href="#"><i
 												class="fas fa-search"></i></a>
 										<a class="mobile-hide search-bar-icon" href="/profile"><i
@@ -248,7 +247,8 @@
 													<input type="hidden" name="subtotal" value="{{subtotal}}">
 													<input type="hidden" name="shippingRate" value="{{shippingRate}}">
 													<input type="hidden" name="total" value="{{total}}">
-													<input type="hidden" name="addressId" value="{{addresses._id}}">
+													{{!-- <input type="hidden" name="addressId"
+														value="{{addresses._id}}"> --}}
 
 
 													{{!-- <a href="/user/address"
@@ -476,7 +476,15 @@
 						window.location.href = '/orderss';
 					});
 				} else {
-					alert('Failed to place order.');
+					Swal.fire({
+						title: 'Error!',
+						text: 'Failed to place order. Please try again.',
+						icon: 'error',
+						confirmButtonText: 'OK'
+					}).then(() => {
+						// Redirect to orders page after clicking "OK"
+						window.location.href = '/checkout';
+					});;
 				}
 			} catch (error) {
 				console.error('Error placing order:', error);

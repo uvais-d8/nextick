@@ -27,7 +27,7 @@ router.post("/updateUsername",userController.updateUsername);
 
 router.get('/search', userController.searchProducts);
 
-router.post("/editaddress/:id",userController.editaddress)
+router.post("/editaddress/:id", userController.editaddress);
 router.get("/ordertracking/:id",userController.ordertracking)
 router.get('/filtered',userController.filtered);
 router.get("/verify-otp", userController.loadVerifyOtp);
@@ -51,6 +51,7 @@ router.delete("/cart/:id", userController.removecart);
 router.post("/cart/:id/updateQuantity", userController.updateCartQuantity);
 // Routes
 router.patch("/orders/:orderId", userController.removeorder); 
+
 router.patch("/orders/:orderId/items/:itemId", userController.removeItem); 
 
  

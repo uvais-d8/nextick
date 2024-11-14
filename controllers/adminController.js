@@ -401,7 +401,6 @@ const listproducts = async (req, res) => {
 const loadorders = async (req, res) => {
   try {
     const orders = await ordersSchema.find({});
-
     res.render("admin/orders", { orders });
   } catch (error) {
     console.log("Error during load orders", error);

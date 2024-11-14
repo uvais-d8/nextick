@@ -17,18 +17,17 @@ const ordersSchema = new mongoose.Schema({
         require:true,
         default:"scheduled" 
     },
-    items: [{
-      
+    items: [{      
+        productId:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"products",
+            require:true
+        },
         status:{
             type:String,
             enum:["scheduled", "pending", "delivered", "shipped", "canceled"],
             require:true,
             default:"scheduled"
-        },
-        productId:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"products",
-            require:true
         },
         stock:{
             type:Number

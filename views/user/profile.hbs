@@ -54,12 +54,12 @@
             color: rgb(3, 19, 78);
             font-weight: bold;
             margin-top: 10px;
-            background-color: #e59c0b;
+            background-color: #ffb218cf;
             font-size: 16px;
             border-radius: 9px;
             width: 100px;
             height: 45px;
-            border-radius: 11px;
+            border-radius: 6px;
             font-weight: bold;
             text-decoration: none;
             transition: all 0.3s ease;
@@ -68,7 +68,7 @@
 
 
         .butt:hover {
-            border-radius: 11px;
+            border-radius: 6px;
             background-color: rgba(3, 8, 46, 0.954);
             color: rgb(232, 171, 5);
             transform: scale(1.03);
@@ -288,12 +288,11 @@
                                 </li>
                                 <li>
                                     <div class="header-icons">
-                                        <a class="shopping-cart" href="/cart"><i
-                                                class="fas fa-shopping-cart"></i></a>
+                                        <a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
                                         <a class="mobile-hide search-bar-icon" href="#"><i
                                                 class="fas fa-search"></i></a>
-                                        <a style="color: orange;" class="mobile-hide search-bar-icon"
-                                            href="/profile"><i class="fas fa-user"></i></a>
+                                        <a style="color: orange;" class="mobile-hide search-bar-icon" href="/profile"><i
+                                                class="fas fa-user"></i></a>
                                     </div>
                                 </li>
                             </ul>
@@ -330,120 +329,151 @@
                     alt="User Avatar" class="profile-avatar">
                 <div class="profile-info">
                     <h2>{{user.name}}</h2>
-                    <span style="color:white" id="userId" >{{user._id}}</span>
+                    <span style="color:white" id="userId">{{user._id}}</span>
                     <p style="font-weight:bold;color: rgb(0, 0, 0);">Member since: {{createdAt}}</p>
                     <p style="color: rgb(29, 29, 29);">Email: {{user.email}}</p>
                     <p style="color: rgb(29, 29, 29);">Phone No: {{user.phone}}</p>
 
-     <button style="width: 90px; margin-left:90%" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editUsernameModal">
-    <b>Edit</b>
-</button>
+                    <button style="width: 90px; margin-left:90%" class="btn btn-warning" data-bs-toggle="modal"
+                        data-bs-target="#editUsernameModal">
+                        <b>Edit</b>
+                    </button>
 
-<!-- Edit Username Modal -->
-<div class="modal" id="editUsernameModal" tabindex="-1" aria-labelledby="editUsernameModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editUsernameModalLabel">Edit Username</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="editUsernameForm">
-                    <div class="mb-3">
-                        <label for="newName" class="form-label">New Username</label>
-                        <input type="text" class="form-control" id="newName" name="newName" value="{{user.name}}" required>
+                    <!-- Edit Username Modal -->
+                    <div class="modal" id="editUsernameModal" tabindex="-1" aria-labelledby="editUsernameModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editUsernameModalLabel">Edit Username</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="editUsernameForm">
+                                        <div class="mb-3">
+                                            <label for="newName" class="form-label">New Username</label>
+                                            <input type="text" class="form-control" id="newName" name="newName"
+                                                value="{{user.name}}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="newphone" class="form-label">Add Phone Number</label>
+                                            <input type="text" class="form-control" id="newPhone" name="newPhone"
+                                                value="{{user.phone}}">
+                                            <small id="phoneError" style="color: red; display: none;">Please enter a
+                                                valid phone number (10 digits).</small>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-warning" id="saveNameButton">Save
+                                        changes</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="newphone" class="form-label">Add Phone Number</label>
-                        <input type="text" class="form-control" id="newPhone" name="newPhone" value="{{user.phone}}">
-                        <small id="phoneError" style="color: red; display: none;">Please enter a valid phone number (10 digits).</small>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-warning" id="saveNameButton">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
-</section>
-<script>
-    document.getElementById("saveNameButton").addEventListener("click", async () => {
-        const newName = document.getElementById("newName").value;
-        const newPhone = document.getElementById("newPhone").value;
-        const userId = document.getElementById('userId').textContent;
-        console.log(newPhone, newName)
+            </section>
+            <script>
+                document.getElementById("saveNameButton").addEventListener("click", async () => {
+                    const newName = document.getElementById("newName").value;
+                    const newPhone = document.getElementById("newPhone").value;
+                    const userId = document.getElementById('userId').textContent;
+                    console.log(newPhone, newName)
 
-        // Validate phone number (only numeric and 10 digits)
-        const phoneRegex = /^[0-9]{10}$/;
-        if (newPhone && !phoneRegex.test(newPhone)) {
-            document.getElementById("phoneError").style.display = "block";
-            return;
-        } else {
-            document.getElementById("phoneError").style.display = "none";
-        }
+                    // Validate phone number (only numeric and 10 digits)
+                    const phoneRegex = /^[0-9]{10}$/;
+                    if (newPhone && !phoneRegex.test(newPhone)) {
+                        document.getElementById("phoneError").style.display = "block";
+                        return;
+                    } else {
+                        document.getElementById("phoneError").style.display = "none";
+                    }
 
-        if (!newName) {
-            alert("Please enter a new username.");
-            return;
-        }
+                    if (!newName) {
+                        alert("Please enter a new username.");
+                        return;
+                    }
 
-        try {
-            const response = await fetch("/updateUsername", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ userId, newName, newPhone })
-            });
+                    try {
+                        const response = await fetch("/updateUsername", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ userId, newName, newPhone })
+                        });
 
-            const result = await response.json();
-            if (result.error) {
-                alert(result.error);
-            } else {
-                console.log("Username and phone number updated successfully");
+                        const result = await response.json();
+                        if (result.error) {
+                            alert(result.error);
+                        } else {
+                            console.log("Username and phone number updated successfully");
 
-                // Optionally, close the modal after the update
-                $('#editUsernameModal').modal('hide'); 
+                            // Optionally, close the modal after the update
+                            $('#editUsernameModal').modal('hide');
 
-                // Update the UI directly without refreshing the page (optional)
-                document.getElementById("userNameDisplay").textContent = newName;  // Assuming you display username somewhere in the HTML
-                document.getElementById("userPhoneDisplay").textContent = newPhone; // Same for phone number if needed
+                            // Update the UI directly without refreshing the page (optional)
+                            document.getElementById("userNameDisplay").textContent = newName;  // Assuming you display username somewhere in the HTML
+                            document.getElementById("userPhoneDisplay").textContent = newPhone; // Same for phone number if needed
 
-                // Optionally, reload the page to reflect changes
-                 location.reload(); 
-            }
-        } catch (error) {
-            console.log("Error:", error);
-        }
-    });
-</script>
+                            // Optionally, reload the page to reflect changes
+                            location.reload();
+                        }
+                    } catch (error) {
+                        console.log("Error:", error);
+                    }
+                });
+            </script>
 
 
 
             <section style="background-color: rgb(242, 242, 242);" class="section order-history">
                 <main style="margin-top:40px ;background-color: rgb(242, 242, 242);" class="section account-settings">
                     <h3>Your address</h3>
-                    <form>
 
-                        <div class="form-group">
-                            <label for="name">First Name :{{addresses.firstname}}</label>
-                            <label for="name">Last Name :{{addresses.lastname}}</label>
-                            <label for="name">Address :{{addresses.address}}</label>
-                            <label for="name">Phone No:{{addresses.phone}}</label>
-                            <label for="name">Email :{{addresses.email}}</label>
-                            <label for="name">Place:{{addresses.place}}</label>
-                            <label for="name">City:{{addresses.city}}</label>
-                        </div>
+                    <div class="form-group">
+                        <label for="name">First Name : {{addresses.firstname}}</label>
+                        <label for="name">Last Name : {{addresses.lastname}}</label>
+                        <label for="name">Addressv : {{addresses.address}}</label>
+                        <label for="name">Phone No : {{addresses.phone}}</label>
+                        <label for="name">Email : {{addresses.email}}</label>
+                        <label for="name">Place : {{addresses.place}}</label>
+                        <label for="name">City : {{addresses.city}}</label>
+                        <label for="name">Pincode : {{addresses.pincode}}</label>
+                        <label for="name">District : {{addresses.district}}</label>
 
-                    </form>
+
+                        </form>
 
                 </main>
 
             </section>
             <section style="background-color: rgb(242, 242, 242);" class="section order-history">
                 <h4>Change Password</h4>
+              <!-- Message input -->
+<input type="text"
+       style="margin-top:-10px;font-weight:600;border-width:0px;background-color:rgba(241, 241, 241, 0.851); color:red; font-size:15px;"
+       id="message" value="{{{message}}}" readonly>
+
+<!-- Success input -->
+<input type="text"
+       style="margin-top:-10px; font-weight:bold;background-color:rgba(241, 241, 241, 0.851); border-width:0px; color:rgba(53, 160, 7, 0.893); font-size:16px;"
+       id="success" value="{{{success}}}" readonly>
+
+<!-- JavaScript to clear messages after 4 seconds -->
+<script>
+  // Wait for the page to load fully
+  document.addEventListener("DOMContentLoaded", function() {
+    // Set a timer to clear messages after 4 seconds
+    setTimeout(function() {
+      document.getElementById("message").value = "";
+      document.getElementById("success").value = "";
+    }, 4000); // 4000ms = 4 seconds
+  });
+</script>
+
                 <div class="order">
                     <div class="order-details">
                         <form id="changePasswordForm" method="post" action="/changepassword">
