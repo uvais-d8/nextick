@@ -458,7 +458,7 @@
 			console.log(orderData)
 
 			try {
-				const response = await fetch('/user/placeOrder', {
+				const response = await fetch('/placeOrder', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify(orderData)
@@ -473,7 +473,7 @@
 						confirmButtonText: 'OK'
 					}).then(() => {
 						// Redirect to orders page after clicking "OK"
-						window.location.href = '/user/orderss';
+						window.location.href = '/orderss';
 					});
 				} else {
 					alert('Failed to place order.');

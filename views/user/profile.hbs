@@ -330,98 +330,97 @@
                     alt="User Avatar" class="profile-avatar">
                 <div class="profile-info">
                     <h2>{{user.name}}</h2>
+                    <span style="color:white" id="userId" >{{user._id}}</span>
                     <p style="font-weight:bold;color: rgb(0, 0, 0);">Member since: {{createdAt}}</p>
                     <p style="color: rgb(29, 29, 29);">Email: {{user.email}}</p>
                     <p style="color: rgb(29, 29, 29);">Phone No: {{user.phone}}</p>
 
-                    <button style="width: 90px; margin-left:90%" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editUsernameModal">
-                        <b>Edit</b>
-                    </button>
+     <button style="width: 90px; margin-left:90%" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editUsernameModal">
+    <b>Edit</b>
+</button>
 
-                    <!-- Edit Username Modal -->
-                    <div class="modal" id="editUsernameModal" tabindex="-1" aria-labelledby="editUsernameModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="editUsernameModalLabel">Edit Username</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form id="editUsernameForm">
-                                        <div class="mb-3">
-                                            <label for="newName" class="form-label">New Username</label>
-                                            <input type="text" class="form-control" id="newName" name="newName"
-                                                value="{{user.name}}" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="newphone" class="form-label">Add Phone Number</label>
-                                            <input type="text" class="form-control" id="newphone" name="newphone"
-                                                value="{{user.phone}}" required>
-                                            <small id="phoneError" style="color: red; display: none;">Please enter a
-                                                valid phone number.</small>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-warning" id="saveNameButton">Save
-                                        changes</button>
-                                </div>
-                            </div>
-                        </div>
+<!-- Edit Username Modal -->
+<div class="modal" id="editUsernameModal" tabindex="-1" aria-labelledby="editUsernameModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUsernameModalLabel">Edit Username</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editUsernameForm">
+                    <div class="mb-3">
+                        <label for="newName" class="form-label">New Username</label>
+                        <input type="text" class="form-control" id="newName" name="newName" value="{{user.name}}" required>
                     </div>
+                    <div class="mb-3">
+                        <label for="newphone" class="form-label">Add Phone Number</label>
+                        <input type="text" class="form-control" id="newPhone" name="newPhone" value="{{user.phone}}">
+                        <small id="phoneError" style="color: red; display: none;">Please enter a valid phone number (10 digits).</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning" id="saveNameButton">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+<script>
+    document.getElementById("saveNameButton").addEventListener("click", async () => {
+        const newName = document.getElementById("newName").value;
+        const newPhone = document.getElementById("newPhone").value;
+        const userId = document.getElementById('userId').textContent;
+        console.log(newPhone, newName)
+
+        // Validate phone number (only numeric and 10 digits)
+        const phoneRegex = /^[0-9]{10}$/;
+        if (newPhone && !phoneRegex.test(newPhone)) {
+            document.getElementById("phoneError").style.display = "block";
+            return;
+        } else {
+            document.getElementById("phoneError").style.display = "none";
+        }
+
+        if (!newName) {
+            alert("Please enter a new username.");
+            return;
+        }
+
+        try {
+            const response = await fetch("/updateUsername", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ userId, newName, newPhone })
+            });
+
+            const result = await response.json();
+            if (result.error) {
+                alert(result.error);
+            } else {
+                console.log("Username and phone number updated successfully");
+
+                // Optionally, close the modal after the update
+                $('#editUsernameModal').modal('hide'); 
+
+                // Update the UI directly without refreshing the page (optional)
+                document.getElementById("userNameDisplay").textContent = newName;  // Assuming you display username somewhere in the HTML
+                document.getElementById("userPhoneDisplay").textContent = newPhone; // Same for phone number if needed
+
+                // Optionally, reload the page to reflect changes
+                 location.reload(); 
+            }
+        } catch (error) {
+            console.log("Error:", error);
+        }
+    });
+</script>
 
 
-
-                </div>
-
-            </section>
-
-            <script>
-                document.getElementById("saveNameButton").addEventListener("click", async () => {
-                    const newName = document.getElementById("newName").value;
-                    const newPhone = document.getElementById("newphone").value;
-                    const userId = "{{user._id}}";
-
-                    // Validate phone number (example: 10 digits)
-                    const phonePattern = /^[0-9]{10}$/;
-                    if (!phonePattern.test(newPhone)) {
-                        document.getElementById("phoneError").style.display = "block";
-                        return;
-                    } else {
-                        document.getElementById("phoneError").style.display = "none";
-                    }
-
-                    if (!newName) {
-                        alert("Please enter a new username.");
-                        return;
-                    }
-
-                    try {
-                        const response = await fetch("/user/updateUsername", {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({ userId, newName, newPhone })
-                        });
-
-                        const result = await response.json();
-                        if (result.error) {
-                            alert(result.error);
-                        } else {
-                            console.log("Username and phone number updated successfully");
-                            // Optionally refresh or update the UI as needed
-                            location.reload(); // Reload page to reflect changes
-                        }
-                    } catch (error) {
-                        console.log(error);
-                    }
-                });
-            </script>
 
             <section style="background-color: rgb(242, 242, 242);" class="section order-history">
                 <main style="margin-top:40px ;background-color: rgb(242, 242, 242);" class="section account-settings">
@@ -567,39 +566,6 @@
                     });
                 }
             });
-        </script>
-        <script>
-            document.getElementById("saveNameButton").addEventListener("click", async () => {
-                const newName = document.getElementById("newName").value;
-                const userId = "USER_ID"; // Replace this with the logged-in user's ID or pass it dynamically from session
-
-                if (!newName) {
-                    alert("Please enter a valid name.");
-                    return;
-                }
-
-                try {
-                    const response = await fetch("/updateUsername", {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ userId, newName }),
-                    });
-
-                    const result = await response.json();
-                    if (response.ok) {
-                        alert(result.message);
-                        // Optionally update the UI with the new name or close the modal
-                        document.getElementById("editUsernameModal").modal("hide");
-                    } else {
-                        alert(result.error);
-                    }
-                } catch (error) {
-                    console.error("Error:", error);
-                }
-            });
-
         </script>
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>

@@ -168,7 +168,7 @@
 								{{#each carts}}
 								<tr class="table-body-row">
 									<td>
-										<form class="product-remove" action="/user/cart/{{this._id}}?_method=DELETE"
+										<form class="product-remove" action="/cart/{{this._id}}?_method=DELETE"
 											method="POST">
 											<button type="submit" class="btn btn-warning removecart"
 												data-id={{this._id}}>X</button>
@@ -348,7 +348,7 @@
 			const itemId = $(this).data('id'); // Get the item ID
 
 			$.ajax({
-				url: `/user/cart/${itemId}`,
+				url: `/cart/${itemId}`,
 				type: 'DELETE',
 				success: function (result) {
 					// Handle successful deletion (e.g., remove the item from the DOM)
@@ -396,7 +396,7 @@
 					confirmButtonText: 'OK'
 				}).then(() => {
 					// Redirect to orders page after clicking "OK"
-					window.location.href = '/user/cart';
+					window.location.href = '/cart';
 				});
 			} else {
 				// Only submit the form if the quantity is within the valid range

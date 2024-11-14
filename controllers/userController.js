@@ -12,54 +12,65 @@ const ordersSchema = require("../model/ordersmodal");
 const { OAuth2Client } = require("google-auth-library");
 const addresses = require("../model/addressmodal");
 const products = require("../model/productsmodal");
-const { Console } = require("console");
+const { Console, profile, log } = require("console");
 const client = new OAuth2Client(
   "458432719748-rs94fgenq571a8jfulbls7dk9i10mv2o.apps.googleusercontent.com"
-  
 );
 require("dotenv").config();
 
-const searchProducts= async (req, res) => {
+const searchProducts = async (req, res) => {
   try {
-    const query = req.query.query || '';
-    const products = await productsmodal.find({ name: new RegExp(query, 'i') }); // Regex for case-insensitive search
-    res.render('products', { products, query });
+    const query = req.query.query || "";
+    const products = await productsmodal.find({ name: new RegExp(query, "i") }); // Regex for case-insensitive search
+    res.render("products", { products, query });
   } catch (error) {
-    console.error('Error searching for products:', error);
-    res.status(500).send('Error searching for products');
+    console.error("Error searching for products:", error);
+    res.status(500).send("Error searching for products");
   }
 };
-
 const updateUsername = async (req, res) => {
   try {
-    const { userId, newName, newPhone } = req.body;
-
+    const { userId,  newName, newPhone } = req.body;
+    console.log(req.body)
+    
+    // Check if newName is provided
     if (!newName) {
       return res.status(400).json({ error: "New name is required" });
     }
 
-    // Validate phone number (example: 10 digits)
-    const phonePattern = /^[0-9]{10}$/;
-    if (!newPhone || !phonePattern.test(newPhone)) {
-      return res.status(400).json({ error: "Invalid phone number format" });
-    }
-
-    // Find the user by userId and update their name and phone number
+    // Update the user in the database
     const updatedUser = await userSchema.findByIdAndUpdate(
       userId,
       { name: newName, phone: newPhone },
-      { new: true } // Return the updated user
+      { new: true } // Return the updated user document
     );
 
+    console.log(updatedUser)
+
+    // If the user is not found, return an error
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    return res.status(200).json({ message: "Username and phone number updated successfully", user: updatedUser });
+    // If successful, return the updated user information
+    return res.status(200).json({
+      message: "Username and phone number updated successfully",
+      user: updatedUser
+    });
+
   } catch (error) {
-    return res.status(500).json({ error: "Server error" });
+    // Log the error message for debugging
+    console.error("Error:", error);
+
+    // Send an error response to the client
+    return res.status(500).json({ error: "Server error. Please try again later." });
   }
 };
+
+
+
+
+
 
 const editaddress = async (req, res) => {
   const { id } = req.params; // Extract the id from route parameters
@@ -95,7 +106,7 @@ const editaddress = async (req, res) => {
       { new: true } // This ensures that the updated document is returned
     );
 
-    console.log(updatedAddress)
+    console.log(updatedAddress);
 
     if (!updatedAddress) {
       return res.status(404).send("Address not found");
@@ -128,7 +139,7 @@ const ordertracking = async (req, res) => {
     console.log("Error fetching order:", error);
     res.status(500).send("Server error");
   }
-};  
+};
 // Load Forgot Password Page
 const loadforgotpassword = (req, res) => {
   res.render("forgotpassword");
@@ -144,7 +155,9 @@ const sendotptoemail = async (req, res) => {
     if (!email) {
       const message = "You didn't enter any email.";
       console.log(message);
-      return res.render("forgotpassword", { message: "You didn't enter any email" });
+      return res.render("forgotpassword", {
+        message: "You didn't enter any email"
+      });
     }
 
     // Check if the email exists in the user schema
@@ -154,7 +167,9 @@ const sendotptoemail = async (req, res) => {
     if (!existingUser) {
       const message = "This email doesn't exist.";
       console.log(message);
-      return res.render("forgotpassword", { message: "This email doesn't exist." });
+      return res.render("forgotpassword", {
+        message: "This email doesn't exist."
+      });
     }
 
     // Generate OTP and send email
@@ -163,7 +178,8 @@ const sendotptoemail = async (req, res) => {
 
     const emailSent = await sendVerificationEmail(email, otp);
     if (!emailSent) {
-      req.session.message = "Error sending verification email. Please try again.";
+      req.session.message =
+        "Error sending verification email. Please try again.";
       return res.redirect("/forgotpassword");
     }
 
@@ -191,8 +207,10 @@ const verifyotpemail = async (req, res) => {
     } else {
       // If OTP doesn't match, show error message on the verification page
       req.session.message = "Invalid OTP. Please try again.";
-      console.log("Invalid OTP. Please try again")
-      res.render("passwordverification",{message:"Invalid OTP. Please try again"});
+      console.log("Invalid OTP. Please try again");
+      res.render("passwordverification", {
+        message: "Invalid OTP. Please try again"
+      });
     }
   } catch (error) {
     console.error("OTP verification error", error);
@@ -204,53 +222,55 @@ const loadnewpassword = (req, res) => {
   res.render("newpassword", { message: req.session.message || null });
   req.session.message = null; // Clear message after rendering
 };
+
 const setnewpassword = async (req, res) => {
-  const newpass = req.body.confirmPassword; // Get the new password from request body
-  console.log(newpass);
-  // Ensure the user passed the OTP verification step
+  const newPassword = req.body.newPassword; // Assuming new password
+  const confirmPassword = req.body.confirmPassword; // Confirm password
+
+  // Basic password validation
+  if (!newPassword || newPassword.length < 6) {
+    req.session.message = "Password must be at least 6 characters long.";
+    return res.redirect("/newpassword");
+  }
+
+  // Password complexity (Optional): e.g., at least one letter, one number, one special character
+  const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/;
+  if (!passwordPattern.test(newPassword)) {
+    req.session.message = "Password must include a uppercase letter, lowercase letter,and a number.";
+    return res.redirect("/newpassword");
+  }
+
+  // Confirm password validation
+  if (newPassword !== confirmPassword) {
+    req.session.message = "Passwords do not match.";
+    return res.redirect("/newpassword");
+  }
+
+  // Check if user passed OTP verification
   if (!req.session.userEmail) {
-    console.log("hello");
-    req.session.message =
-      "Session expired. Please start the reset process again.";
-    console.log("Session expired. Please start the reset process again");
+    req.session.message = "Session expired. Please start the reset process again.";
     return res.redirect("/newpassword");
   }
 
   try {
-    let newemail = req.session.userEmail;
-    // Find the user by the email saved in the session
-    const user = await userSchema.findOne({ email: newemail });
+    const email = req.session.userEmail;
+    const user = await userSchema.findOne({ email });
 
     if (!user) {
       req.session.message = "User not found.";
-      console.log("User not found");
       return res.redirect("/newpassword");
     }
 
-    // Ensure the password is provided
-    if (!newpass) {
-      req.session.message = "New password is required.";
-      console.log("New password is required.");
-      return res.redirect("/newpassword");
-    }
-
-    // Generate salt with a specified number of rounds
+    // Generate salt and hash the password
     const salt = await bcrypt.genSalt(saltround);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    // Hash the new password and update it in the database
-    const hashedPassword = await bcrypt.hash(newpass, 10); // Hash the new password with salt
-
-    // Replace the old password with the new hashed password
-    user.password = hashedPassword; // This replaces the old password
-
-    // Save the user object with the updated password in the database
+    // Update user password
+    user.password = hashedPassword;
     await user.save();
 
-    // Clear session data related to password reset for security reasons
-    req.session.userEmail = null; // Clear email from session to protect sensitive data
+    req.session.userEmail = null;
     req.session.message = "Password updated successfully. Please log in.";
-
-    // Redirect to the login page after successful password reset
     res.redirect("/login");
   } catch (error) {
     console.error("Error changing password:", error);
@@ -258,6 +278,7 @@ const setnewpassword = async (req, res) => {
     res.redirect("/newpassword");
   }
 };
+
 const placeOrder = async (req, res) => {
   const { addressId, email, phone, paymentMethod, items, total } = req.body;
 
@@ -449,28 +470,44 @@ const registerUser = async (req, res) => {
     // Check for empty fields
     if (!username || !email || !password || !confirmPassword) {
       req.session.message = "All fields are required.";
-      console.log(req.session.message);
-      return res.redirect("/signup");
+      return res.render("signup", { message: "All fields are required" });
     }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      // req.session.message = "Invalid email format.";
+      return res.render("signup", { message: "Invalid email format" });
+    }
+    //check the password length if it is 6 charecters
     if (password.length < 6) {
-      req.session.message = "password must be 6 charecters";
-      console.log(req.session.message);
+      // req.session.message = "Password must be at least 6 characters long.";
       return res.render("signup", {
-        message: "password must be 6 charecters"
+        message: "Password must be at least 6 characters long"
       });
     }
     // Check if passwords match
     if (password !== confirmPassword) {
-      req.session.message = "Passwords do not match.";
+      // req.session.message = "Passwords do not match.";
       return res.render("signup", { message: "Passwords do not match" });
+    }
+
+    // Password validation (minimum length and complexity)
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/;
+    if (!passwordRegex.test(password)) {
+      // req.session.message = "Password must include an uppercase letter, a lowercase letter, and a number.";
+
+      return res.render("signup", {
+        message:
+          "Password must include a uppercase letter, lowercase letter,and a number"
+      });
     }
 
     // Check for existing user
     const alreadyuser = await userSchema.findOne({ email });
     if (alreadyuser) {
-      req.session.message = "Email is already registered.";
+      // req.session.message = "Email is already registered.";
 
-      console.log(req.session.message);
       return res.render("signup", {
         message: "Email is already registered"
       });
@@ -480,10 +517,10 @@ const registerUser = async (req, res) => {
     const otp = generateOtp();
     const emailSent = await sendVerificationEmail(email, otp);
     if (!emailSent) {
-      req.session.message =
-        "Error sending verification email. Please try again.";
+      // req.session.message =
+      //   "Error sending verification email. Please try again.";
       console.log("Error sending verification email. Please try again.");
-      return res.redirect("/signup");
+      return res.redirect("/signup",{message:"Error sending verification email. Please try again"});
     }
 
     // Store OTP and user data in session
@@ -511,6 +548,7 @@ const loadVerifyOtp = async (req, res) => {
 const verifyOtp = async (req, res) => {
   try {
     const { otp } = req.body;
+
     if (otp === req.session.userOTP) {
       const user = req.session.userData;
       const hashedPassword = await bcrypt.hash(user.password, 10);
@@ -611,20 +649,27 @@ const login = async (req, res) => {
     // Find the user by email
     const user = await userSchema.findOne({ email });
 
+    if (email === "" || password === "") {
+      console.log("all fields are required");
+      return res.render("login", { message: "All fields are required" });
+    }
+
     if (!user) {
       console.log("User doesn't exist");
-
       return res.render("login", { message: "User doesn't exist" });
     }
 
     // Compare the provided password with the stored hashed password
     const ismatch = await bcrypt.compare(password, user.password);
+
     if (!ismatch) {
       console.log("Incorrect password");
       return res.render("login", { message: "Incorrect password" });
     }
     if (user.blocked) {
-      return res.render("login", { message: "user is blocked by admin" });
+      return res.render("login", {
+        message: "you have been blocked by the admin"
+      });
     }
     req.session.userId = user._id;
     console.log(req.session);
@@ -1063,7 +1108,7 @@ const changepassword = async (req, res) => {
 const resendotpemail = async (req, res) => {
   console.log(req.session.userEmail);
   try {
-    const  email  = req.session.userEmail;
+    const email = req.session.userEmail;
     console.log("hioii");
     console.log(req.session.userEmail);
     if (!email) {

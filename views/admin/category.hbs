@@ -13,7 +13,7 @@
         crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="/admin/products.css">
-    	<link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
 
 </head>
 
@@ -60,15 +60,26 @@
                 <form method="get" action="/admin/addcategory"><button class="sort-button">ADD CATEGORY</button></form>
             </div>
             <table>
-                <thead>
-                    <tr>
-                        {{!-- <th>Id</th> --}}
-                        <th>brand</th>
-                        <th>band color</th>
-                        <th>Stock</th>
-                        <th>status</th>
-                        <th>Actions</th>
-                    </tr>
+                <tr>
+                    <input type="text"
+                        style="border-width: 0px; color:red;font-weight:bold;width:100%;background-color:rgba(14, 14, 28, 0.976)"
+                        name="message" id="message" value="{{message}}">
+                </tr>
+                <script>
+                    // Wait for 2 seconds and then clear the message
+                    setTimeout(function () {
+                        document.getElementById('message').value = ''; // Clear the message
+                    }, 2000); // 2000 milliseconds = 2 seconds
+                </script>
+                </thead>
+                <tr>
+                    {{!-- <th>Id</th> --}}
+                    <th>brand</th>
+                    <th>band color</th>
+                    <th>Stock</th>
+                    <th>status</th>
+                    <th>Actions</th>
+                </tr>
                 </thead>
                 <tbody>
                     {{#each category}}
@@ -103,9 +114,11 @@
                     </tr>
                 </tbody>
             </table>
-            <button class="pagination-button">&lt;</button>
-            <span>swipe</span>
-            <button class="pagination-button">&gt;</button>
+            <div style="margin-left: 44%;" class="pagination">
+                <button style="color:white;background-color: rgb(10, 15, 27);" class="pagination-button">&lt;</button>
+                <span style="margin-top: 8px;">swipe</span>
+                <button style="color:white;background-color: rgb(10, 15, 27);" class="pagination-button">&gt;</button>
+            </div>
         </main>
     </div>
 </body>

@@ -257,85 +257,17 @@ const listcategory = async (req, res) => {
     res.redirect("/admin/dashboard");
   }
 };
-// const editproducts = async (req, res) => {
-//   const productId = req.params.id;
-//   const { name, category, stock, price } = req.body;
-
-//   try {
-//     // Find the product by ID
-//     const product = await productsmodal.findById(productId);
-//     if (!product) {
-//       console.log("Product not found");
-//       return res.render("admin/products", {
-//         modalError: "Product not found",
-//         message: "Product not found"
-//       });
-//     }
-
-//     // Check if a different product with the same name exists
-//     const existingProduct = await productsmodal.findOne({
-//       name,
-//       _id: { $ne: productId }
-//     });
-//     if (existingProduct) {
-//       console.log("Product with this name already exists");
-//       const products = await productsmodal.find({});
-//       return res.render("admin/products", {
-//         products,
-//         modalError: "Product with this name already exists",
-//         message: "Product with this name already exists"
-//       });
-//     }
-
-//     // Handle deleted images
-//     if (req.body.deletedImages) {
-//       const deletedImages = req.body.deletedImages.split(","); // Convert comma-separated string to an array
-
-//       // Remove each image path from the product's image array and delete from the file system
-//       for (const imagePath of deletedImages) {
-//         const index = product.images.indexOf(imagePath);
-//         if (index > -1) {
-//           product.images.splice(index, 1); // Remove the image from the product
-//         }
-
-//         // Delete the image file from the server
-//         const fullImagePath = path.join(__dirname, "..", "public", imagePath);
-//         try {
-//           if (fs.existsSync(fullImagePath)) {
-//             fs.unlinkSync(fullImagePath); // Remove the image file
-//           }
-//         } catch (err) {
-//           console.error(`Error deleting image: ${imagePath}`, err);
-//         }
-//       }
-//     }
-
-//     // Handle new image uploads
-//     if (req.files && req.files.length > 0) {
-//       const newImages = req.files.map(file => "uploads/" + file.filename);
-//       product.images.push(...newImages); // Add new images to the product
-//     }
-
-//     // Update the product fields
-//     Object.assign(product, { name, category, stock, price });
-
-//     // Save the updated product in the database
-//     await product.save();
-
-//     // Redirect to the products page after a successful update
-//     res.redirect("/admin/products");
-//   } catch (error) {
-//     console.error("Error updating product:", error);
-//     res.status(500).render("admin/products", {
-//       modalError: "Failed to update product",
-//       message: "An error occurred while updating the product. Please try again."
-//     });
-//   }
-// };
 
 const editproducts = async (req, res) => {
   const productId = req.params.id;
-  const { name, category, stock, price, deletedImages } = req.body;
+  const {
+    name,
+    category,
+    stock,
+    price,
+    deletedImages,
+    croppedImageData
+  } = req.body;
 
   try {
     // Find the product by ID
@@ -347,47 +279,52 @@ const editproducts = async (req, res) => {
         message: "Product not found"
       });
     }
-
-    // Check if a different product with the same name exists
-    const existingProduct = await productsmodal.findOne({
-      name,
-      _id: { $ne: productId }
-    });
+    const existingProduct = await productsmodal.findOne({ name });
     if (existingProduct) {
-      console.log("Product with this name already exists");
+      console.log("Product already exists");
       const products = await productsmodal.find({});
       return res.render("admin/products", {
         products,
-        modalError: "Product with this name already exists",
-        message: "Product with this name already exists"
+        modalError: "Product already exists",
+        message: "Product already exists"
       });
     }
-
     // Handle deleted images
     if (deletedImages) {
-      const deletedImagesArray = deletedImages.split(","); // Convert comma-separated string to an array
+      const deletedImagesArray = deletedImages.split(",");
       for (const imagePath of deletedImagesArray) {
         const index = product.images.indexOf(imagePath);
         if (index > -1) {
-          product.images.splice(index, 1); // Remove the image from the product
+          product.images.splice(index, 1);
         }
 
         // Delete the image file from the server
         const fullImagePath = path.join(__dirname, "..", "public", imagePath);
-        try {
-          if (fs.existsSync(fullImagePath)) {
-            fs.unlinkSync(fullImagePath); // Remove the image file
-          }
-        } catch (err) {
-          console.error(`Error deleting image: ${imagePath}`, err);
+        if (fs.existsSync(fullImagePath)) {
+          fs.unlinkSync(fullImagePath);
         }
       }
     }
 
-    // Handle new image uploads
+    // Handle cropped image
+    if (croppedImageData) {
+      // Save the cropped image to the server or upload it as a file
+      const buffer = Buffer.from(croppedImageData.split(",")[1], "base64");
+      const filePath = path.join(
+        __dirname,
+        "..",
+        "public",
+        "uploads",
+        "cropped-" + Date.now() + ".png"
+      );
+      fs.writeFileSync(filePath, buffer);
+      product.images.push("uploads/" + path.basename(filePath));
+    }
+
+    // Handle new image uploads if any
     if (req.files && req.files.length > 0) {
       const newImages = req.files.map(file => "uploads/" + file.filename);
-      product.images.push(...newImages); // Add new images to the product
+      product.images.push(...newImages);
     }
 
     // Update the product fields
@@ -407,7 +344,6 @@ const editproducts = async (req, res) => {
   }
 };
 
-
 const editcategory = async (req, res) => {
   const categoryId = req.params.id;
   const { brand, bandcolor, stock } = req.body;
@@ -416,7 +352,7 @@ const editcategory = async (req, res) => {
   try {
     // Check if a different category with the same brand already exists
     const { id } = req.params;
-    const category = await categorymodal.findOne({ id });
+    const category = await categorymodal.find({});
 
     const existingCategory = await categorymodal.findOne({
       brand,
@@ -425,7 +361,8 @@ const editcategory = async (req, res) => {
 
     if (existingCategory) {
       console.log("Category already exists with this brand");
-      return res.render("admin/editcategory", {
+      return res.render("admin/category", {
+
         category,
         message: "Category with this brand already exists"
       });
@@ -611,41 +548,44 @@ const editinventory = async (req, res) => {
   const { name, stock } = req.body; // Product name and stock from the request body
 
   try {
-      // Find the product by ID
-      const product = await productsmodal.findById(productId);
-      if (!product) {
-          return res.status(404).json({ message: "Product not found" });
-      }
+    // Find the product by ID
+    const product = await productsmodal.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
 
-      // Check if a product with the same name already exists (excluding the current product)
-      const existingProduct = await productsmodal.findOne({ name: name, _id: { $ne: productId } });
-      if (existingProduct) {
-          return res.render("admin/inventory", {
-              products: await productsmodal.find({}),
-              message: "Product with this name already exists"
-          });
-      }
+    // Check if a product with the same name already exists (excluding the current product)
+    const existingProduct = await productsmodal.findOne({
+      name: name,
+      _id: { $ne: productId }
+    });
+    if (existingProduct) {
+      return res.render("admin/inventory", {
+        products: await productsmodal.find({}),
+        message: "Product with this name already exists"
+      });
+    }
 
-      // Check if the name and stock are the same as before
-      if (product.name === name && product.stock === stock) {
-          return res.render("admin/inventory", {
-              products: await productsmodal.find({}),
-              message: "No changes made to the product"
-          });
-      }
+    // Check if the name and stock are the same as before
+    if (product.name === name && product.stock === stock) {
+      return res.render("admin/inventory", {
+        products: await productsmodal.find({}),
+        message: "No changes made to the product"
+      });
+    }
 
-      // Update the product details
-      product.name = name;
-      product.stock = stock;
+    // Update the product details
+    product.name = name;
+    product.stock = stock;
 
-      // Save the updated product to the database
-      await product.save();
+    // Save the updated product to the database
+    await product.save();
 
-      // Redirect to the inventory page with a success message
-      res.redirect("/admin/inventory");
+    // Redirect to the inventory page with a success message
+    res.redirect("/admin/inventory");
   } catch (error) {
-      console.error("Error updating product:", error);
-      res.status(500).send("Error updating product");
+    console.error("Error updating product:", error);
+    res.status(500).send("Error updating product");
   }
 };
 // Date formatting helper

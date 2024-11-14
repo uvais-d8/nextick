@@ -23,7 +23,7 @@ router.get(
   }
 );
 
-router.put("/updateUsername",userController.updateUsername);
+router.post("/updateUsername",userController.updateUsername);
 
 router.get('/search', userController.searchProducts);
 

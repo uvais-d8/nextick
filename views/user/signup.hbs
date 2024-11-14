@@ -14,12 +14,12 @@
   <div class="container">
     <h1>Sign Up</h1>
     <form method="post" action="/signup" onsubmit="return validateForm()">
-      <input type="text" id="message" style="color: red; border-width:0px; font-weight:bold; font-size:15px;"
+      <input type="text" id="message" style="color: red; border-width:0px; font-weight:bold; font-size:14px;width:500px"
         name="message" value="{{message}}" readonly>
 
       <input type="text" id="username" name="username" placeholder="Username">
 
-      <input type="email" id="email" name="email" placeholder="Email">
+      <input type="text" id="email" name="email" placeholder="Email">
 
       <input type="password" id="password" name="password" placeholder="Password">
 
@@ -56,59 +56,7 @@
 
     </form>
   </div>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      document.querySelector('form').addEventListener('submit', formValidate);
-
-      const message = document.getElementById('message').value;
-
-      if (message) {
-        console.log("user already exists")
-        { { !--Swal.fire(message); --} }
-      }
-    });
-
-    function formValidate(e) {
-      e.preventDefault();
-      var email = document.getElementById('email').value;
-      var password = document.getElementById('password').value;
-      
-      if (email === "" || password === "") {
-        Swal.fire({
-          icon: "error",
-          text: "Email and passwords are required",
-        });
-        return false;
-      }
-      e.target.submit();
-      return true;
-    }
-  </script>
-  <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelector('form').addEventListener('submit', formValidate);
-
-            const message = document.getElementById('message').value;
-
-           
-        });
-
-        function formValidate(e) {
-            e.preventDefault();
-            var email = document.getElementById('email').value;
-            var password = document.getElementById('password').value;
-
-            if (email === "" || password === "") {
-                Swal.fire({
-                    icon: "error",
-                    text: "Email and passwords are required",
-                });
-                return false;
-            }
-            e.target.submit();
-            return true;
-        }
-    </script>
+ 
       <script>
         // Wait until the DOM is fully loaded
         document.addEventListener("DOMContentLoaded", function () {
@@ -118,7 +66,7 @@
           if (messageInput.value) {
             setTimeout(() => {
               messageInput.value = ""; // Clear the message after a delay
-            }, 2000); // Adjust delay as needed (e.g., 3000ms = 3 seconds)
+            }, 4000); // Adjust delay as needed (e.g., 3000ms = 3 seconds)
           }
         });
       </script>
