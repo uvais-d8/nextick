@@ -62,7 +62,8 @@
 		}
 
 		.but {
-			background-color: rgb(255, 162, 0);
+			color:#000000e4;
+			background-color: rgba(215, 215, 215, 0.87);
 			border-width: 0px;
 			font-size: 14px;
 			width: 100px;
@@ -382,12 +383,11 @@
 								</li>
 								<li>
 									<div class="header-icons">
-										<a class="shopping-cart" href="/cart"><i
-												class="fas fa-shopping-cart"></i></a>
+										<a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
 										<a class="mobile-hide search-bar-icon" href="#"><i
 												class="fas fa-search"></i></a>
-										<a style="color: orange;" class="mobile-hide search-bar-icon"
-											href="/profile"><i class="fas fa-user"></i></a>
+										<a style="color: orange;" class="mobile-hide search-bar-icon" href="/profile"><i
+												class="fas fa-user"></i></a>
 									</div>
 								</li>
 							</ul>
@@ -459,8 +459,6 @@
 		</div>
 	</div>
 
-
-
 	<!-- Orders History Section -->
 	<main class="section order-history">
 		<h3>Orders History</h3>
@@ -478,20 +476,30 @@
 
 			</div>
 			<div class="order-actions">
-				<button class="but" data-toggle="modal" data-target="#cancelModal"
+				<button class="but" style="color: rgba(0, 0, 0, 0.884); background-color:rgb(209, 208, 208)" data-toggle="modal" data-target="#cancelModal"
 					onclick="setItemToCancel('{{../_id}}', '{{this._id}}', 'item')">Cancel Item</button>
-				<p style="margin-left: -20px;margin-top:20px; font-size:13px;color:rgb(111, 111, 111);font-weight:bold">Item Status: {{status}}</p>
-				<form method="get" action="/ordertracking/{{id}}" >
-				<input type="submit" style="color:black;font-size:12px;font-weight:bold;background-color:white" value="view more" ><b></b>
-</form>
+				<p style="margin-left: -20px;margin-top:20px; font-size:13px;font-weight:bold;color:rgb(88, 88, 88)">
+					Item Status: {{status}}</p>
+				
+			<form method="get" action="/order/viewDetails/{{../_id}}/{{this._id}}">
+				<button class="but" type="submit"
+					style="color:rgba(26, 26, 26, 0.898);font-size:15px;background-color:rgba(255, 255, 255, 0.911);margin-top:-10px;">view
+					more</button>
+			</form>
 			</div>
-
 		</div>
 		{{/each}}
-
-		<button class="but" data-toggle="modal" data-target="#cancelModal"
-			onclick="setItemToCancel('{{this._id}}', null, 'order')">Cancel Order</button>
-		{{/each}}
+		<div style="margin-top:-20px;">
+			{{!-- <button style="margin-left:82%" class="but" data-toggle="modal" data-target="#cancelModal"
+				onclick="setItemToCancel('{{this._id}}', null, 'order')">Cancel Order</button> --}}
+		</div>
+		<div style="margin-top: -10px;">
+			<form method="get" action="/ordertracking/{{id}}">
+				<button class="but" type="submit"
+					style="margin-left:91%;color:black;font-size:15px;margin-top:-10px;">view
+					Order</button>
+			</form>
+		</div> {{/each}}
 	</main>
 
 
@@ -651,11 +659,11 @@
 			if (cancelType === 'order') {
 				// Cancel entire order
 				url = `/orders/${orderToCancelId}`;
-				requestBody = { status: 'cancelled' };
+				requestBody = { status: 'canceled' };
 			} else if (cancelType === 'item') {
 				// Cancel a specific item in the order
 				url = `/orders/${orderToCancelId}/items/${itemToCancelId}`;
-				requestBody = { status: 'cancelled' };
+				requestBody = { status: 'canceled' };
 			}
 
 			// Send PATCH request to update status to "cancelled"

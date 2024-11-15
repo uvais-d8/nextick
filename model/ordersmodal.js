@@ -56,6 +56,10 @@ const ordersSchema = new mongoose.Schema({
                 return this.price * this.quantity;
             }
         },
+        description:{
+            type: String,
+
+        },
         images: [{
             type: String,
             required: false

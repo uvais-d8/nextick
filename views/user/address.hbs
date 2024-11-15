@@ -11,6 +11,9 @@
     <!-- title -->
     <title>WATCH PREMIUM</title>
 
+<!-- Include SweetAlert CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
     <!-- favicon -->
     <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
     <!-- google font -->
@@ -433,11 +436,35 @@
             </div>
           </div>
 
-          <!-- Delete Form -->
-          <form style="margin-top: 5px;" class="address-remove" action="/address/{{this._id}}?_method=DELETE" method="POST">
-            <button type="submit" style="font-size:18px;width:70px;margin-left: 81%;height: 35px;font-size:13px;margin-top:-40px"
-              class="btn btn-warning removecart" data-id={{this._id}}><b>Delete</b></button>
-          </form>
+        <!-- Delete Form -->
+<form style="margin-top: 5px;" class="address-remove" action="/address/{{this._id}}?_method=DELETE" method="POST" id="delete-form-{{this._id}}">
+  <button type="button" style="font-size:18px;width:70px;margin-left: 81%;height: 35px;font-size:13px;margin-top:-40px"
+    class="btn btn-warning removecart" data-id="{{this._id}}" id="delete-button-{{this._id}}"><b>Delete</b></button>
+</form>
+
+<!-- SweetAlert Confirmation Script -->
+<script>
+  document.getElementById('delete-button-{{this._id}}').addEventListener('click', function(event) {
+    event.preventDefault(); // Prevent the form from submitting immediately
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You won\'t be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // If confirmed, submit the form
+        document.getElementById('delete-form-{{this._id}}').submit();
+      }
+    });
+  });
+</script>
+
         </main>
       </div>
     {{/each}}
@@ -588,6 +615,10 @@
     <script src="/assets/js/sticker.js"></script>
     <!-- main js -->
     <script src="/assets/js/main.js"></script>
+
+<!-- Include SweetAlert JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
 </body>
 
 </html>

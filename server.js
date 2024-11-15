@@ -104,6 +104,9 @@ hbs.registerHelper("statusIcon", (status) => {
   }
 });
 
+hbs.registerHelper('json', function (context) {
+  return JSON.stringify(context); 
+});
 
 // Route handlers
 // app.use("/admin", adminroutes);

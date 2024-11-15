@@ -46,6 +46,8 @@ router.get("/contact", userController.loadcontactpage);
 router.get("/profile", userController.loadprofile);
 router.get("/checkout", userController.checkout);
 router.post("/addtocart", userController.addtocart);
+router.get("/order/viewDetails/:orderId/:itemId",userController.loadViewDetails)
+
 
 router.delete("/cart/:id", userController.removecart);
 router.post("/cart/:id/updateQuantity", userController.updateCartQuantity);

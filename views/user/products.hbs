@@ -98,8 +98,7 @@
 								</li>
 								<li>
 									<div class="header-icons">
-										<a class="shopping-cart" href="/cart"><i
-												class="fas fa-shopping-cart"></i></a>
+										<a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
 										<a class="mobile-hide search-bar-icon" href="#"><i
 												class="fas fa-search"></i></a>
 										<a class="mobile-hide search-bar-icon" href="/profile"><i
@@ -159,7 +158,7 @@
 		<div class="container mt-5">
 			<!-- Search Heading -->
 			<h2>Our Products</h2>
-			
+
 			<!-- Sort and Filter Form -->
 			<form action="/sorted" method="get" id="form">
 				<input type="hidden" name="query" value="{{query}}">
@@ -207,16 +206,18 @@
 			<h4>{{#if query}}Results for "{{query}}"{{else}}All Products{{/if}}</h4>
 			<form action="/search" method="get" id="searchForm">
 				<div class="input-group mb-3" style="max-width: 1500px;">
-					<input style="border-color: rgb(230, 152, 8);height:40px;border-radius:5px" type="text" name="query"
-						class="form-control" placeholder="Search for products..." aria-label="Search for products"
-						aria-describedby="button-search" />
+					<input id="searchInput" style="border-color: rgb(230, 152, 8);height:40px;border-radius:5px"
+						type="text" name="query" class="form-control" placeholder="Search for products..."
+						aria-label="Search for products" aria-describedby="button-search" oninput="liveSearch()" />
 					<div class="input-group-append">
-						<button style="margin-left: 6px;border-radius:5px" class="btn btn-outline-warning" type="submit" id="button-search">
+						<button style="margin-left: 6px;border-radius:5px;width:100px" class="btn btn-outline-warning"
+							type="submit" id="button-search">
 							Search
 						</button>
 					</div>
 				</div>
 			</form>
+
 			<div class="row mt-4" style="background-color: rgb(255, 255, 255); border-radius:11px;">
 				{{#each products}}
 				<div class="col-md-4 mb-4">
@@ -261,10 +262,40 @@
 					</a>
 				</div>
 				{{/each}}
-			</div>
-		</div>
+</div>
+</div>	
+		<!-- Div to show live search results -->
+		<div id="live-search-results"></div>
 		</div>
 
+		<script>
+			function liveSearch() {
+				const query = document.getElementById('searchInput').value;
+
+				// Only perform search if there's at least one character
+				if (query.length > 0) {
+					fetch(`/search?query=${query}`)
+						.then(response => response.json())  // Assuming the server responds with JSON
+						.then(data => {
+							const resultsDiv = document.getElementById('live-search-results');
+							resultsDiv.innerHTML = '';  // Clear previous results
+
+							if (data.length > 0) {
+								data.forEach(item => {
+									const resultItem = document.createElement('div');
+									resultItem.textContent = item.name; // Assuming item has a 'name' property
+									resultsDiv.appendChild(resultItem);
+								});
+							} else {
+								resultsDiv.innerHTML = 'No results found.';
+							}
+						})
+						.catch(error => console.error('Error fetching search results:', error));
+				} else {
+					document.getElementById('live-search-results').innerHTML = '';
+				}
+			}
+		</script>
 		<!-- logo carousel -->
 		<div class="logo-carousel-section">
 			<div class="container">

@@ -77,8 +77,7 @@
 								</li>
 								<li>
 									<div class="header-icons">
-										<a class="shopping-cart" href="/cart"><i
-												class="fas fa-shopping-cart"></i></a>
+										<a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
 										<a class="mobile-hide search-bar-icon" href="#"><i
 												class="fas fa-search"></i></a>
 										<a class="mobile-hide search-bar-icon" href="/profile"><i
@@ -161,13 +160,33 @@
 			left: 0;
 			top: 0;
 		}
+
+		/* Popup box style */
+		.popup-box {
+			margin-top:40px;
+			margin-left:220px;
+			transform: translate(-50%, -50%);
+			background-color: #0f0f0fb3;
+			/* Black background */
+			color: #ffffff;
+			/* White text */
+			padding-top: -10px;
+			padding: 15px 25px;
+			border-radius: 8px;
+			width:175px;
+			height: 45px;
+			font-size: 16px;
+			padding-top: 8px;
+						{{!-- padding-left: 59px; --}}
+
+		}
 	</style>
 	<!-- single product -->
 	<div class="single-product mt-150 mb-150">
 		<div class="container">
 			<div class="row">
 				<div class="col-md-5">
-			
+
 					<div id="imagezoom" style="--zoom-x: 0%; --zoom-y: 0%; --display: none;">
 
 						<script>
@@ -233,9 +252,26 @@
 						< </button>
 							<button class="btn btn-warning" style="margin-left: 5px;" id="next"
 								onclick="changeSlide(1)"> > </button>
+							{{!-- <p style="margin-left:37%">Tap to see more</p> --}}
+							<div id="popupMessage" class="popup-box">
+								Tap to see more
+							</div>
 
 				</div>
+				<script>
+					// Function to show and auto-hide the popup
+					function showPopup() {
+						const popup = document.getElementById('popupMessage');
+						popup.style.display = 'block'; // Show popup
+						setTimeout(() => {
+							popup.style.display = 'none'; // Hide popup after 4 seconds
+						}, 4000);
+					}
 
+					// Show the popup when the page loads
+					window.onload = showPopup;
+
+				</script>
 				<script>
 					let image = document.getElementById('imagePath').value;
 					document.getElementById('imagezoom').style.backgroundImage = `/${image}`;
@@ -265,6 +301,7 @@
 				<div class="col-md-7">
 					<div class="single-product-content">
 						<h3>{{product.name}}</h3>
+						<p>{{product.description}}</p>
 						<p class="single-product-pricing">
 							<span>Discount: {{#if product.discount}}%{{product.discount}} off{{/if}}</span>
 							₹ {{product.price}}

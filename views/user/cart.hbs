@@ -165,6 +165,7 @@
 								</tr>
 							</thead>
 							<tbody>
+
 								{{#each carts}}
 								<tr class="table-body-row">
 									<td>
@@ -174,6 +175,7 @@
 												data-id={{this._id}}>X</button>
 										</form>
 									</td>
+
 									<td class="product-image">
 										<img src="/{{this.image}}" alt="{{this.name}}">
 									</td>
@@ -187,10 +189,14 @@
 									</td>
 									<td class="product-total">{{multiply this.price this.quantity}}</td>
 								</tr>
+
 								{{/each}}
 							</tbody>
 
 						</table>
+						<input type="text"
+							style="width:400px;margin-left:25%;margin-top:30px; font-weight:bold; border-width:0px; color:rgb(72, 71, 71); font-size:16px;"
+							id="message" value="{{{message}}}" readonly>
 					</div>
 				</div>
 

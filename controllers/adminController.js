@@ -268,6 +268,15 @@ const editproducts = async (req, res) => {
     deletedImages,
     croppedImageData
   } = req.body;
+  const products = await productsmodal.find({});
+
+  if (stock < 0) {
+    return res.render("admin/products", {
+      products,
+      modalError: "Stock cannot be negative",
+      message: "Stock cannot be negative"
+    });
+  }
 
   try {
     // Find the product by ID
@@ -275,20 +284,23 @@ const editproducts = async (req, res) => {
     if (!product) {
       console.log("Product not found");
       return res.render("admin/products", {
+        products,
         modalError: "Product not found",
         message: "Product not found"
       });
     }
-    const existingProduct = await productsmodal.findOne({ name });
+
+    // Check if a different product with the same name exists
+    const existingProduct = await productsmodal.findOne({ name, _id: { $ne: productId } });
     if (existingProduct) {
-      console.log("Product already exists");
-      const products = await productsmodal.find({});
+      console.log("Product with this name already exists");
       return res.render("admin/products", {
         products,
-        modalError: "Product already exists",
-        message: "Product already exists"
+        modalError: "Product with this name already exists",
+        message: "Product with this name already exists"
       });
     }
+
     // Handle deleted images
     if (deletedImages) {
       const deletedImagesArray = deletedImages.split(",");
@@ -329,7 +341,13 @@ const editproducts = async (req, res) => {
 
     // Update the product fields
     Object.assign(product, { name, category, stock, price });
-
+    if (!product.images) {
+      return res.render("admin/products", {
+        products,
+        modalError: "images is compelsory",
+        message: "images is compelsory"
+      });
+    }
     // Save the updated product in the database
     await product.save();
 
@@ -338,11 +356,13 @@ const editproducts = async (req, res) => {
   } catch (error) {
     console.error("Error updating product:", error);
     res.status(500).render("admin/products", {
+      products,
       modalError: "Failed to update product",
       message: "An error occurred while updating the product. Please try again."
     });
   }
 };
+
 
 const editcategory = async (req, res) => {
   const categoryId = req.params.id;
@@ -362,7 +382,6 @@ const editcategory = async (req, res) => {
     if (existingCategory) {
       console.log("Category already exists with this brand");
       return res.render("admin/category", {
-
         category,
         message: "Category with this brand already exists"
       });

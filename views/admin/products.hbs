@@ -71,7 +71,7 @@
                     <tr>
                         <input type="text"
                             style="border-width: 0px; color:red;font-weight:bold;width:100%;background-color:rgba(14, 14, 28, 0.976)"
-                            name="message" id="message" value="{{message}}">
+                            name="message" id="message" value="{{message}}" readonly>
                     </tr>
                 </thead>
                 <script>
@@ -86,7 +86,7 @@
                         <td><img src="/{{this.images.[0]}}" alt="{{this.name}}" style="width: 100px; height: 100px;">
                         </td>
                         <td>{{this.name}}</td>
-                        <td>{{this.category}}</td>
+                        <td>{{this.category}}</=d>
                         <td>{{this.stock}}</td>
                         <td>{{this.price}}</td>
                         <td>
@@ -128,8 +128,7 @@
             </div>
         </main>
     </div>
-
-    {{#each products}}
+ {{#each products}}
     <!-- Edit Product Modal -->
     <div class="modal fade" id="editProductModal-{{_id}}" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -456,8 +455,13 @@
 
         });
 
-    </script>
+    </script> 
 
+  
+
+
+  
+  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
 </body>

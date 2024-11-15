@@ -247,8 +247,7 @@
 													<input type="hidden" name="subtotal" value="{{subtotal}}">
 													<input type="hidden" name="shippingRate" value="{{shippingRate}}">
 													<input type="hidden" name="total" value="{{total}}">
-													{{!-- <input type="hidden" name="addressId"
-														value="{{addresses._id}}"> --}}
+													<input type="hidden" name="addressId" value="{{addresses._id}}">
 
 
 													{{!-- <a href="/user/address"
@@ -438,6 +437,18 @@
 			event.preventDefault(); // Prevent default form submission
 			console.log('hai')
 
+			const form = event.target;
+
+			// Collect form field values
+			const firstname = form.elements['firstname'].value;
+			const lastname = form.elements['lastname'].value;
+			const email = form.elements['email'].value;
+			const address = form.elements['address'].value;
+			const phone = form.elements['phone'].value;
+			const pincode = form.elements['pincode'].value;
+			const district = form.elements['district'].value;
+			const paymentMethod = form.elements['paymentMethod'].value;
+
 			const items = Array.from(document.querySelectorAll('.order-details-body tr')).map(row => ({
 				name: row.querySelector('.item-name').textContent,
 				price: parseFloat(row.querySelector('.item-price').textContent),
@@ -447,7 +458,15 @@
 			}));
 
 			const orderData = {
-				items: items,
+				firstname,
+				lastname,
+				email,
+				address,
+				phone,
+				pincode,
+				district,
+				paymentMethod,
+				items,
 				paymentMethod: document.getElementById('paymentMethod').value,
 				subtotal: parseFloat(document.querySelector('input[name="subtotal"]').value),
 				shippingRate: parseFloat(document.querySelector('input[name="shippingRate"]').value),
@@ -477,14 +496,14 @@
 					});
 				} else {
 					Swal.fire({
-						title: 'Error!',
-						text: 'Failed to place order. Please try again.',
-						icon: 'error',
+						title: 'error!',
+						text: 'cannot place the order.',
+						icon: 'failed',
 						confirmButtonText: 'OK'
 					}).then(() => {
 						// Redirect to orders page after clicking "OK"
 						window.location.href = '/checkout';
-					});;
+					});
 				}
 			} catch (error) {
 				console.error('Error placing order:', error);

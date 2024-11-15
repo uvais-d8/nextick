@@ -21,13 +21,25 @@ require("dotenv").config();
 const searchProducts = async (req, res) => {
   try {
     const query = req.query.query || "";
-    const products = await productsmodal.find({ name: new RegExp(query, "i") }); // Regex for case-insensitive search
-    res.render("products", { products, query });
+    // Perform the search using a case-insensitive regex search
+    const products = await productsmodal.find({ name: new RegExp(query, "i") });
+
+    // Check if the request is for AJAX (live search)
+    if (req.xhr) {
+      // Respond with JSON if the request is an AJAX call
+      return res.json(products);
+    } else {
+      // Render the search results page for regular page load
+      res.render("products", { products, query });
+    }
   } catch (error) {
     console.error("Error searching for products:", error);
     res.status(500).send("Error searching for products");
   }
 };
+
+module.exports = { searchProducts };
+
 const updateUsername = async (req, res) => {
   try {
     const { userId, newName, newPhone } = req.body;
@@ -114,27 +126,80 @@ const editaddress = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
+const loadViewDetails = async (req, res) => {
+  try {
+    const { orderId, itemId } = req.params;
+    console.log(orderId, itemId);
+    const order = await ordersSchema
+      .findById(orderId)
+      .populate("userId") // Populate the user
+      .populate("items.productId"); // Populate the productId for each item in the items array
+    console.log(order.items);
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+    const product = order.items.find(item => item._id.toString() === itemId);
+    console.log(product);
+    if (!product) {
+      return res.status(404).send("Product not found in this order");
+    }
+    res.render("orderDetails", { order, product });
+  } catch (error) {
+    res.status(500).send(error);
+    console.log("error");
+  }
+};
+
 const ordertracking = async (req, res) => {
   const { id } = req.params;
   try {
     // Fetch the order by ID and populate items' product details
-    const order = await ordersSchema.findById(id).populate("items.productId");
-
-    // if (!order) {
-    //   console.log("Order not found");
-    //   return res.status(404).send("Order not found");
-    // }
+    const order = await ordersSchema.findById(id);
+    const product = await productsmodal.findById(id);
+    // const order = await ordersSchema.findById(orderId).populate('items.productId', 'name'); // populate the productId field if needed
+    console.log(order);
+    if (!order) {
+      console.log("Order not found");
+      return res.render("orders");
+    }
 
     // Log the retrieved order to see the full data structure
-    console.log("Retrieved Order:", JSON.stringify(order, null, 2));
+    // console.log("Retrieved Order:", JSON.stringify(order, null, 2));
 
     // Render the order details on the tracking page
-    res.render("ordertracking", { order });
+    res.render("ordertracking", { order, product });
   } catch (error) {
     console.log("Error fetching order:", error);
     res.status(500).send("Server error");
   }
 };
+
+// const ordertracking = async (req, res) => {
+//   const { orderId, itemId } = req.params;
+//   try {
+//     // Find the order and update the item status to "canceled"
+//     const order = await ordersSchema.findOne(
+//       { _id: orderId, "items._id": itemId }, // Find the specific item
+//       { new: true },
+//       console.log("item canceled successfuly")
+//     );
+
+//     if (!order) {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "Order or item not found." });
+//     }
+
+//     res.render("ordertracking",{item})
+
+//       .status(200)
+//       .json({ success: true, message: "Item canceled successfully." });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ success: false, message: "Error canceling item." });
+//   }
+// };
+
 // Load Forgot Password Page
 const loadforgotpassword = (req, res) => {
   res.render("forgotpassword");
@@ -289,19 +354,7 @@ const placeOrder = async (req, res) => {
     lastname,
     address
   } = req.body;
-  console.log(
-    "helloo",
-    email,
-    phone,
-    paymentMethod,
-    items,
-    total,
-    pincode,
-    district,
-    firstname,
-    lastname,
-    address
-  );
+
   const userId = req.session.userId;
 
   try {
@@ -313,19 +366,6 @@ const placeOrder = async (req, res) => {
       total: item.price * item.quantity,
       images: item.images
     }));
-
-    let shippingAddress;
-
-    // if (addressId) {
-    //   // If `addressId` is provided, use the selected address
-    //   const existingAddress = await addressmodel.findById(addressId);
-    //   if (!existingAddress) {
-    //     return res.status(400).json({ success: false, message: "Invalid address ID." });
-    //   }
-    // shippingAddress = existingAddress;
-    // } else {
-    // Otherwise, use the newly entered address fields
-    // }
 
     // Create a new order
     const newOrder = new ordersSchema({
@@ -348,6 +388,9 @@ const placeOrder = async (req, res) => {
 
     // Save the order to the database
     await newOrder.save();
+
+    // Clear the user's cart from the database
+    await cartmodal.deleteMany({ userId });
     return res.json({ success: true });
   } catch (error) {
     console.error("Error placing order:", error);
@@ -779,7 +822,7 @@ const loadcartpage = async (req, res) => {
 
     // Calculate totals (if needed)
     const subtotal = carts.reduce(
-      (acc, cart) => acc + cart.price * cart.quantity,
+      (acc, carts) => acc + carts.price * carts.quantity,
       0
     );
 
@@ -787,7 +830,21 @@ const loadcartpage = async (req, res) => {
     const shippingRate = 50;
     const total = subtotal + shippingRate;
 
-    res.render("cart", { carts, subtotal, shippingRate, total });
+    if (!carts || carts.length === 0) {
+      // Render the "cart" page with the "no products" message
+      return res.render("cart", {
+        message: "There are no items in your cart at the moment"
+      });
+    }
+
+    // If cart has items, render the cart with the products
+    res.render("cart", {
+      carts,
+      subtotal,
+      shippingRate,
+      total
+      // or any other data you need to pass to the template
+    });
   } catch (error) {
     console.log("Error occurred during cart page:", error);
   }
@@ -834,14 +891,7 @@ const removeorder = async (req, res) => {
       console.log(orderId),
       { status: "canceled" },
       { new: true },
-      console.log("canceled")
     );
-
-    if (!updatedOrder) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Order not found." });
-    }
 
     res
       .status(200)
@@ -851,6 +901,36 @@ const removeorder = async (req, res) => {
     res.status(500).json({ success: false, message: "Error canceling order." });
   }
 };
+
+// const removeorder = async (req, res) => {
+//   const { orderId } = req.params;
+//   console.log("Order cancellation requested for:", orderId);
+
+//   try {
+//     // Find the order and update the status to "canceled"
+//     const updatedOrder = await ordersSchema.findByIdAndUpdate(
+//       console.log("hello"),
+//       orderId,
+//       { status: "canceled" },
+//       { new: true },
+//       console.log("Order successfully canceled:", orderId)
+//     );
+
+//     if (!updatedOrder) {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "Order not found." });
+//     }
+
+//     console.log("Order successfully canceled:", orderId);
+//     res
+//       .status(200)
+//       .json({ success: true, message: "Order canceled successfully." });
+//   } catch (error) {
+//     console.log("Error canceling order:", error);
+//     res.status(500).json({ success: false, message: "Error canceling order." });
+//   }
+// };
 
 const removeItem = async (req, res) => {
   const { orderId, itemId } = req.params;
@@ -1226,5 +1306,6 @@ module.exports = {
   setnewpassword,
   editaddress,
   updateUsername,
-  searchProducts
+  searchProducts,
+  loadViewDetails
 };
