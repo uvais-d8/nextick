@@ -1,18 +1,17 @@
 const bcrypt = require("bcrypt");
-const userSchema = require("../model/usermodal");
-const productsmodal = require("../model/productsmodal");
-const cartmodal = require("../model/cartmodal");
+const User = require("../model/usermodal");
+const Products = require("../model/productsmodal");
+const Cart = require("../model/cartmodal");
 const saltround = 10;
 const path = require("path");
 const userotpverification = require("../model/otpverification");
 const nodemailer = require("nodemailer");
 const googlemodal = require("../model/googlemodal");
-const addressmodel = require("../model/addressmodal");
-const ordersSchema = require("../model/ordersmodal");
+const Address = require("../model/addressmodal");
+const Orders = require("../model/ordersmodal");
 const { OAuth2Client } = require("google-auth-library");
-const addresses = require("../model/addressmodal");
-const products = require("../model/productsmodal");
-const { Console, profile, log } = require("console");
+const { Console, profile, log, error } = require("console");
+const Category = require("../model/categorymodal")
 const client = new OAuth2Client(
   "458432719748-rs94fgenq571a8jfulbls7dk9i10mv2o.apps.googleusercontent.com"
 );
@@ -22,14 +21,12 @@ const searchProducts = async (req, res) => {
   try {
     const query = req.query.query || "";
     // Perform the search using a case-insensitive regex search
-    const products = await productsmodal.find({ name: new RegExp(query, "i") });
+    const products = await Products.find({ name: new RegExp(query, "i") });
 
     // Check if the request is for AJAX (live search)
     if (req.xhr) {
-      // Respond with JSON if the request is an AJAX call
       return res.json(products);
     } else {
-      // Render the search results page for regular page load
       res.render("products", { products, query });
     }
   } catch (error) {
@@ -37,9 +34,6 @@ const searchProducts = async (req, res) => {
     res.status(500).send("Error searching for products");
   }
 };
-
-module.exports = { searchProducts };
-
 const updateUsername = async (req, res) => {
   try {
     const { userId, newName, newPhone } = req.body;
@@ -51,7 +45,7 @@ const updateUsername = async (req, res) => {
     }
 
     // Update the user in the database
-    const updatedUser = await userSchema.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       userId,
       { name: newName, phone: newPhone },
       { new: true } // Return the updated user document
@@ -80,7 +74,7 @@ const updateUsername = async (req, res) => {
   }
 };
 const editaddress = async (req, res) => {
-  const { id } = req.params; // Extract the id from route parameters
+  const { id } = req.params; 
   console.log("id is:", id);
 
   const {
@@ -96,8 +90,7 @@ const editaddress = async (req, res) => {
   } = req.body;
 
   try {
-    // Use findByIdAndUpdate to update the address document in the database
-    const updatedAddress = await addressmodel.findByIdAndUpdate(
+    const updatedAddress = await Address.findByIdAndUpdate(
       id,
       {
         firstname,
@@ -110,7 +103,7 @@ const editaddress = async (req, res) => {
         pincode,
         district
       },
-      { new: true } // This ensures that the updated document is returned
+      { new: true } 
     );
 
     console.log(updatedAddress);
@@ -130,7 +123,7 @@ const loadViewDetails = async (req, res) => {
   try {
     const { orderId, itemId } = req.params;
     console.log(orderId, itemId);
-    const order = await ordersSchema
+    const order = await Orders
       .findById(orderId)
       .populate("userId") // Populate the user
       .populate("items.productId"); // Populate the productId for each item in the items array
@@ -149,22 +142,18 @@ const loadViewDetails = async (req, res) => {
     console.log("error");
   }
 };
-
 const ordertracking = async (req, res) => {
   const { id } = req.params;
   try {
     // Fetch the order by ID and populate items' product details
-    const order = await ordersSchema.findById(id);
-    const product = await productsmodal.findById(id);
-    // const order = await ordersSchema.findById(orderId).populate('items.productId', 'name'); // populate the productId field if needed
+    const order = await Orders.findById(id);
+    const product = await Products.findById(id);
     console.log(order);
     if (!order) {
       console.log("Order not found");
       return res.render("orders");
     }
 
-    // Log the retrieved order to see the full data structure
-    // console.log("Retrieved Order:", JSON.stringify(order, null, 2));
 
     // Render the order details on the tracking page
     res.render("ordertracking", { order, product });
@@ -173,33 +162,6 @@ const ordertracking = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-
-// const ordertracking = async (req, res) => {
-//   const { orderId, itemId } = req.params;
-//   try {
-//     // Find the order and update the item status to "canceled"
-//     const order = await ordersSchema.findOne(
-//       { _id: orderId, "items._id": itemId }, // Find the specific item
-//       { new: true },
-//       console.log("item canceled successfuly")
-//     );
-
-//     if (!order) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "Order or item not found." });
-//     }
-
-//     res.render("ordertracking",{item})
-
-//       .status(200)
-//       .json({ success: true, message: "Item canceled successfully." });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({ success: false, message: "Error canceling item." });
-//   }
-// };
-
 // Load Forgot Password Page
 const loadforgotpassword = (req, res) => {
   res.render("forgotpassword");
@@ -221,7 +183,7 @@ const sendotptoemail = async (req, res) => {
     }
 
     // Check if the email exists in the user schema
-    const existingUser = await userSchema.findOne({ email: email });
+    const existingUser = await User.findOne({ email: email });
     console.log(existingUser);
 
     if (!existingUser) {
@@ -314,7 +276,7 @@ const setnewpassword = async (req, res) => {
 
   try {
     const email = req.session.userEmail;
-    const user = await userSchema.findOne({ email });
+    const user = await User.findOne({ email });
 
     if (!user) {
       req.session.message = "User not found.";
@@ -338,7 +300,6 @@ const setnewpassword = async (req, res) => {
     res.redirect("/newpassword");
   }
 };
-
 const placeOrder = async (req, res) => {
   const {
     email,
@@ -368,7 +329,7 @@ const placeOrder = async (req, res) => {
     }));
 
     // Create a new order
-    const newOrder = new ordersSchema({
+    const newOrder = new Orders({
       userId,
       items: cartItems,
       paymentMethod,
@@ -390,17 +351,16 @@ const placeOrder = async (req, res) => {
     await newOrder.save();
 
     // Clear the user's cart from the database
-    await cartmodal.deleteMany({ userId });
+    await Cart.deleteMany({ userId });
     return res.json({ success: true });
   } catch (error) {
     console.error("Error placing order:", error);
     res.status(500).json({ success: false, message: "Failed to place order." });
   }
 };
-
 const loadorderss = async (req, res) => {
   try {
-    const orders = await ordersSchema.find({});
+    const orders = await Orders.find({});
     res.render("orders", { orders });
   } catch (error) {
     console.log("Error during load orders", error);
@@ -410,15 +370,54 @@ const updateCartQuantity = async (req, res) => {
   try {
     const { id } = req.params;
     const { quantity } = req.body;
-
     // Update quantity in the cart model
-    await cartmodal.findByIdAndUpdate(id, { quantity });
+    await Cart.findByIdAndUpdate(id, { quantity });
     res.redirect("/cart");
   } catch (error) {
     console.error("Error updating quantity:", error);
     res.redirect("/cart");
   }
 };
+
+// const updateCartQuantity= async (req, res) => {
+//     try {
+//         const { quantity } = req.body; // Get new quantity from the request body
+//         const cartItem = await Cart.findById(req.params.id);
+
+//         if (!cartItem) {
+//             return res.status(404).json({ error: "Cart item not found" });
+//         }
+
+//         const product = await Products.findById(cartItem.productId);
+
+//         // Ensure quantity doesn't exceed stock
+//         if (quantity > product.stock) {
+//             return res.status(400).json({ error: "Exceeds available stock" });
+//         }
+
+//         // Update quantity and recalculate total
+//         cartItem.quantity = quantity;
+//         cartItem.total = quantity * cartItem.price;
+
+//         await cartItem.save();
+
+//         // Calculate updated subtotal for the cart
+//         const cartItems = await Cart.find();
+//         const subtotal = cartItems.reduce((acc, item) => acc + item.total, 0);
+//         const shippingRate = 50; // Example shipping rate
+//         const total = subtotal + shippingRate;
+
+//         res.json({
+//             itemTotal: cartItem.total,
+//             subtotal,
+//             shippingRate,
+//             total,
+//         });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ error: "Server error" });
+//     }
+// };
 const loadaddress = async (req, res) => {
   try {
     const userId = req.session.userId;
@@ -507,7 +506,7 @@ const loadprofile = async (req, res) => {
     console.log("Session User ID:", userId);
 
     // Find the user by userId
-    const user = await userSchema.findOne({ _id: userId }); // Use `user` model as defined in schema
+    const user = await User.findOne({ _id: userId }); // Use `user` model as defined in schema
     if (!user) {
       console.log("User not found");
       return res.redirect("/login");
@@ -567,7 +566,7 @@ const registerUser = async (req, res) => {
     }
 
     // Check for existing user
-    const alreadyuser = await userSchema.findOne({ email });
+    const alreadyuser = await User.findOne({ email });
     if (alreadyuser) {
       // req.session.message = "Email is already registered.";
 
@@ -592,7 +591,6 @@ const registerUser = async (req, res) => {
     req.session.userOTP = otp;
     req.session.userData = { username, email, password };
     console.log(otp);
-    // console.log(req.session.userData)
 
     // Redirect to OTP verification page
     res.redirect("/verify-otp");
@@ -605,7 +603,6 @@ const registerUser = async (req, res) => {
 // Load OTP Verification Page
 const loadVerifyOtp = async (req, res) => {
   res.render("verification", {
-    message: req.session.message
   });
   req.session.message = null;
 };
@@ -618,7 +615,7 @@ const verifyOtp = async (req, res) => {
       const user = req.session.userData;
       const hashedPassword = await bcrypt.hash(user.password, 10);
 
-      const newUser = new userSchema({
+      const newUser = new User({
         name: user.username,
         email: user.email,
         password: hashedPassword,
@@ -636,7 +633,7 @@ const verifyOtp = async (req, res) => {
       res.redirect("/home");
     } else {
       req.session.message = "Invalid OTP. Please try again.";
-      res.redirect("/verify-otp");
+      res.render("verification",{message:"Invalid OTP. Please try again"});
     }
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
@@ -712,7 +709,7 @@ const login = async (req, res) => {
     console.log(email);
     console.log(password);
     // Find the user by email
-    const user = await userSchema.findOne({ email });
+    const user = await User.findOne({ email });
 
     if (email === "" || password === "") {
       console.log("all fields are required");
@@ -757,39 +754,75 @@ const loadlogin = (req, res) => {
 };
 const loadhome = async (req, res) => {
   try {
-    // if (req.session.userId) {
-    //   const userId = req.session.userId;
-    //   const userData = await userSchema.findOne({ _id: userId });
-    const products = await productsmodal.find({ islisted: true });
+    // Fetch products and populate their category data
+    const products = await Products
+      .find({ islisted: true }) // Fetch only listed products
+      .populate({
+        path: "category", // Reference the category field
+        match: { islisted: true }, // Only include listed categories
+        select: "category islisted" // Only include necessary fields from the category
+      });
 
-    //   if (userData) {
-    res.render("home", { products }); // Pass both user and product data
-    //   } else {
-    //     res.redirect("/user/login");
-    //   }
-    // } else {
-    //   res.redirect("/user/login");
-    // }
+    // Filter out products where the category is not listed
+    const filteredProducts = products.filter((product) => product.category);
+
+    // Render the home page with filtered products
+    res.render("home", { products: filteredProducts });
   } catch (err) {
-    console.log(err);
-    console.log("failed to load home page");
+    console.error("Error loading home page:", err);
+    res.status(500).send("Failed to load home page");
   }
 };
 const loadproducts = async (req, res) => {
   try {
-    const products = await productsmodal.find({ islisted: true });
-    res.render("products", { products });
+    // Step 1: Fetch all categories and products
+    const categories = await Category.find({});
+    const products = await Products.find({});
+
+    // Step 2: Update product categories with ObjectId if necessary
+    for (const product of products) {
+      const category = categories.find((cat) => cat.category === product.category);
+
+      if (category) {
+        product.category = category._id; // Update product with category's ObjectId
+        await product.save();
+        console.log(`Updated product ${product.name} with category ${category.category}`);
+      } else {
+        console.warn(`No matching category found for product ${product.name}`);
+      }
+    }
+
+    // Step 3: Fetch listed products with their populated category data
+    const listedProducts = await Products
+      .find({ islisted: true }) // Only fetch listed products
+      .populate({
+        path: "category", // Populate the 'category' field
+        match: { islisted: true }, // Only include listed categories
+        select: "category brand islisted", // Select relevant fields
+      });
+
+    // Step 4: Filter products that have a valid category (category exists)
+    const filteredProducts = listedProducts.filter((product) => product.category);
+
+    if (filteredProducts.length === 0) {
+      console.warn("No products with valid listed categories found.");
+      return res.render("products", { message: "No products available." });
+    }
+
+    // Step 5: Render the products page with filtered products
+    res.render("products", { products: filteredProducts ,categories } );
+
   } catch (error) {
-    console.log(error);
-    console.log("failed to fetch products data");
+    console.error("Error fetching and updating products:", error);
+    res.status(500).send("Failed to fetch or update products.");
   }
 };
 const singleproduct = async (req, res) => {
   const productId = req.params.id;
   // console.log(productId);
   try {
-    const product = await productsmodal.findById(productId);
-    const products = await productsmodal.find({ islisted: true });
+    const product = await Products.findById(productId);
+    const products = await Products.find({ islisted: true });
     // console.log(product);
     if (!product) {
       return res.status(404).send("Product not found");
@@ -818,7 +851,7 @@ const loadcontactpage = (req, res) => {
 };
 const loadcartpage = async (req, res) => {
   try {
-    const carts = await cartmodal.find({}); // Assuming this returns an array of cart items
+    const carts = await Cart.find({}); // Assuming this returns an array of cart items
 
     // Calculate totals (if needed)
     const subtotal = carts.reduce(
@@ -849,13 +882,12 @@ const loadcartpage = async (req, res) => {
     console.log("Error occurred during cart page:", error);
   }
 };
-
 const removecart = async (req, res) => {
   const { id } = req.params;
 
   try {
     // Step 1: Find the cart item to get the quantity and product ID
-    const cartItem = await cartmodal.findById(id);
+    const cartItem = await Cart.findById(id);
     if (!cartItem) {
       console.error("Cart item not found");
       return res.redirect("/cart");
@@ -864,14 +896,14 @@ const removecart = async (req, res) => {
     const { productId, quantity } = cartItem;
 
     // Step 2: Update the product's quantity in the products database
-    await productsmodal.findByIdAndUpdate(
+    await Products.findByIdAndUpdate(
       productId,
       { $inc: { stock: quantity } },
       { new: true }
     );
 
     // Step 3: Delete the cart item
-    await cartmodal.findByIdAndDelete(id);
+    await Cart.findByIdAndDelete(id);
 
     console.log("Item deleted and stock updated successfully");
     res.redirect("/cart");
@@ -880,13 +912,12 @@ const removecart = async (req, res) => {
     res.redirect("/cart");
   }
 };
-
 const removeorder = async (req, res) => {
   const { orderId } = req.params;
   console.log("helloo");
   try {
     // Find the order and update the status to "canceled"
-    const updatedOrder = await ordersSchema.findByIdAndUpdate(
+    const updatedOrder = await Orders.findByIdAndUpdate(
       orderId,
       console.log(orderId),
       { status: "canceled" },
@@ -901,63 +932,37 @@ const removeorder = async (req, res) => {
     res.status(500).json({ success: false, message: "Error canceling order." });
   }
 };
-
-// const removeorder = async (req, res) => {
-//   const { orderId } = req.params;
-//   console.log("Order cancellation requested for:", orderId);
-
-//   try {
-//     // Find the order and update the status to "canceled"
-//     const updatedOrder = await ordersSchema.findByIdAndUpdate(
-//       console.log("hello"),
-//       orderId,
-//       { status: "canceled" },
-//       { new: true },
-//       console.log("Order successfully canceled:", orderId)
-//     );
-
-//     if (!updatedOrder) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "Order not found." });
-//     }
-
-//     console.log("Order successfully canceled:", orderId);
-//     res
-//       .status(200)
-//       .json({ success: true, message: "Order canceled successfully." });
-//   } catch (error) {
-//     console.log("Error canceling order:", error);
-//     res.status(500).json({ success: false, message: "Error canceling order." });
-//   }
-// };
-
 const removeItem = async (req, res) => {
   const { orderId, itemId } = req.params;
   try {
-    // Find the order and update the item status to "canceled"
-    const updatedOrder = await ordersSchema.findOneAndUpdate(
-      { _id: orderId, "items._id": itemId }, // Find the specific item
-      { $set: { "items.$.status": "canceled" } }, // Update item's status
-      { new: true },
-      console.log("item canceled successfuly")
-    );
+    // Find the order and retrieve the item
+    const order = await Orders.findOne({ _id: orderId, "items._id": itemId });
 
-    if (!updatedOrder) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Order or item not found." });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order or item not found." });
     }
 
-    res
-      .status(200)
-      .json({ success: true, message: "Item canceled successfully." });
+    // Find the specific item within the order
+    const item = order.items.find(item => item._id.toString() === itemId);
+
+    // Check if the item's status is 'delivered'
+    if (item.status === "delivered") {
+      return res.status(400).json({ success: false, message: "Item is already delivered and cannot be canceled." });
+    }
+
+    // Update the item status to "canceled"
+    const updatedOrder = await Orders.findOneAndUpdate(
+      { _id: orderId, "items._id": itemId },
+      { $set: { "items.$.status": "canceled" } },
+      { new: true }
+    );
+
+    res.status(200).json({ success: true, message: "Item canceled successfully." });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Error canceling item." });
   }
 };
-
 const removeaddress = async (req, res) => {
   const { id } = req.params;
   console.log({ id });
@@ -972,7 +977,6 @@ const removeaddress = async (req, res) => {
     res.redirect("/address");
   }
 };
-
 const addtocart = async (req, res) => {
   try {
     const { quantity, productId } = req.body;
@@ -984,7 +988,7 @@ const addtocart = async (req, res) => {
     }
 
     // Find the product in the database
-    const product = await productsmodal.findById(productId);
+    const product = await Products.findById(productId);
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
@@ -994,7 +998,7 @@ const addtocart = async (req, res) => {
       return res.render("singleproduct", {
         message: "Not enough stock available for this quantity",
         product, // Pass the product ID to the view
-        products
+        product
       });
     }
     if (!product.islisted) {
@@ -1008,7 +1012,7 @@ const addtocart = async (req, res) => {
     const itemTotal = product.price * quantity;
 
     // Check if the product already exists in the cart
-    const existingItem = await cartmodal.findOne({ productId });
+    const existingItem = await Cart.findOne({ productId });
 
     if (existingItem) {
       // Update the quantity and total if the item already exists in the cart
@@ -1020,7 +1024,7 @@ const addtocart = async (req, res) => {
         return res.render("singleproduct", {
           message: "Not enough storage in your cart",
           product, // Pass the product ID to the view
-          products
+          product
         });
       }
       existingItem.quantity = newQuantity;
@@ -1028,7 +1032,7 @@ const addtocart = async (req, res) => {
       await existingItem.save();
     } else {
       // Create a new cart item if it doesn't exist in the cart
-      const cartItem = new cartmodal({
+      const cartItem = new Cart({
         productId,
         name: product.name,
         price: product.price,
@@ -1049,7 +1053,6 @@ const addtocart = async (req, res) => {
     res.status(500).json({ error: "Failed to add product to cart" });
   }
 };
-
 const checkout = async (req, res) => {
   try {
     const userId = req.session.userId; // Get the user ID from the session
@@ -1059,7 +1062,7 @@ const checkout = async (req, res) => {
     const alladdresses = await addressmodel.find({});
     const addresses = await addressmodel.findOne({ user: userId });
 
-    const carts = await cartmodal.find({});
+    const carts = await Cart.find({});
     const subtotal = carts.reduce(
       (acc, cart) => acc + cart.price * cart.quantity,
       0
@@ -1123,7 +1126,7 @@ const advancedSearch = async (req, res) => {
     }
 
     // Fetch and sort products based on filter and sorting options
-    const products = await productsmodal.find(searchFilter).sort(sortOption);
+    const products = await Products.find(searchFilter).sort(sortOption);
 
     // Render the results to the template with products, query, and sort for user reference
     res.render("products", { products, query, sort });
@@ -1133,28 +1136,54 @@ const advancedSearch = async (req, res) => {
   }
 };
 const filtered = async (req, res) => {
-  const showOutOfStock = req.query.showOutOfStock || ""; // Get the query parameter
-
-  let filter = {};
-
-  // Apply filter based on the showOutOfStock value
-  if (showOutOfStock === "exclude") {
-    filter.stock = { $gt: 0 }; // Only products that are in stock
-  }
-
   try {
-    const products = await productsmodal.find(filter); // Find products based on filter
-    res.render("products", { products, showOutOfStock }); // Render products page with data
+    const { showOutOfStock, minPrice, maxPrice, category, rating } = req.query;
+
+    // Build the filter object dynamically
+    let filter = { islisted: true }; // Only fetch listed products
+
+    // Stock filter
+    if (showOutOfStock === "exclude") {
+      filter.stock = { $gt: 0 }; // Products with stock greater than 0
+    }
+
+    // Price filter
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = parseFloat(minPrice);
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+    }
+
+    // Category filter
+    if (category && category !== "all") {
+      const categoryDoc = await Categoory.findOne({ category }); // Find the category by name
+      if (categoryDoc) {
+        filter.category = categoryDoc._id; // Use ObjectId for filtering
+      }
+    }
+
+    // Rating filter
+    if (rating && rating !== "all") {
+      filter.averageRating = { $gte: parseFloat(rating) };
+    }
+
+    // Fetch products with applied filters
+    const products = await Products
+      .find(filter)
+      .populate("category", "category brand"); // Populate category details
+
+    // Render the products page with filtered data
+    res.render("products", { products, showOutOfStock, minPrice, maxPrice, category, rating });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Error fetching products");
+    console.error("Error fetching filtered products:", error);
+    res.status(500).send("Error fetching products.");
   }
 };
 const changepassword = async (req, res) => {
   const { currentPassword, newpassword, confirmpassword } = req.body;
   const userId = req.session.userId;
 
-  const user = await userSchema.findOne({ _id: userId });
+  const user = await User.findOne({ _id: userId });
   const addresses = await addressmodel.findOne({ user: userId });
 
   if (!req.session.userId) {
@@ -1232,7 +1261,6 @@ const changepassword = async (req, res) => {
     res.redirect("/profile");
   }
 };
-
 const resendotpemail = async (req, res) => {
   console.log(req.session.userEmail);
   try {
@@ -1267,6 +1295,7 @@ const resendotpemail = async (req, res) => {
   }
 };
 module.exports = {
+  searchProducts,
   resendotpemail,
   ordertracking,
   changepassword,

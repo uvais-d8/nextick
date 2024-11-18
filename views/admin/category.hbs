@@ -73,7 +73,7 @@
                 </script>
                 </thead>
                 <tr>
-                    {{!-- <th>Id</th> --}}
+                    <th>Category</th>
                     <th>brand</th>
                     <th>band color</th>
                     <th>Stock</th>
@@ -84,27 +84,29 @@
                 <tbody>
                     {{#each category}}
                     <tr>
-                        {{!-- <td>{{this._id}}</td> --}}
+                        {{!-- <td>{{this.category}}</td> --}}
+                        <td>{{this.category}}</td>
+
                         <td>{{this.brand}}</td>
                         <td>{{this.bandcolor}}</td>
                         <td>{{this.stock}}</td>
                         <td>{{this.status}}</td>
                         <td>
                             <form method="get" action="/admin/editcategory/{{this._id}}"><button
-                                    style="background-color: rgba(1, 171, 1, 0.776);width: 60%;height:40px;color:white"
+                                    style="background-color: rgba(1, 171, 1, 0.776);width: 75px;height:40px;color:white"
                                     class="btnn1">edit</button></form>
 
                             {{#if this.islisted}}
                             <form action="/admin/category/unlist/{{this._id}}" method="POST">
                                 <button
-                                    style="background-color: rgba(253, 213, 11, 0.768);width: 60%;margin-top:6px;height:40px;color:white"
-                                    type="submit" class="btnn2">Unlist</button>
+                                    style="background-color: rgba(192, 192, 6, 0.905);width: 75px;margin-top:6px;height:40px;color:white"
+                                    type="submit" class="btnn2">listed</button>
                             </form>
                             {{else}}
                             <form action="/admin/category/list/{{this._id}}" method="POST">
                                 <button
-                                    style="background-color: rgba(221, 6, 6, 0.766);width: 60%;margin-top:6px;height:40px;color:white"
-                                    type="submit" class="btnn2">List</button>
+                                    style="background-color: rgba(211, 37, 25, 0.766);width: 75px;margin-top:6px;height:40px;color:white"
+                                    type="submit" class="btnn2">unlisted</button>
                             </form>
                             {{/if}}
                             {{/each}}

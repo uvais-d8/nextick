@@ -188,8 +188,9 @@
 										</form>
 									</td>
 									<td class="product-total">{{multiply this.price this.quantity}}</td>
-								</tr>
 
+								</tr>
+<tr><input type="text" value="{{errormessage}}"></tr>
 								{{/each}}
 							</tbody>
 
@@ -391,6 +392,17 @@
 	<!-- main js -->
 	<script src="/assets/js/main.js"></script>
 	<script>
+		$(document).ready(function() {
+    const errorMessage = document.getElementById('error-message').value;
+    if (errorMessage) {
+        Swal.fire({
+            title: 'Error!',
+            text: errorMessage, // Show the error message passed from the backend
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+});
 		function checkCartLimit(input) {
 			const quantity = parseInt(input.value);
 
@@ -410,6 +422,7 @@
 			}
 		}
 	</script>
+	
 
 
 </body>

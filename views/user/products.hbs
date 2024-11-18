@@ -34,20 +34,90 @@
 
 </head>
 <style>
+	/* General Body Styles */
 	body {
 		margin: -25px;
+		font-family: Arial, sans-serif;
 	}
 
+	/* Card Styles */
 	.card {
 		box-shadow: 0 0 15px 9px #cccccc69;
-		border-width: 0px;
-
+		border: none;
+		transition: box-shadow 0.3s ease;
 	}
 
 	.card:hover {
 		box-shadow: 0 0 15px 9px #eaeaea69;
-
 	}
+
+	/* Sidebar Styles */
+	.sidebar {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 330px;
+		/* Adjust width as needed */
+		height: 100vh;
+		background-color: #ffffff;
+		/* Sidebar background */
+		color: #000;
+		/* Sidebar text color */
+		padding: 20px;
+		box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		margin-top: 90px;
+		/* Adjust for header if present */
+	}
+
+	/* Main Content Styles */
+	.main-content {
+		margin-left: 300px;
+		/* Matches the sidebar width */
+		padding: 20px;
+	}
+
+	/* Button Base Styles (Shared for Sort and Filter Buttons) */
+	.sidebar {
+		overflow-y: auto;
+		/* Enable vertical scrolling */
+		max-height: 99vh;
+		/* Limit the sidebar height to the viewport */
+		padding: 10px;
+		/* Padding for better spacing */
+		border: 1px solid rgb(255, 136, 0);
+		/* Optional border styling */
+		height: 5000px;
+	}
+
+	.sidebar a {
+		display: block;
+		text-decoration: none;
+		color: rgb(255, 136, 0);
+		border: 1px solid rgb(255, 136, 0);
+		border-radius: 5px;
+		padding: 8px 10px;
+		text-align: center;
+		background-color: transparent;
+		transition: all 0.4s ease;
+		margin-top: 5px;
+	}
+
+
+	.sidebar a:hover {
+		background-color: rgb(255, 136, 0);
+		color: white;
+	}
+
+	/* Active State for Buttons */
+	.sidebar a.active {
+		background-color: rgb(255, 136, 0);
+		color: white;
+	}
+
+	/* Ensure other content doesn't overlap the sidebar */
 </style>
 
 <body>
@@ -118,156 +188,269 @@
 	<!-- end header -->
 
 
-	<div class="breadcrumb-section breadcrumb-bg">
-		<div class="container">
-			<div class="row">
+	<div style="height: -11px;" class="breadcrumb-section breadcrumb-bg">
+		<div style="height: -111px;" class="container">
+			<div style="height: -111px;" class="row">
 				<div class="col-lg-8 offset-lg-2 text-center">
-					<div class="breadcrumb-text">
-						<p><a href="/home">Home</a> > <a href="/products">Products</a> > <span>Single
-								Product</span>
+					<div style="margin-top: -80px;" class="breadcrumb-text">
+						<p><a href="/home">Home</a> > <a href="/products">Products</a>
 						</p>
-						<h1>Single Product</h1>
+
+						<h2 style="color: white;">Products</h2>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 	</header>
-
-	<!-- Breadcrumbs -->
-
-
-
-
 	</head>
 
 	<body style="background-color: rgb(255, 255, 255);">
-
 		<!-- PreLoader -->
 		<div class="loader">
 			<div class="loader-inner">
 				<div class="circle"></div>
 			</div>
 		</div>
-
-
-
-
-
-
-		<div class="container mt-5">
-			<!-- Search Heading -->
-			<h2>Our Products</h2>
-
-			<!-- Sort and Filter Form -->
-			<form action="/sorted" method="get" id="form">
-				<input type="hidden" name="query" value="{{query}}">
-
-				<!-- Sort By Dropdown -->
-				<div>
-					<select
-						style="width: 150px; border-radius: 5px; height: 40px; background-color: rgb(255, 255, 255);border-color:rgb(255, 136, 0);margin-top:10px"
-						name="sort" onchange="this.form.submit()">
-						<option value="">Sort By</option>
-						<option value="popularity" {{#if (eq sort 'popularity' )}}selected{{/if}}>Popularity</option>
-						<option value="priceLowToHigh" {{#if (eq sort 'priceLowToHigh' )}}selected{{/if}}>Price: Low to
-							High
-						</option>
-						<option value="priceHighToLow" {{#if (eq sort 'priceHighToLow' )}}selected{{/if}}>Price: High to
-							Low
-						</option>
-						<option value="averageRating" {{#if (eq sort 'averageRating' )}}selected{{/if}}>Average Rating
-						</option>
-						<option value="featured" {{#if (eq sort 'featured' )}}selected{{/if}}>Featured</option>
-						<option value="newArrivals" {{#if (eq sort 'newArrivals' )}}selected{{/if}}>New Arrivals
-						</option>
-						<option value="aToZ" {{#if (eq sort 'aToZ' )}}selected{{/if}}>A-Z</option>
-						<option value="zToA" {{#if (eq sort 'zToA' )}}selected{{/if}}>Z-A</option>
-					</select>
-				</div>
-				<div style="margin-top: -40px;margin-left:155px">
-					<!-- Filter Out-of-Stock Products -->
-			</form>
-			<form method="get" action="/filtered">
-				<select
-					style="width: 150px; border-radius: 5px; height: 40px; background-color: rgb(255, 255, 255);border-color:rgb(255, 153, 0)"
-					name="showOutOfStock" onchange="this.form.submit()">
-					<option value="">Filter Stock</option>
-					<option value="include" {{#if (eq showOutOfStock 'include' )}}selected{{/if}}>Show all products
-					</option>
-					<option value="exclude" {{#if (eq showOutOfStock 'exclude' )}}selected{{/if}}>Hide Out of Stock
-					</option>
-				</select>
-			</form>
-
-		</div>
-		<!-- Product Cards -->
-		<div class="container mt-5">
-			<h4>{{#if query}}Results for "{{query}}"{{else}}All Products{{/if}}</h4>
-			<form action="/search" method="get" id="searchForm">
-				<div class="input-group mb-3" style="max-width: 1500px;">
-					<input id="searchInput" style="border-color: rgb(230, 152, 8);height:40px;border-radius:5px"
-						type="text" name="query" class="form-control" placeholder="Search for products..."
-						aria-label="Search for products" aria-describedby="button-search" oninput="liveSearch()" />
-					<div class="input-group-append">
-						<button style="margin-left: 6px;border-radius:5px;width:100px" class="btn btn-outline-warning"
-							type="submit" id="button-search">
-							Search
-						</button>
-					</div>
-				</div>
-			</form>
-
-			<div class="row mt-4" style="background-color: rgb(255, 255, 255); border-radius:11px;">
-				{{#each products}}
-				<div class="col-md-4 mb-4">
-					<a href="/product/{{this._id}}" style="text-decoration: none; color: inherit;">
-						<div class="card" style="background-color: rgb(224, 224, 224); border-radius:11px;;
-">
-							<img src="/{{this.images.[0]}}" class="card-img-top" alt="{{this.name}}"
-								style="height: 200px; object-fit: cover;">
-							<div style="background-color: rgb(255, 255, 255);border-radius:6px;box-shadow;"
-								class="card-body">
-								<h5 class="card-title">{{this.name}}</h5>
-								<p class="card-text">Category: {{this.category}}</p>
-
-								<!-- Price and Discount -->
-								<p class="card-text">
-									Price: ₹<span>{{this.price}}</span>
-									{{#if this.discount}}
-									<span class="discount">(Discount: ₹{{this.discount}})</span>
-									{{/if}}
-								</p>
-
-								<!-- Stock Information -->
-								<p class="card-text stock">
-									Stock:
-									{{#if this.stock}}
-									<span style="color:green;" class="in-stock">{{this.stock}} Available</span>
-									{{else}}
-									<span style="color: RED;" class="out-of-stock">Out of Stock</span>
-									{{/if}}
-								</p>
-
-								<!-- Ratings -->
-								<p class="card-text">
-									Rating:
-									<span class="rating">
-										{{#each this.rating}}★{{/each}}
-									</span>
-									<span class="review-count">({{this.reviews.length}} Reviews)</span>
-								</p>
-							</div>
-						</div>
+		<div class="sidebar">
+			<div>
+				<div class="site-logo">
+					<a style="border-color: white;margin-left:40px;margin-top:40px;width:210px" href="/home">
+						<h4 style="font-weight: bold;color:rgb(0, 0, 0)">WATCH PREMIUM</h4>
 					</a>
 				</div>
-				{{/each}}
-</div>
-</div>	
-		<!-- Div to show live search results -->
-		<div id="live-search-results"></div>
+				<div>
+					<p style="color: white;">.</p>
+					<p style="color: white;">.</p>
+					<p style="color: white;">.</p>
+					<p style="color: white;">.</p>
+					<p style="color: white;">.</p>
+					<p style="color: white;">.</p>
+				</div>
+			</div>
+			<!-- Sorting Options -->
+			<h5>Sort By:</h5>
+			<div class="sort-buttons">
+				<a href="/sorted?sort=popularity">Popularity</a>
+				<a href="/sorted?sort=priceLowToHigh">Price: Low to High</a>
+				<a href="/sorted?sort=priceHighToLow">Price: High to Low</a>
+				<a href="/sorted?sort=averageRating">Average Rating</a>
+				<a href="/sorted?sort=featured">Featured</a>
+				<a href="/sorted?sort=newArrivals">New Arrivals</a>
+				<a href="/sorted?sort=aToZ">A-Z</a>
+				<a href="/sorted?sort=zToA">Z-A</a>
+
+
+			</div>
+			<h5>Filter Stock:</h5>
+
+			<div class="filter-buttons">
+				<a href="#" data-value="include" class="{{#if (eq showOutOfStock 'include')}}active{{/if}}">Show All
+					Products</a>
+				<a href="#" data-value="exclude" class="{{#if (eq showOutOfStock 'exclude')}}active{{/if}}">Hide Out of
+					Stock</a>
+			</div>
+
+			<h5>Filter by Price:</h5>
+			<div class="filter-price">
+				<label for="min-price">Min Price:</label>
+				<input type="number" id="min-price" name="minPrice" value="{{minPrice}}" placeholder="00000"
+					style="border-color: orange;margin-left:110px" /><br>
+				<label for="max-price">Max Price:</label>
+				<input type="number" id="max-price" name="maxPrice" value="{{maxPrice}}" placeholder="00000"
+					style="border-color: orange;margin-left:106px" />
+				<button id="filter-price-button"
+					style="border-width:0px;height:40px;border-radius:5px;margin-left:160px;background-color: orange;">Apply
+					Price Filter</button>
+			</div>
+
+			<h5>Filter by Category:</h5>
+			<div class="filter-category">
+				<select id="category-filter" style="border-color: orange;width: 100%;height:40px;border-radius:5px">
+					<option value="all" {{#if (eq category 'all' )}}selected{{/if}}>All Categories</option>
+					{{#each categories}}
+					<option value="{{this.name}}" {{#if (eq ../category this.category)}}selected{{/if}}>
+						{{this.category}}</option>
+					{{/each}}
+				</select>
+			</div>
+			<div>
+
+				<p style="color: white;">.</p>
+				<p style="color: white;">.</p>
+				<p style="color: white;">.</p>
+				<p style="color: white;">.</p>
+				<p style="color: white;">.</p>
+				<p style="color: white;">.</p>
+				<p style="color: white;">.</p>
+				<p style="color: white;">.</p>
+				<p style="color: white;">.</p>
+				<p style="color: white;">.</p>
+				<p style="color: white;">.</p>
+			</div>
+
+			<h5>Filter by Rating:</h5>
+			<div class="filter-rating">
+				<select id="rating-filter" style="border-color: orange;">
+					<option value="all" {{#if (eq rating 'all' )}}selected{{/if}}>All Ratings</option>
+					<option value="4" {{#if (eq rating '4' )}}selected{{/if}}>4 Stars & Above</option>
+					<option value="3" {{#if (eq rating '3' )}}selected{{/if}}>3 Stars & Above</option>
+					<option value="2" {{#if (eq rating '2' )}}selected{{/if}}>2 Stars & Above</option>
+					<option value="1" {{#if (eq rating '1' )}}selected{{/if}}>1 Star & Above</option>
+				</select>
+			</div>
+			<script>
+				// Event Handlers
+				document.getElementById('filter-price-button').addEventListener('click', () => {
+					const minPrice = document.getElementById('min-price').value || 0;
+					const maxPrice = document.getElementById('max-price').value || 10000;
+					applyFilters(`/filtered?minPrice=${minPrice}&maxPrice=${maxPrice}`);
+				});
+
+				document.getElementById('category-filter').addEventListener('change', (e) => {
+					const category = e.target.value;
+					applyFilters(`/filtered?category=${category}`);
+				});
+
+				document.getElementById('rating-filter').addEventListener('change', (e) => {
+					const rating = e.target.value;
+					applyFilters(`/filtered?rating=${rating}`);
+				});
+
+				function applyFilters(url) {
+					window.location.href = url; // Redirect to the filtered URL
+				}
+			</script>
+
+
 		</div>
 
+		</div>
+		</div>
+
+		</div>
+
+		<div>
+			<div class="main-content">
+				<div class="container mt-5">
+					<!-- Search Heading -->
+					<h3>Our Products</h3>
+					<!-- Product Cards -->
+					<div class="container mt-5">
+						<h5>{{#if query}}Results for "{{query}}"{{else}}All Products{{/if}}</h5>
+						<form action="/search" method="get" id="searchForm">
+							<div class="input-group mb-3" style="max-width: 1500px;">
+								<input id="searchInput"
+									style="border-color: rgb(230, 152, 8); height:40px; border-radius:5px" type="text"
+									name="query" class="form-control" placeholder="Search for products..."
+									aria-label="Search for products" aria-describedby="button-search" value="{{query}}">
+								<!-- Pre-fill with the current query -->
+
+								<div class="input-group-append">
+									<button style="margin-left: 6px; border-radius:5px; width:100px"
+										class="btn btn-outline-warning" type="submit" id="button-search">
+										Search
+									</button>
+								</div>
+
+							</div>
+							<input type="text" id="message" name="message" style="width: 100%;border-width:0px;"
+								value="{{message}}"{{message}}>
+
+						</form>
+					</div>
+
+
+					<div class="row mt-4" style="background-color: rgb(255, 255, 255); border-radius:11px;">
+						{{#each products}}
+						<div class="col-md-4 mb-4">
+							<a href="/product/{{this._id}}" style="text-decoration: none; color: inherit;">
+								<div class="card" style="background-color: rgb(224, 224, 224); border-radius:11px;;
+">
+									<img src="/{{this.images.[0]}}" class="card-img-top" alt="{{this.name}}"
+										style="height: 200px; object-fit: cover;">
+									<div style="background-color: rgb(255, 255, 255);border-radius:6px;box-shadow;"
+										class="card-body">
+										<h5 class="card-title">{{this.name}}</h5>
+										<p class="card-text">Category: {{this.category.category}}</p>
+
+										<!-- Price and Discount -->
+										<p class="card-text">
+											Price: ₹<span>{{this.price}}</span>
+											{{#if this.discount}}
+											<span class="discount">(Discount: ₹{{this.discount}})</span>
+											{{/if}}
+										</p>
+
+										<!-- Stock Information -->
+										<p class="card-text stock">
+											Stock:
+											{{#if this.stock}}
+											<span style="color:green;" class="in-stock">{{this.stock}}
+												Available</span>
+											{{else}}
+											<span style="color: RED;" class="out-of-stock">Out of Stock</span>
+											{{/if}}
+										</p>
+
+										<!-- Ratings -->
+										<p class="card-text">
+											Rating:
+											<span class="rating">
+												{{#each this.rating}}★{{/each}}
+											</span>
+											<span class="review-count">({{this.reviews.length}} Reviews)</span>
+										</p>
+									</div>
+								</div>
+							</a>
+						</div>
+						{{/each}}
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<script>
+			document.addEventListener("DOMContentLoaded", () => {
+				const applyFilters = () => {
+					const showOutOfStock = document.querySelector(".filter-buttons a.active")?.getAttribute("data-value") || "";
+					const minPrice = document.getElementById("min-price").value || "";
+					const maxPrice = document.getElementById("max-price").value || "";
+					const category = document.getElementById("category-filter").value || "all";
+					const rating = document.getElementById("rating-filter").value || "all";
+
+					// Construct the query string
+					const queryParams = new URLSearchParams({
+						showOutOfStock,
+						minPrice,
+						maxPrice,
+						category,
+						rating,
+					});
+
+					// Reload page with updated query params
+					window.location.href = `/filtered?${queryParams.toString()}`;
+				};
+
+				// Event Listeners
+				document.querySelectorAll(".filter-buttons a").forEach(button => {
+					button.addEventListener("click", e => {
+						e.preventDefault();
+						document.querySelectorAll(".filter-buttons a").forEach(btn => btn.classList.remove("active"));
+						button.classList.add("active");
+						applyFilters();
+					});
+				});
+
+				document.getElementById("filter-price-button").addEventListener("click", applyFilters);
+
+				document.getElementById("category-filter").addEventListener("change", applyFilters);
+
+				document.getElementById("rating-filter").addEventListener("change", applyFilters);
+			});
+
+		</script>
 		<script>
 			function liveSearch() {
 				const query = document.getElementById('searchInput').value;
@@ -297,7 +480,7 @@
 			}
 		</script>
 		<!-- logo carousel -->
-		<div class="logo-carousel-section">
+		<div style="position: relative;" class="logo-carousel-section">
 			<div class="container">
 				<div class="row">
 					<div class="col-lg-12">
@@ -334,9 +517,8 @@
 			</div>
 		</div>
 		<!-- end logo carousel -->
-
 		<!-- footer -->
-		<div class="footer-area">
+		<div style="position: relative;" class="footer-area">
 			<div class="container">
 				<div class="row">
 					<div class="col-lg-3 col-md-6">
@@ -385,11 +567,12 @@
 		<!-- end footer -->
 
 		<!-- copyright -->
-		<div class="copyright">
+		<div style="position: relative;" class="copyright">
 			<div class="container">
 				<div class="row">
 					<div class="col-lg-6 col-md-12">
-						<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights
+						<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All
+							Rights
 							Reserved.<br>
 							Distributed By - <a href="https://themewagon.com/">Themewagon</a>
 						</p>
@@ -408,6 +591,33 @@
 				</div>
 			</div>
 		</div>
+		<script>
+			function updateCartQuantity(itemId, newQuantity) {
+    $.ajax({
+        url: `/cart/${itemId}/updateQuantity`,
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ quantity: newQuantity }),
+        success: function (response) {
+            // Update UI
+            $(`#quantity-${itemId}`).val(newQuantity); // Update quantity field
+            $(`#product-total-${itemId}`).text(response.itemTotal); // Update product total
+            $('#cart-subtotal').text(response.subtotal); // Update subtotal
+            $('#cart-shipping').text(response.shippingRate); // Update shipping
+            $('#cart-total').text(response.total); // Update total
+        },
+        error: function (xhr) {
+            const errorResponse = xhr.responseJSON;
+            alert(errorResponse?.error || "An error occurred.");
+        },
+    });
+}
+cartSchema.pre("save", function (next) {
+    this.total = this.quantity * this.price; // Calculate total
+    next();
+});
+
+		</script>
 		<!-- end copyright -->
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

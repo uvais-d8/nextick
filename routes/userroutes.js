@@ -18,7 +18,7 @@ router.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/signup" }),
   (req, res) => {
-    console.log("User authenticated, redirecting to home.");
+    console.log(".");
     res.redirect("/home");
   }
 );
@@ -46,7 +46,7 @@ router.get("/contact", userController.loadcontactpage);
 router.get("/profile", userController.loadprofile);
 router.get("/checkout", userController.checkout);
 router.post("/addtocart", userController.addtocart);
-router.get("/order/viewDetails/:orderId/:itemId",userController.loadViewDetails)
+router.get("/viewDetails/:orderId/:itemId",userController.loadViewDetails)
 
 
 router.delete("/cart/:id", userController.removecart);

@@ -35,7 +35,8 @@ const cartSchema = new mongoose.Schema({
     shippingrate: {
         type: Number,
         required: false,
-    }
+    },
+    
 });
 
 const cartmodal = mongoose.model("cart", cartSchema);

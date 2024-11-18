@@ -82,7 +82,7 @@
                             <form method="POST" action="/admin/updatestatus">
                                 <select
                                     style="color: rgb(255, 255, 255); background-color: rgba(26, 45, 120, 0.752); border-color: rgb(0, 0, 0)"
-                                    name="status" required onchange="this.form.submit()">
+                                    name="status" id="statusSelect" required onchange="this.form.submit()">
                                     <option value=""><b>{{status}}</b></option>
                                     <option value="scheduled"><b>Scheduled</b></option>
                                     <option value="pending"><b>Pending</b></option>
@@ -92,7 +92,52 @@
                                 </select>
                                 <input type="hidden" name="orderId" value="{{../_id}}">
                                 <input type="hidden" name="itemId" value="{{_id}}"> <!-- Pass itemId -->
+
+                                <!-- Hidden message for validation -->
+                                <div id="statusWarning"
+                                    style="color: rgba(30, 179, 0, 0.851); display: none;font-weight:500;font-size:10px ">
+                                    <b>PRODUCT DELIVERED</b>
+                                </div>
                             </form>
+
+                            <script>
+                                // Function to disable status change if the current status is 'Delivered'
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    var currentStatus = "{{status}}"; // Get the current status
+                                    var statusSelect = document.getElementById('statusSelect');
+                                    var statusWarning = document.getElementById('statusWarning');
+
+                                    // If current status is 'Delivered', disable the select and show warning
+                                    if (currentStatus === "delivered") {
+                                        statusSelect.disabled = true;
+                                        statusWarning.style.display = 'block';
+                                    }
+                                });
+                            </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                         </td>
                         <td>
                             <form action="/admin/orders/cancel" method="POST">
@@ -105,7 +150,7 @@
                                 </button>
                             </form>
                         </td>
-                    </tr>                      
+                    </tr>
 
                     {{/each}}
                     {{/each}}

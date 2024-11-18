@@ -16,7 +16,7 @@ router.get("/category",adminController.loadcategory)
 router.post("/block/:id",adminAuth.checksession,adminController.blockUser);
 router.post("/unblock/:id",adminAuth.checksession,adminController.unblockUser);
 
-router.post("/editproducts/:id",adminController.upload, adminController.editproducts)
+router.post("/editproducts",adminController.upload, adminController.editproducts)
 
 router.get("/editcategory/:id",adminAuth.checksession,adminController.loadeditcategory)
 router.post('/editcategory/:id', adminAuth.checksession,adminController.editcategory);

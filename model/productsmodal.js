@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const productsShema = new mongoose.Schema({
   description: {
     type: String,
@@ -25,19 +26,29 @@ const productsShema = new mongoose.Schema({
     required: true
   },
   category: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId, // Reference to the category model
+    ref: "category",
     required: true
   },
   stock: {
     type: Number,
-    default:0
+    default: 0
   },
   availability: {
     type: String,
-    enum: ["in-stock", "out-of-stock"]
-    // required: true
+    enum: ["in-stock", "out-of-stock"],
+    default: function () {
+      return this.stock > 0 ? "in-stock" : "out-of-stock";
+    }
   },
-
+  priceWithDiscount: {
+    type: Number,
+    default: function () {
+      return this.discount ? this.price - this.discount : this.price;
+    }
+  },
+  
+  
   price: {
     type: Number,
     required: true
@@ -58,6 +69,8 @@ const productsShema = new mongoose.Schema({
     }
   ]
 });
+
 productsShema.index({ name: "text", description: "text" });
+
 const products = mongoose.model("products", productsShema);
 module.exports = products;
