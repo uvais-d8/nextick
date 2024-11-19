@@ -78,66 +78,47 @@
                         <td>$ {{total}}</td>
                         <td>{{quantity}}</td>
                         <td>
-
                             <form method="POST" action="/admin/updatestatus">
-                                <select
-                                    style="color: rgb(255, 255, 255); background-color: rgba(26, 45, 120, 0.752); border-color: rgb(0, 0, 0)"
-                                    name="status" id="statusSelect" required onchange="this.form.submit()">
-                                    <option value=""><b>{{status}}</b></option>
-                                    <option value="scheduled"><b>Scheduled</b></option>
-                                    <option value="pending"><b>Pending</b></option>
-                                    <option value="delivered"><b>Delivered</b></option>
-                                    <option value="shipped"><b>Shipped</b></option>
-                                    <option value="canceled"><b>Canceled</b></option>
-                                </select>
-                                <input type="hidden" name="orderId" value="{{../_id}}">
-                                <input type="hidden" name="itemId" value="{{_id}}"> <!-- Pass itemId -->
-
-                                <!-- Hidden message for validation -->
-                                <div id="statusWarning"
-                                    style="color: rgba(30, 179, 0, 0.851); display: none;font-weight:500;font-size:10px ">
-                                    <b>PRODUCT DELIVERED</b>
-                                </div>
+                                <div class="status-container" data-status="{{status}}">
+                                    <select id="statusSelect{{_id}}" class="statusSelect"
+                                        style="color: rgb(255, 255, 255); background-color: rgba(26, 45, 120, 0.752); border-color: rgb(0, 0, 0)"
+                                        name="status" id="statusSelect" required onchange="this.form.submit()">
+                                        <option value=""><b>{{status}}</b></option>
+                                        <option value="scheduled"><b>Scheduled</b></option>
+                                        <option value="pending"><b>Pending</b></option>
+                                        <option value="delivered"><b>Delivered</b></option>
+                                        <option value="shipped"><b>Shipped</b></option>
+                                        <option value="canceled"><b>Canceled</b></option>
+                                    </select>
+                                    <input type="hidden" name="orderId" value="{{../_id}}">
+                                    <input type="hidden" name="itemId" value="{{_id}}"> <!-- Pass itemId -->
+                                    <p id="statusWarning{{_id}}" class="statusWarning"
+                                        style="display: none; color: rgb(255, 17, 0);font-size:13px">
+                                        can't change status<br>from delivered
+                                    </p>
                             </form>
 
                             <script>
                                 // Function to disable status change if the current status is 'Delivered'
                                 document.addEventListener('DOMContentLoaded', function () {
-                                    var currentStatus = "{{status}}"; // Get the current status
-                                    var statusSelect = document.getElementById('statusSelect');
-                                    var statusWarning = document.getElementById('statusWarning');
+                                    // Select all status containers (assuming a class is applied for grouping them)
+                                    var statusContainers = document.querySelectorAll('.status-container');
 
-                                    // If current status is 'Delivered', disable the select and show warning
-                                    if (currentStatus === "delivered") {
-                                        statusSelect.disabled = true;
-                                        statusWarning.style.display = 'block';
-                                    }
+                                    statusContainers.forEach(function (container) {
+                                        // Get the current status and select elements within each container
+                                        var currentStatus = container.getAttribute('data-status'); // Retrieve status from a data attribute
+                                        var statusSelect = container.querySelector('.statusSelect'); // Target select within this container
+                                        var statusWarning = container.querySelector('.statusWarning'); // Target warning within this container
+
+                                        // If current status is 'Delivered', disable the select and show warning
+                                        if (currentStatus === "delivered") {
+                                            statusSelect.disabled = true;
+                                            statusWarning.style.display = 'block';
+                                        }
+                                    });
                                 });
+
                             </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                         </td>
                         <td>
                             <form action="/admin/orders/cancel" method="POST">
@@ -145,9 +126,11 @@
                                 <input type="hidden" name="itemId" value="{{_id}}"> <!-- Pass itemId -->
                                 <button
                                     style="color:rgb(246, 246, 246); background-color: rgba(189, 4, 4, 0.93); height:40px; font-size:12px"
-                                    class="action-button unblock-button">
+                                    class="action-button unblock-button" {{#if (eq status "delivered"
+                                    )}}disabled{{/if}}>
                                     <b>CANCEL</b>
                                 </button>
+
                             </form>
                         </td>
                     </tr>

@@ -53,6 +53,8 @@ hbs.registerHelper('eq', (a, b) => {
 hbs.registerHelper('gt', (a, b) => {
   return a > b;
 });
+hbs.registerHelper('eq', (a, b) => a === b);
+hbs.registerHelper('or', (a, b) => a || b);
 
 // Registering the formatDate helper
 hbs.registerHelper('formatDate', (dateString) => {

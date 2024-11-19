@@ -62,15 +62,14 @@
 		}
 
 		.but {
-			color:#000000e4;
+			color: #000000e4;
 			background-color: rgba(215, 215, 215, 0.87);
 			border-width: 0px;
-			font-size: 14px;
+			font-size: 13px;
 			width: 100px;
 			height: 45px;
-			border-radius: 5px;
-			font-weight: bold;
-			margin-top: 10px;
+			border-radius: 4px;
+			font-weight: 500;
 
 		}
 
@@ -186,7 +185,6 @@
 		}
 
 		.section h2 {
-			margin-top: 0;
 			border-bottom: 2px solid var(--border-color);
 			padding-bottom: 0.5rem;
 			margin-bottom: 1rem;
@@ -240,7 +238,6 @@
 			color: #fff;
 			text-align: center;
 			padding: 1rem 0;
-			margin-top: 2rem;
 		}
 
 		@media (max-width: 768px) {
@@ -254,9 +251,6 @@
 				align-items: flex-start;
 			}
 
-			.order-status {
-				margin-top: 0.5rem;
-			}
 		}
 
 		.top-header-area .main-menu a {
@@ -460,43 +454,51 @@
 	</div>
 
 	<!-- Orders History Section -->
-	<main class="section order-history">
-		<h3>Orders History</h3>
+	<main style="background-color: rgba(240, 237, 237, 0.523);" class="section order-history">
+		<h1 style="margin-left: 10%;">Orders History</h1>
 		{{#each orders}}
 		{{#each items}}
-		<div class="order">
+		<div>
+			<div style="width: 1200px;margin-left:10%;background-color:white"  class="order">
 			<div class="order-details">
 				<div class="client-avatar">
 					<img src="/{{this.images}}" alt="{{this.name}}">
 				</div>
 				<h4>{{name}}</h4>
-				<p><b>Order Date: {{../time}}</b></p>
+				<p>{{description}}</p>
+				<p><b>Order Date: {{formatDate ../time}}</b></p>
 				<p><b>Amount: ${{total}}</b></p>
 				<p><b>Quantity: {{quantity}}</b></p>
 
 			</div>
 			<div class="order-actions">
-				<button class="but" style="color: rgba(0, 0, 0, 0.884); background-color:rgb(209, 208, 208)" data-toggle="modal" data-target="#cancelModal"
-					onclick="setItemToCancel('{{../_id}}', '{{this._id}}', 'item')">Cancel Item</button>
+				{{#if (or (eq this.status "canceled") (eq this.status "delivered"))}}
+				<!-- Do nothing or render a placeholder if needed -->
+				{{else}}
+				<button class="but" style="color: rgba(0, 0, 0, 0.884); background-color:rgb(209, 208, 208)"
+					data-toggle="modal" data-target="#cancelModal"
+					onclick="setItemToCancel('{{../_id}}', '{{this._id}}', 'item')">
+					Cancel Item
+				</button>
+				{{/if}}
+
+
 				<p style="margin-left: -20px;margin-top:20px; font-size:13px;font-weight:bold;color:rgb(88, 88, 88)">
 					Item Status: {{status}}</p>
-				
-			<form method="get" action="/viewDetails/{{../_id}}/{{this._id}}">
-				<button class="but" type="submit"
-					style="color:rgba(26, 26, 26, 0.898);font-size:15px;background-color:rgba(255, 255, 255, 0.911);margin-top:-10px;">view
-					more</button>
-			</form>
+
+				<form method="get" action="/viewDetails/{{../_id}}/{{this._id}}">
+					<button class="but" type="submit"
+						style="color:rgba(26, 26, 26, 0.898);font-size:15px;background-color:rgba(255, 255, 255, 0.911);height: 30px;border-width:0px">view
+						more</button>
+				</form>
 			</div>
 		</div>
+		
+	
 		{{/each}}
-		<div style="margin-top:-20px;">
-			{{!-- <button style="margin-left:82%" class="but" data-toggle="modal" data-target="#cancelModal"
-				onclick="setItemToCancel('{{this._id}}', null, 'order')">Cancel Order</button> --}}
-		</div>
-		<div style="margin-top: -10px;">
 			<form method="get" action="/ordertracking/{{id}}">
 				<button class="but" type="submit"
-					style="margin-left:91%;color:black;font-size:15px;margin-top:-10px;">view
+					style="margin-left:85%;color:black;font-size:15px;height:30px;">view
 					Order</button>
 			</form>
 		</div> {{/each}}

@@ -190,7 +190,6 @@
 									<td class="product-total">{{multiply this.price this.quantity}}</td>
 
 								</tr>
-<tr><input type="text" value="{{errormessage}}"></tr>
 								{{/each}}
 							</tbody>
 
@@ -349,6 +348,27 @@
 	<!-- end copyright -->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
+		$.ajax({
+        url: `/cart/${productId}/updateQuantity`, // Adjust URL based on your actual backend route
+        method: 'POST',
+        data: { quantity: quantity },  // Send the quantity as data
+        success: function(response) {
+            // If the backend responds with success, update the cart totals on the page
+            updateCartDetails(response);
+        },
+        error: function(xhr, status, error) {
+            const errorMessage = xhr.responseJSON && xhr.responseJSON.errorMessage;
+            if (errorMessage) {
+                // Show SweetAlert with the error message from backend
+                Swal.fire({
+                    title: 'Error!',
+                    text: errorMessage,  // Display error message from backend
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+    });
 		$(document).on('click', '.remove-cart-item', function (event) {
 			event.preventDefault(); // Prevent the default form submission
 

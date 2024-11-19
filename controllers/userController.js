@@ -11,29 +11,11 @@ const Address = require("../model/addressmodal");
 const Orders = require("../model/ordersmodal");
 const { OAuth2Client } = require("google-auth-library");
 const { Console, profile, log, error } = require("console");
-const Category = require("../model/categorymodal")
+const Category = require("../model/categorymodal");
 const client = new OAuth2Client(
   "458432719748-rs94fgenq571a8jfulbls7dk9i10mv2o.apps.googleusercontent.com"
 );
 require("dotenv").config();
-
-const searchProducts = async (req, res) => {
-  try {
-    const query = req.query.query || "";
-    // Perform the search using a case-insensitive regex search
-    const products = await Products.find({ name: new RegExp(query, "i") });
-
-    // Check if the request is for AJAX (live search)
-    if (req.xhr) {
-      return res.json(products);
-    } else {
-      res.render("products", { products, query });
-    }
-  } catch (error) {
-    console.error("Error searching for products:", error);
-    res.status(500).send("Error searching for products");
-  }
-};
 const updateUsername = async (req, res) => {
   try {
     const { userId, newName, newPhone } = req.body;
@@ -74,7 +56,7 @@ const updateUsername = async (req, res) => {
   }
 };
 const editaddress = async (req, res) => {
-  const { id } = req.params; 
+  const { id } = req.params;
   console.log("id is:", id);
 
   const {
@@ -103,7 +85,7 @@ const editaddress = async (req, res) => {
         pincode,
         district
       },
-      { new: true } 
+      { new: true }
     );
 
     console.log(updatedAddress);
@@ -123,8 +105,7 @@ const loadViewDetails = async (req, res) => {
   try {
     const { orderId, itemId } = req.params;
     console.log(orderId, itemId);
-    const order = await Orders
-      .findById(orderId)
+    const order = await Orders.findById(orderId)
       .populate("userId") // Populate the user
       .populate("items.productId"); // Populate the productId for each item in the items array
     console.log(order.items);
@@ -153,7 +134,6 @@ const ordertracking = async (req, res) => {
       console.log("Order not found");
       return res.render("orders");
     }
-
 
     // Render the order details on the tracking page
     res.render("ordertracking", { order, product });
@@ -370,7 +350,7 @@ const updateCartQuantity = async (req, res) => {
   try {
     const { id } = req.params;
     const { quantity } = req.body;
-    // Update quantity in the cart model
+   
     await Cart.findByIdAndUpdate(id, { quantity });
     res.redirect("/cart");
   } catch (error) {
@@ -378,7 +358,6 @@ const updateCartQuantity = async (req, res) => {
     res.redirect("/cart");
   }
 };
-
 // const updateCartQuantity= async (req, res) => {
 //     try {
 //         const { quantity } = req.body; // Get new quantity from the request body
@@ -418,11 +397,12 @@ const updateCartQuantity = async (req, res) => {
 //         res.status(500).json({ error: "Server error" });
 //     }
 // };
+
 const loadaddress = async (req, res) => {
   try {
     const userId = req.session.userId;
     console.log(userId);
-    const addresses = await addressmodel.find({});
+    const addresses = await Address.find({});
     res.render("address", { addresses });
   } catch (error) {
     console.log(error);
@@ -464,7 +444,7 @@ const addaddress = async (req, res) => {
     }
 
     // Check if an address with the same email already exists
-    const existingaddress = await addressmodel.findOne({ email });
+    const existingaddress = await Address.findOne({ email });
     if (existingaddress) {
       console.log("User already exists");
       req.session.message = "Address with this email already exists.";
@@ -472,7 +452,7 @@ const addaddress = async (req, res) => {
     }
 
     // Create a new address document
-    const newaddress = new addressmodel({
+    const newaddress = new Address({
       user: userId,
       firstname,
       lastname,
@@ -513,12 +493,13 @@ const loadprofile = async (req, res) => {
     }
 
     // Format the date of account creation
-    const createdAt = user.registered.toLocaleDateString("en-GB");
-
-    const addresses = await addressmodel.findOne({ user: userId });
+    const createdAt = user.registered.toLocaleDateString("en-GB"); 
+    const orders = await Orders.find({});
+    const address = await Address.findOne({isDefault:true});
 
     // Render profile page with user info, formatted date, and address if found
-    res.render("profile", { user, createdAt, addresses });
+    console.log(orders)
+    res.render("profile", { user, createdAt, address ,orders });
   } catch (error) {
     console.error("Error loading profile:", error);
     res.redirect("/login"); // Redirect on error
@@ -602,8 +583,7 @@ const registerUser = async (req, res) => {
 };
 // Load OTP Verification Page
 const loadVerifyOtp = async (req, res) => {
-  res.render("verification", {
-  });
+  res.render("verification", {});
   req.session.message = null;
 };
 // Verify OTP and create user
@@ -633,7 +613,7 @@ const verifyOtp = async (req, res) => {
       res.redirect("/home");
     } else {
       req.session.message = "Invalid OTP. Please try again.";
-      res.render("verification",{message:"Invalid OTP. Please try again"});
+      res.render("verification", { message: "Invalid OTP. Please try again" });
     }
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
@@ -755,8 +735,7 @@ const loadlogin = (req, res) => {
 const loadhome = async (req, res) => {
   try {
     // Fetch products and populate their category data
-    const products = await Products
-      .find({ islisted: true }) // Fetch only listed products
+    const products = await Products.find({ islisted: true }) // Fetch only listed products
       .populate({
         path: "category", // Reference the category field
         match: { islisted: true }, // Only include listed categories
@@ -764,7 +743,7 @@ const loadhome = async (req, res) => {
       });
 
     // Filter out products where the category is not listed
-    const filteredProducts = products.filter((product) => product.category);
+    const filteredProducts = products.filter(product => product.category);
 
     // Render the home page with filtered products
     res.render("home", { products: filteredProducts });
@@ -781,28 +760,31 @@ const loadproducts = async (req, res) => {
 
     // Step 2: Update product categories with ObjectId if necessary
     for (const product of products) {
-      const category = categories.find((cat) => cat.category === product.category);
+      const category = categories.find(
+        cat => cat.category === product.category
+      );
 
       if (category) {
         product.category = category._id; // Update product with category's ObjectId
         await product.save();
-        console.log(`Updated product ${product.name} with category ${category.category}`);
+        console.log(
+          `Updated product ${product.name} with category ${category.category}`
+        );
       } else {
-        console.warn(`No matching category found for product ${product.name}`);
+        // console.warn(`No matching category found for product ${product.name}`);
       }
     }
 
     // Step 3: Fetch listed products with their populated category data
-    const listedProducts = await Products
-      .find({ islisted: true }) // Only fetch listed products
+    const listedProducts = await Products.find({ islisted: true }) // Only fetch listed products
       .populate({
         path: "category", // Populate the 'category' field
         match: { islisted: true }, // Only include listed categories
-        select: "category brand islisted", // Select relevant fields
+        select: "category brand islisted" // Select relevant fields
       });
 
     // Step 4: Filter products that have a valid category (category exists)
-    const filteredProducts = listedProducts.filter((product) => product.category);
+    const filteredProducts = listedProducts.filter(product => product.category);
 
     if (filteredProducts.length === 0) {
       console.warn("No products with valid listed categories found.");
@@ -810,8 +792,7 @@ const loadproducts = async (req, res) => {
     }
 
     // Step 5: Render the products page with filtered products
-    res.render("products", { products: filteredProducts ,categories } );
-
+    res.render("products", { products: filteredProducts, categories });
   } catch (error) {
     console.error("Error fetching and updating products:", error);
     res.status(500).send("Failed to fetch or update products.");
@@ -874,6 +855,7 @@ const loadcartpage = async (req, res) => {
     res.render("cart", {
       carts,
       subtotal,
+      description,
       shippingRate,
       total
       // or any other data you need to pass to the template
@@ -921,7 +903,7 @@ const removeorder = async (req, res) => {
       orderId,
       console.log(orderId),
       { status: "canceled" },
-      { new: true },
+      { new: true }
     );
 
     res
@@ -939,37 +921,64 @@ const removeItem = async (req, res) => {
     const order = await Orders.findOne({ _id: orderId, "items._id": itemId });
 
     if (!order) {
-      return res.status(404).json({ success: false, message: "Order or item not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Order or item not found." });
     }
 
     // Find the specific item within the order
-    const item = order.items.find(item => item._id.toString() === itemId);
+    const item = order.items.find((item) => item._id.toString() === itemId);
+
+    if (!item) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Item not found in the order." });
+    }
 
     // Check if the item's status is 'delivered'
     if (item.status === "delivered") {
-      return res.status(400).json({ success: false, message: "Item is already delivered and cannot be canceled." });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Item is already delivered and cannot be canceled.",
+        });
     }
 
     // Update the item status to "canceled"
-    const updatedOrder = await Orders.findOneAndUpdate(
+    await Orders.findOneAndUpdate(
       { _id: orderId, "items._id": itemId },
-      { $set: { "items.$.status": "canceled" } },
-      { new: true }
+      { $set: { "items.$.status": "canceled" } }
     );
 
-    res.status(200).json({ success: true, message: "Item canceled successfully." });
+    // Update the stock of the product
+    const product = await Products.findById(item.productId); // Assuming `productId` is stored in the item
+    if (product) {
+      product.stock += item.quantity;
+      await product.save();
+    } else {
+      return res
+        .status(404)
+        .json({ success: false, message: "Associated product not found." });
+    }
+
+    res
+      .status(200)
+      .json({ success: true, message: "Item canceled successfully." });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Error canceling item." });
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error canceling item." });
   }
 };
 const removeaddress = async (req, res) => {
   const { id } = req.params;
   console.log({ id });
   try {
-    await addressmodel.findByIdAndDelete(id);
+    await Address.findByIdAndDelete(id);
     console.log(id);
-    const address = await addressmodel.find({});
+    const address = await Address.find({});
     console.log("address deleted successfully");
     res.redirect("/address");
   } catch (error) {
@@ -1018,8 +1027,6 @@ const addtocart = async (req, res) => {
       // Update the quantity and total if the item already exists in the cart
       const newQuantity = parseInt(existingItem.quantity) + parseInt(quantity);
 
-      // Check again if the combined quantity exceeds available stock
-
       if (newQuantity > 10) {
         return res.render("singleproduct", {
           message: "Not enough storage in your cart",
@@ -1038,6 +1045,7 @@ const addtocart = async (req, res) => {
         price: product.price,
         quantity,
         total: itemTotal,
+        description: product.description,
         image: product.images[0]
       });
       await cartItem.save();
@@ -1059,8 +1067,8 @@ const checkout = async (req, res) => {
     // console.log(req.session.userId);
     // console.log(userId);
 
-    const alladdresses = await addressmodel.find({});
-    const addresses = await addressmodel.findOne({ user: userId });
+    const alladdresses = await Address.find({});
+    const addresses = await Address.findOne({ user: userId });
 
     const carts = await Cart.find({});
     const subtotal = carts.reduce(
@@ -1081,6 +1089,173 @@ const checkout = async (req, res) => {
   } catch (error) {
     console.error(error); // Log any errors for debugging
     res.status(500).send("Internal Server Error"); // Send a response in case of error
+  }
+};
+const changepassword = async (req, res) => {
+  const { currentPassword, newpassword, confirmpassword } = req.body;
+  const userId = req.session.userId;
+
+  const user = await User.findOne({ _id: userId });
+  const address = await Address.findOne({ isDefault:true });
+  const orders=await Orders.find({})
+
+
+  if (!req.session.userId) {
+    req.session.message =
+      "Session expired. Please start the reset process again.";
+    return res.redirect("/profile");
+  }
+
+  try {
+    if (!user) {
+      req.session.message = "User not found.";
+      return res.redirect("/profile");
+    }
+
+    const isPasswordMatch = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
+    if(!currentPassword && newPassword == null ){
+      res.redirect("/profile")
+    }
+    if (!isPasswordMatch) {
+      return res.render("profile", {
+        user,
+        address,
+        orders,
+        message: "Current password is incorrect."
+      });
+    }
+
+    if (newpassword !== confirmpassword) {
+      return res.render("profile", {
+        user,
+        address,
+        orders,
+        message: "New password and confirm password do not match."
+      });
+    }
+
+    if (newpassword.length < 6) {
+      return res.render("profile", {
+        user,
+        address,
+        orders,
+        message: "Password must be at least 6 characters long."
+      });
+    }
+
+    const uppercasePattern = /[A-Z]/;
+    const lowercasePattern = /[a-z]/;
+    const numberPattern = /[0-9]/;
+
+    if (
+      !uppercasePattern.test(newpassword) ||
+      !lowercasePattern.test(newpassword) ||
+      !numberPattern.test(newpassword)
+    ) {
+      return res.render("profile", {
+        user,
+        address,
+        orders,
+        message:
+          "Password must contain at least one uppercase letter, one lowercase letter, and one number."
+      });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newpassword, salt);
+    user.password = hashedPassword;
+    await user.save();
+
+    // Set success message in session
+    req.session.successMessage = "Password updated successfully.";
+    res.render("profile", {
+      user,
+      address,
+      orders,
+      success: "Password updated successfully"
+    });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    req.session.message = "Failed to update password. Please try again.";
+    res.redirect("/profile");
+  }
+};
+const resendotpemail = async (req, res) => {
+  console.log(req.session.userEmail);
+  try {
+    const email = req.session.userEmail;
+    console.log("hioii");
+    console.log(req.session.userEmail);
+    if (!email) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email not found in session" });
+    }
+    const otp = generateOtp();
+    req.session.userOTP = otp;
+    const emailSent = await sendVerificationEmail(email, otp);
+    if (emailSent) {
+      console.log(otp);
+      console.log("success to resend OTP");
+    } else {
+      console.log("Failed to resend OTP, please try again");
+      res.status(500).json({
+        success: false,
+        message: "Failed to resend OTP, please try again"
+      });
+    }
+  } catch (error) {
+    console.error("Error resending OTP", error);
+    return res.render("passwordverification");
+
+    // return res
+    //   .status(500)
+    //   .json({ success: false, message: "Server error, please try again" });
+  }
+};
+const updateDefaultAddress = async (req, res) => {
+  const { addressId } = req.body;
+  const userId = req.session.userId ; // Assuming you're using authentication to identify the user.
+
+  try {
+    // Set all addresses' isDefault to false
+    await Address.updateMany({ userId }, { $set: { isDefault: false } });
+
+    // Update the clicked address to be default
+    const updatedAddress = await Address.findByIdAndUpdate(
+      addressId,
+      { isDefault: true },
+      { new: true }
+    );
+
+    if (updatedAddress) {
+      res.status(200).json({ success: true, message: "Default address updated" });
+    } else {
+      res.status(404).json({ success: false, message: "Address not found" });
+    }
+  } catch (error) {
+    console.error("Error updating default address:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+const searchProducts = async (req, res) => {
+  try {
+    const query = req.query.query || "";
+    // Perform the search using a case-insensitive regex search
+    const products = await Products.find({ name: new RegExp(query, "i") });
+
+    // Check if the request is for AJAX (live search)
+    if (req.xhr) {
+      return res.json(products);
+    } else {
+      res.render("products", { products, query });
+    }
+  } catch (error) {
+    console.error("Error searching for products:", error);
+    res.status(500).send("Error searching for products");
   }
 };
 // Advanced search with sorting options
@@ -1168,133 +1343,27 @@ const filtered = async (req, res) => {
     }
 
     // Fetch products with applied filters
-    const products = await Products
-      .find(filter)
-      .populate("category", "category brand"); // Populate category details
+    const products = await Products.find(filter).populate(
+      "category",
+      "category brand"
+    ); // Populate category details
 
     // Render the products page with filtered data
-    res.render("products", { products, showOutOfStock, minPrice, maxPrice, category, rating });
+    res.render("products", {
+      products,
+      showOutOfStock,
+      minPrice,
+      maxPrice,
+      category,
+      rating
+    });
   } catch (error) {
     console.error("Error fetching filtered products:", error);
     res.status(500).send("Error fetching products.");
   }
 };
-const changepassword = async (req, res) => {
-  const { currentPassword, newpassword, confirmpassword } = req.body;
-  const userId = req.session.userId;
-
-  const user = await User.findOne({ _id: userId });
-  const addresses = await addressmodel.findOne({ user: userId });
-
-  if (!req.session.userId) {
-    req.session.message =
-      "Session expired. Please start the reset process again.";
-    return res.redirect("/profile");
-  }
-
-  try {
-    if (!user) {
-      req.session.message = "User not found.";
-      return res.redirect("/profile");
-    }
-
-    const isPasswordMatch = await bcrypt.compare(
-      currentPassword,
-      user.password
-    );
-    if (!isPasswordMatch) {
-      return res.render("profile", {
-        user,
-        addresses,
-        message: "Current password is incorrect."
-      });
-    }
-
-    if (newpassword !== confirmpassword) {
-      return res.render("profile", {
-        user,
-        addresses,
-        message: "New password and confirm password do not match."
-      });
-    }
-
-    if (newpassword.length < 6) {
-      return res.render("profile", {
-        user,
-        addresses,
-        message: "Password must be at least 6 characters long."
-      });
-    }
-
-    const uppercasePattern = /[A-Z]/;
-    const lowercasePattern = /[a-z]/;
-    const numberPattern = /[0-9]/;
-
-    if (
-      !uppercasePattern.test(newpassword) ||
-      !lowercasePattern.test(newpassword) ||
-      !numberPattern.test(newpassword)
-    ) {
-      return res.render("profile", {
-        user,
-        addresses,
-        message:
-          "Password must contain at least one uppercase letter, one lowercase letter, and one number."
-      });
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newpassword, salt);
-    user.password = hashedPassword;
-    await user.save();
-
-    // Set success message in session
-    req.session.successMessage = "Password updated successfully.";
-    res.render("profile", {
-      user,
-      addresses,
-      success: "Password updated successfully"
-    });
-  } catch (error) {
-    console.error("Error changing password:", error);
-    req.session.message = "Failed to update password. Please try again.";
-    res.redirect("/profile");
-  }
-};
-const resendotpemail = async (req, res) => {
-  console.log(req.session.userEmail);
-  try {
-    const email = req.session.userEmail;
-    console.log("hioii");
-    console.log(req.session.userEmail);
-    if (!email) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email not found in session" });
-    }
-    const otp = generateOtp();
-    req.session.userOTP = otp;
-    const emailSent = await sendVerificationEmail(email, otp);
-    if (emailSent) {
-      console.log(otp);
-      console.log("success to resend OTP");
-    } else {
-      console.log("Failed to resend OTP, please try again");
-      res.status(500).json({
-        success: false,
-        message: "Failed to resend OTP, please try again"
-      });
-    }
-  } catch (error) {
-    console.error("Error resending OTP", error);
-    return res.render("passwordverification");
-
-    // return res
-    //   .status(500)
-    //   .json({ success: false, message: "Server error, please try again" });
-  }
-};
 module.exports = {
+  updateDefaultAddress,
   searchProducts,
   resendotpemail,
   ordertracking,

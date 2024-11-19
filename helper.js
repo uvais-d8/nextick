@@ -17,3 +17,10 @@ Handlebars.registerHelper('calculateTotal', (carts) => {
     return subtotal + shipping;
 });
 
+// Register a Handlebars helper for date formatting
+Handlebars.registerHelper('formatDate', function (dateString) {
+    const date = new Date(dateString); // Convert to Date object
+    // Format as dd/mm/yyyy
+    const formattedDate = date.toLocaleDateString("en-GB");
+    return formattedDate;
+});
