@@ -855,7 +855,6 @@ const loadcartpage = async (req, res) => {
     res.render("cart", {
       carts,
       subtotal,
-      description,
       shippingRate,
       total
       // or any other data you need to pass to the template
@@ -1045,7 +1044,6 @@ const addtocart = async (req, res) => {
         price: product.price,
         quantity,
         total: itemTotal,
-        description: product.description,
         image: product.images[0]
       });
       await cartItem.save();
@@ -1264,9 +1262,7 @@ const advancedSearch = async (req, res) => {
     const { query, sort } = req.query; // Extract search term and sort option
 
     // Define the search filter based on the query
-    const searchFilter = query
-      ? { $text: { $search: query } } // Using MongoDB's text search for name/description fields
-      : {};
+    const searchFilter = query ? { $text: { $search: query } } : {};// Using MongoDB's text search for name/description fields
 
     // Define sorting criteria based on the selected sort option
     let sortOption = {};
@@ -1331,7 +1327,7 @@ const filtered = async (req, res) => {
 
     // Category filter
     if (category && category !== "all") {
-      const categoryDoc = await Categoory.findOne({ category }); // Find the category by name
+      const categoryDoc = await Category.findOne({ category }); // Find the category by name
       if (categoryDoc) {
         filter.category = categoryDoc._id; // Use ObjectId for filtering
       }

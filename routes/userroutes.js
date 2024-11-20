@@ -57,7 +57,6 @@ router.patch("/orders/:orderId", userController.removeorder);
 router.patch("/orders/:orderId/items/:itemId", userController.removeItem); 
 
  
-router.post("/updateDefaultAddress", userController.updateDefaultAddress);
 
 router.delete("/address/:id", userController.removeaddress);
 router.get("/forgotpassword", userController.loadforgotpassword);

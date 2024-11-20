@@ -76,7 +76,8 @@
 		.but:hover {
 			background-color: #c27f11;
 			border-radius: 5px;
-			font-color: rgb(255, 145, 0);
+			color: white,
+				font-color: rgb(255, 145, 0);
 
 		}
 
@@ -316,6 +317,37 @@
 		.order-remove button:hover {
 			background-color: #db7217;
 		}
+
+		.gradient-button-blue {
+			color: rgb(37, 53, 226);
+			font-weight: bold;
+			font-size: 15px;
+		}
+
+		.gradient-button-green {
+			color: rgb(0, 255, 4);
+			font-weight: bold;
+			font-size: 15px;
+		}
+
+		.gradient-button-yellow {
+			color: rgb(236, 232, 14);
+			font-weight: bold;
+			font-size: 15px;
+		}
+
+		.gradient-button-purple {
+			color: rgb(229, 42, 235);
+			font-weight: bold;
+			font-size: 15px;
+
+		}
+
+		.gradient-button-red {
+			color: rgb(236, 14, 14);
+			font-weight: bold;
+			font-size: 15px;
+		}
 	</style>
 </head>
 
@@ -459,48 +491,59 @@
 		{{#each orders}}
 		{{#each items}}
 		<div>
-			<div style="width: 1200px;margin-left:10%;background-color:white"  class="order">
-			<div class="order-details">
-				<div class="client-avatar">
-					<img src="/{{this.images}}" alt="{{this.name}}">
+			<div style="width: 1200px;margin-left:10%;background-color:white" class="order">
+				<div class="order-details">
+					<div class="client-avatar">
+						<img src="/{{this.images}}" alt="{{this.name}}">
+					</div>
+					<h4>{{name}}</h4>
+					<p>{{description}}</p>
+					<p>Amount:<b style="font-weight: 501;color:rgb(49, 49, 49)"> $ {{total}}</p>
+
+					<p>Quantity: <b>{{quantity}}</b></p>
+					<p style="color: rgb(48, 47, 47);">Order Date: <b>{{formatDate ../time}}</b></p>
+
+					<div class="order-actions">
+						{{#if (or (eq this.status "canceled") (eq this.status "delivered"))}}
+						<!-- Do nothing or render a placeholder if needed -->
+						{{else}}
+						<button class="but"
+							style="color: rgba(0, 0, 0, 0.884);height:35px; background-color:rgb(209, 208, 208);margin-left:100%"
+							data-toggle="modal" data-target="#cancelModal"
+							onclick="setItemToCancel('{{../_id}}', '{{this._id}}', 'item')">
+							Cancel Item
+						</button>
+						{{/if}}
+					</div>
+					<form method="get" action="/viewDetails/{{../_id}}/{{this._id}}">
+						<button class="but" type="submit"
+							style="color:rgba(26, 26, 26, 0.898);font-size:14px;background-color:rgba(255, 255, 255, 0.911);height: 30px;border-width:0px;margin-left:100%;font-weight:bold">view
+							more</button>
+					</form>
 				</div>
-				<h4>{{name}}</h4>
-				<p>{{description}}</p>
-				<p><b>Order Date: {{formatDate ../time}}</b></p>
-				<p><b>Amount: ${{total}}</b></p>
-				<p><b>Quantity: {{quantity}}</b></p>
-
-			</div>
-			<div class="order-actions">
-				{{#if (or (eq this.status "canceled") (eq this.status "delivered"))}}
-				<!-- Do nothing or render a placeholder if needed -->
-				{{else}}
-				<button class="but" style="color: rgba(0, 0, 0, 0.884); background-color:rgb(209, 208, 208)"
-					data-toggle="modal" data-target="#cancelModal"
-					onclick="setItemToCancel('{{../_id}}', '{{this._id}}', 'item')">
-					Cancel Item
-				</button>
-				{{/if}}
 
 
-				<p style="margin-left: -20px;margin-top:20px; font-size:13px;font-weight:bold;color:rgb(88, 88, 88)">
-					Item Status: {{status}}</p>
+				<p>status :<span style="width: 100px;" class="
+        {{#if (eq status 'scheduled')}}gradient-button-blue{{else}}
+        {{#if (eq status 'pending')}}gradient-button-yellow{{else}}
+        {{#if (eq status 'canceled')}}gradient-button-red{{else}}
+        {{#if (eq status 'delivered')}}gradient-button-green{{else}}
+        {{#if (eq status 'shipped')}}gradient-button-purple{{/if}}
+        {{/if}}{{/if}}{{/if}}{{/if}}">
+						{{status}}
+					</span></p>
 
-				<form method="get" action="/viewDetails/{{../_id}}/{{this._id}}">
-					<button class="but" type="submit"
-						style="color:rgba(26, 26, 26, 0.898);font-size:15px;background-color:rgba(255, 255, 255, 0.911);height: 30px;border-width:0px">view
-						more</button>
-				</form>
+
 			</div>
 		</div>
-		
-	
+
+
 		{{/each}}
-			<form method="get" action="/ordertracking/{{id}}">
-				<button class="but" type="submit"
-					style="margin-left:85%;color:black;font-size:15px;height:30px;">view
-					Order</button>
-			</form>
+		<form method="get" action="/ordertracking/{{id}}">
+			<button class="but" type="submit"
+				style="margin-left:85%;font-size:13px;height:30px;border-color:black;border-width:1px">view
+				Order</button>
+		</form>
 		</div> {{/each}}
 	</main>
 
@@ -662,10 +705,13 @@
 				// Cancel entire order
 				url = `/orders/${orderToCancelId}`;
 				requestBody = { status: 'canceled' };
+				location.reload()
 			} else if (cancelType === 'item') {
 				// Cancel a specific item in the order
 				url = `/orders/${orderToCancelId}/items/${itemToCancelId}`;
 				requestBody = { status: 'canceled' };
+				location.reload()
+
 			}
 
 			// Send PATCH request to update status to "cancelled"
@@ -688,10 +734,11 @@
 					console.error('Error updating status:', error);
 					document.getElementById('errorMessage').style.display = 'block';
 				});
-
+			window.location.reload();
 			// Close modal after action
 			$('#cancelModal').modal('hide');
 		});
+
 
 	</script>
 

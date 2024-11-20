@@ -299,30 +299,6 @@
 					<option value="1" {{#if (eq rating '1' )}}selected{{/if}}>1 Star & Above</option>
 				</select>
 			</div>
-			<script>
-				// Event Handlers
-				document.getElementById('filter-price-button').addEventListener('click', () => {
-					const minPrice = document.getElementById('min-price').value || 0;
-					const maxPrice = document.getElementById('max-price').value || 10000;
-					applyFilters(`/filtered?minPrice=${minPrice}&maxPrice=${maxPrice}`);
-				});
-
-				document.getElementById('category-filter').addEventListener('change', (e) => {
-					const category = e.target.value;
-					applyFilters(`/filtered?category=${category}`);
-				});
-
-				document.getElementById('rating-filter').addEventListener('change', (e) => {
-					const rating = e.target.value;
-					applyFilters(`/filtered?rating=${rating}`);
-				});
-
-				function applyFilters(url) {
-					window.location.href = url; // Redirect to the filtered URL
-				}
-			</script>
-
-
 		</div>
 
 		</div>
@@ -478,6 +454,28 @@
 					document.getElementById('live-search-results').innerHTML = '';
 				}
 			}
+		</script>
+		<script>
+				// Event Handlers
+				document.getElementById('filter-price-button').addEventListener('click', () => {
+					const minPrice = document.getElementById('min-price').value || 0;
+					const maxPrice = document.getElementById('max-price').value || 10000;
+					applyFilters(`/filtered?minPrice=${minPrice}&maxPrice=${maxPrice}`);
+				});
+
+				document.getElementById('category-filter').addEventListener('change', (e) => {
+					const category = e.target.value;
+					applyFilters(`/filtered?category=${category}`);
+				});
+
+				document.getElementById('rating-filter').addEventListener('change', (e) => {
+					const rating = e.target.value;
+					applyFilters(`/filtered?rating=${rating}`);
+				});
+
+				function applyFilters(url) {
+					window.location.href = url; // Redirect to the filtered URL
+				}
 		</script>
 		<!-- logo carousel -->
 		<div style="position: relative;" class="logo-carousel-section">
