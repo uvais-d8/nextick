@@ -4,7 +4,7 @@ const ordersSchema = new mongoose.Schema({
   
     userId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"users",
+        ref:"user",
         require:true
     },
     islisted:{
@@ -32,10 +32,6 @@ const ordersSchema = new mongoose.Schema({
         stock:{
             type:Number
         },
-        name: {
-            type: String,
-            required: true
-        },
         price: {
             type: Number,
             required: true
@@ -44,10 +40,6 @@ const ordersSchema = new mongoose.Schema({
             type: Number,
             required: true,
             min: 1
-        },
-        stock: {
-            type: Number,
-            required: false,
         },
         total: {
             type: Number,
@@ -104,7 +96,7 @@ const ordersSchema = new mongoose.Schema({
         type: Date, 
         default: Date.now 
     }
-});
+},{ timestamps: true });
 
 // Calculate the total order amount based on items' total values
 ordersSchema.pre('save', function(next) {

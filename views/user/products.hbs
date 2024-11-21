@@ -231,14 +231,14 @@
 			<!-- Sorting Options -->
 			<h5>Sort By:</h5>
 			<div class="sort-buttons">
-				<a href="/sorted?sort=popularity">Popularity</a>
-				<a href="/sorted?sort=priceLowToHigh">Price: Low to High</a>
-				<a href="/sorted?sort=priceHighToLow">Price: High to Low</a>
-				<a href="/sorted?sort=averageRating">Average Rating</a>
-				<a href="/sorted?sort=featured">Featured</a>
-				<a href="/sorted?sort=newArrivals">New Arrivals</a>
-				<a href="/sorted?sort=aToZ">A-Z</a>
-				<a href="/sorted?sort=zToA">Z-A</a>
+				<a href="/advancedSearch?sort=popularity">Popularity</a>
+				<a href="/advancedSearch?sort=priceLowToHigh">Price: Low to High</a>
+				<a href="/advancedSearch?sort=priceHighToLow">Price: High to Low</a>
+				<a href="/advancedSearch?sort=averageRating">Average Rating</a>
+				<a href="/advancedSearch?sort=featured">Featured</a>
+				<a href="/advancedSearch?sort=newArrivals">New Arrivals</a>
+				<a href="/advancedSearch?sort=aToZ">A-Z</a>
+				<a href="/advancedSearch?sort=zToA">Z-A</a>
 
 
 			</div>
@@ -314,7 +314,7 @@
 					<!-- Product Cards -->
 					<div class="container mt-5">
 						<h5>{{#if query}}Results for "{{query}}"{{else}}All Products{{/if}}</h5>
-						<form action="/search" method="get" id="searchForm">
+						<form action="/advancedSearch" method="get" id="searchForm">
 							<div class="input-group mb-3" style="max-width: 1500px;">
 								<input id="searchInput"
 									style="border-color: rgb(230, 152, 8); height:40px; border-radius:5px" type="text"
@@ -387,53 +387,107 @@
 
 			</div>
 		</div>
-		<script>
-			document.addEventListener("DOMContentLoaded", () => {
-				const applyFilters = () => {
-					const showOutOfStock = document.querySelector(".filter-buttons a.active")?.getAttribute("data-value") || "";
-					const minPrice = document.getElementById("min-price").value || "";
-					const maxPrice = document.getElementById("max-price").value || "";
-					const category = document.getElementById("category-filter").value || "all";
-					const rating = document.getElementById("rating-filter").value || "all";
+			<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const applyFilters = () => {
+      const query = document.getElementById("searchInput")?.value || ""; // Preserve search query
+      const showOutOfStock = document.querySelector(".filter-buttons a.active")?.getAttribute("data-value") || "";
+      const minPrice = document.getElementById("min-price").value || "";
+      const maxPrice = document.getElementById("max-price").value || "";
+      const category = document.getElementById("category-filter").value || "all";
+      const rating = document.getElementById("rating-filter").value || "all";
+      const sort = document.getElementById("sort-filter").value || "";
 
-					// Construct the query string
-					const queryParams = new URLSearchParams({
-						showOutOfStock,
-						minPrice,
-						maxPrice,
-						category,
-						rating,
-					});
+      // Construct query string
+      const queryParams = new URLSearchParams({
+        query,
+        showOutOfStock,
+        minPrice,
+        maxPrice,
+        category,
+        rating,
+        sort,
+      });
 
-					// Reload page with updated query params
-					window.location.href = `/filtered?${queryParams.toString()}`;
-				};
+      // Reload page with updated query params
+      window.location.href = `/advancedSearch?${queryParams.toString()}`;
+    };
 
-				// Event Listeners
-				document.querySelectorAll(".filter-buttons a").forEach(button => {
-					button.addEventListener("click", e => {
-						e.preventDefault();
-						document.querySelectorAll(".filter-buttons a").forEach(btn => btn.classList.remove("active"));
-						button.classList.add("active");
-						applyFilters();
-					});
-				});
+   document.querySelectorAll(".filter-buttons a").forEach((button) => {
+  button.addEventListener("click", (e) => {
+    e.preventDefault();
+    // Remove 'active' from all buttons and set it for the clicked one
+    document.querySelectorAll(".filter-buttons a").forEach((btn) => btn.classList.remove("active"));
+    button.classList.add("active");
 
-				document.getElementById("filter-price-button").addEventListener("click", applyFilters);
+    // Get the value and apply the filter
+    const showOutOfStock = button.getAttribute("data-value");
+    const queryParams = new URLSearchParams(window.location.search);
+    queryParams.set("showOutOfStock", showOutOfStock);
+    window.location.search = queryParams.toString(); // Reload with new query params
+  });
+});document.getElementById("filter-price-button").addEventListener("click", () => {
+  const minPrice = document.getElementById("min-price").value;
+  const maxPrice = document.getElementById("max-price").value;
 
-				document.getElementById("category-filter").addEventListener("change", applyFilters);
+  // Update query parameters
+  const queryParams = new URLSearchParams(window.location.search);
+  if (minPrice) queryParams.set("minPrice", minPrice);
+  else queryParams.delete("minPrice");
+  if (maxPrice) queryParams.set("maxPrice", maxPrice);
+  else queryParams.delete("maxPrice");
 
-				document.getElementById("rating-filter").addEventListener("change", applyFilters);
-			});
+  window.location.search = queryParams.toString(); // Reload with updated parameters
+});
+document.getElementById("category-filter").addEventListener("change", (e) => {
+  const category = e.target.value;
 
-		</script>
+  // Update query parameters
+  const queryParams = new URLSearchParams(window.location.search);
+  queryParams.set("category", category);
+  window.location.search = queryParams.toString(); // Reload with updated parameters
+});
+
+
+    document.getElementById("filter-price-button").addEventListener("click", applyFilters);
+    document.getElementById("category-filter").addEventListener("change", applyFilters);
+    document.getElementById("rating-filter").addEventListener("change", applyFilters);
+    document.getElementById("sort-filter").addEventListener("change", applyFilters);
+
+    // Live Search
+    document.getElementById("searchInput").addEventListener("input", () => {
+      const query = document.getElementById("searchInput").value;
+      if (query.length > 0) {
+        fetch(`/advancedSearch?query=${query}`)
+          .then(response => response.json())
+          .then(data => {
+            const resultsDiv = document.getElementById("live-search-results");
+            resultsDiv.innerHTML = "";
+
+            if (data.length > 0) {
+              data.forEach(item => {
+                const resultItem = document.createElement("div");
+                resultItem.textContent = item.name; // Assuming item has a 'name' property
+                resultsDiv.appendChild(resultItem);
+              });
+            } else {
+              resultsDiv.innerHTML = "No results found.";
+            }
+          })
+          .catch(error => console.error("Error fetching search results:", error));
+      } else {
+        document.getElementById("live-search-results").innerHTML = "";
+      }
+    });
+  });
+</script>
 		<script>
 			function liveSearch() {
 				const query = document.getElementById('searchInput').value;
 
 				// Only perform search if there's at least one character
 				if (query.length > 0) {
-					fetch(`/search?query=${query}`)
+					fetch(`/advancedSearch?query=${query}`)
 						.then(response => response.json())  // Assuming the server responds with JSON
 						.then(data => {
 							const resultsDiv = document.getElementById('live-search-results');
@@ -460,17 +514,17 @@
 				document.getElementById('filter-price-button').addEventListener('click', () => {
 					const minPrice = document.getElementById('min-price').value || 0;
 					const maxPrice = document.getElementById('max-price').value || 10000;
-					applyFilters(`/filtered?minPrice=${minPrice}&maxPrice=${maxPrice}`);
+					applyFilters(`/advancedSearch?minPrice=${minPrice}&maxPrice=${maxPrice}`);
 				});
 
 				document.getElementById('category-filter').addEventListener('change', (e) => {
 					const category = e.target.value;
-					applyFilters(`/filtered?category=${category}`);
+					applyFilters(`/advancedSearch?category=${category}`);
 				});
 
 				document.getElementById('rating-filter').addEventListener('change', (e) => {
 					const rating = e.target.value;
-					applyFilters(`/filtered?rating=${rating}`);
+					applyFilters(`/advancedSearch?rating=${rating}`);
 				});
 
 				function applyFilters(url) {
@@ -589,33 +643,7 @@
 				</div>
 			</div>
 		</div>
-		<script>
-			function updateCartQuantity(itemId, newQuantity) {
-    $.ajax({
-        url: `/cart/${itemId}/updateQuantity`,
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({ quantity: newQuantity }),
-        success: function (response) {
-            // Update UI
-            $(`#quantity-${itemId}`).val(newQuantity); // Update quantity field
-            $(`#product-total-${itemId}`).text(response.itemTotal); // Update product total
-            $('#cart-subtotal').text(response.subtotal); // Update subtotal
-            $('#cart-shipping').text(response.shippingRate); // Update shipping
-            $('#cart-total').text(response.total); // Update total
-        },
-        error: function (xhr) {
-            const errorResponse = xhr.responseJSON;
-            alert(errorResponse?.error || "An error occurred.");
-        },
-    });
-}
-cartSchema.pre("save", function (next) {
-    this.total = this.quantity * this.price; // Calculate total
-    next();
-});
-
-		</script>
+		
 		<!-- end copyright -->
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

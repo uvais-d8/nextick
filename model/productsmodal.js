@@ -47,11 +47,9 @@ const productsShema = new mongoose.Schema({
       return this.discount ? this.price - this.discount : this.price;
     }
   },
-  
-  
   price: {
     type: Number,
-    required: true
+    required: false
   },
   islisted: {
     type: Boolean,
@@ -74,3 +72,11 @@ productsShema.index({ name: "text", description: "text" });
 
 const products = mongoose.model("products", productsShema);
 module.exports = products;
+
+
+
+
+
+
+
+

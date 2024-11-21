@@ -277,11 +277,12 @@
 								<tbody class="order-details-body">
 									{{#each carts}}
 									<tr>
-										<td class="item-name">{{this.name}}</td>
-										<td class="item-price">{{this.price}}</td>
+										<td class="item-id" hidden >{{this.productId._id}}</td>
+										<td class="item-name">{{this.productId.name}}</td>
+										<td class="item-price">{{this.productId.price}}</td>
 										<td class="item-quantity">{{this.quantity}}</td>
-										<td class="item-total">{{multiply this.price this.quantity}}</td>
-										<td class="item-image" hidden>{{this.image}}</td>
+										<td class="item-total">{{multiply this.productId.price this.quantity}}</td>
+										<td class="item-image" hidden >{{this.productId.images}}</td>
 									</tr>
 									{{/each}}
 								</tbody>
@@ -450,6 +451,7 @@
 			const paymentMethod = form.elements['paymentMethod'].value;
 
 			const items = Array.from(document.querySelectorAll('.order-details-body tr')).map(row => ({
+				productId: row.querySelector('.item-id').textContent.trim(),
 				name: row.querySelector('.item-name').textContent,
 				price: parseFloat(row.querySelector('.item-price').textContent),
 				quantity: parseInt(row.querySelector('.item-quantity').textContent),

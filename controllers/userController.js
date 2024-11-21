@@ -12,6 +12,7 @@ const Orders = require("../model/ordersmodal");
 const { OAuth2Client } = require("google-auth-library");
 const { Console, profile, log, error } = require("console");
 const Category = require("../model/categorymodal");
+const addresses = require("../model/addressmodal");
 const client = new OAuth2Client(
   "458432719748-rs94fgenq571a8jfulbls7dk9i10mv2o.apps.googleusercontent.com"
 );
@@ -53,6 +54,39 @@ const updateUsername = async (req, res) => {
     return res
       .status(500)
       .json({ error: "Server error. Please try again later." });
+  }
+};  
+const getProductStock = async (req, res) => {
+  const { cartId } = req.params;
+  try {
+      const cartItem = await Cart.findById(cartId).populate('productId');
+      if (!cartItem) {
+          return res.status(404).json({ success: false, message: "Cart item not found" });
+      }
+
+      const product = cartItem.productId;
+      return res.status(200).json({ stock: product.stock });
+  } catch (error) {
+      console.error("Error fetching product stock:", error);
+      res.status(500).json({ success: false, message: "Failed to fetch stock" });
+  }
+};
+const updateQuantity = async (req, res) => {
+  const { id } = req.params;
+  const { quantity } = req.body;
+
+  if (quantity < 1 || quantity > 11) {
+    return res.status(400).json({ message: "Invalid quantity" });
+  }
+
+  try {
+    await Cart.updateOne({ _id: id }, { $set: { quantity } });
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error updating cart quantity:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error updating quantity." });
   }
 };
 const editaddress = async (req, res) => {
@@ -120,7 +154,7 @@ const loadViewDetails = async (req, res) => {
     res.render("orderDetails", { order, product });
   } catch (error) {
     res.status(500).send(error);
-    console.log("error");
+    console.log("error: ", error);
   }
 };
 const ordertracking = async (req, res) => {
@@ -130,6 +164,8 @@ const ordertracking = async (req, res) => {
     const order = await Orders.findById(id);
     const product = await Products.findById(id);
     console.log(order);
+    console.log(product);
+
     if (!order) {
       console.log("Order not found");
       return res.render("orders");
@@ -285,8 +321,7 @@ const placeOrder = async (req, res) => {
     email,
     phone,
     paymentMethod,
-    items,
-    total,
+    items, // Assume items contain product IDs and quantities
     pincode,
     district,
     firstname,
@@ -299,14 +334,31 @@ const placeOrder = async (req, res) => {
   const userId = req.session.userId;
 
   try {
-    // Prepare items for order
-    const cartItems = items.map(item => ({
-      name: item.name,
-      price: item.price,
-      quantity: item.quantity,
-      total: item.price * item.quantity,
-      images: item.images
-    }));
+    // Fetch product details for each item
+    const cartItems = await Promise.all(
+      items.map(async item => {
+        const product = await Products.findById(item.productId);
+
+        if (!product) {
+          throw new Error(`Product with ID ${item.productId} not found.`);
+        }
+
+        // Check if stock is sufficient
+        if (item.quantity > product.stock) {
+          throw new Error(`Insufficient stock for product: ${product.name}`);
+        }
+
+        return {
+          productId: product._id,
+          price: product.price,
+          quantity: item.quantity,
+          total: product.price * item.quantity
+        };
+      })
+    );
+
+    // Calculate order total
+    const orderTotal = cartItems.reduce((sum, item) => sum + item.total, 0);
 
     // Create a new order
     const newOrder = new Orders({
@@ -324,80 +376,47 @@ const placeOrder = async (req, res) => {
         pincode,
         district
       },
-      orderTotal: total
+      orderTotal
     });
 
     // Save the order to the database
     await newOrder.save();
 
+    // Decrease the stock for each product
+    await Promise.all(
+      cartItems.map(async item => {
+        await Products.findByIdAndUpdate(
+          item.productId,
+          { $inc: { stock: -item.quantity } }, // Decrease stock
+          { new: true } // Return updated product
+        );
+      })
+    );
+
     // Clear the user's cart from the database
-    await Cart.deleteMany({ userId });
-    return res.json({ success: true });
+    await Cart.deleteMany({});
+
+    res.json({ success: true });
   } catch (error) {
     console.error("Error placing order:", error);
-    res.status(500).json({ success: false, message: "Failed to place order." });
+    res.status(500).json({ success: false, message: error.message || "Failed to place order." });
   }
 };
 const loadorderss = async (req, res) => {
   try {
-    const orders = await Orders.find({});
+    const orders = await Orders.find({ userId: req.session.userId })
+      .populate({
+        path: "items.productId",
+        select: "name images description price"
+      })
+      .sort({ createdAt: -1 }); // Sort orders by creation date, descending
+
     res.render("orders", { orders });
   } catch (error) {
-    console.log("Error during load orders", error);
+    console.error("Error during load orders", error);
+    res.status(500).send("Failed to load orders.");
   }
 };
-const updateCartQuantity = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { quantity } = req.body;
-   
-    await Cart.findByIdAndUpdate(id, { quantity });
-    res.redirect("/cart");
-  } catch (error) {
-    console.error("Error updating quantity:", error);
-    res.redirect("/cart");
-  }
-};
-// const updateCartQuantity= async (req, res) => {
-//     try {
-//         const { quantity } = req.body; // Get new quantity from the request body
-//         const cartItem = await Cart.findById(req.params.id);
-
-//         if (!cartItem) {
-//             return res.status(404).json({ error: "Cart item not found" });
-//         }
-
-//         const product = await Products.findById(cartItem.productId);
-
-//         // Ensure quantity doesn't exceed stock
-//         if (quantity > product.stock) {
-//             return res.status(400).json({ error: "Exceeds available stock" });
-//         }
-
-//         // Update quantity and recalculate total
-//         cartItem.quantity = quantity;
-//         cartItem.total = quantity * cartItem.price;
-
-//         await cartItem.save();
-
-//         // Calculate updated subtotal for the cart
-//         const cartItems = await Cart.find();
-//         const subtotal = cartItems.reduce((acc, item) => acc + item.total, 0);
-//         const shippingRate = 50; // Example shipping rate
-//         const total = subtotal + shippingRate;
-
-//         res.json({
-//             itemTotal: cartItem.total,
-//             subtotal,
-//             shippingRate,
-//             total,
-//         });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ error: "Server error" });
-//     }
-// };
-
 const loadaddress = async (req, res) => {
   try {
     const userId = req.session.userId;
@@ -410,7 +429,14 @@ const loadaddress = async (req, res) => {
 };
 const addaddress = async (req, res) => {
   const userId = req.session.userId;
-  console.log(req.session.userId);
+  const addresses =await Address.find({})
+  if (!userId) {
+    req.session.message = "User not authenticated.";
+    return res.redirect("/login"); // Or redirect to login
+  }
+
+  console.log(userId);
+
   try {
     // Destructure values from req.body
     const {
@@ -424,35 +450,37 @@ const addaddress = async (req, res) => {
       pincode,
       district
     } = req.body;
-    console.log(req.body);
 
-    // Validation for required fields (uncomment if needed)
-    if (
-      !firstname ||
-      !lastname ||
-      !address ||
-      !phone ||
-      !email ||
-      !place ||
-      !city ||
-      !pincode ||
-      !district
-    ) {
+    // Validation for required fields
+    if (!firstname || !lastname || !address || !phone || !email || !place || !city || !pincode || !district) {
       req.session.message = "All fields are required.";
       console.log("All fields are required.");
-      return res.redirect("/address");
+      return res.render("address",{addresses,message:"All fields are required"});
     }
 
-    // Check if an address with the same email already exists
-    const existingaddress = await Address.findOne({ email });
-    if (existingaddress) {
-      console.log("User already exists");
-      req.session.message = "Address with this email already exists.";
-      return res.redirect("/address");
+    // Email validation (basic check for a valid email)
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      req.session.message = "Invalid email format.";
+      return res.render("address",{addresses,message:"Invalid email format"});
+    }
+
+    // Phone validation (basic check for valid phone)
+    const phoneRegex = /^[0-9]{10}$/; // Modify based on your country
+    if (!phoneRegex.test(phone)) {
+      req.session.message = "Invalid phone number.";
+      return res.render("address",{addresses,message:"Invalid phone number"});
+    }
+
+    // Check if an address with the same email already exists for this user
+    const existingAddress = await Address.findOne({ user: userId, email });
+    if (existingAddress) {
+      req.session.message = "Address with this email already exists for this user.";
+      return res.render("address",{addresses,message:"Address with this email already exists for this user"});
     }
 
     // Create a new address document
-    const newaddress = new Address({
+    const newAddress = new Address({
       user: userId,
       firstname,
       lastname,
@@ -465,13 +493,19 @@ const addaddress = async (req, res) => {
       district
     });
 
-    // Save the document to the database
-    await newaddress.save();
-    console.log("New address saved:", newaddress);
+    // If the user has no existing address, mark this as the default address
+    const userAddresses = await Address.find({ user: userId });
+    if (userAddresses.length === 0) {
+      newAddress.isDefault = true; // Mark the first address as the default
+    }
+
+    // Save the address document to the database
+    await newAddress.save();
+    console.log("New address saved:", newAddress);
 
     // Set a success message and redirect
     req.session.message = "Address added successfully!";
-    req.session.useraddress = newaddress;
+    req.session.useraddress = newAddress; // You may want to update this based on your needs
 
     res.redirect("/address");
   } catch (error) {
@@ -493,13 +527,16 @@ const loadprofile = async (req, res) => {
     }
 
     // Format the date of account creation
-    const createdAt = user.registered.toLocaleDateString("en-GB"); 
-    const orders = await Orders.find({});
-    const address = await Address.findOne({isDefault:true});
+    const createdAt = user.registered.toLocaleDateString("en-GB");
+    const orders = await Orders.find({}) .populate({
+      path: "items.productId",
+      select: "name price images",
+    })
+    const address = await Address.findOne({ isDefault: true });
 
     // Render profile page with user info, formatted date, and address if found
-    console.log(orders)
-    res.render("profile", { user, createdAt, address ,orders });
+    console.log(orders);
+    res.render("profile", { user, createdAt, address, orders });
   } catch (error) {
     console.error("Error loading profile:", error);
     res.redirect("/login"); // Redirect on error
@@ -832,24 +869,33 @@ const loadcontactpage = (req, res) => {
 };
 const loadcartpage = async (req, res) => {
   try {
-    const carts = await Cart.find({}); // Assuming this returns an array of cart items
+    const userId = req.session.userId;
 
-    // Calculate totals (if needed)
-    const subtotal = carts.reduce(
-      (acc, carts) => acc + carts.price * carts.quantity,
-      0
-    );
+    const carts = await Cart.find({ user: userId }).populate("productId");
 
-    // const shippingRate = carts.reduce((acc, cart) => acc + (cart.shippingrate || 0), 0);
-    const shippingRate = 50;
-    const total = subtotal + shippingRate;
-
+    // If no items in the cart, render the page with a message
     if (!carts || carts.length === 0) {
-      // Render the "cart" page with the "no products" message
       return res.render("cart", {
         message: "There are no items in your cart at the moment"
       });
     }
+
+    // Calculate totals (if needed)
+    const subtotal = carts.reduce(
+      (acc, cart) => acc + cart.productId.price * cart.quantity,
+      0
+    );
+
+    const shippingRate = 50; // Static shipping rate for now
+    const total = subtotal + shippingRate;
+
+    // Add the first image of each product to the cart items
+    carts.forEach(cart => {
+      if (cart.productId.images && cart.productId.images.length > 0) {
+        cart.firstImage = cart.productId.images[0]; // Store the first image
+      }
+    });
+    console.log(carts);
 
     // If cart has items, render the cart with the products
     res.render("cart", {
@@ -857,7 +903,6 @@ const loadcartpage = async (req, res) => {
       subtotal,
       shippingRate,
       total
-      // or any other data you need to pass to the template
     });
   } catch (error) {
     console.log("Error occurred during cart page:", error);
@@ -874,15 +919,6 @@ const removecart = async (req, res) => {
       return res.redirect("/cart");
     }
 
-    const { productId, quantity } = cartItem;
-
-    // Step 2: Update the product's quantity in the products database
-    await Products.findByIdAndUpdate(
-      productId,
-      { $inc: { stock: quantity } },
-      { new: true }
-    );
-
     // Step 3: Delete the cart item
     await Cart.findByIdAndDelete(id);
 
@@ -895,21 +931,40 @@ const removecart = async (req, res) => {
 };
 const removeorder = async (req, res) => {
   const { orderId } = req.params;
-  console.log("helloo");
+
   try {
-    // Find the order and update the status to "canceled"
-    const updatedOrder = await Orders.findByIdAndUpdate(
-      orderId,
-      console.log(orderId),
-      { status: "canceled" },
-      { new: true }
+    // Find the order to get its items
+    const order = await Orders.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found." });
+    }
+
+    // Check if the order is already canceled
+    if (order.status === "canceled") {
+      return res
+        .status(400)
+        .json({ success: false, message: "Order is already canceled." });
+    }
+
+    // Iterate through order items and update product stock
+    await Promise.all(
+      order.items.map(async (item) => {
+        const product = await Products.findById(item.productId);
+        if (product) {
+          product.stock += item.quantity;
+          await product.save();
+        }
+      })
     );
 
-    res
-      .status(200)
-      .json({ success: true, message: "Order canceled successfully." });
+    // Update the order status to "canceled"
+    order.status = "canceled";
+    await order.save();
+
+    res.status(200).json({ success: true, message: "Order canceled successfully and stock updated." });
   } catch (error) {
-    console.log(error);
+    console.error("Error canceling order:", error);
     res.status(500).json({ success: false, message: "Error canceling order." });
   }
 };
@@ -926,7 +981,7 @@ const removeItem = async (req, res) => {
     }
 
     // Find the specific item within the order
-    const item = order.items.find((item) => item._id.toString() === itemId);
+    const item = order.items.find(item => item._id.toString() === itemId);
 
     if (!item) {
       return res
@@ -936,12 +991,10 @@ const removeItem = async (req, res) => {
 
     // Check if the item's status is 'delivered'
     if (item.status === "delivered") {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Item is already delivered and cannot be canceled.",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Item is already delivered and cannot be canceled."
+      });
     }
 
     // Update the item status to "canceled"
@@ -966,9 +1019,7 @@ const removeItem = async (req, res) => {
       .json({ success: true, message: "Item canceled successfully." });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ success: false, message: "Error canceling item." });
+    res.status(500).json({ success: false, message: "Error canceling item." });
   }
 };
 const removeaddress = async (req, res) => {
@@ -986,9 +1037,16 @@ const removeaddress = async (req, res) => {
   }
 };
 const addtocart = async (req, res) => {
+  const userId = req.session.userId; // Assume `req.user` contains the authenticated user's details
+
+  // Early redirect if no user is authenticated
+  if (!userId) {
+    return res.redirect("/login");
+  }
+
   try {
     const { quantity, productId } = req.body;
-
+    console.log(quantity);
     if (!quantity || !productId) {
       return res
         .status(400)
@@ -997,18 +1055,12 @@ const addtocart = async (req, res) => {
 
     // Find the product in the database
     const product = await Products.findById(productId);
+    console.log("hellooo ::", product.stock);
     if (!product) {
-      return res.status(404).json({ error: "Product not found" });
+      return res.render("singleproduct", { message: "Product not found" });
     }
 
-    // Check if there is enough stock
-    if (product.stock < quantity) {
-      return res.render("singleproduct", {
-        message: "Not enough stock available for this quantity",
-        product, // Pass the product ID to the view
-        product
-      });
-    }
+    // Check if the product is listed and has enough stock
     if (!product.islisted) {
       return res.render("singleproduct", {
         message: "This product is currently unavailable",
@@ -1016,20 +1068,27 @@ const addtocart = async (req, res) => {
       });
     }
 
-    // Calculate total for the new quantity
-    const itemTotal = product.price * quantity;
+    if (product.stock < quantity) {
+      console.log("stock : ", product.stock);
+      console.log(quantity);
 
-    // Check if the product already exists in the cart
-    const existingItem = await Cart.findOne({ productId });
+      return res.render("singleproduct", {
+        message: "Not enough stock available for this quantity",
+        product
+      });
+    }
+
+    // Check if the product already exists in the user's cart
+    const existingItem = await Cart.findOne({ user: userId, productId });
 
     if (existingItem) {
-      // Update the quantity and total if the item already exists in the cart
-      const newQuantity = parseInt(existingItem.quantity) + parseInt(quantity);
+      // Update the quantity and total
+      const newQuantity = existingItem.quantity + parseInt(quantity);
 
+      // Ensure the new quantity doesn't exceed stock or a maximum limit
       if (newQuantity > 10) {
         return res.render("singleproduct", {
-          message: "Not enough storage in your cart",
-          product, // Pass the product ID to the view
+          message: "Cannot add more than 10 units of this item to your cart",
           product
         });
       }
@@ -1037,25 +1096,24 @@ const addtocart = async (req, res) => {
       existingItem.total = newQuantity * product.price;
       await existingItem.save();
     } else {
-      // Create a new cart item if it doesn't exist in the cart
+      // Create a new cart item
       const cartItem = new Cart({
+        user: userId,
         productId,
-        name: product.name,
-        price: product.price,
         quantity,
-        total: itemTotal,
-        image: product.images[0]
+        total: product.price * quantity
       });
       await cartItem.save();
     }
 
     // Decrease stock of the product after adding to cart
-    product.stock -= quantity;
+    // product.stock -= quantity;
     await product.save();
 
+    // Redirect to the cart page after successfully adding the product
     res.redirect("/cart");
   } catch (error) {
-    console.error(error);
+    console.error("Error adding product to cart:", error);
     res.status(500).json({ error: "Failed to add product to cart" });
   }
 };
@@ -1066,14 +1124,18 @@ const checkout = async (req, res) => {
     // console.log(userId);
 
     const alladdresses = await Address.find({});
-    const addresses = await Address.findOne({ user: userId });
+    const addresses = await Address.findOne({});
 
-    const carts = await Cart.find({});
+    const carts = await Cart.find({ user: userId })
+      .populate("user")
+      .populate("productId");
+    // Calculate totals (if needed)
     const subtotal = carts.reduce(
-      (acc, cart) => acc + cart.price * cart.quantity,
+      (acc, cart) => acc + cart.productId.price * cart.quantity,
       0
     );
-    const shippingRate = 50;
+
+    const shippingRate = 50; // Static shipping rate for now
     const total = subtotal + shippingRate;
 
     res.render("checkout", {
@@ -1094,9 +1156,8 @@ const changepassword = async (req, res) => {
   const userId = req.session.userId;
 
   const user = await User.findOne({ _id: userId });
-  const address = await Address.findOne({ isDefault:true });
-  const orders=await Orders.find({})
-
+  const address = await Address.findOne({ isDefault: true });
+  const orders = await Orders.find({});
 
   if (!req.session.userId) {
     req.session.message =
@@ -1114,8 +1175,8 @@ const changepassword = async (req, res) => {
       currentPassword,
       user.password
     );
-    if(!currentPassword && newPassword == null ){
-      res.redirect("/profile")
+    if (!currentPassword && newPassword == null) {
+      res.redirect("/profile");
     }
     if (!isPasswordMatch) {
       return res.render("profile", {
@@ -1216,7 +1277,7 @@ const resendotpemail = async (req, res) => {
 };
 const updateDefaultAddress = async (req, res) => {
   const { addressId } = req.body;
-  const userId = req.session.userId ; // Assuming you're using authentication to identify the user.
+  const userId = req.session.userId; // Assuming you're using authentication to identify the user.
 
   try {
     // Set all addresses' isDefault to false
@@ -1230,7 +1291,9 @@ const updateDefaultAddress = async (req, res) => {
     );
 
     if (updatedAddress) {
-      res.status(200).json({ success: true, message: "Default address updated" });
+      res
+        .status(200)
+        .json({ success: true, message: "Default address updated" });
     } else {
       res.status(404).json({ success: false, message: "Address not found" });
     }
@@ -1239,34 +1302,53 @@ const updateDefaultAddress = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-const searchProducts = async (req, res) => {
-  try {
-    const query = req.query.query || "";
-    // Perform the search using a case-insensitive regex search
-    const products = await Products.find({ name: new RegExp(query, "i") });
-
-    // Check if the request is for AJAX (live search)
-    if (req.xhr) {
-      return res.json(products);
-    } else {
-      res.render("products", { products, query });
-    }
-  } catch (error) {
-    console.error("Error searching for products:", error);
-    res.status(500).send("Error searching for products");
-  }
-};
-// Advanced search with sorting options
 const advancedSearch = async (req, res) => {
   try {
-    const { query, sort } = req.query; // Extract search term and sort option
+    const {
+      query = "",
+      sort,
+      showOutOfStock,
+      minPrice,
+      maxPrice,
+      category,
+      rating
+    } = req.query;
 
-    // Define the search filter based on the query
-    const searchFilter = query ? { $text: { $search: query } } : {};// Using MongoDB's text search for name/description fields
+    // Base filter: only fetch listed products
+    let filter = { islisted: true };
 
-    // Define sorting criteria based on the selected sort option
+    // Text search (use regex for partial and case-insensitive match)
+    if (query) {
+      filter.name = { $regex: query, $options: "i" }; // Match query anywhere in the name (case-insensitive)
+    }
+
+    // Stock filter
+    if (showOutOfStock === "exclude") {
+      filter.stock = { $gt: 0 }; // Products with stock greater than 0
+    }
+
+    // Price filter
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = parseFloat(minPrice);
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+    }
+
+    // Category filter
+    if (category && category !== "all") {
+      const categoryDoc = await Category.findOne({ category }); // Find the category by name
+      if (categoryDoc) {
+        filter.category = categoryDoc._id; // Use ObjectId for filtering
+      }
+    }
+
+    // Rating filter
+    if (rating && rating !== "all") {
+      filter.averageRating = { $gte: parseFloat(rating) };
+    }
+
+    // Define sorting criteria
     let sortOption = {};
-
     switch (sort) {
       case "popularity":
         sortOption = { popularity: -1 }; // Assuming 'popularity' field tracks product popularity
@@ -1296,75 +1378,36 @@ const advancedSearch = async (req, res) => {
         sortOption = {}; // Default to no sorting if no valid option is selected
     }
 
-    // Fetch and sort products based on filter and sorting options
-    const products = await Products.find(searchFilter).sort(sortOption);
+    // Fetch products with filters, search, and sorting
+    const products = await Products.find(filter)
+      .sort(sortOption)
+      .collation({ locale: "en", strength: 2 }) // Case-insensitive sorting
+      .populate("category", "category brand");
 
-    // Render the results to the template with products, query, and sort for user reference
-    res.render("products", { products, query, sort });
+    if (req.xhr) {
+      return res.json(products); // AJAX response for live search
+    } else {
+      res.render("products", {
+        products,
+        query,
+        sort,
+        showOutOfStock,
+        minPrice,
+        maxPrice,
+        category,
+        rating
+      });
+    }
   } catch (error) {
     console.error("Error during advanced search:", error);
-    res.status(500).json({ message: "Server error during advanced search" });
-  }
-};
-const filtered = async (req, res) => {
-  try {
-    const { showOutOfStock, minPrice, maxPrice, category, rating } = req.query;
-
-    // Build the filter object dynamically
-    let filter = { islisted: true }; // Only fetch listed products
-
-    // Stock filter
-    if (showOutOfStock === "exclude") {
-      filter.stock = { $gt: 0 }; // Products with stock greater than 0
-    }
-
-    // Price filter
-    if (minPrice || maxPrice) {
-      filter.price = {};
-      if (minPrice) filter.price.$gte = parseFloat(minPrice);
-      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
-    }
-
-    // Category filter
-    if (category && category !== "all") {
-      const categoryDoc = await Category.findOne({ category }); // Find the category by name
-      if (categoryDoc) {
-        filter.category = categoryDoc._id; // Use ObjectId for filtering
-      }
-    }
-
-    // Rating filter
-    if (rating && rating !== "all") {
-      filter.averageRating = { $gte: parseFloat(rating) };
-    }
-
-    // Fetch products with applied filters
-    const products = await Products.find(filter).populate(
-      "category",
-      "category brand"
-    ); // Populate category details
-
-    // Render the products page with filtered data
-    res.render("products", {
-      products,
-      showOutOfStock,
-      minPrice,
-      maxPrice,
-      category,
-      rating
-    });
-  } catch (error) {
-    console.error("Error fetching filtered products:", error);
-    res.status(500).send("Error fetching products.");
+    res.status(500).json({ message: "Error fetching products." });
   }
 };
 module.exports = {
   updateDefaultAddress,
-  searchProducts,
   resendotpemail,
   ordertracking,
   changepassword,
-  filtered,
   advancedSearch,
   removeorder,
   removeItem,
@@ -1389,7 +1432,6 @@ module.exports = {
   removecart,
   loadaddress,
   addaddress,
-  updateCartQuantity,
   placeOrder,
   loadorderss,
   removeaddress,
@@ -1400,6 +1442,7 @@ module.exports = {
   setnewpassword,
   editaddress,
   updateUsername,
-  searchProducts,
-  loadViewDetails
+  loadViewDetails,
+  updateQuantity,
+  getProductStock
 };

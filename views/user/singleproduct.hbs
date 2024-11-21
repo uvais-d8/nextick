@@ -161,10 +161,38 @@
 			top: 0;
 		}
 
+		.quantity-control {
+			display: flex;
+			align-items: center;
+		}
+
+		.quantity-control button {
+			background-color: #d08b0bd2;
+			color: white;
+			width: 30px;
+			border: none;
+			font-size: 16px;
+			height: 30px;
+			cursor: pointer;
+			border-radius: 4px;
+		}
+
+		.quantity-control input {
+			width: 50px;
+			text-align: center;
+			font-size: 16px;
+			padding: 5px;
+			margin: 0 10px;
+		}
+
+		.quantity-control button:focus {
+			outline: none;
+		}
+
 		/* Popup box style */
 		.popup-box {
-			margin-top:40px;
-			margin-left:220px;
+			margin-top: 40px;
+			margin-left: 220px;
 			transform: translate(-50%, -50%);
 			background-color: #0f0f0fb3;
 			/* Black background */
@@ -173,11 +201,17 @@
 			padding-top: -10px;
 			padding: 15px 25px;
 			border-radius: 8px;
-			width:175px;
+			width: 175px;
 			height: 45px;
 			font-size: 16px;
 			padding-top: 8px;
-						{{!-- padding-left: 59px; --}}
+
+				{
+					{
+					!-- padding-left: 59px;
+					--
+				}
+			}
 
 		}
 	</style>
@@ -317,18 +351,49 @@
 							{{/if}}
 						</p>
 						<div class="single-product-form">
-							<form action="/addtocart" method="post"> <!-- Changed to POST -->
+							<form action="/addtocart" method="post">
 								<input type="hidden" name="productId" value="{{product._id}}">
-								<input type="number" name="quantity" value="1" min="1" max="11"
-									onchange="checkCartLimit(this)" required>
+
+								<!-- Quantity Control -->
+								<div class="quantity-control">
+									<button type="button" class="decrease-btn" onclick="adjustQuantity(-1)">-</button>
+									<input style="height: 33px;" type="number" name="quantity" value="1" min="1"
+										max="10" onchange="checkCartLimit(this)" required id="quantity" readonly>
+									<button type="button" class="increase-btn" onclick="adjustQuantity(1)">+</button>
+								</div>
+
 								<button
-									style="width:150px; border-width:0px; height: 46px; border-radius:4px; color:white; background-color:rgba(208, 139, 11, 0.916); font-weight:bold"
+									style="width:150px; border-width:0px; height: 46px; border-radius:4px; color:white; background-color:rgba(208, 139, 11, 0.916); font-weight:bold;margin-top:20px"
 									type="submit" class="cart-btn">
-									<i class="fas fa-shopping-cart">Add to Cart</i>
+									<i class="fas fa-shopping-cart"> Add to Cart</i>
 								</button>
 							</form>
-
 						</div>
+						<script>
+							function adjustQuantity(change) {
+								const quantityInput = document.getElementById('quantity');
+								let currentQuantity = parseInt(quantityInput.value);
+
+								// Adjust quantity
+								currentQuantity += change;
+
+								// Ensure the quantity stays within the range of 1 to 10
+								if (currentQuantity >= 1 && currentQuantity <= 10) {
+									quantityInput.value = currentQuantity;
+								}
+							}
+
+							function checkCartLimit(input) {
+								// Ensure that the quantity stays within the allowed range
+								let value = parseInt(input.value);
+								if (value < 1) {
+									input.value = 1;
+								} else if (value > 10) {
+									input.value = 10;
+								}
+							}
+
+						</script>
 
 						<div class="single-product-reviews">
 							<h4>Customer Reviews:</h4>

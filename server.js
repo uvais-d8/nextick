@@ -106,10 +106,23 @@ hbs.registerHelper("statusIcon", (status) => {
   }
 });
 
+hbs.registerHelper('add', (a, b) => a + b);
+hbs.registerHelper('subtract', (a, b) => a - b);
+
 hbs.registerHelper('json', function (context) {
   return JSON.stringify(context); 
 });
+// Date formatting helper
+hbs.registerHelper("formatDate", dateString => {
+  const date = new Date(dateString);
 
+  // Get day, month, and year
+  const day = String(date.getDate()).padStart(2, "0"); // Pad day
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Pad month
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`; // Return in DD/MM/YYYY format
+});
 // Route handlers
 // app.use("/admin", adminroutes);
 // app.use("/", userroutes);

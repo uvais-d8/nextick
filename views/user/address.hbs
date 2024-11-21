@@ -501,6 +501,13 @@
     <main style="margin-top:40px ;" class="container row">
         <section style="background-color: rgb(242, 242, 242);" class="section account-settings col-lg-12">
             <h3>Add new Address</h3>
+            <p id="message" style="color: red;font-size:13px;font-weight:700;border-width:0px;background-color: rgb(242, 242, 242);margin-left:15px">{{message}}</p>
+            <script>setTimeout(function() {
+  const messageInput = document.getElementById('message');
+  if (messageInput) {
+    messageInput.style.display = 'none'; // Hides the input field
+  }
+}, 4000);</script>
             <form method="post" action="/addaddress">
                 <div class="d-flex">
                     <div class="col-md-6">

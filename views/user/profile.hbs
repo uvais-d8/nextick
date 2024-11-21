@@ -524,7 +524,7 @@
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
                                     <span class="status-dot active"></span>
-                                    {{name}}
+                                    {{productId.name}}
                                     <p style="margin-left: 20px;">{{formatDate ../time}}</p>
                                     <hr style="width: 650px;color:orange">
                                 </div>
@@ -541,9 +541,12 @@
                             {{/each}}
                             {{/each}}
 
-                            <a href="/orderss"><button
+
+                            <form action="orderss" method="get">
+                                <button
                                     style="font-size:13px;width: 90px; margin-left:87%;background-color:rgba(228, 154, 17, 0.908);height: 30px;font-size:13px;font-weight:bold;border-width:0px;border-radius: 4px">view
-                                    more</button> </a>
+                                    more</button>
+                            </form>
 
                         </div>
                     </div>

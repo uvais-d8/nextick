@@ -31,328 +31,9 @@
     <link rel="stylesheet" href="/assets/css/responsive.css">
     <!-- Custom CSS for product listing -->
     <style>
-        :root {
-            --primary-color: #4a90e2;
-            --secondary-color: #f5a623;
-            --background-color: #f9f9f9;
-            --text-color: #333;
-            --border-color: #e0e0e0;
-        }
-
-        .butt {
-            border-width: 1px;
-            font-size: 14px;
-            color: rgb(3, 19, 78);
-            font-weight: bold;
-            margin-top: 10px;
-            background-color: #e59c0b;
-            font-size: 16px;
-            border-radius: 9px;
-            width: 100px;
-            height: 45px;
-            border-radius: 11px;
-            font-weight: bold;
-            text-decoration: none;
-            transition: all 0.3s ease;
-
-        }
-
-
-        .butt:hover {
-            border-radius: 11px;
-            background-color: rgba(3, 8, 46, 0.954);
-            color: rgb(232, 171, 5);
-            transform: scale(1.03);
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--background-color);
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        header {
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .nav-links a {
-            color: var(--text-color);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
-        }
-
-        main {
-            padding: 2rem 0;
-        }
-
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .profile-avatar {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid var(--primary-color);
-        }
-
-        .profile-info h1 {
-            margin: 0 0 0.5rem 0;
-        }
-
-        .profile-info p {
-            margin: 0;
-            color: #666;
-        }
-
-        .section {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .section h2 {
-            margin-top: 0;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .order-history {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .order {
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .order-details {
-            flex-grow: 1;
-        }
-
-        .order-status {
-            font-weight: bold;
-            color: var(--secondary-color);
-        }
-
-        .account-settings form {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            margin-bottom: 0.5rem;
-        }
-
-        .form-group input {
-            padding: 0.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-        }
-
-
-
-        footer {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 1rem 0;
-            margin-top: 2rem;
-        }
-
-        @media (max-width: 768px) {
-            .profile-header {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .order {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .order-status {
-                margin-top: 0.5rem;
-            }
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: system-ui, -apple-system, sans-serif;
-        }
-
-
-        .tracking-container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .order-info {
-            margin-bottom: 2rem;
-        }
-
-        .order-number {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        .status-header {
-            margin-bottom: 1rem;
-        }
-
-        .status-text {
-            color: #22c55e;
-            font-weight: 500;
-        }
-
-        .timeline {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 2rem 0;
-            position: relative;
-            padding: 0 1rem;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50px;
-            right: 50px;
-            height: 2px;
-            background: #22c55e;
-            transform: translateY(-50%);
-        }
-
-        .step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            z-index: 1;
-        }
-
-        .step-icon {
-            width: 40px;
-            height: 40px;
-            background: #22c55e;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-
-        .step-label {
-            font-size: 0.875rem;
-            color: #666;
-            text-align: center;
-        }
-
-        .tracking-log {
-            margin-top: 2rem;
-        }
-
-        .log-entry {
-            display: flex;
-            gap: 1rem;
-            padding: 0.75rem 0;
-            border-left: 2px solid #eee;
-            padding-left: 1rem;
-            margin-left: 1rem;
-        }
-
-        .log-entry:before {
-            content: '';
-            width: 12px;
-            height: 12px;
-            background: #fff;
-            border: 2px solid #ddd;
-            border-radius: 50%;
-            margin-left: -1.5rem;
-            margin-top: 0.25rem;
-        }
-
-        .log-time {
-            color: #666;
-            font-size: 0.875rem;
-        }
-
-        @media (max-width: 640px) {
-            .timeline::before {
-                left: 30px;
-                right: 30px;
-            }
-
-            .step-label {
-                font-size: 0.75rem;
-            }
-
-            .step-icon {
-                width: 32px;
-                height: 32px;
-            }
-        }
-
+      
         .mcontainer {
-            max-width: 800px;
+            max-width: 850px;
             margin: 200px auto;
             padding: 20px;
             background-color: #fff;
@@ -365,12 +46,12 @@
             font-size: 28px;
             font-weight: bold;
             margin-bottom: 20px;
-            color: #444;
+            color: #1e1e1e;
         }
 
         .mback {
-            border: 1px solid #b07b36;
-            color: #b07b36;
+            border: 1px solid #c68531;
+            color: #cb872e;
             background-color: #fff;
             border-radius: 4px;
             cursor: pointer;
@@ -383,7 +64,7 @@
         }
 
         .mback:hover {
-            background-color: #b07b36;
+            background-color: #ca852b;
             color: white;
         }
 
@@ -395,7 +76,7 @@
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 8px;
-            color: #666;
+            color: #343434;
         }
 
         .morder-info,
@@ -414,7 +95,7 @@
         .mpayment-info span,
         .morder-status span {
             font-weight: bold;
-            color: #333;
+            color: #252525;
         }
 
         .mproducts-table {
@@ -432,7 +113,7 @@
 
         .mproducts-table th {
             background-color: #f0f0f0;
-            color: #333;
+            color: #262626;
             font-weight: bold;
         }
 
@@ -560,19 +241,19 @@
 
             <!-- Products Ordered -->
             <div class="msection">
-                <div class="msection-title">Products Ordered</div>
+                <div class="msection-title">Products Details</div>
                 <table class="mproducts-table">
                     <tbody>
                         <tr>
-                            <td>Product name: <b>{{product.name}}</b></td>
-                            <td>Quantity: <b>{{product.quantity}}</b></td>
-                            <td>Price: ₹<b>{{product.price}}</b></td>
-                            <td>Total Price: ₹<b>{{multiply product.price product.quantity}}</b></td>
+                            <p>Product name: <b>{{product.productId.name}}</b></p>
+                            <p>{{product.productId.description}}</p>
+                            <td><b>Quantity:  {{product.quantity}}</b></td>
+                            <td><b>Price: ₹ {{product.price}}</b></td>
+                            <td><b>Total Price: ₹ {{multiply product.price product.quantity}}</b></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-
             <!-- Payment Information -->
             <div class="msection payment-info">
                 <div class="msection-title">Payment Information</div>

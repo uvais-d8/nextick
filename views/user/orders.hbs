@@ -474,12 +474,15 @@
 				</div>
 				<div class="modal-body">
 					<p id="modalMessage"></p>
-					<p><strong>This action cannot be undone!</strong></p>
+					<h4>Are you sure you want to cancel this order?</h4>
+					<p>Once canceled, the order cannot be restored. Please confirm if you want to proceed with the
+						cancellation.</p>
+					{{!-- <p><strong>Order ID:</strong>{{items.productId.name}}</p> --}}
 					<p id="errorMessage" style="color: red; display: none;">An error occurred. Please try again.</p>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-warning" id="confirmCancelBtn">Yes, Cancel</button>
+					<button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-danger" id="confirmCancelBtn">Yes, Cancel</button>
 				</div>
 			</div>
 		</div>
@@ -494,9 +497,12 @@
 			<div style="width: 1200px;margin-left:10%;background-color:white" class="order">
 				<div class="order-details">
 					<div class="client-avatar">
-						<img src="/{{this.images}}" alt="{{this.name}}">
+						{{!-- <img src="/{{this.productId.images.[0]}}" alt="{{this.productId.name}}"> --}}
+						<img src="/{{this.productId.images.[0]}}" alt="{{this.productId.name}}" />
+						{{!-- <img src="/{{this.Image}}" alt="{{this.name}}"> --}}
+
 					</div>
-					<h4>{{name}}</h4>
+					<h4>{{this.productId.name}}</h4>
 					<p>{{description}}</p>
 					<p>Amount:<b style="font-weight: 501;color:rgb(49, 49, 49)"> $ {{total}}</p>
 
@@ -508,7 +514,7 @@
 						<!-- Do nothing or render a placeholder if needed -->
 						{{else}}
 						<button class="but"
-							style="color: rgba(0, 0, 0, 0.884);height:35px; background-color:rgb(209, 208, 208);margin-left:100%"
+							style="color: rgba(0, 0, 0, 0.884);height:35px; background-color:rgb(209, 208, 208);margin-left:100%;"
 							data-toggle="modal" data-target="#cancelModal"
 							onclick="setItemToCancel('{{../_id}}', '{{this._id}}', 'item')">
 							Cancel Item
@@ -517,13 +523,13 @@
 					</div>
 					<form method="get" action="/viewDetails/{{../_id}}/{{this._id}}">
 						<button class="but" type="submit"
-							style="color:rgba(26, 26, 26, 0.898);font-size:14px;background-color:rgba(255, 255, 255, 0.911);height: 30px;border-width:0px;margin-left:100%;font-weight:bold">view
+							style="color:rgba(26, 26, 26, 0.898);font-size:14px;background-color:rgba(255, 255, 255, 0.911);height: 30px;border-width:0px;margin-left:100%;font-weight:bold;margin-top:20px">view
 							more</button>
 					</form>
 				</div>
 
 
-				<p>status :<span style="width: 100px;" class="
+				<p style="margin-top: -20px;">status :<span style="width: 100px;" class="
         {{#if (eq status 'scheduled')}}gradient-button-blue{{else}}
         {{#if (eq status 'pending')}}gradient-button-yellow{{else}}
         {{#if (eq status 'canceled')}}gradient-button-red{{else}}
@@ -693,7 +699,7 @@
 			itemToCancelId = itemId;
 			cancelType = type;
 			// Dynamically update the modal text
-			document.querySelector("#modalMessage").innerHTML = `Are you sure you want to cancel this ${type}?`;
+			document.querySelector("#modalMessage").innerHTML ;
 		}
 
 		// Confirm cancel action

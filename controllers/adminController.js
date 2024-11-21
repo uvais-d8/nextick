@@ -14,6 +14,7 @@ const { default: mongoose } = require("mongoose");
 const Handlebars = require("handlebars");
 const couponSchema = require("../model/couponmodal");
 const multer = require("multer");
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "uploads/");
@@ -24,6 +25,7 @@ const storage = multer.diskStorage({
     },
 });
 const upload = multer({ storage: storage }).any("images", 10);
+
 const loadcoupon = async (req, res) => {
   try {
     const coupons = await couponSchema.find({}); // Fetching all coupons
@@ -150,7 +152,6 @@ const loadaddproduct = async (req, res) => {
     res.status(500).send("Error fetching categories");
   }
 };
-
 const addproduct = async (req, res) => {
   try {
     const { name, category, stock, price, description } = req.body;
@@ -212,61 +213,6 @@ const addproduct = async (req, res) => {
     res.redirect("/admin/dashboard");
   }
 };
-
-
-// const addproduct = async (req, res) => {
-//   try {
-//     const { name, category, stock, price, description } = req.body;
-//     console.log("Request body:", req.body);
-
-//     // Check if at least 3 images are uploaded
-//     if (!name || !category || !stock || !price || !description) {
-//       return res.status(400).render("admin/addproduct", {
-//         message: "all fields are required"
-//       });
-//     }
-
-//     // Check if at least 3 images are uploaded
-//     if (!req.files || req.files.length < 3) {
-//       return res.status(400).render("admin/addproduct", {
-//         message: "Please upload at least 3 images"
-//       });
-//     }
-
-//     console.log("Uploaded files:", req.files);
-
-//     // Check if product already exists
-
-//     const existingProduct = await productsmodal.findOne({ name });
-//     if (existingProduct) {
-//       console.log("Product already exists");
-//       const products = await productsmodal.find({});
-//       return res.render("admin/addproduct", {
-//         products,
-//         modalError: "Product already exists",
-//         message: "Product already exists"
-//       });
-//     }
-//     // Create new product with images
-//     const newProduct = new productsmodal({
-//       name,
-//       category,
-//       stock,
-//       price,
-//       description: description || "Default description here",
-//       images: req.files.map(file => file.path) // Store file paths in the database
-//     });
-
-//     await newProduct.save();
-//     console.log("New product saved:", newProduct);
-
-//     // Redirect to products page after saving
-//     return res.redirect("/admin/products");
-//   } catch (error) {
-//     console.error("Error adding product:", error.message);
-//     res.redirect("/admin/dashboard");
-//   }
-// };
 const addcategory = async (req, res) => {
   try {
     const { category, brand, bandcolor, stock, status } = req.body;
@@ -436,13 +382,6 @@ const editproducts = async (req, res) => {
       });
   }
 };
-
-
-
-
-
-
-
 const editcategory = async (req, res) => {
   const categoryId = req.params.id;
   const { category,brand, bandcolor, stock } = req.body;
@@ -598,14 +537,12 @@ const updateOrderStatus = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid status." });
     }
-
     console.log(
       "Attempting to update item status for order ID:",
       orderId,
       "and item ID:",
       itemId
     );
-
     // Find the order by ID
     const order = await orders.findById(orderId);
     if (!order) {
@@ -614,7 +551,6 @@ const updateOrderStatus = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Order not found." });
     }
-
     // Find the specific item within the order
     const item = order.items.id(itemId);
     if (!item) {
@@ -685,17 +621,6 @@ const editinventory = async (req, res) => {
     res.status(500).send("Error updating product");
   }
 };
-// Date formatting helper
-Handlebars.registerHelper("formatDate", dateString => {
-  const date = new Date(dateString);
-
-  // Get day, month, and year
-  const day = String(date.getDate()).padStart(2, "0"); // Pad day
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // Pad month
-  const year = date.getFullYear();
-
-  return `${day}/${month}/${year}`; // Return in DD/MM/YYYY format
-});
 const loadaddcoupon = async (req, res) => {
   res.render("admin/addcoupon");
 };

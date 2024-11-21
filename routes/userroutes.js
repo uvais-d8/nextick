@@ -23,13 +23,15 @@ router.get(
   }
 );
 
+router.post('/cart/:id/updateQuantity',userController.updateQuantity) 
+
 router.post("/updateUsername",userController.updateUsername);
 
-router.get('/search', userController.searchProducts);
+// router.get('/search', userController.searchProducts);
 
 router.post("/editaddress/:id", userController.editaddress);
 router.get("/ordertracking/:id",userController.ordertracking)
-router.get('/filtered',userController.filtered);
+// router.get('/filtered',userController.filtered);
 router.get("/verify-otp", userController.loadVerifyOtp);
 router.post("/verify-otp", userController.verifyOtp);
 router.post("/resend-otp", userController.resendOtp);
@@ -50,13 +52,12 @@ router.get("/viewDetails/:orderId/:itemId",userController.loadViewDetails)
 
 
 router.delete("/cart/:id", userController.removecart);
-router.post("/cart/:id/updateQuantity", userController.updateCartQuantity);
+// router.post("/cart/:id/updateQuantity", userController.updateCartQuantity);
 // Routes
 router.patch("/orders/:orderId", userController.removeorder); 
 
 router.patch("/orders/:orderId/items/:itemId", userController.removeItem); 
 
- 
 
 router.delete("/address/:id", userController.removeaddress);
 router.get("/forgotpassword", userController.loadforgotpassword);
@@ -71,8 +72,10 @@ router.get("/orderss", userController.loadorderss);
 
 router.post("/placeOrder", userController.placeOrder);
 
+// Example route to fetch product stock
+router.get('/cart/:cartId/getProductStock',userController.getProductStock)
 router.get("/address", userController.loadaddress);
-router.get("/sorted", userController.advancedSearch);
+router.get("/advancedSearch", userController.advancedSearch);
 
 router.post("/addaddress", userController.addaddress);
 

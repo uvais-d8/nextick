@@ -24,3 +24,6 @@ Handlebars.registerHelper('formatDate', function (dateString) {
     const formattedDate = date.toLocaleDateString("en-GB");
     return formattedDate;
 });
+
+Handlebars.registerHelper('add', (a, b) => a + b);
+Handlebars.registerHelper('subtract', (a, b) => a - b);
