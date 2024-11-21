@@ -1,20 +1,17 @@
 const bcrypt = require("bcrypt");
-const usermodal = require("../model/usermodal");
-const admin = require("../model/adminmodal");
-const productsmodal = require("../model/productsmodal");
-const categorymodal = require("../model/categorymodal");
-const products = require("../model/productsmodal");
-const ordersSchema = require("../model/ordersmodal");
 const fs = require("fs");
+const User = require("../model/userModel");
+const admin = require("../model/adminModel");
+const Products = require("../model/ProductsModel");
+const Category = require("../model/categoryModel");
+const Orders = require("../model/ordersModel");
 
 
 const path = require("path");
-const orders = require("../model/ordersmodal");
 const { default: mongoose } = require("mongoose");
 const Handlebars = require("handlebars");
-const couponSchema = require("../model/couponmodal");
+const Coupon = require("../model/couponModel");
 const multer = require("multer");
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "uploads/");
@@ -38,7 +35,7 @@ const loadeditproducts = async (req, res) => {
   const { id } = req.params;
   console.log("hello");
   console.log(req.params);
-  const product = await productsmodal.findById(id);
+  const product = await Products.findById(id);
   res.render(`admin/products`, { product });
   console.log(product);
 };
@@ -79,7 +76,7 @@ const loaddashboard = async (req, res) => {
     if (!admin) return res.redirect("/admin/login");
 
     // Fetch all users from the database
-    const users = await usermodal.find({});
+    const users = await User.find({});
 
     // Pass users to the dashboard view
     res.render("admin/dashboard", { users });
@@ -93,7 +90,7 @@ const blockUser = async (req, res) => {
     const userId = req.params.id;
     console.log(`User id = ${userId}`);
     req.session.userId = null;
-    await usermodal.findByIdAndUpdate(userId, { blocked: true });
+    await User.findByIdAndUpdate(userId, { blocked: true });
     res.redirect("/admin/dashboard");
   } catch (error) {
     console.error("Failed to block user:", error);
@@ -104,7 +101,7 @@ const unblockUser = async (req, res) => {
   try {
     const userId = req.params.id;
     console.log(`user id ${userId}`);
-    await usermodal.findByIdAndUpdate(userId, { blocked: false });
+    await User.findByIdAndUpdate(userId, { blocked: false });
     res.redirect("/admin/dashboard");
   } catch (error) {
     console.error(error);
@@ -117,7 +114,7 @@ const logout = (req, res) => {
 };
 const loadcategory = async (req, res) => {
   try {
-    const category = await categorymodal.find({});
+    const category = await Category.find({});
     res.render("admin/category", { category });
   } catch (error) {
     console.log(`No data found : ${error}`);
@@ -125,8 +122,8 @@ const loadcategory = async (req, res) => {
 };
 const loadproducts = async (req, res) => {
   try {
-    const categories=await categorymodal.find({})
-    const products = await productsmodal.find({}).populate("category", "category");  ;
+    const categories=await Category.find({})
+    const products = await Products.find({}).populate("category", "category");  ;
     res.render("admin/products", { products ,categories});
     console.log("categoreiesss:",categories)
   } catch (error) {
@@ -136,7 +133,7 @@ const loadproducts = async (req, res) => {
 };
 const loadUserMangment = async (req, res) => {
   try {
-    const users = await usermodal.find({});
+    const users = await User.find({});
     res.render("admin/userManagement", { users });
   } catch (error) {
     console.log(error);
@@ -145,7 +142,7 @@ const loadUserMangment = async (req, res) => {
 };
 const loadaddproduct = async (req, res) => {
   try {
-    const categories = await categorymodal.find({}); // Get listed categories
+    const categories = await Category.find({}); // Get listed categories
     res.render("admin/addproduct", { categories });
   } catch (error) {
     console.error("Error fetching categories:", error);
@@ -174,9 +171,9 @@ const addproduct = async (req, res) => {
     }
 
     // Step 3: Check if product already exists
-    const existingProduct = await productsmodal.findOne({ name });
+    const existingProduct = await Products.findOne({ name });
     if (existingProduct) {
-      const products = await productsmodal.find({});
+      const products = await Products.find({});
       return res.render("admin/addproduct", {
         products,
         modalError: "Product already exists",
@@ -185,7 +182,7 @@ const addproduct = async (req, res) => {
     }
 
     // Step 4: Find category by name (category passed is the category name)
-    const categoryObj = await categorymodal.findOne({ category: category });
+    const categoryObj = await Category.findOne({ category: category });
     if (!categoryObj) {
       return res.status(400).render("admin/addproduct", {
         message: "Category not found"
@@ -193,7 +190,7 @@ const addproduct = async (req, res) => {
     }
 
     // Step 5: Create new product
-    const newProduct = new productsmodal({
+    const newProduct = new Products({
       name,
       category: categoryObj._id, // Set the category ObjectId
       stock,
@@ -217,14 +214,14 @@ const addcategory = async (req, res) => {
   try {
     const { category, brand, bandcolor, stock, status } = req.body;
 
-    const existingCategory = await categorymodal.findOne({ category });
+    const existingCategory = await Category.findOne({ category });
     if (existingCategory) {
       console.log("Category already exists");
       return res.render("admin/addcategory", {
         message: "Category already exists"
       });
     }
-    const newCategory = new categorymodal({
+    const newCategory = new Category({
       category,
       brand,
       bandcolor,
@@ -247,7 +244,7 @@ const loadeditcategory = async (req, res) => {
   try {
     console.log(req.params);
     const { id } = req.params;
-    const category = await categorymodal.findById(id);
+    const category = await Category.findById(id);
     res.render("admin/editcategory", { category }); // Make sure this is only called once
   } catch (error) {
     console.error(`Something went wrong: ${error}`);
@@ -258,7 +255,7 @@ const unlistcategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
     console.log(`category id : ${categoryId}`);
-    await categorymodal.findByIdAndUpdate(categoryId, { islisted: false });
+    await Category.findByIdAndUpdate(categoryId, { islisted: false });
     res.redirect("/admin/category");
   } catch (error) {
     console.error("failed to unlist category", error);
@@ -268,7 +265,7 @@ const unlistcategory = async (req, res) => {
 const listcategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
-    await categorymodal.findByIdAndUpdate(categoryId, { islisted: true });
+    await Category.findByIdAndUpdate(categoryId, { islisted: true });
     res.redirect("/admin/category");
   } catch (error) {
     console.log(error);
@@ -290,14 +287,14 @@ const editproducts = async (req, res) => {
       console.log("Deleted Images:", deletedImages);
 
       // Fetch product by ID
-      const product = await productsmodal.findById(id);
+      const product = await Products.findById(id);
       if (!product) {
           console.error("Product not found for ID:", id);
           return res.render("admin/products", { message: "Product not found" });
       }
 
       // Fetch the Category ObjectId
-      const categoryObj = await categorymodal.findById(category);  // Fetch by ObjectId
+      const categoryObj = await Category.findById(category);  // Fetch by ObjectId
       if (!categoryObj) {
           return res.status(400).render("admin/products", { message: "Category not found" });
       }
@@ -375,7 +372,7 @@ const editproducts = async (req, res) => {
 
   } catch (error) {
       console.error("Error updating product:", error);
-      const products = await productsmodal.find({});
+      const products = await Products.find({});
       res.status(500).render("admin/products", {
           products,
           message: "An error occurred while updating the product. Please try again.",
@@ -390,9 +387,9 @@ const editcategory = async (req, res) => {
   try {
     // Check if a different category with the same brand already exists
     const { id } = req.params;
-    const category = await categorymodal.find({});
+    const category = await Category.find({});
 
-    const existingCategory = await categorymodal.findOne({
+    const existingCategory = await Category.findOne({
       category,
       _id: { $ne: categoryId }
     });
@@ -406,7 +403,7 @@ const editcategory = async (req, res) => {
     }
 
     // Update the category if no duplicate is found
-    await categorymodal.findByIdAndUpdate(categoryId, updatedCategory);
+    await Category.findByIdAndUpdate(categoryId, updatedCategory);
     res.redirect("/admin/category"); // Redirect to category list after updating
   } catch (err) {
     console.error("Error updating category:", err);
@@ -416,7 +413,7 @@ const editcategory = async (req, res) => {
 const unlistproducts = async (req, res) => {
   try {
     const productId = req.params.id;
-    await productsmodal.findByIdAndUpdate(productId, { islisted: false });
+    await Products.findByIdAndUpdate(productId, { islisted: false });
     console.log(`Product ${productId} successfully unlisted`);
     res.redirect("/admin/products");
   } catch (error) {
@@ -427,7 +424,7 @@ const unlistproducts = async (req, res) => {
 const listproducts = async (req, res) => {
   try {
     const productId = req.params.id;
-    await productsmodal.findByIdAndUpdate(productId, { islisted: true });
+    await Products.findByIdAndUpdate(productId, { islisted: true });
     console.log(`Product ${productId} successfully listed`);
     res.redirect("/admin/products");
   } catch (error) {
@@ -437,7 +434,7 @@ const listproducts = async (req, res) => {
 };
 const loadorders = async (req, res) => {
   try {
-    const orders = await ordersSchema.find({});
+    const orders = await Orders.find({});
     res.render("admin/orders", { orders });
   } catch (error) {
     console.log("Error during load orders", error);
@@ -445,7 +442,7 @@ const loadorders = async (req, res) => {
 };
 const loadinventory = async (req, res) => {
   try {
-    const products = await productsmodal.find({});
+    const products = await Products.find({});
     res.render("admin/inventory", { products });
   } catch (error) {
     console.log("failed to load inventory");
@@ -475,7 +472,7 @@ const cancelOrderItem = async (req, res) => {
     );
 
     // Find the order by ID
-    const order = await orders.findById(orderId);
+    const order = await Orders.findById(orderId);
     if (!order) {
       console.log("Order not found for ID:", orderId);
       return res
@@ -544,7 +541,7 @@ const updateOrderStatus = async (req, res) => {
       itemId
     );
     // Find the order by ID
-    const order = await orders.findById(orderId);
+    const order = await Orders.findById(orderId);
     if (!order) {
       console.log("Order not found for ID:", orderId);
       return res
@@ -582,19 +579,19 @@ const editinventory = async (req, res) => {
 
   try {
     // Find the product by ID
-    const product = await productsmodal.findById(productId);
+    const product = await Products.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
     // Check if a product with the same name already exists (excluding the current product)
-    const existingProduct = await productsmodal.findOne({
+    const existingProduct = await Products.findOne({
       name: name,
       _id: { $ne: productId }
     });
     if (existingProduct) {
       return res.render("admin/inventory", {
-        products: await productsmodal.find({}),
+        products: await Products.find({}),
         message: "Product with this name already exists"
       });
     }
@@ -602,7 +599,7 @@ const editinventory = async (req, res) => {
     // Check if the name and stock are the same as before
     if (product.name === name && product.stock === stock) {
       return res.render("admin/inventory", {
-        products: await productsmodal.find({}),
+        products: await Products.find({}),
         message: "No changes made to the product"
       });
     }

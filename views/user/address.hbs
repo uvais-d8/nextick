@@ -75,9 +75,11 @@
             margin: 0 auto;
             padding: 0 20px;
         }
- #box:hover {
-      box-shadow: 0 10px 20px rgba(255, 136, 0, 0.752);
-    }
+
+        #box:hover {
+            box-shadow: 0 10px 20px rgba(255, 136, 0, 0.752);
+        }
+
         header {
             background-color: #fff;
             box-shadow: 0 2px 4px rgb(0, 0, 0);
@@ -360,136 +362,135 @@
         <div class="row">
             {{#each addresses}}
             <div class="col-md-4">
-                    <section id="box" style="background-color: rgb(242, 242, 242);MARGIN-TOP:50PX" class="section account-settings">
-                        <form>
-                            <div class="form-group address-card" data-id="{{this._id}}" style="cursor: pointer;">
+                <section id="box" style="background-color: rgb(242, 242, 242);MARGIN-TOP:50PX"
+                    class="section account-settings">
+                    <form>
+                      <div class="form-group address-card" data-id="{{this._id}}" style="cursor: pointer;">
+    <h3>Saved Address</h3>
+    <label>First Name: {{this.firstname}}</label>
+    <label>Last Name: {{this.lastname}}</label>
+    <label>Address: {{this.address}}</label>
+    <label>Phone No: {{this.phone}}</label>
+    <label>Email: {{this.email}}</label>
+    <label>Place: {{this.place}}</label>
+    <label>City: {{this.city}}</label>
+    <label>Pin Code: {{this.pincode}}</label>
+    <label>District: {{this.district}}</label>
+</div>
 
-                                <h3>Saved Address</h3>
+                    </form>
 
-                                <label for="name">First Name: {{this.firstname}}</label>
-                                <label for="name">Last Name: {{this.lastname}}</label>
-                                <label for="name">Address: {{this.address}}</label>
-                                <label for="name">Phone No: {{this.phone}}</label>
-                                <label for="name">Email: {{this.email}}</label>
-                                <label for="name">Place: {{this.place}}</label>
-                                <label for="name">City: {{this.city}}</label>
-                                <label for="name">Pin Code: {{this.pincode}}</label>
-                                <label for="name">District: {{this.district}}</label>
-                            </div>
-                        </form>
-
-                        <!-- Button to trigger modal with unique ID -->
-                        <button style="width: 70px;height:30px;margin-left:58%;" type="button" class="btn btn-warning"
-                            data-bs-toggle="modal" data-bs-target="#editAddressModal-{{this._id}}">
-                            <b>Edit</b>
-                        </button>
+                    <!-- Button to trigger modal with unique ID -->
+                    <button style="width: 70px;height:30px;margin-left:58%;" type="button" class="btn btn-warning"
+                        data-bs-toggle="modal" data-bs-target="#editAddressModal-{{this._id}}">
+                        <b>Edit</b>
+                    </button>
 
 
-                        <!-- Modal -->
-                        <div class="modal fade" id="editAddressModal-{{this._id}}" tabindex="-1"
-                            aria-labelledby="editAddressModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <!-- Form fields for editing address -->
-                                        <form method="post" action="/editaddress/{{this._id}}">
-                                            <div class="mb-3">
-                                                <label for="firstname" style="font-weight: bold;"
-                                                    class="form-label">First Name</label>
-                                                <input name="firstname" type="text" class="form-control" id="firstname"
-                                                    value="{{this.firstname}}" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="lastname" style="font-weight: bold;" class="form-label">Last
-                                                    Name</label>
-                                                <input name="lastname" type="text" class="form-control" id="lastname"
-                                                    value="{{this.lastname}}" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="address" style="font-weight: bold;"
-                                                    class="form-label">Address</label>
-                                                <input name="address" type="text" class="form-control" id="address"
-                                                    value="{{this.address}}" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="phone" style="font-weight: bold;" class="form-label">Phone
-                                                    No</label>
-                                                <input name="phone" type="tel" class="form-control" id="phone"
-                                                    value="{{this.phone}}" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="email" style="font-weight: bold;"
-                                                    class="form-label">Email</label>
-                                                <input name="email" type="email" class="form-control" id="email"
-                                                    value="{{this.email}}" readonly>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="place" style="font-weight: bold;"
-                                                    class="form-label">Place</label>
-                                                <input name="place" type="text" class="form-control" id="place"
-                                                    value="{{this.place}}" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="city" style="font-weight: bold;"
-                                                    class="form-label">City</label>
-                                                <input name="city" type="text" class="form-control" id="city"
-                                                    value="{{this.city}}" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="pincode" style="font-weight: bold;" class="form-label">Pin
-                                                    Code</label>
-                                                <input name="pincode" type="text" class="form-control" id="pincode"
-                                                    value="{{this.pincode}}" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="district" style="font-weight: bold;"
-                                                    class="form-label">District</label>
-                                                <input name="district" type="text" class="form-control" id="district"
-                                                    value="{{this.district}}" required>
-                                            </div>
-                                            <button type="submit" class="btn btn-warning">Save Changes</button>
-                                        </form>
-                                    </div>
+                    <!-- Modal -->
+                    <div class="modal fade" id="editAddressModal-{{this._id}}" tabindex="-1"
+                        aria-labelledby="editAddressModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Form fields for editing address -->
+                                    <form method="post" action="/editaddress/{{this._id}}">
+                                        <div class="mb-3">
+                                            <label for="firstname" style="font-weight: bold;" class="form-label">First
+                                                Name</label>
+                                            <input name="firstname" type="text" class="form-control" id="firstname"
+                                                value="{{this.firstname}}" >
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="lastname" style="font-weight: bold;" class="form-label">Last
+                                                Name</label>
+                                            <input name="lastname" type="text" class="form-control" id="lastname"
+                                                value="{{this.lastname}}" >
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="address" style="font-weight: bold;"
+                                                class="form-label">Address</label>
+                                            <input name="address" type="text" class="form-control" id="address"
+                                                value="{{this.address}}" >
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="phone" style="font-weight: bold;" class="form-label">Phone
+                                                No</label>
+                                            <input name="phone" type="tel" class="form-control" id="phone"
+                                                value="{{this.phone}}" >
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="email" style="font-weight: bold;"
+                                                class="form-label">Email</label>
+                                            <input name="email" type="email" class="form-control" id="email"
+                                                value="{{this.email}}" readonly>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="place" style="font-weight: bold;"
+                                                class="form-label">Place</label>
+                                            <input name="place" type="text" class="form-control" id="place"
+                                                value="{{this.place}}" >
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="city" style="font-weight: bold;" class="form-label">City</label>
+                                            <input name="city" type="text" class="form-control" id="city"
+                                                value="{{this.city}}" >
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="pincode" style="font-weight: bold;" class="form-label">Pin
+                                                Code</label>
+                                            <input name="pincode" type="text" class="form-control" id="pincode"
+                                                value="{{this.pincode}}" >
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="district" style="font-weight: bold;"
+                                                class="form-label">District</label>
+                                            <input name="district" type="text" class="form-control" id="district"
+                                                value="{{this.district}}" >
+                                        </div>
+                                        <button type="submit" class="btn btn-warning">Save Changes</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Delete Form -->
-                        <form style="margin-top: 5px;" class="address-remove"
-                            action="/address/{{this._id}}?_method=DELETE" method="POST" id="delete-form-{{this._id}}">
-                            <button type="button"
-                                style="font-size:18px;width:70px;margin-left: 81%;height: 30px;font-size:13px;margin-top:-35px;color:black"
-                                class="btn btn-danger removecart" data-id="{{this._id}}"
-                                id="delete-button-{{this._id}}"><b>Delete</b></button>
-                        </form>
+                    <!-- Delete Form -->
+                    <form style="margin-top: 5px;" class="address-remove" action="/address/{{this._id}}?_method=DELETE"
+                        method="POST" id="delete-form-{{this._id}}">
+                        <button type="button"
+                            style="font-size:18px;width:70px;margin-left: 81%;height: 30px;font-size:13px;margin-top:-35px;color:black"
+                            class="btn btn-danger removecart" data-id="{{this._id}}"
+                            id="delete-button-{{this._id}}"><b>Delete</b></button>
+                    </form>
 
-                        <!-- SweetAlert Confirmation Script -->
-                        <script>
-                            document.getElementById('delete-button-{{this._id}}').addEventListener('click', function (event) {
-                                event.preventDefault(); // Prevent the form from submitting immediately
+                    <!-- SweetAlert Confirmation Script -->
+                    <script>
+                        document.getElementById('delete-button-{{this._id}}').addEventListener('click', function (event) {
+                            event.preventDefault(); // Prevent the form from submitting immediately
 
-                                Swal.fire({
-                                    title: 'Are you sure?',
-                                    text: 'You won\'t be able to revert this!',
-                                    icon: 'warning',
-                                    showCancelButton: true,
-                                    confirmButtonColor: '#d33',
-                                    cancelButtonColor: '#3085d6',
-                                    confirmButtonText: 'Yes, delete it!',
-                                    cancelButtonText: 'Cancel'
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        // If confirmed, submit the form
-                                        document.getElementById('delete-form-{{this._id}}').submit();
-                                    }
-                                });
+                            Swal.fire({
+                                title: 'Are you sure?',
+                                text: 'You won\'t be able to revert this!',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#d33',
+                                cancelButtonColor: '#3085d6',
+                                confirmButtonText: 'Yes, delete it!',
+                                cancelButtonText: 'Cancel'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // If confirmed, submit the form
+                                    document.getElementById('delete-form-{{this._id}}').submit();
+                                }
                             });
-                        </script>
+                        });
+                    </script>
 
             </div>
             {{/each}}
@@ -501,13 +502,15 @@
     <main style="margin-top:40px ;" class="container row">
         <section style="background-color: rgb(242, 242, 242);" class="section account-settings col-lg-12">
             <h3>Add new Address</h3>
-            <p id="message" style="color: red;font-size:13px;font-weight:700;border-width:0px;background-color: rgb(242, 242, 242);margin-left:15px">{{message}}</p>
-            <script>setTimeout(function() {
-  const messageInput = document.getElementById('message');
-  if (messageInput) {
-    messageInput.style.display = 'none'; // Hides the input field
-  }
-}, 4000);</script>
+            <p id="message"
+                style="color: red;font-size:13px;font-weight:700;border-width:0px;background-color: rgb(242, 242, 242);margin-left:15px">
+                {{message}}</p>
+            <script>setTimeout(function () {
+                    const messageInput = document.getElementById('message');
+                    if (messageInput) {
+                        messageInput.style.display = 'none'; // Hides the input field
+                    }
+                }, 4000);</script>
             <form method="post" action="/addaddress">
                 <div class="d-flex">
                     <div class="col-md-6">
@@ -622,43 +625,42 @@
             </div>
         </div>
     </div>
-    <script>
-        document.querySelectorAll(".address-card").forEach((card) => {
-  card.addEventListener("click", async function () {
-    const addressId = this.getAttribute("data-id");
+ <script>
+    document.addEventListener("click", async function (event) {
+    const card = event.target.closest(".address-card");
+    if (!card) return;
+
+    const addressId = card.getAttribute("data-id");
+    if (!addressId) return;
 
     try {
-      const response = await fetch("/updateDefaultAddress", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ addressId }),
-      });
+        const response = await fetch("/updateDefaultAddress", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ addressId }),
+        });
 
-      const result = await response.json();
+        const result = await response.json();
 
-      if (result.success) {
-        {{!-- alert("Default address updated successfully!"); --}}
-         Swal.fire({
-        text: 'Default address updated successfully!',
-        icon: 'success',
-cancelButtonText: 'okey'
-}).then((result) => {
-if (result.isConfirmed) {
-document.getElementById('delete-form-{{this._id}}').submit();
-                                    }
-                                });
-      } else {
-        alert("Failed to update default address: " + result.message);
-      }
+        if (result.success) {
+            Swal.fire({
+                text: 'Default address updated successfully!',
+                icon: 'success',
+                cancelButtonText: 'okey'
+            }).then(() => {
+                location.reload(); // Refresh to show updated default address
+            });
+        } else {
+            alert("Failed to update default address: " + result.message);
+        }
     } catch (error) {
-      console.error("Error updating default address:", error);
+        console.error("Error updating default address:", error);
     }
-  });
 });
 
-    </script>
+ </script>
     <!-- end copyright -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>

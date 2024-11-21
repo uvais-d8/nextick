@@ -3,13 +3,12 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
 const salesController = require("../controllers/salesController")
+const orderController = require("../controllers/orderController")
+const registerController = require("../controllers/registerController")
+const profileController = require("../controllers/profileController")
 const userAuth = require("../middleware/userAuth");
 const passport = require("passport");
 
-router.get("/signup", userController.loadsignup);
-router.post("/signup", userController.registerUser);
-router.get("/login", userController.loadlogin);
-router.post("/login", userAuth.islogin, userController.login);
 
 router.get(
   "/auth/google",
@@ -24,60 +23,59 @@ router.get(
   }
 );
 
+//register user routes
+router.post("/login", userAuth.islogin, registerController.login);
+router.post("/logout", registerController.logout);
+router.get("/signup", registerController.loadsignup);
+router.post("/signup", registerController.registerUser);
+router.get("/login", registerController.loadlogin);
+router.get("/verify-otp", registerController.loadVerifyOtp);
+router.post("/verify-otp", registerController.verifyOtp);
+router.post("/resend-otp", registerController.resendOtp);
+router.get("/forgotpassword", registerController.loadforgotpassword);
+
+
+//profile controller routes
+router.post("/resendotpemail", profileController.resendotpemail);
+router.post("/updateUsername",profileController.updateUsername);
+router.post("/editaddress/:id", profileController.editaddress);
+router.get("/profile", profileController.loadprofile);
+router.delete("/address/:id", profileController.removeaddress);
+router.get("/newpassword", profileController.loadnewpassword);
+router.post("/email", profileController.sendotptoemail);
+router.post("/verifyotpemail", profileController.verifyotpemail);
+router.post("/updatepassword", profileController.setnewpassword);
+router.post("/changepassword",profileController.changepassword)
+router.get("/address", profileController.loadaddress);
+router.post("/addaddress", profileController.addaddress);
+
+//sales Controller
+router.post("/addtocart", salesController.addtocart);
+router.post("/placeOrder", salesController.placeOrder);
+router.get("/cart", salesController.loadcartpage);
+router.get('/cart/:cartId/getProductStock',salesController.getProductStock)
+router.delete("/cart/:id", salesController.removecart);
 router.post('/cart/:id/updateQuantity',salesController.updateQuantity) 
 
-router.post("/updateUsername",userController.updateUsername);
 
-// router.get('/search', userController.searchProducts);
+//Orders Controller
+router.get("/checkout", orderController.checkout);
+router.get("/viewDetails/:orderId/:itemId",orderController.loadViewDetails)
+router.get("/orderss", orderController.loadorderss);
+router.patch("/orders/:orderId", orderController.removeorder); 
+router.patch("/orders/:orderId/items/:itemId", orderController.removeItem); 
 
-router.post("/editaddress/:id", userController.editaddress);
-router.get("/ordertracking/:id",userController.ordertracking)
-// router.get('/filtered',userController.filtered);
-router.get("/verify-otp", userController.loadVerifyOtp);
-router.post("/verify-otp", userController.verifyOtp);
-router.post("/resend-otp", userController.resendOtp);
-router.post("/resendotpemail", userController.resendotpemail);
 
-router.get("/home", userController.loadhome);
+//pages routes
+router.get("/advancedSearch", userController.advancedSearch);
+router.get("/ordertracking/:id",orderController.ordertracking)
 router.get("/products", userController.loadproducts);
-router.post("/logout", userController.logout);
 router.get("/product/:id", userController.singleproduct);
 router.get("/about", userController.loadaboutpage);
 router.get("/contact", userController.loadcontactpage);
-router.get("/cart", salesController.loadcartpage);
 router.get("/contact", userController.loadcontactpage);
-router.get("/profile", userController.loadprofile);
-router.get("/checkout", userController.checkout);
-router.post("/addtocart", salesController.addtocart);
-router.get("/viewDetails/:orderId/:itemId",userController.loadViewDetails)
+router.get("/home", userController.loadhome);
 
 
-router.delete("/cart/:id", salesController.removecart);
-// router.post("/cart/:id/updateQuantity", userController.updateCartQuantity);
-// Routes
-router.patch("/orders/:orderId", userController.removeorder); 
-
-router.patch("/orders/:orderId/items/:itemId", userController.removeItem); 
-
-
-router.delete("/address/:id", userController.removeaddress);
-router.get("/forgotpassword", userController.loadforgotpassword);
-router.get("/newpassword", userController.loadnewpassword);
-router.post("/email", userController.sendotptoemail);
-router.post("/verifyotpemail", userController.verifyotpemail);
-router.post("/updatepassword", userController.setnewpassword);
-
-router.post("/changepassword",userController.changepassword)
-
-router.get("/orderss", userController.loadorderss);
-
-router.post("/placeOrder", salesController.placeOrder);
-
-// Example route to fetch product stock
-router.get('/cart/:cartId/getProductStock',salesController.getProductStock)
-router.get("/address", userController.loadaddress);
-router.get("/advancedSearch", userController.advancedSearch);
-
-router.post("/addaddress", userController.addaddress);
 
 module.exports = router;

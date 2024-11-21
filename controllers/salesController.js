@@ -1,8 +1,7 @@
-const Cart = require("../model/cartmodal");
-const User = require("../model/usermodal");
-const Products = require("../model/productsmodal");
-const Address = require("../model/addressmodal");
-const Orders = require("../model/ordersmodal");
+const Cart = require("../model/cartModel");
+const Products = require("../model/ProductsModel");
+const Orders = require("../model/ordersModel");
+
 
 const getProductStock = async (req, res) => {
     const { cartId } = req.params;
