@@ -2,6 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
+const salesController = require("../controllers/salesController")
 const userAuth = require("../middleware/userAuth");
 const passport = require("passport");
 
@@ -23,7 +24,7 @@ router.get(
   }
 );
 
-router.post('/cart/:id/updateQuantity',userController.updateQuantity) 
+router.post('/cart/:id/updateQuantity',salesController.updateQuantity) 
 
 router.post("/updateUsername",userController.updateUsername);
 
@@ -43,15 +44,15 @@ router.post("/logout", userController.logout);
 router.get("/product/:id", userController.singleproduct);
 router.get("/about", userController.loadaboutpage);
 router.get("/contact", userController.loadcontactpage);
-router.get("/cart", userController.loadcartpage);
+router.get("/cart", salesController.loadcartpage);
 router.get("/contact", userController.loadcontactpage);
 router.get("/profile", userController.loadprofile);
 router.get("/checkout", userController.checkout);
-router.post("/addtocart", userController.addtocart);
+router.post("/addtocart", salesController.addtocart);
 router.get("/viewDetails/:orderId/:itemId",userController.loadViewDetails)
 
 
-router.delete("/cart/:id", userController.removecart);
+router.delete("/cart/:id", salesController.removecart);
 // router.post("/cart/:id/updateQuantity", userController.updateCartQuantity);
 // Routes
 router.patch("/orders/:orderId", userController.removeorder); 
@@ -70,10 +71,10 @@ router.post("/changepassword",userController.changepassword)
 
 router.get("/orderss", userController.loadorderss);
 
-router.post("/placeOrder", userController.placeOrder);
+router.post("/placeOrder", salesController.placeOrder);
 
 // Example route to fetch product stock
-router.get('/cart/:cartId/getProductStock',userController.getProductStock)
+router.get('/cart/:cartId/getProductStock',salesController.getProductStock)
 router.get("/address", userController.loadaddress);
 router.get("/advancedSearch", userController.advancedSearch);
 

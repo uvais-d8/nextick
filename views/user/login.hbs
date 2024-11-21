@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WATCHES PREMIUM</title>
     <link rel="stylesheet" href="/user/login.css">
-      <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
 
     <script>
 
@@ -68,19 +68,20 @@
             </script>
             <input name="email" id="email" type="email" placeholder="Email">
             <input name="password" id="password" type="password" placeholder="Password">
-            <a style="color: white;text-decoration:none;margin-left:81%;font-size:14px"
-                href="/forgotpassword">forgot password</a>
+            <a style="color: white;text-decoration:none;margin-left:83%;font-size:13px" href="/forgotpassword">forgot
+                password</a>
 
             <input class="btn" type="submit" value="Login">
-            <a style="margin-left: 30%;" class="link" href="/signup">Don't have an account? Sign up</a>
+            <a style="margin-left: 33%;font-size:14px" class="link" href="/signup">Don't have an account? Sign up</a>
 
             <!-- Google Sign-In Button -->
-               <div style="margin-left: 188px;border-radius:20px;margin-top:20px">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png" style="width: 25px;border-radius:25px;margin-left:160px">
-        <a href="/auth/google" style="color: white; text-decoration:none;margin-left:5px;"><p style="margin-top:-24px;margin-left:210px">Continue with google</p></a>
-      </div>
-
-
+            <div style="margin-left: 210px;border-radius:20px;margin-top:20px">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png"
+                    style="width: 25px;border-radius:25px;margin-left:175px">
+                <a href="/auth/google" style="color: white; text-decoration:none;margin-left:5px;">
+                    <p style="margin-top:-24px;margin-left:210px;font-size:14px">Continue with google</p>
+                </a>
+            </div>
             <script>
                 function handleCredentialResponse(response) {
                     fetch('/auth/google', {
