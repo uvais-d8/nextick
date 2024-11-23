@@ -1,9 +1,39 @@
 const bcrypt = require("bcrypt");
-const User = require("../model/userModel");
+const User = require("../model/usermodal");
 const { OAuth2Client } = require("google-auth-library");
 const { Console, profile, log, error } = require("console");
 const Category = require("../model/categoryModel");
+const nodemailer = require("nodemailer");
+const googlemodal = require("../model/googleModel");
+const client = new OAuth2Client(
+  "458432719748-rs94fgenq571a8jfulbls7dk9i10mv2o.apps.googleusercontent.com"
+);
+async function sendVerificationEmail(email, otp) {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      auth: {
+        user: process.env.SERVEREMAIL,
+        pass: process.env.PASS // Make sure to store this securely in environment variables
+      }
+    });
 
+    const info = await transporter.sendMail({
+      from: process.env.SERVEREMAIL,
+      to: email,
+      subject: "Verify your account",
+      text: `Your OTP is ${otp}`,
+      html: `<b>Your OTP: ${otp}</b>`
+    });
+    return info.accepted.length > 0;
+  } catch (error) {
+    console.error("Error sending email", error);
+    return false;
+  }
+}    
 
 const logout = (req, res) => {
     req.session.userId = null;
@@ -211,7 +241,7 @@ const registerUser = async (req, res) => {
       const newotp = generateOtp();
       req.session.userOTP = newotp;
       await req.session.save();   
-      console.log("this is newotp : :", req.session.userOTP);
+      console.log("this is newotp :", req.session.userOTP);
       const emailSent = await sendVerificationEmail(email, newotp);
       if (emailSent) {
         console.log("success to resend OTP");
@@ -225,7 +255,7 @@ const registerUser = async (req, res) => {
       }
     } catch (error) {
       console.error("Error resending OTP", error);
-      return res.render("verification");
+      return res.render("verification",{success:"OTP resend Successfully"});
   
       // return res
       //   .status(500)

@@ -123,11 +123,11 @@
 <body>
 
 	<!--PreLoader-->
-	<div class="loader">
+	{{!-- <div class="loader">
 		<div class="loader-inner">
 			<div class="circle"></div>
 		</div>
-	</div>
+	</div> --}}
 	<!--PreLoader Ends-->
 
 	<!-- header -->
@@ -206,12 +206,7 @@
 	</head>
 
 	<body style="background-color: rgb(255, 255, 255);">
-		<!-- PreLoader -->
-		<div class="loader">
-			<div class="loader-inner">
-				<div class="circle"></div>
-			</div>
-		</div>
+	
 		<div class="sidebar">
 			<div>
 				<div class="site-logo">
@@ -230,26 +225,23 @@
 			</div>
 			<!-- Sorting Options -->
 			<h5>Sort By:</h5>
-			<div class="sort-buttons">
-				<a href="/advancedSearch?sort=popularity">Popularity</a>
-				<a href="/advancedSearch?sort=priceLowToHigh">Price: Low to High</a>
-				<a href="/advancedSearch?sort=priceHighToLow">Price: High to Low</a>
-				<a href="/advancedSearch?sort=averageRating">Average Rating</a>
-				<a href="/advancedSearch?sort=featured">Featured</a>
-				<a href="/advancedSearch?sort=newArrivals">New Arrivals</a>
-				<a href="/advancedSearch?sort=aToZ">A-Z</a>
-				<a href="/advancedSearch?sort=zToA">Z-A</a>
+		<div class="sort-buttons">
+  <a href="/advancedSearch?sort=popularity&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Popularity</a>
+  <a href="/advancedSearch?sort=priceLowToHigh&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Price: Low to High</a>
+  <a href="/advancedSearch?sort=priceHighToLow&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Price: High to Low</a>
+  <a href="/advancedSearch?sort=averageRating&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Average Rating</a>
+  <a href="/advancedSearch?sort=featured&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Featured</a>
+  <a href="/advancedSearch?sort=newArrivals&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">New Arrivals</a>
+  <a href="/advancedSearch?sort=aToZ&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">A-Z</a>
+  <a href="/advancedSearch?sort=zToA&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Z-A</a>
+</div>
 
-
-			</div>
 			<h5>Filter Stock:</h5>
 
 			<div class="filter-buttons">
-				<a href="#" data-value="include" class="{{#if (eq showOutOfStock 'include')}}active{{/if}}">Show All
-					Products</a>
-				<a href="#" data-value="exclude" class="{{#if (eq showOutOfStock 'exclude')}}active{{/if}}">Hide Out of
-					Stock</a>
-			</div>
+  <a href="/advancedSearch?showOutOfStock=include&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}" class="{{#if (eq showOutOfStock 'include')}}active{{/if}}">Show All Products</a>
+  <a href="/advancedSearch?showOutOfStock=exclude&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}" class="{{#if (eq showOutOfStock 'exclude')}}active{{/if}}">Hide Out of Stock</a>
+</div>
 
 			<h5>Filter by Price:</h5>
 			<div class="filter-price">
@@ -260,19 +252,40 @@
 				<input type="number" id="max-price" name="maxPrice" value="{{maxPrice}}" placeholder="00000"
 					style="border-color: orange;margin-left:106px" />
 				<button id="filter-price-button"
-					style="border-width:0px;height:40px;border-radius:5px;margin-left:160px;background-color: orange;">Apply
-					Price Filter</button>
+  style="border-width:0px;height:40px;border-radius:5px;margin-left:160px;background-color: orange;"
+  onclick="applyPriceFilter()">Apply Price Filter</button>
+
+<script>
+  function applyPriceFilter() {
+    const minPrice = document.getElementById("min-price").value;
+    const maxPrice = document.getElementById("max-price").value;
+
+    const url = new URL(window.location.href);
+    url.searchParams.set('minPrice', minPrice);
+    url.searchParams.set('maxPrice', maxPrice);
+
+    // Update the URL and reload the page
+    window.location.href = url;
+  }
+</script>
+
 			</div>
 
 			<h5>Filter by Category:</h5>
 			<div class="filter-category">
-				<select id="category-filter" style="border-color: orange;width: 100%;height:40px;border-radius:5px">
-					<option value="all" {{#if (eq category 'all' )}}selected{{/if}}>All Categories</option>
-					{{#each categories}}
-					<option value="{{this.name}}" {{#if (eq ../category this.category)}}selected{{/if}}>
-						{{this.category}}</option>
-					{{/each}}
-				</select>
+				<select id="category-filter" style="border-color: orange;width: 100%;height:40px;border-radius:5px" onchange="applyCategoryFilter()">
+  <option value="all" {{#if (eq category 'all') }}selected{{/if}}>All Categories</option>
+  {{#each categories}}
+    <option value="{{this.name}}" {{#if (eq category this.name)}}selected{{/if}}>{{this.category}}</option>
+  {{/each}}
+</select><script>
+  function applyCategoryFilter() {
+    const category = document.getElementById("category-filter").value;
+    const url = new URL(window.location.href);
+    url.searchParams.set('category', category);
+    window.location.href = url; // Reload the page with updated URL
+  }
+</script>
 			</div>
 			<div>
 
@@ -291,13 +304,22 @@
 
 			<h5>Filter by Rating:</h5>
 			<div class="filter-rating">
-				<select id="rating-filter" style="border-color: orange;">
-					<option value="all" {{#if (eq rating 'all' )}}selected{{/if}}>All Ratings</option>
-					<option value="4" {{#if (eq rating '4' )}}selected{{/if}}>4 Stars & Above</option>
-					<option value="3" {{#if (eq rating '3' )}}selected{{/if}}>3 Stars & Above</option>
-					<option value="2" {{#if (eq rating '2' )}}selected{{/if}}>2 Stars & Above</option>
-					<option value="1" {{#if (eq rating '1' )}}selected{{/if}}>1 Star & Above</option>
-				</select>
+				<select id="rating-filter" style="border-color: orange;" onchange="applyRatingFilter()">
+  <option value="all" {{#if (eq rating 'all') }}selected{{/if}}>All Ratings</option>
+  <option value="4" {{#if (eq rating '4') }}selected{{/if}}>4 Stars & Above</option>
+  <option value="3" {{#if (eq rating '3') }}selected{{/if}}>3 Stars & Above</option>
+  <option value="2" {{#if (eq rating '2') }}selected{{/if}}>2 Stars & Above</option>
+  <option value="1" {{#if (eq rating '1') }}selected{{/if}}>1 Star & Above</option>
+</select>
+
+<script>
+  function applyRatingFilter() {
+    const rating = document.getElementById("rating-filter").value;
+    const url = new URL(window.location.href);
+    url.searchParams.set('rating', rating);
+    window.location.href = url; // Reload the page with updated URL
+  }
+</script>
 			</div>
 		</div>
 
@@ -382,12 +404,13 @@
 							</a>
 						</div>
 						{{/each}}
+
 					</div>
 				</div>
 
 			</div>
 		</div>
-			<script>
+			{{!-- <script>
   document.addEventListener("DOMContentLoaded", () => {
     const applyFilters = () => {
       const query = document.getElementById("searchInput")?.value || ""; // Preserve search query
@@ -530,7 +553,24 @@ document.getElementById("category-filter").addEventListener("change", (e) => {
 				function applyFilters(url) {
 					window.location.href = url; // Redirect to the filtered URL
 				}
-		</script>
+		</script> --}}
+
+		<script>document.getElementById("filterForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  const queryString = new URLSearchParams(formData).toString();
+
+  try {
+    const response = await fetch(`/products?${queryString}`, { method: "GET" });
+    const { products, totalProducts } = await response.json();
+
+    // Update product listing dynamically (implement renderProducts)
+    renderProducts(products, totalProducts);
+  } catch (error) {
+    console.error("Error fetching filtered products:", error);
+  }
+});
+</script>
 		<!-- logo carousel -->
 		<div style="position: relative;" class="logo-carousel-section">
 			<div class="container">

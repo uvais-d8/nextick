@@ -1,9 +1,9 @@
 body {
   background-size: cover;
-  color: #fff;
+  color: #000000;
   font-family: sans-serif;
   text-align: center;
-  background-color: rgba(107, 65, 18, 0.929);
+  background-color:wheat;
 }
 .container{
     position: relative;
@@ -15,8 +15,11 @@ body {
     left: 0;
     margin: auto;
     height: 400px;
-    background-color: rgba(0, 0, 0, 0.697);
+    background-color: rgba(255, 255, 255, 0.907);
     padding: 30px;
+    color: black;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.166);
+
     border-radius: 10px;
     position: fixed;
 }
@@ -29,14 +32,19 @@ form {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  color: black;
+
 }
 
 input {
+  color: black;
   padding: 10px;
   border: none;
+  height: 25px;
   border-bottom: 1px solid #fff;
-  background-color: transparent;
-  color: #fff;
+  background-color: rgba(231, 220, 220, 0.783);
+  border-radius: 4px;
+  color: #000000;
 margin-top: 20px;
 
 }
@@ -45,8 +53,10 @@ margin-top: 20px;
   padding: 10px 20px;
   background-color: rgba(226, 137, 13, 0.889);
   margin-top: 100px;
+  font-size: 17px;
   color: #fff;
   border: none;
+  height: 40px;
   border-radius: 5px;
   cursor: pointer;
 }

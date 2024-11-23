@@ -1,12 +1,10 @@
 const bcrypt = require("bcrypt");
 const fs = require("fs");
-const User = require("../model/userModel");
+const User = require("../model/usermodal");
 const admin = require("../model/adminModel");
-const Products = require("../model/ProductsModel");
+const Products = require("../model/productsmodal");
 const Category = require("../model/categoryModel");
-const Orders = require("../model/ordersModel");
-
-
+const Orders = require("../model/ordersmodal");
 const path = require("path");
 const { default: mongoose } = require("mongoose");
 const Handlebars = require("handlebars");
@@ -273,112 +271,126 @@ const listcategory = async (req, res) => {
     res.redirect("/admin/dashboard");
   }
 };
+
 const editproducts = async (req, res) => {
   try {
-      // Retrieve form data
-      const { id, name, category, stock, price, deletedImages } = req.body;
+    // Retrieve form data
+    const { id, name, category, stock, price, deletedImages } = req.body;
 
-      console.log("Received Data:");
-      console.log("ID:", id);
-      console.log("Name:", name);
-      console.log("Category:", category);
-      console.log("Stock:", stock);
-      console.log("Price:", price);
-      console.log("Deleted Images:", deletedImages);
+    console.log("Received Data:");
+    console.log("ID:", id);
+    console.log("Name:", name);
+    console.log("Category:", category);
+    console.log("Stock:", stock);
+    console.log("Price:", price);
+    console.log("Deleted Images:", deletedImages);
 
-      // Fetch product by ID
-      const product = await Products.findById(id);
-      if (!product) {
-          console.error("Product not found for ID:", id);
-          return res.render("admin/products", { message: "Product not found" });
-      }
+    // Check if a product with the same name already exists (excluding the current product)
+    const existingProduct = await Products.findOne({
+      name: name.trim(),
+      _id: { $ne: id }, // Exclude the current product being edited
+    });
 
-      // Fetch the Category ObjectId
-      const categoryObj = await Category.findById(category);  // Fetch by ObjectId
-      if (!categoryObj) {
-          return res.status(400).render("admin/products", { message: "Category not found" });
-      }
-
-      // Convert stock to a number for validation
-      const stockNumber = parseInt(stock, 10);
-      if (isNaN(stockNumber)) {
-          return res.render("admin/products", { message: "Stock must be a valid number" });
-      }
-
-      // Validation: Stock cannot be negative
-      if (stockNumber < 0) {
-          return res.render("admin/products", { message: "Stock cannot be negative" });
-      }
-
-      // Handle deleted images
-      if (deletedImages) {
-          const deletedImagesArray = deletedImages.split(",");
-          for (const imagePath of deletedImagesArray) {
-              const index = product.images.indexOf(imagePath);
-              if (index > -1) {
-                  product.images.splice(index, 1);
-                  const fullImagePath = path.join(__dirname, "..", "public", imagePath);
-                  if (fs.existsSync(fullImagePath)) {
-                      fs.unlinkSync(fullImagePath);
-                      console.log("Deleted image from server:", fullImagePath);
-                  }
-              }
-          }
-      }
-
-      // Handle newly uploaded files
-      if (req.files && req.files.images) {
-          const newImages = req.files.images.map((file) => "uploads/" + file.filename);
-          product.images.push(...newImages);
-          console.log("Added new images:", newImages);
-      }
-
-      // Handle cropped image if provided
-      if (req.body.croppedImageData) {
-          const croppedImages = Array.isArray(req.body.croppedImageData)
-              ? req.body.croppedImageData
-              : [req.body.croppedImageData];
-
-          for (const croppedImageData of croppedImages) {
-              const buffer = Buffer.from(croppedImageData.split(",")[1], "base64");
-              const croppedFileName = `cropped-${Date.now()}.png`;
-              const filePath = path.join(__dirname, "..", "uploads", croppedFileName);
-              fs.writeFileSync(filePath, buffer);
-              product.images.push("uploads/" + croppedFileName);
-              console.log("Added cropped image:", croppedFileName);
-          }
-      }
-
-      // Ensure at least one image is provided
-      if (product.images.length === 0) {
-          console.error("No images provided for the product.");
-          return res.render("admin/products", { message: "At least one image is required" });
-      }
-
-      // Update product fields
-      Object.assign(product, {
-          name: name.trim(),
-          category: categoryObj._id,  // Assign the ObjectId of the category
-          stock: stockNumber,
-          price: parseFloat(price).toFixed(2),
+    if (existingProduct) {
+      console.error("Product with this name already exists:", name);
+      return res.render("admin/products", {
+        message: "A product with this name already exists.",
       });
+    }
 
-      // Save the updated product
-      await product.save();
-      console.log("Product updated successfully:", product);
+    // Fetch product by ID
+    const product = await Products.findById(id);
+    if (!product) {
+      console.error("Product not found for ID:", id);
+      return res.render("admin/products", { message: "Product not found" });
+    }
 
-      // Redirect to the products page after successful update
-      res.redirect("/admin/products");
+    // Fetch the Category ObjectId
+    const categoryObj = await Category.findById(category); // Fetch by ObjectId
+    if (!categoryObj) {
+      return res.status(400).render("admin/products", { message: "Category not found" });
+    }
 
+    // Convert stock to a number for validation
+    const stockNumber = parseInt(stock, 10);
+    if (isNaN(stockNumber)) {
+      return res.render("admin/products", { message: "Stock must be a valid number" });
+    }
+
+    // Validation: Stock cannot be negative
+    if (stockNumber < 0) {
+      return res.render("admin/products", { message: "Stock cannot be negative" });
+    }
+
+    // Handle deleted images
+    if (deletedImages) {
+      const deletedImagesArray = deletedImages.split(",");
+      for (const imagePath of deletedImagesArray) {
+        const index = product.images.indexOf(imagePath);
+        if (index > -1) {
+          product.images.splice(index, 1);
+          const fullImagePath = path.join(__dirname, "..", "public", imagePath);
+          if (fs.existsSync(fullImagePath)) {
+            fs.unlinkSync(fullImagePath);
+            console.log("Deleted image from server:", fullImagePath);
+          }
+        }
+      }
+    }
+
+    // Handle newly uploaded files
+    if (req.files && req.files.images) {
+      const newImages = req.files.images.map((file) => "uploads/" + file.filename);
+      product.images.push(...newImages);
+      console.log("Added new images:", newImages);
+    }
+
+    // Handle cropped image if provided
+    if (req.body.croppedImageData) {
+      const croppedImages = Array.isArray(req.body.croppedImageData)
+        ? req.body.croppedImageData
+        : [req.body.croppedImageData];
+
+      for (const croppedImageData of croppedImages) {
+        const buffer = Buffer.from(croppedImageData.split(",")[1], "base64");
+        const croppedFileName = `cropped-${Date.now()}.png`;
+        const filePath = path.join(__dirname, "..", "uploads", croppedFileName);
+        fs.writeFileSync(filePath, buffer);
+        product.images.push("uploads/" + croppedFileName);
+        console.log("Added cropped image:", croppedFileName);
+      }
+    }
+
+    // Ensure at least one image is provided
+    if (product.images.length === 0) {
+      console.error("No images provided for the product.");
+      return res.render("admin/products", { message: "At least one image is required" });
+    }
+
+    // Update product fields
+    Object.assign(product, {
+      name: name.trim(),
+      category: categoryObj._id, // Assign the ObjectId of the category
+      stock: stockNumber,
+      price: parseFloat(price).toFixed(2),
+    });
+
+    // Save the updated product
+    await product.save();
+    console.log("Product updated successfully:", product);
+
+    // Redirect to the products page after successful update
+    res.redirect("/admin/products");
   } catch (error) {
-      console.error("Error updating product:", error);
-      const products = await Products.find({});
-      res.status(500).render("admin/products", {
-          products,
-          message: "An error occurred while updating the product. Please try again.",
-      });
+    console.error("Error updating product:", error);
+    const products = await Products.find({});
+    res.status(500).render("admin/products", {
+      products,
+      message: "An error occurred while updating the product. Please try again.",
+    });
   }
 };
+
 const editcategory = async (req, res) => {
   const categoryId = req.params.id;
   const { category,brand, bandcolor, stock } = req.body;
@@ -434,12 +446,18 @@ const listproducts = async (req, res) => {
 };
 const loadorders = async (req, res) => {
   try {
-    const orders = await Orders.find({});
+    // Fetch orders and populate items.productId to get product details
+    const orders = await Orders.find({})
+      .populate('items.productId', 'name') // Populate productId with only the 'name' field
+      .exec();
+
     res.render("admin/orders", { orders });
   } catch (error) {
-    console.log("Error during load orders", error);
+    console.error("Error during load orders:", error);
+    res.status(500).send("Failed to load orders");
   }
 };
+
 const loadinventory = async (req, res) => {
   try {
     const products = await Products.find({});
@@ -583,7 +601,9 @@ const editinventory = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-
+if (stock.length<0){
+  console.log("not minus allowed")
+}
     // Check if a product with the same name already exists (excluding the current product)
     const existingProduct = await Products.findOne({
       name: name,

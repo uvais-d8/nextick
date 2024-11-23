@@ -36,6 +36,7 @@ router.get("/forgotpassword", registerController.loadforgotpassword);
 
 
 //profile controller routes
+router.post("/updateDefaultAddress",profileController.updateDefaultAddress)
 router.post("/resendotpemail", profileController.resendotpemail);
 router.post("/updateUsername",profileController.updateUsername);
 router.post("/editaddress/:id", profileController.editaddress);

@@ -158,7 +158,7 @@
 	<!-- end breadcrumb section -->
 	<div class="container">
 		<div class="row">
-			{{#each alladdresses}}
+			{{#each addresses}}
 			<div class="col-md-4">
 				<main id="box" style="margin-top:40px;">
 					<section id="box"
@@ -212,33 +212,55 @@
 											<div class="billing-address-form">
 												<!-- Shipping Address Form -->
 												<form method="post" action="/placeOrder" id="orderForm">
+													<div
+														style="display: flex; justify-content: space-between; gap: 20px; align-items: center;">
+														<div style="flex: 1;">
+															<label for="firstname"><b>First Name</b></label>
+															<p><input id="firstname" name="firstname" type="text"
+																	style="width: 100%;"></p>
+														</div>
 
-													<label for="firstname"><b>First Name</b></label>
-													<p><input id="firstname" name="firstname" type="text" required>
-													</p>
-
-													<label for="lastname"><b>Last Name</b></label>
-													<p><input id="lastname" name="lastname" type="text" required>
-													</p>
+														<div style="flex: 1;">
+															<label for="lastname"><b>Last Name</b></label>
+															<p><input id="lastname" name="lastname" type="text"
+																	style="width: 100%;"></p>
+														</div>
+													</div>
 
 													<label for="email"><b>Email</b></label>
-													<p><input id="email" name="email" type="email" required></p>
+													<p><input id="email" name="email" type="email"></p>
 
 													<label for="address"><b>Address</b></label>
-													<p><input id="address" name="address" type="text" required></p>
+													<p><input id="address" name="address" type="text"></p>
 
 													<label for="phone"><b>Phone</b></label>
-													<p><input id="phone" name="phone" type="tel" required></p>
+													<p><input id="phone" name="phone" type="tel"></p>
 
 													<label for="pincode"><b>Pin code</b></label>
-													<p><input id="pincode" name="pincode" type="number" required></p>
+													<p><input id="pincode" name="pincode" type="number"></p>
+
+													<div
+														style="display: flex; justify-content: space-between; gap: 20px; align-items: center;">
+														<div style="flex: 1;">
+															<label for="place"><b>Place</b></label>
+															<p><input id="place" name="place" type="text"
+																	style="width: 100%;"></p>
+														</div>
+
+														<div style="flex: 1;">
+															<label for="city"><b>City</b></label>
+															<p><input id="city" name="city" type="text"
+																	style="width: 100%;"></p>
+														</div>
+													</div>
+
 
 													<label for="district"><b>District</b></label>
-													<p><input id="district" name="district" type="text" required></p>
+													<p><input id="district" name="district" type="text"></p>
 
 
 													<label for="paymentMethod"><b>Payment Method</b></label>
-													<select id="paymentMethod" name="paymentMethod" required>
+													<select id="paymentMethod" name="paymentMethod">
 														<option value="cod">COD</option>
 														<option value="upi">UPI</option>
 													</select>
@@ -277,12 +299,12 @@
 								<tbody class="order-details-body">
 									{{#each carts}}
 									<tr>
-										<td class="item-id" hidden >{{this.productId._id}}</td>
+										<td class="item-id" hidden>{{this.productId._id}}</td>
 										<td class="item-name">{{this.productId.name}}</td>
 										<td class="item-price">{{this.productId.price}}</td>
 										<td class="item-quantity">{{this.quantity}}</td>
 										<td class="item-total">{{multiply this.productId.price this.quantity}}</td>
-										<td class="item-image" hidden >{{this.productId.images}}</td>
+										<td class="item-image" hidden>{{this.productId.images}}</td>
 									</tr>
 									{{/each}}
 								</tbody>
@@ -436,8 +458,6 @@
 	<script>
 		document.getElementById('orderForm').addEventListener('submit', async function (event) {
 			event.preventDefault(); // Prevent default form submission
-			console.log('hai')
-
 			const form = event.target;
 
 			// Collect form field values
@@ -449,6 +469,9 @@
 			const pincode = form.elements['pincode'].value;
 			const district = form.elements['district'].value;
 			const paymentMethod = form.elements['paymentMethod'].value;
+			const place = form.elements['place'].value;
+			const city = form.elements['city'].value;
+
 
 			const items = Array.from(document.querySelectorAll('.order-details-body tr')).map(row => ({
 				productId: row.querySelector('.item-id').textContent.trim(),
@@ -469,6 +492,8 @@
 				district,
 				paymentMethod,
 				items,
+				place,
+				city,
 				paymentMethod: document.getElementById('paymentMethod').value,
 				subtotal: parseFloat(document.querySelector('input[name="subtotal"]').value),
 				shippingRate: parseFloat(document.querySelector('input[name="shippingRate"]').value),

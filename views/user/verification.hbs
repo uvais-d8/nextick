@@ -10,7 +10,7 @@
 
     <style>
         body {
-            background-color: rgba(194, 121, 26, 0.87);
+background-color: wheat;            background-size: cover;
         }
 
         .timer {
@@ -45,24 +45,26 @@
         <p style="color:rgb(38, 38, 38); width: 700px;height:100px;font-size:14px">Please enter the OTP sent to your
             registered email address.</p>
         <input style="background-color:rgb(236, 236, 236);color:red;font-size:14px;font-weight:bold;border-width:0px"
-            id="message" value="{{message}}" type="text"></p>
+            id="message" value="{{message}}" type="text"></p> 
+        <input style="background-color:rgb(236, 236, 236);color:rgb(49, 184, 19);font-size:14px;font-weight:bold;border-width:0px"
+            id="success" value="{{success}}" type="text"></p>
 
         <!-- Form with OTP Inputs -->
-<form id="otpForm" action="/verify-otp" method="POST" onsubmit="updateOtpValue()">
-    <div class="otp-input">
-        <input type="text" maxlength="1" class="otp-box" required oninput="moveToNext(this)">
-        <input type="text" maxlength="1" class="otp-box" required oninput="moveToNext(this)">
-        <input type="text" maxlength="1" class="otp-box" required oninput="moveToNext(this)">
-        <input type="text" maxlength="1" class="otp-box" required oninput="moveToNext(this)">
-        <input type="text" maxlength="1" class="otp-box" required oninput="moveToNext(this)">
-        <input type="text" maxlength="1" class="otp-box" required oninput="moveToNext(this)">
-    </div>
-    <input type="hidden" name="otp" id="otp" required>
+        <form id="otpForm" action="/verify-otp" method="POST" onsubmit="updateOtpValue()">
+            <div class="otp-input">
+                <input type="text" maxlength="1" class="otp-box" required oninput="moveToNext(this)">
+                <input type="text" maxlength="1" class="otp-box" required oninput="moveToNext(this)">
+                <input type="text" maxlength="1" class="otp-box" required oninput="moveToNext(this)">
+                <input type="text" maxlength="1" class="otp-box" required oninput="moveToNext(this)">
+                <input type="text" maxlength="1" class="otp-box" required oninput="moveToNext(this)">
+                <input type="text" maxlength="1" class="otp-box" required oninput="moveToNext(this)">
+            </div>
+            <input type="hidden" name="otp" id="otp" required>
 
-            <div id="timer" style="font-size: 14px; margin-bottom: 10px;margin-top:15px">Resend OTP in <span
-                    id="countdown">30</span> seconds</div>
+            <div id="timer" onclick="location.reload()" style="font-size: 14px; margin-bottom: 10px;margin-top:15px">
+                Resend OTP in <span id="countdown">30</span> seconds</div>
 
-            
+
             <button style="background-color:rgba(255, 145, 0, 0.944);color:rgb(0, 0, 0)" type="submit"
                 id="verifyButton"><b>Verify OTP</b></button>
         </form>
@@ -94,7 +96,7 @@
                     // Hide the timer and show the resend button
                     document.getElementById('timer').style.display = 'none';
                     resendForm.style.display = 'block';
-                } 
+                }
             }, 1000); // Update every second
         </script>
 
@@ -117,6 +119,12 @@
             }
             setTimeout(() => {
                 const messageElement = document.getElementById('message');
+                if (messageElement) {
+                    messageElement.remove(); // Removes the input field from the DOM
+                }
+            }, 2000);
+            setTimeout(() => {
+                const messageElement = document.getElementById('success');
                 if (messageElement) {
                     messageElement.remove(); // Removes the input field from the DOM
                 }

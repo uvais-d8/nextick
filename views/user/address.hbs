@@ -251,11 +251,11 @@
     </style>
 
     <!--PreLoader-->
-    <div class="loader">
+    {{!-- <div class="loader">
         <div class="loader-inner">
             <div class="circle"></div>
         </div>
-    </div>
+    </div> --}}
     <!--PreLoader Ends-->
 
     <!-- header -->
@@ -364,21 +364,20 @@
             <div class="col-md-4">
                 <section id="box" style="background-color: rgb(242, 242, 242);MARGIN-TOP:50PX"
                     class="section account-settings">
-                    <form>
-                      <div class="form-group address-card" data-id="{{this._id}}" style="cursor: pointer;">
-    <h3>Saved Address</h3>
-    <label>First Name: {{this.firstname}}</label>
-    <label>Last Name: {{this.lastname}}</label>
-    <label>Address: {{this.address}}</label>
-    <label>Phone No: {{this.phone}}</label>
-    <label>Email: {{this.email}}</label>
-    <label>Place: {{this.place}}</label>
-    <label>City: {{this.city}}</label>
-    <label>Pin Code: {{this.pincode}}</label>
-    <label>District: {{this.district}}</label>
-</div>
 
-                    </form>
+
+                    <div class="form-group address-card" data-id="{{this._id}}" style="cursor: pointer;">
+                        <h3>Saved Address</h3>
+                        <label>First Name: {{this.firstname}}</label>
+                        <label>Last Name: {{this.lastname}}</label>
+                        <label>Address: {{this.address}}</label>
+                        <label>Phone No: {{this.phone}}</label>
+                        <label>Email: {{this.email}}</label>
+                        <label>Place: {{this.place}}</label>
+                        <label>City: {{this.city}}</label>
+                        <label>Pin Code: {{this.pincode}}</label>
+                        <label>District: {{this.district}}</label>
+                    </div>
 
                     <!-- Button to trigger modal with unique ID -->
                     <button style="width: 70px;height:30px;margin-left:58%;" type="button" class="btn btn-warning"
@@ -404,25 +403,25 @@
                                             <label for="firstname" style="font-weight: bold;" class="form-label">First
                                                 Name</label>
                                             <input name="firstname" type="text" class="form-control" id="firstname"
-                                                value="{{this.firstname}}" >
+                                                value="{{this.firstname}}">
                                         </div>
                                         <div class="mb-3">
                                             <label for="lastname" style="font-weight: bold;" class="form-label">Last
                                                 Name</label>
                                             <input name="lastname" type="text" class="form-control" id="lastname"
-                                                value="{{this.lastname}}" >
+                                                value="{{this.lastname}}">
                                         </div>
                                         <div class="mb-3">
                                             <label for="address" style="font-weight: bold;"
                                                 class="form-label">Address</label>
                                             <input name="address" type="text" class="form-control" id="address"
-                                                value="{{this.address}}" >
+                                                value="{{this.address}}">
                                         </div>
                                         <div class="mb-3">
                                             <label for="phone" style="font-weight: bold;" class="form-label">Phone
                                                 No</label>
                                             <input name="phone" type="tel" class="form-control" id="phone"
-                                                value="{{this.phone}}" >
+                                                value="{{this.phone}}">
                                         </div>
                                         <div class="mb-3">
                                             <label for="email" style="font-weight: bold;"
@@ -434,24 +433,24 @@
                                             <label for="place" style="font-weight: bold;"
                                                 class="form-label">Place</label>
                                             <input name="place" type="text" class="form-control" id="place"
-                                                value="{{this.place}}" >
+                                                value="{{this.place}}">
                                         </div>
                                         <div class="mb-3">
                                             <label for="city" style="font-weight: bold;" class="form-label">City</label>
                                             <input name="city" type="text" class="form-control" id="city"
-                                                value="{{this.city}}" >
+                                                value="{{this.city}}">
                                         </div>
                                         <div class="mb-3">
                                             <label for="pincode" style="font-weight: bold;" class="form-label">Pin
                                                 Code</label>
                                             <input name="pincode" type="text" class="form-control" id="pincode"
-                                                value="{{this.pincode}}" >
+                                                value="{{this.pincode}}">
                                         </div>
                                         <div class="mb-3">
                                             <label for="district" style="font-weight: bold;"
                                                 class="form-label">District</label>
                                             <input name="district" type="text" class="form-control" id="district"
-                                                value="{{this.district}}" >
+                                                value="{{this.district}}">
                                         </div>
                                         <button type="submit" class="btn btn-warning">Save Changes</button>
                                     </form>
@@ -527,7 +526,7 @@
                             <input id="phone" name="phone" placeholder="Phone No">
                         </div>
                         <div class="form-group">
-                            <input style="width: 100%;" type="number" id="pincode" name="pincode"
+                            <input style="width: 100%;" id="pincode" name="pincode"
                                 placeholder="Pin code">
                         </div>
                     </div>
@@ -625,42 +624,64 @@
             </div>
         </div>
     </div>
- <script>
-    document.addEventListener("click", async function (event) {
-    const card = event.target.closest(".address-card");
-    if (!card) return;
+    <script>
+        document.addEventListener("click", async function (event) {
+            console.log("Click event detected");
 
-    const addressId = card.getAttribute("data-id");
-    if (!addressId) return;
+            const card = event.target.closest(".address-card");
+            if (!card) return; // Exit if no address card was clicked
+            console.log("Address card clicked:", card);
 
-    try {
-        const response = await fetch("/updateDefaultAddress", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ addressId }),
+            const addressId = card.getAttribute("data-id");
+            if (!addressId) {
+                console.error("Address ID not found in the data-id attribute.");
+                return; // Exit if no data-id is found
+            }
+
+            try {
+                // Make the POST request to update the default address
+                const response = await fetch("/updateDefaultAddress", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ addressId }), // Send the address ID in the body
+                });
+
+                // Parse the JSON response
+                const result = await response.json();
+
+                // Handle success or failure based on response
+                if (result.success) {
+                    Swal.fire({
+                        text: "Default address updated successfully!",
+                        icon: "success",
+                        confirmButtonText: "OK",
+                    }).then(() => {
+                        // Optionally reload the page or dynamically update the UI
+                        location.reload(); // Reloads the page to reflect the updated default address
+                    });
+                } else {
+                    // Show an error message if the update failed
+                    Swal.fire({
+                        text: `Failed to update default address: ${result.message}`,
+                        icon: "error",
+                        confirmButtonText: "OK",
+                    });
+                }
+            } catch (error) {
+                // Catch any errors from the fetch request or JSON parsing
+                console.error("Error updating default address:", error);
+                Swal.fire({
+                    text: "An error occurred while updating the address. Please try again.",
+                    icon: "error",
+                    confirmButtonText: "OK",
+                });
+            }
         });
 
-        const result = await response.json();
 
-        if (result.success) {
-            Swal.fire({
-                text: 'Default address updated successfully!',
-                icon: 'success',
-                cancelButtonText: 'okey'
-            }).then(() => {
-                location.reload(); // Refresh to show updated default address
-            });
-        } else {
-            alert("Failed to update default address: " + result.message);
-        }
-    } catch (error) {
-        console.error("Error updating default address:", error);
-    }
-});
-
- </script>
+    </script>
     <!-- end copyright -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>

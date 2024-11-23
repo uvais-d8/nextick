@@ -2,133 +2,170 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const adminroutes = require("./routes/adminroutes");
-const userroutes = require('./routes/userroutes');
+const userroutes = require("./routes/userroutes");
 const session = require("express-session");
 const nocache = require("nocache");
 const connectdb = require("./db/connectdb");
-const MongoStore = require('connect-mongo');
-const hbs = require('hbs'); 
-const expressHbs = require('express-handlebars');
-require('dotenv').config();
-const methodOverride = require('method-override');
-// const password=require("./config/passport");
+const MongoStore = require("connect-mongo");
+const hbs = require("hbs");
+const Handlebars = require("./helper");
+const exphbs = require("express-handlebars");
 const passport = require("passport");
-require("./config/passport")
-
+const methodOverride = require("method-override");
 const PORT = process.env.PORT;
+require("dotenv").config();
+require("./config/passport");
+
 
 // Session management
-app.use(session({
-  secret: 'yourSecretKey',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: false }
-}));
-
-
+app.use(
+  session({
+    secret: "yourSecretKey",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
 // Middleware
-app.use(methodOverride('_method'));
+app.use(methodOverride("_method"));
 app.use(nocache());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static('uploads'));
+app.use("/uploads", express.static("uploads"));
 
+
+// Register views and set view engine
+app.set("view engine", "hbs");
+app.set("views", path.join(__dirname, "views"));
+app.use(express.static("public"));
+
+// Admin routes - set views path dynamically
+app.use("/admin",(req, res, next) => {
+    app.set("views", path.join(__dirname, "views"));
+    next();
+  },
+  adminroutes
+);
+
+// User routes - set views path dynamically
+app.use("/",(req, res, next) => {
+    app.set("views", path.join(__dirname, "views/user"));
+    next();
+  },
+  userroutes
+);
+
+//using helpers
+app.engine(
+  "hbs",
+  exphbs.engine({
+    extname: "hbs",
+    defaultLayout: false, // Disable layout usage
+
+    // layoutsDir: path.join(__dirname, 'views/layouts'),
+    partialsDir: [
+      path.join(__dirname, "views", "partials", "admin"),
+      path.join(__dirname, "views", "partials", "user")
+    ],
+    runtimeOptions: {
+      allowProtoPropertiesByDefault: true,
+      allowProtoMethodsByDefault: true
+    },
+    helpers: {
+      // Helper to calculate subtotal
+      calculateSubtotal: carts => {
+        return carts.reduce((acc, item) => acc + item.total, 0);
+      },
+
+      // Helper to calculate shipping
+      calculateShipping: carts => {
+        return carts.reduce((acc, item) => acc + item.shippingrate, 0);
+      },
+
+      // Helper to calculate total (subtotal + shipping)
+      calculateTotal: carts => {
+        const subtotal = carts.reduce((acc, item) => acc + item.total, 0);
+        const shipping = carts.reduce(
+          (acc, item) => acc + item.shippingrate,
+          0
+        );
+        return subtotal + shipping;
+      },
+
+      // Helper for date formatting
+      formatDate: dateString => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      },
+
+      // Helper to build query string
+      buildQuery: (
+        query,
+        sort,
+        showOutOfStock,
+        minPrice,
+        maxPrice,
+        category,
+        rating,
+        page
+      ) => {
+        return `query=${query || ""}&sort=${sort ||
+          ""}&showOutOfStock=${showOutOfStock || "all"}&minPrice=${minPrice ||
+          ""}&maxPrice=${maxPrice || ""}&category=${category ||
+          "all"}&rating=${rating || "all"}&page=${page || 1}`;
+      },
+
+      // Helper to multiply two values
+      multiply: (price, quantity) => {
+        return price * quantity;
+      },
+
+      // Helper to add two values
+      add: (a, b) => a + b,
+
+      // Helper to subtract two values
+      subtract: (a, b) => a - b,
+
+      // Helper for equality check
+      eq: (a, b) => a === b,
+
+      // Helper for greater than check
+      gt: (a, b) => a > b,
+
+      // Helper for less than check
+      lt: (a, b) => a < b,
+
+      // Helper for logical OR
+      or: (a, b) => a || b,
+
+      // Helper to return status icon based on status
+      statusIcon: status => {
+        switch (status) {
+          case "delivered":
+            return "✓";
+          case "shipped":
+            return "⏳";
+          case "pending":
+            return "🔄";
+          default:
+            return "•";
+        }
+      },
+
+      // Helper to return the JSON representation of the context
+      json: context => JSON.stringify(context)
+    }
+  })
+);
 
 // Connect to the database
 connectdb();
-
-
-// Register Handlebars helpers
-hbs.registerHelper('multiply', (price, quantity) => {
-  return price * quantity;
-});
-
-hbs.registerHelper('eq', (a, b) => {
-  return a === b;
-});
-
-hbs.registerHelper('gt', (a, b) => {
-  return a > b;
-});
-hbs.registerHelper('eq', (a, b) => a === b);
-hbs.registerHelper('or', (a, b) => a || b);
-
-// Registering the formatDate helper
-hbs.registerHelper('formatDate', (dateString) => {
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
-});
-
-// Equals helper for selected option in dropdown
-hbs.registerHelper('eq', (a, b) => a === b);
-
-// Register views and set view engine
-app.set('view engine', 'hbs');
-app.set("views", path.join(__dirname, "views"));
-
-// Admin routes - set views path dynamically
-app.use("/admin", (req, res, next) => {
-  app.set("views", path.join(__dirname, "views"));
-  next();
-}, adminroutes);
-
-// User routes - set views path dynamically
-app.use("/", (req, res, next) => {
-  app.set("views", path.join(__dirname, "views/user"));
-  next();
-}, userroutes);
-
-app.use(express.static('public'));
-
-
-// Handlebars helper function to format date
-hbs.registerHelper('formatDate', function(date) {
-  const formattedDate = new Date(date).toLocaleDateString('en-GB'); // 'dd/mm/yyyy' format
-  return formattedDate;
-});
-
-// Register a helper for checking equality
-hbs.registerHelper("eq", (a, b) => a === b);
-
-// Register a helper for status icons
-hbs.registerHelper("statusIcon", (status) => {
-  switch (status) {
-    case "delivered": return "✓";
-    case "shipped": return "⏳";
-    case "pending": return "🔄";
-    default: return "•";
-  }
-});
-
-hbs.registerHelper('add', (a, b) => a + b);
-hbs.registerHelper('subtract', (a, b) => a - b);
-
-hbs.registerHelper('json', function (context) {
-  return JSON.stringify(context); 
-});
-// Date formatting helper
-hbs.registerHelper("formatDate", dateString => {
-  const date = new Date(dateString);
-
-  // Get day, month, and year
-  const day = String(date.getDate()).padStart(2, "0"); // Pad day
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // Pad month
-  const year = date.getFullYear();
-
-  return `${day}/${month}/${year}`; // Return in DD/MM/YYYY format
-});
-// Route handlers
-// app.use("/admin", adminroutes);
-// app.use("/", userroutes);
-
-// app.set('view options', { layout: 'layout' });
-
 
 // Start the server
 app.listen(PORT, () => {

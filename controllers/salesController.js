@@ -1,6 +1,6 @@
 const Cart = require("../model/cartModel");
-const Products = require("../model/ProductsModel");
-const Orders = require("../model/ordersModel");
+const Products = require("../model/productsmodal");
+const Orders = require("../model/ordersmodal");
 
 
 const getProductStock = async (req, res) => {
@@ -57,7 +57,32 @@ const getProductStock = async (req, res) => {
   
     const userId = req.session.userId;
   
-    try {
+    try { 
+          if (
+            !email ||
+            !phone ||
+            !paymentMethod ||
+            !items ||
+            !pincode ||
+            !district ||
+            !firstname ||
+            !lastname ||
+            !address ||
+            !place ||
+            !city
+          ) {
+            console.log("all fields required")
+            console.log(
+              
+               
+             
+              
+              place,
+              city,
+              lastname,
+              address)
+            return res.redirect("/checkout")
+          }
       // Fetch product details for each item
       const cartItems = await Promise.all(
         items.map(async item => {
@@ -131,7 +156,159 @@ const getProductStock = async (req, res) => {
         });
     }
   };
-
+  // const placeOrder = async (req, res) => {
+  //   const {
+  //     email,
+  //     phone,
+  //     paymentMethod,
+  //     items, // Array containing product IDs and quantities
+  //     pincode,
+  //     district,
+  //     firstname,
+  //     lastname,
+  //     address,
+  //     place,
+  //     city
+  //   } = req.body;
+  
+  //   const userId = req.session.userId;
+  
+  //   try {
+  //     // 1. Validate required fields
+  //     if (
+  //       !email ||
+  //       !phone ||
+  //       !paymentMethod ||
+  //       !items ||
+  //       !pincode ||
+  //       !district ||
+  //       !firstname ||
+  //       !lastname ||
+  //       !address ||
+  //       !place ||
+  //       !city
+  //     ) {
+  //       return res.status(400).json({
+  //         success: false,
+  //         message: "All fields are required. Please provide complete information."
+  //       });
+  //     }
+  
+  //     // Validate email format
+  //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //     if (!emailRegex.test(email)) {
+  //       return res.status(400).json({
+  //         success: false,
+  //         message: "Invalid email format."
+  //       });
+  //     }
+  
+  //     // Validate phone number (example: 10-digit Indian mobile number)
+  //     const phoneRegex = /^[6-9]\d{9}$/;
+  //     if (!phoneRegex.test(phone)) {
+  //       return res.status(400).json({
+  //         success: false,
+  //         message: "Invalid phone number format."
+  //       });
+  //     }
+  
+  //     // Ensure `items` is an array with valid structure
+  //     if (!Array.isArray(items) || items.length === 0) {
+  //       return res.status(400).json({
+  //         success: false,
+  //         message: "Items must be a non-empty array with product IDs and quantities."
+  //       });
+  //     }
+  
+  //     // Check if payment method is valid
+  //     const validPaymentMethods = ["cash", "card", "UPI", "netbanking"];
+  //     if (!validPaymentMethods.includes(paymentMethod.toLowerCase())) {
+  //       return res.status(400).json({
+  //         success: false,
+  //         message: "Invalid payment method. Choose from Cash, Card, UPI, or Netbanking."
+  //       });
+  //     }
+  
+  //     // 2. Fetch product details and validate each item
+  //     const cartItems = await Promise.all(
+  //       items.map(async (item) => {
+  //         if (!item.productId || !item.quantity || item.quantity <= 0) {
+  //           throw new Error("Invalid product ID or quantity in items.");
+  //         }
+  
+  //         const product = await Products.findById(item.productId);
+  //         if (!product) {
+  //           throw new Error(`Product with ID ${item.productId} not found.`);
+  //         }
+  
+  //         // Check if the product is listed for sale
+  //         if (!product.isListed) {
+  //           throw new Error(`Product "${product.name}" is not available for sale.`);
+  //         }
+  
+  //         // Check if stock is sufficient
+  //         if (item.quantity > product.stock) {
+  //           throw new Error(`Insufficient stock for product: "${product.name}".`);
+  //         }
+  
+  //         return {
+  //           productId: product._id,
+  //           price: product.price,
+  //           quantity: item.quantity,
+  //           total: product.price * item.quantity
+  //         };
+  //       })
+  //     );
+  
+  //     // 3. Calculate order total
+  //     const orderTotal = cartItems.reduce((sum, item) => sum + item.total, 0);
+  
+  //     // 4. Create and save the order
+  //     const newOrder = new Orders({
+  //       userId,
+  //       items: cartItems,
+  //       paymentMethod,
+  //       shippingAddress: {
+  //         firstname: firstname.trim(),
+  //         lastname: lastname.trim(),
+  //         address: address.trim(),
+  //         phone,
+  //         email,
+  //         place: place.trim(),
+  //         city: city.trim(),
+  //         pincode: parseInt(pincode, 10),
+  //         district: district.trim()
+  //       },
+  //       orderTotal
+  //     });
+  
+  //     await newOrder.save();
+  
+  //     // 5. Decrease stock for each product
+  //     await Promise.all(
+  //       cartItems.map(async (item) => {
+  //         await Products.findByIdAndUpdate(
+  //           item.productId,
+  //           { $inc: { stock: -item.quantity } }, // Decrease stock
+  //           { new: true } // Return updated product
+  //         );
+  //       })
+  //     );
+  
+  //     // 6. Clear the user's cart
+  //     await Cart.deleteMany({ user: userId });
+  
+  //     // 7. Respond with success
+  //     res.json({ success: true, message: "Order placed successfully." });
+  //   } catch (error) {
+  //     console.error("Error placing order:", error);
+  //     res.status(500).json({
+  //       success: false,
+  //       message: error.message || "Failed to place order."
+  //     });
+  //   }
+  // };
+  
   const loadcartpage = async (req, res) => {
     try {
       const userId = req.session.userId;
@@ -141,38 +318,39 @@ const getProductStock = async (req, res) => {
       // If no items in the cart, render the page with a message
       if (!carts || carts.length === 0) {
         return res.render("cart", {
-          message: "There are no items in your cart at the moment"
+          carts: [], // Pass an empty array to avoid errors
+          message: "There are no items in your cart at the moment",
         });
       }
   
-      // Calculate totals (if needed)
+      // Calculate totals
       const subtotal = carts.reduce(
-        (acc, cart) => acc + cart.productId.price * cart.quantity,
+        (acc, cart) => acc + (cart.productId.price || 0) * cart.quantity,
         0
       );
-  
       const shippingRate = 50; // Static shipping rate for now
       const total = subtotal + shippingRate;
   
       // Add the first image of each product to the cart items
-      carts.forEach(cart => {
+      carts.forEach((cart) => {
         if (cart.productId.images && cart.productId.images.length > 0) {
-          cart.firstImage = cart.productId.images[0]; // Store the first image
+          cart.firstImage = cart.productId.images[0];
         }
       });
-      console.log(carts);
   
-      // If cart has items, render the cart with the products
+      // Render the cart page with items
       res.render("cart", {
         carts,
         subtotal,
         shippingRate,
-        total
+        total,
       });
     } catch (error) {
-      console.log("Error occurred during cart page:", error);
+      console.error("Error occurred during cart page:", error);
+      res.status(500).send("Internal Server Error");
     }
   };
+  
   const removecart = async (req, res) => {
     const { id } = req.params;
   

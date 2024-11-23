@@ -74,14 +74,14 @@
                         <td>{{../shippingAddress.firstname}} {{../shippingAddress.lastname}}</td>
                         <td>{{../shippingAddress.address}}</td> <!-- Access address from shippingAddress -->
                         <td>{{formatDate ../time}}</td> <!-- Use the formatDate helper here -->
-                        <td>{{name}}</td>
+                        <td> {{productId.name}}</td>
                         <td>$ {{total}}</td>
                         <td>{{quantity}}</td>
                         <td>
                             <form method="POST" action="/admin/updatestatus">
                                 <div class="status-container" data-status="{{status}}">
                                     <select id="statusSelect{{_id}}" class="statusSelect"
-                                        style="color: rgb(255, 255, 255); background-color: rgba(26, 45, 120, 0.752); border-color: rgb(0, 0, 0)"
+                                        style="width:140px;color: rgb(255, 255, 255); background-color: rgba(26, 45, 120, 0.752); border-color: rgb(0, 0, 0)"
                                         name="status" id="statusSelect" required onchange="this.form.submit()">
                                         <option value=""><b>{{status}}</b></option>
                                         <option value="scheduled"><b>Scheduled</b></option>
@@ -94,7 +94,7 @@
                                     <input type="hidden" name="itemId" value="{{_id}}"> <!-- Pass itemId -->
                                     <p id="statusWarning{{_id}}" class="statusWarning"
                                         style="display: none; color: rgb(255, 17, 0);font-size:13px">
-                                        can't change status<br>from delivered
+                                        order already delivered
                                     </p>
                             </form>
 
