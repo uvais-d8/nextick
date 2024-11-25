@@ -21,7 +21,7 @@ const productsShema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  name: {
+  name:{
     type: String,
     required: true
   },

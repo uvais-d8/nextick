@@ -20,6 +20,10 @@ const couponSchema = new mongoose.Schema({
         type: [String], // Array of product IDs or names
         default: []
     },
+    Categories: {
+        type: [String], // Array of applicable category names or IDs
+        default: []
+    },
     MinimumCartValue: {
         type: Number, // Changed to Number for cart value comparison
         min: 0
@@ -36,14 +40,6 @@ const couponSchema = new mongoose.Schema({
         type: String,
         maxlength: 500 // Limit description length
     },
-    ApplicableProducts: {
-        type: [String], // Array of applicable product IDs or names
-        default: []
-    },
-    ApplicableCategories: {
-        type: [String], // Array of applicable category names or IDs
-        default: []
-    }
 });
 
 const Coupons = mongoose.model("Coupon", couponSchema);

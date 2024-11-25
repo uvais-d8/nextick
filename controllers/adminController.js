@@ -20,10 +20,9 @@ const storage = multer.diskStorage({
     },
 });
 const upload = multer({ storage: storage }).any("images", 10);
-
 const loadcoupon = async (req, res) => {
   try {
-    const coupons = await couponSchema.find({}); // Fetching all coupons
+    const coupons = await Coupon.find({}); // Fetching all coupons
     res.render("admin/coupon", { coupons }); // Passing the coupons array to the view
   } catch (error) {
     console.log(error);
@@ -210,7 +209,7 @@ const addproduct = async (req, res) => {
 };
 const addcategory = async (req, res) => {
   try {
-    const { category, brand, bandcolor, stock, status } = req.body;
+    const { category,brand, bandcolor } = req.body;
 
     const existingCategory = await Category.findOne({ category });
     if (existingCategory) {
@@ -221,10 +220,8 @@ const addcategory = async (req, res) => {
     }
     const newCategory = new Category({
       category,
-      brand,
       bandcolor,
-      stock,
-      status
+      brand,
     });
 
     await newCategory.save();
@@ -271,12 +268,10 @@ const listcategory = async (req, res) => {
     res.redirect("/admin/dashboard");
   }
 };
-
 const editproducts = async (req, res) => {
   try {
     // Retrieve form data
     const { id, name, category, stock, price, deletedImages } = req.body;
-
     console.log("Received Data:");
     console.log("ID:", id);
     console.log("Name:", name);
@@ -390,33 +385,30 @@ const editproducts = async (req, res) => {
     });
   }
 };
-
 const editcategory = async (req, res) => {
-  const categoryId = req.params.id;
-  const { category,brand, bandcolor, stock } = req.body;
-  const updatedCategory = { category,brand, bandcolor, stock };
+  const categoryId = req.params.id; // Category ID from the request
+  const { category, brand, bandcolor } = req.body; // Extract values from request body
+  const updatedCategory = { category, brand, bandcolor };
 
   try {
-    // Check if a different category with the same brand already exists
-    const { id } = req.params;
-    const category = await Category.find({});
-
+    // Check if a different category with the same name already exists
     const existingCategory = await Category.findOne({
-      category,
-      _id: { $ne: categoryId }
+      category: category.trim(), // Use category name from req.body
+      _id: { $ne: categoryId }   // Exclude the current category being edited
     });
 
     if (existingCategory) {
       console.log("Category already exists");
+      const category  = await Category.find({}); // Fetch all categories to display
       return res.render("admin/category", {
         category,
-        message: "Category already exists with this same name"
+        message: "Category with this name already exists."
       });
     }
 
     // Update the category if no duplicate is found
-    await Category.findByIdAndUpdate(categoryId, updatedCategory);
-    res.redirect("/admin/category"); // Redirect to category list after updating
+    await Category.findByIdAndUpdate(categoryId, updatedCategory, { new: true });
+    res.redirect("/admin/category"); // Redirect to the category list after updating
   } catch (err) {
     console.error("Error updating category:", err);
     res.status(500).send("Error updating category");
@@ -457,7 +449,6 @@ const loadorders = async (req, res) => {
     res.status(500).send("Failed to load orders");
   }
 };
-
 const loadinventory = async (req, res) => {
   try {
     const products = await Products.find({});
@@ -623,7 +614,6 @@ if (stock.length<0){
         message: "No changes made to the product"
       });
     }
-
     // Update the product details
     product.name = name;
     product.stock = stock;
@@ -639,7 +629,16 @@ if (stock.length<0){
   }
 };
 const loadaddcoupon = async (req, res) => {
-  res.render("admin/addcoupon");
+  try {
+    const products = await Products.find({})
+    const Categories = await Category.find({})
+    console.log(Categories);
+    
+    res.render("admin/addcoupon",{products,Categories});
+  } catch (error) {
+    console.log("errorr")
+    res.render("admin/addcoupon",{message:"errorr"});
+  }
 };
 const addcoupon = async (req, res) => {
   try {
@@ -647,52 +646,128 @@ const addcoupon = async (req, res) => {
       CouponCode,
       DiscountType,
       DiscountValue,
-      Products,
+      Products,   
+      Categories, 
       MinimumCartValue,
       UsageLimit,
       ExpiryDate,
       Description,
-      ApplicableProducts,
-      ApplicableCategories
     } = req.body;
+
     console.log("Request body:", req.body);
 
-    // Check if product already exists
-    const existingcoupon = await couponSchema.findOne({ CouponCode });
-    if (existingcoupon) {
-      console.log("coupon already exists");
-      return res.render("admin/coupon", {
-        message: "coupon already exists"
+    if (!CouponCode || !DiscountType || !DiscountValue || !Products || !ExpiryDate) {
+      console.log("Missing required fields");
+      return res.render("admin/addcoupon", {
+        message: "All fields are required"
       });
     }
-    const formattedExpiryDate = new Date(ExpiryDate).toLocaleDateString(
-      "en-GB"
-    ); // 'dd/mm/yyyy' format
 
-    const newCoupon = new couponSchema({
+    // Check for existing coupon code
+    const existingcoupon = await Coupon.findOne({ CouponCode });
+    if (existingcoupon) {
+      console.log("coupon already exists");
+      return res.render("admin/addcoupon", {
+        message: "Coupon already exists"
+      });
+    }
+
+    // Additional validations (DiscountValue, MinimumCartValue, UsageLimit, ExpiryDate, etc.)
+    if (isNaN(DiscountValue) || DiscountValue <= 0) {
+      console.log("Invalid DiscountValue");
+      return res.render("admin/addcoupon", {
+        message: "Discount value must be a positive number"
+      });
+    }
+
+    if (MinimumCartValue && (isNaN(MinimumCartValue) || MinimumCartValue < 0)) {
+      console.log("Invalid MinimumCartValue");
+      return res.render("admin/addcoupon", {
+        message: "Minimum cart value must be a positive number"
+      });
+    }
+
+    if (UsageLimit && (isNaN(UsageLimit) || UsageLimit <= 0 || !Number.isInteger(Number(UsageLimit)))) {
+      console.log("Invalid UsageLimit");
+      return res.render("admin/addcoupon", {
+        message: "Usage limit must be a positive integer"
+      });
+    }
+
+    const formattedExpiryDate = new Date(ExpiryDate);
+    if (isNaN(formattedExpiryDate)) {
+      console.log("Invalid ExpiryDate");
+      return res.render("admin/addcoupon", {
+        message: "Expiry date is invalid"
+      });
+    }
+
+    if (formattedExpiryDate < new Date()) {
+      console.log("Expiry date is in the past");
+      return res.render("admin/addcoupon", {
+        message: "Expiry date cannot be in the past"
+      });
+    }
+
+    if (Description && typeof Description !== 'string') {
+      console.log("Invalid Description");
+      return res.render("admin/addcoupon", {
+        message: "Description must be a valid string"
+      });
+    }
+
+    // Create a new coupon object
+    const newCoupon = new Coupon({
       CouponCode,
       DiscountType,
       DiscountValue,
-      Products,
+      Products,     // Now it correctly stores an array of selected products
+      Categories,   // Now it correctly stores an array of selected categories
       MinimumCartValue,
       UsageLimit,
-      ExpiryDate: formattedExpiryDate, // Use formatted date here
+      ExpiryDate: formattedExpiryDate, 
       Description,
-      ApplicableProducts,
-      ApplicableCategories
     });
 
     await newCoupon.save();
     console.log("New coupon saved:", newCoupon);
 
-    // Redirect to products page after saving
     return res.redirect("/admin/coupon");
   } catch (error) {
     console.error("Error adding coupon:", error.message);
     res.redirect("/admin/dashboard");
   }
 };
+const deleteCoupon = async (req, res) => {
+  const { couponId } = req.params;  // Destructure couponId from req.params
+  console.log("Coupon ID received:", couponId);
+
+  try {
+    // Delete the coupon from the Coupon model
+    const deletedCoupon = await Coupon.findByIdAndDelete(couponId);
+
+    if (!deletedCoupon) {
+      // If no coupon is found with the given ID
+      console.log("Coupon not found");
+      return res.redirect("/admin/coupon"); // Redirect if coupon not found
+    }
+
+    // Log the deleted coupon to verify
+    console.log("Deleted coupon:", deletedCoupon);
+
+    // Redirect to the coupon list page after deletion
+    return res.redirect("/admin/coupon"); // Adjust the path as per your structure
+
+  } catch (error) {
+    // Catch any errors during the deletion process
+    console.log("Error occurred while deleting coupon:", error);
+    return res.status(500).render("admin/coupon", {
+      message: "An error occurred while deleting the coupon"
+    });
+  }
+};
 module.exports = {
+  deleteCoupon,
   addcoupon,
   loadaddcoupon,
   loadcoupon,

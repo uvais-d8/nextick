@@ -31,94 +31,93 @@
 	<link rel="stylesheet" href="/assets/css/responsive.css">
 
 	<!-- Custom CSS for product listing -->.
+	<style>
+		/* General Body Styles */
+		body {
+			margin: -25px;
+			font-family: Arial, sans-serif;
+		}
 
+		/* Card Styles */
+		.card {
+			box-shadow: 0 0 15px 9px #cccccc69;
+			border: none;
+			transition: box-shadow 0.3s ease;
+		}
+
+		.card:hover {
+			box-shadow: 0 0 15px 9px #eaeaea69;
+		}
+
+		/* Sidebar Styles */
+		.sidebar {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 330px;
+			/* Adjust width as needed */
+			height: 100vh;
+			background-color: #ffffff;
+			/* Sidebar background */
+			color: #000;
+			/* Sidebar text color */
+			padding: 20px;
+			box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			margin-top: 90px;
+			/* Adjust for header if present */
+		}
+
+		/* Main Content Styles */
+		.main-content {
+			margin-left: 300px;
+			/* Matches the sidebar width */
+			padding: 20px;
+		}
+
+		/* Button Base Styles (Shared for Sort and Filter Buttons) */
+		.sidebar {
+			overflow-y: auto;
+			/* Enable vertical scrolling */
+			max-height: 99vh;
+			/* Limit the sidebar height to the viewport */
+			padding: 10px;
+			/* Padding for better spacing */
+			border: 1px solid rgb(255, 136, 0);
+			/* Optional border styling */
+			height: 5000px;
+		}
+
+		.sidebar a {
+			display: block;
+			text-decoration: none;
+			color: rgb(255, 136, 0);
+			border: 1px solid rgb(255, 136, 0);
+			border-radius: 5px;
+			padding: 8px 10px;
+			text-align: center;
+			background-color: transparent;
+			transition: all 0.4s ease;
+			margin-top: 5px;
+		}
+
+
+		.sidebar a:hover {
+			background-color: rgb(255, 136, 0);
+			color: white;
+		}
+
+		/* Active State for Buttons */
+		.sidebar a.active {
+			background-color: rgb(255, 136, 0);
+			color: white;
+		}
+
+		/* Ensure other content doesn't overlap the sidebar */
+	</style>
 </head>
-<style>
-	/* General Body Styles */
-	body {
-		margin: -25px;
-		font-family: Arial, sans-serif;
-	}
-
-	/* Card Styles */
-	.card {
-		box-shadow: 0 0 15px 9px #cccccc69;
-		border: none;
-		transition: box-shadow 0.3s ease;
-	}
-
-	.card:hover {
-		box-shadow: 0 0 15px 9px #eaeaea69;
-	}
-
-	/* Sidebar Styles */
-	.sidebar {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 330px;
-		/* Adjust width as needed */
-		height: 100vh;
-		background-color: #ffffff;
-		/* Sidebar background */
-		color: #000;
-		/* Sidebar text color */
-		padding: 20px;
-		box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-		margin-top: 90px;
-		/* Adjust for header if present */
-	}
-
-	/* Main Content Styles */
-	.main-content {
-		margin-left: 300px;
-		/* Matches the sidebar width */
-		padding: 20px;
-	}
-
-	/* Button Base Styles (Shared for Sort and Filter Buttons) */
-	.sidebar {
-		overflow-y: auto;
-		/* Enable vertical scrolling */
-		max-height: 99vh;
-		/* Limit the sidebar height to the viewport */
-		padding: 10px;
-		/* Padding for better spacing */
-		border: 1px solid rgb(255, 136, 0);
-		/* Optional border styling */
-		height: 5000px;
-	}
-
-	.sidebar a {
-		display: block;
-		text-decoration: none;
-		color: rgb(255, 136, 0);
-		border: 1px solid rgb(255, 136, 0);
-		border-radius: 5px;
-		padding: 8px 10px;
-		text-align: center;
-		background-color: transparent;
-		transition: all 0.4s ease;
-		margin-top: 5px;
-	}
-
-
-	.sidebar a:hover {
-		background-color: rgb(255, 136, 0);
-		color: white;
-	}
-
-	/* Active State for Buttons */
-	.sidebar a.active {
-		background-color: rgb(255, 136, 0);
-		color: white;
-	}
-
-	/* Ensure other content doesn't overlap the sidebar */
-</style>
 
 <body>
 
@@ -188,7 +187,7 @@
 	<!-- end header -->
 
 
-	<div style="height: -11px;" class="breadcrumb-section breadcrumb-bg">
+	<div class="breadcrumb-section breadcrumb-bg">
 		<div style="height: -111px;" class="container">
 			<div style="height: -111px;" class="row">
 				<div class="col-lg-8 offset-lg-2 text-center">
@@ -206,7 +205,7 @@
 	</head>
 
 	<body style="background-color: rgb(255, 255, 255);">
-	
+
 		<div class="sidebar">
 			<div>
 				<div class="site-logo">
@@ -225,23 +224,36 @@
 			</div>
 			<!-- Sorting Options -->
 			<h5>Sort By:</h5>
-		<div class="sort-buttons">
-  <a href="/advancedSearch?sort=popularity&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Popularity</a>
-  <a href="/advancedSearch?sort=priceLowToHigh&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Price: Low to High</a>
-  <a href="/advancedSearch?sort=priceHighToLow&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Price: High to Low</a>
-  <a href="/advancedSearch?sort=averageRating&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Average Rating</a>
-  <a href="/advancedSearch?sort=featured&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Featured</a>
-  <a href="/advancedSearch?sort=newArrivals&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">New Arrivals</a>
-  <a href="/advancedSearch?sort=aToZ&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">A-Z</a>
-  <a href="/advancedSearch?sort=zToA&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Z-A</a>
-</div>
-
+			<div class="sort-buttons">
+				<a
+					href="/advancedSearch?sort=popularity&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Popularity</a>
+				<a
+					href="/advancedSearch?sort=priceLowToHigh&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Price:
+					Low to High</a>
+				<a
+					href="/advancedSearch?sort=priceHighToLow&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Price:
+					High to Low</a>
+				<a
+					href="/advancedSearch?sort=averageRating&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Average
+					Rating</a>
+				<a
+					href="/advancedSearch?sort=featured&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Featured</a>
+				<a
+					href="/advancedSearch?sort=newArrivals&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">New
+					Arrivals</a>
+				<a
+					href="/advancedSearch?sort=aToZ&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">A-Z</a>
+				<a
+					href="/advancedSearch?sort=zToA&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Z-A</a>
+			</div>
 			<h5>Filter Stock:</h5>
 
 			<div class="filter-buttons">
-  <a href="/advancedSearch?showOutOfStock=include&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}" class="{{#if (eq showOutOfStock 'include')}}active{{/if}}">Show All Products</a>
-  <a href="/advancedSearch?showOutOfStock=exclude&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}" class="{{#if (eq showOutOfStock 'exclude')}}active{{/if}}">Hide Out of Stock</a>
-</div>
+				<a href="/advancedSearch?showOutOfStock=include&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}"
+					class="{{#if (eq showOutOfStock 'include')}}active{{/if}}">Show All Products</a>
+				<a href="/advancedSearch?showOutOfStock=exclude&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}"
+					class="{{#if (eq showOutOfStock 'exclude')}}active{{/if}}">Hide Out of Stock</a>
+			</div>
 
 			<h5>Filter by Price:</h5>
 			<div class="filter-price">
@@ -252,43 +264,63 @@
 				<input type="number" id="max-price" name="maxPrice" value="{{maxPrice}}" placeholder="00000"
 					style="border-color: orange;margin-left:106px" />
 				<button id="filter-price-button"
-  style="border-width:0px;height:40px;border-radius:5px;margin-left:160px;background-color: orange;"
-  onclick="applyPriceFilter()">Apply Price Filter</button>
+					style="border-width:0px;height:40px;border-radius:5px;margin-left:160px;background-color: orange;"
+					onclick="applyPriceFilter()">Apply Price Filter</button>
 
-<script>
-  function applyPriceFilter() {
-    const minPrice = document.getElementById("min-price").value;
-    const maxPrice = document.getElementById("max-price").value;
+				<script>
+					function applyPriceFilter() {
+						let minPrice = document.getElementById("min-price").value;
+						let maxPrice = document.getElementById("max-price").value;
 
-    const url = new URL(window.location.href);
-    url.searchParams.set('minPrice', minPrice);
-    url.searchParams.set('maxPrice', maxPrice);
+						// Convert minPrice and maxPrice to numbers
+						minPrice = parseFloat(minPrice);
+						maxPrice = parseFloat(maxPrice);
 
-    // Update the URL and reload the page
-    window.location.href = url;
-  }
-</script>
+						// Ensure minPrice is at least 0
+						if (minPrice < 0) {
+							minPrice = 0;
+							document.getElementById("min-price").value = minPrice;  // Update the input field
+						}
+
+						// Ensure maxPrice is not less than minPrice
+						if (maxPrice < minPrice) {
+							maxPrice = minPrice; // Set maxPrice to minPrice if it's less
+							document.getElementById("max-price").value = maxPrice;  // Update the input field
+						}
+
+						const url = new URL(window.location.href);
+						url.searchParams.set('minPrice', minPrice);
+						url.searchParams.set('maxPrice', maxPrice);
+
+						// Update the URL and reload the page
+						window.location.href = url;
+					}
+				</script>
 
 			</div>
 
 			<h5>Filter by Category:</h5>
 			<div class="filter-category">
-				<select id="category-filter" style="border-color: orange;width: 100%;height:40px;border-radius:5px" onchange="applyCategoryFilter()">
-  <option value="all" {{#if (eq category 'all') }}selected{{/if}}>All Categories</option>
-  {{#each categories}}
-    <option value="{{this.name}}" {{#if (eq category this.name)}}selected{{/if}}>{{this.category}}</option>
-  {{/each}}
-</select><script>
-  function applyCategoryFilter() {
-    const category = document.getElementById("category-filter").value;
-    const url = new URL(window.location.href);
-    url.searchParams.set('category', category);
-    window.location.href = url; // Reload the page with updated URL
-  }
-</script>
+				<select id="category-filter" style="border-color: orange;width: 100%;height:40px;border-radius:5px"
+					onchange="applyCategoryFilter()">
+					<option value="all" {{#if (eq category 'all' ) }}selected{{/if}}>All Categories</option>
+					{{#each categories}}
+					<option value="{{this.name}}" {{#if (eq category this.name)}}selected{{/if}}>{{this.category}}
+					</option>
+					{{/each}}
+				</select>
+
+				<script>
+					function applyCategoryFilter() {
+						const category = document.getElementById("category-filter").value;
+						const url = new URL(window.location.href);
+						url.searchParams.set('category', category);
+						window.location.href = url; // Reload the page with updated URL
+					}
+				</script>
+
 			</div>
 			<div>
-
 				<p style="color: white;">.</p>
 				<p style="color: white;">.</p>
 				<p style="color: white;">.</p>
@@ -305,21 +337,21 @@
 			<h5>Filter by Rating:</h5>
 			<div class="filter-rating">
 				<select id="rating-filter" style="border-color: orange;" onchange="applyRatingFilter()">
-  <option value="all" {{#if (eq rating 'all') }}selected{{/if}}>All Ratings</option>
-  <option value="4" {{#if (eq rating '4') }}selected{{/if}}>4 Stars & Above</option>
-  <option value="3" {{#if (eq rating '3') }}selected{{/if}}>3 Stars & Above</option>
-  <option value="2" {{#if (eq rating '2') }}selected{{/if}}>2 Stars & Above</option>
-  <option value="1" {{#if (eq rating '1') }}selected{{/if}}>1 Star & Above</option>
-</select>
+					<option value="all" {{#if (eq rating 'all' ) }}selected{{/if}}>All Ratings</option>
+					<option value="4" {{#if (eq rating '4' ) }}selected{{/if}}>4 Stars & Above</option>
+					<option value="3" {{#if (eq rating '3' ) }}selected{{/if}}>3 Stars & Above</option>
+					<option value="2" {{#if (eq rating '2' ) }}selected{{/if}}>2 Stars & Above</option>
+					<option value="1" {{#if (eq rating '1' ) }}selected{{/if}}>1 Star & Above</option>
+				</select>
 
-<script>
-  function applyRatingFilter() {
-    const rating = document.getElementById("rating-filter").value;
-    const url = new URL(window.location.href);
-    url.searchParams.set('rating', rating);
-    window.location.href = url; // Reload the page with updated URL
-  }
-</script>
+				<script>
+					function applyRatingFilter() {
+						const rating = document.getElementById("rating-filter").value;
+						const url = new URL(window.location.href);
+						url.searchParams.set('rating', rating);
+						window.location.href = url; // Reload the page with updated URL
+					}
+				</script>
 			</div>
 		</div>
 
@@ -353,7 +385,7 @@
 
 							</div>
 							<input type="text" id="message" name="message" style="width: 100%;border-width:0px;"
-								value="{{message}}"{{message}}>
+								value="{{message}}" {{message}}>
 
 						</form>
 					</div>
@@ -410,167 +442,23 @@
 
 			</div>
 		</div>
-			{{!-- <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const applyFilters = () => {
-      const query = document.getElementById("searchInput")?.value || ""; // Preserve search query
-      const showOutOfStock = document.querySelector(".filter-buttons a.active")?.getAttribute("data-value") || "";
-      const minPrice = document.getElementById("min-price").value || "";
-      const maxPrice = document.getElementById("max-price").value || "";
-      const category = document.getElementById("category-filter").value || "all";
-      const rating = document.getElementById("rating-filter").value || "all";
-      const sort = document.getElementById("sort-filter").value || "";
-
-      // Construct query string
-      const queryParams = new URLSearchParams({
-        query,
-        showOutOfStock,
-        minPrice,
-        maxPrice,
-        category,
-        rating,
-        sort,
-      });
-
-      // Reload page with updated query params
-      window.location.href = `/advancedSearch?${queryParams.toString()}`;
-    };
-
-   document.querySelectorAll(".filter-buttons a").forEach((button) => {
-  button.addEventListener("click", (e) => {
-    e.preventDefault();
-    // Remove 'active' from all buttons and set it for the clicked one
-    document.querySelectorAll(".filter-buttons a").forEach((btn) => btn.classList.remove("active"));
-    button.classList.add("active");
-
-    // Get the value and apply the filter
-    const showOutOfStock = button.getAttribute("data-value");
-    const queryParams = new URLSearchParams(window.location.search);
-    queryParams.set("showOutOfStock", showOutOfStock);
-    window.location.search = queryParams.toString(); // Reload with new query params
-  });
-});document.getElementById("filter-price-button").addEventListener("click", () => {
-  const minPrice = document.getElementById("min-price").value;
-  const maxPrice = document.getElementById("max-price").value;
-
-  // Update query parameters
-  const queryParams = new URLSearchParams(window.location.search);
-  if (minPrice) queryParams.set("minPrice", minPrice);
-  else queryParams.delete("minPrice");
-  if (maxPrice) queryParams.set("maxPrice", maxPrice);
-  else queryParams.delete("maxPrice");
-
-  window.location.search = queryParams.toString(); // Reload with updated parameters
-});
-document.getElementById("category-filter").addEventListener("change", (e) => {
-  const category = e.target.value;
-
-  // Update query parameters
-  const queryParams = new URLSearchParams(window.location.search);
-  queryParams.set("category", category);
-  window.location.search = queryParams.toString(); // Reload with updated parameters
-});
-
-
-    document.getElementById("filter-price-button").addEventListener("click", applyFilters);
-    document.getElementById("category-filter").addEventListener("change", applyFilters);
-    document.getElementById("rating-filter").addEventListener("change", applyFilters);
-    document.getElementById("sort-filter").addEventListener("change", applyFilters);
-
-    // Live Search
-    document.getElementById("searchInput").addEventListener("input", () => {
-      const query = document.getElementById("searchInput").value;
-      if (query.length > 0) {
-        fetch(`/advancedSearch?query=${query}`)
-          .then(response => response.json())
-          .then(data => {
-            const resultsDiv = document.getElementById("live-search-results");
-            resultsDiv.innerHTML = "";
-
-            if (data.length > 0) {
-              data.forEach(item => {
-                const resultItem = document.createElement("div");
-                resultItem.textContent = item.name; // Assuming item has a 'name' property
-                resultsDiv.appendChild(resultItem);
-              });
-            } else {
-              resultsDiv.innerHTML = "No results found.";
-            }
-          })
-          .catch(error => console.error("Error fetching search results:", error));
-      } else {
-        document.getElementById("live-search-results").innerHTML = "";
-      }
-    });
-  });
-</script>
-		<script>
-			function liveSearch() {
-				const query = document.getElementById('searchInput').value;
-
-				// Only perform search if there's at least one character
-				if (query.length > 0) {
-					fetch(`/advancedSearch?query=${query}`)
-						.then(response => response.json())  // Assuming the server responds with JSON
-						.then(data => {
-							const resultsDiv = document.getElementById('live-search-results');
-							resultsDiv.innerHTML = '';  // Clear previous results
-
-							if (data.length > 0) {
-								data.forEach(item => {
-									const resultItem = document.createElement('div');
-									resultItem.textContent = item.name; // Assuming item has a 'name' property
-									resultsDiv.appendChild(resultItem);
-								});
-							} else {
-								resultsDiv.innerHTML = 'No results found.';
-							}
-						})
-						.catch(error => console.error('Error fetching search results:', error));
-				} else {
-					document.getElementById('live-search-results').innerHTML = '';
-				}
-			}
-		</script>
-		<script>
-				// Event Handlers
-				document.getElementById('filter-price-button').addEventListener('click', () => {
-					const minPrice = document.getElementById('min-price').value || 0;
-					const maxPrice = document.getElementById('max-price').value || 10000;
-					applyFilters(`/advancedSearch?minPrice=${minPrice}&maxPrice=${maxPrice}`);
-				});
-
-				document.getElementById('category-filter').addEventListener('change', (e) => {
-					const category = e.target.value;
-					applyFilters(`/advancedSearch?category=${category}`);
-				});
-
-				document.getElementById('rating-filter').addEventListener('change', (e) => {
-					const rating = e.target.value;
-					applyFilters(`/advancedSearch?rating=${rating}`);
-				});
-
-				function applyFilters(url) {
-					window.location.href = url; // Redirect to the filtered URL
-				}
-		</script> --}}
 
 		<script>document.getElementById("filterForm").addEventListener("submit", async function (e) {
-  e.preventDefault();
-  const formData = new FormData(this);
-  const queryString = new URLSearchParams(formData).toString();
+				e.preventDefault();
+				const formData = new FormData(this);
+				const queryString = new URLSearchParams(formData).toString();
 
-  try {
-    const response = await fetch(`/products?${queryString}`, { method: "GET" });
-    const { products, totalProducts } = await response.json();
+				try {
+					const response = await fetch(`/products?${queryString}`, { method: "GET" });
+					const { products, totalProducts } = await response.json();
 
-    // Update product listing dynamically (implement renderProducts)
-    renderProducts(products, totalProducts);
-  } catch (error) {
-    console.error("Error fetching filtered products:", error);
-  }
-});
-</script>
+					// Update product listing dynamically (implement renderProducts)
+					renderProducts(products, totalProducts);
+				} catch (error) {
+					console.error("Error fetching filtered products:", error);
+				}
+			});
+		</script>
 		<!-- logo carousel -->
 		<div style="position: relative;" class="logo-carousel-section">
 			<div class="container">
@@ -683,7 +571,7 @@ document.getElementById("category-filter").addEventListener("change", (e) => {
 				</div>
 			</div>
 		</div>
-		
+
 		<!-- end copyright -->
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

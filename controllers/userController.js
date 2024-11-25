@@ -120,83 +120,75 @@ const loadcontactpage = (req, res) => {
 //       minPrice,
 //       maxPrice,
 //       category,
-//       rating
+//       rating,
+//       page = 1,
+//       limit = 10,
 //     } = req.query;
 
 //     // Base filter: only fetch listed products
 //     let filter = { islisted: true };
 
-//     // Text search (use regex for partial and case-insensitive match)
+//     // Text search (case-insensitive partial match)
 //     if (query) {
-//       filter.name = { $regex: query, $options: "i" }; // Match query anywhere in the name (case-insensitive)
+//       filter.name = { $regex: query.trim(), $options: "i" };
 //     }
 
 //     // Stock filter
 //     if (showOutOfStock === "exclude") {
-//       filter.stock = { $gt: 0 }; // Products with stock greater than 0
+//       filter.stock = { $gt: 0 };
 //     }
 
 //     // Price filter
-//     if (minPrice || maxPrice) {
+//     if (!isNaN(parseFloat(minPrice)) || !isNaN(parseFloat(maxPrice))) {
 //       filter.price = {};
-//       if (minPrice) filter.price.$gte = parseFloat(minPrice);
-//       if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+//       if (!isNaN(parseFloat(minPrice))) filter.price.$gte = parseFloat(minPrice);
+//       if (!isNaN(parseFloat(maxPrice))) filter.price.$lte = parseFloat(maxPrice);
 //     }
 
 //     // Category filter
-//   if (category && category !== "all") {
-//   const categoryDoc = await Category.findOne({ category }); // Find the category by name
-//   if (categoryDoc) {
-//     filter.category = categoryDoc._id; // Use ObjectId for filtering
-//   } else {
-//     console.log(`Category not found: ${category}`);
-//   }
-// }
+//     if (category && category !== "all") {
+//       const categoryDoc = await Category.findOne({ category: category.trim() });
+//       if (categoryDoc) {
+//         filter.category = categoryDoc._id;
+//       } else {
+//         console.warn(`Category not found: ${category}`);
+//       }
+//     }
 
 //     // Rating filter
-//     if (rating && rating !== "all") {
+//     if (!isNaN(parseFloat(rating)) && rating !== "all") {
 //       filter.averageRating = { $gte: parseFloat(rating) };
 //     }
 
-//     // Define sorting criteria
-//     let sortOption = {};
-//     switch (sort) {
-//       case "popularity":
-//         sortOption = { popularity: -1 }; // Assuming 'popularity' field tracks product popularity
-//         break;
-//       case "priceLowToHigh":
-//         sortOption = { price: 1 };
-//         break;
-//       case "priceHighToLow":
-//         sortOption = { price: -1 };
-//         break;
-//       case "averageRatings":
-//         sortOption = { averageRating: -1 }; // Assuming 'averageRating' field stores ratings
-//         break;
-//       case "featured":
-//         sortOption = { featured: -1 }; // Assuming 'featured' field indicates featured products
-//         break;
-//       case "newArrivals":
-//         sortOption = { createdAt: -1 }; // Assuming 'createdAt' tracks product addition date
-//         break;
-//       case "aToZ":
-//         sortOption = { name: 1 }; // Alphabetical order A to Z
-//         break;
-//       case "zToA":
-//         sortOption = { name: -1 }; // Reverse alphabetical order Z to A
-//         break;
-//       default:
-//         sortOption = {}; // Default to no sorting if no valid option is selected
-//     }
+//     // Sorting options
+//     const sortOptions = {
+//       popularity: { popularity: -1 },
+//       priceLowToHigh: { price: 1 },
+//       priceHighToLow: { price: -1 },
+//       averageRatings: { averageRating: -1 },
+//       featured: { featured: -1 },
+//       newArrivals: { createdAt: -1 },
+//       aToZ: { name: 1 },
+//       zToA: { name: -1 },
+//     };
+//     const sortOption = sortOptions[sort] || {}; // Default to no sorting
 
-//     // Fetch products with filters, search, and sorting
+//     // Pagination
+//     const skip = (parseInt(page) - 1) * parseInt(limit);
+
+//     // Fetch filtered, sorted, and paginated products
 //     const products = await Products.find(filter)
 //       .sort(sortOption)
+//       .skip(skip)
+//       .limit(parseInt(limit))
 //       .collation({ locale: "en", strength: 2 }) // Case-insensitive sorting
 //       .populate("category", "category brand");
 
+//     // Total count for pagination
+//     const totalProducts = await Products.countDocuments(filter);
+
 //     if (req.xhr) {
-//       return res.json(products); // AJAX response for live search
+//       return res.json({ products, totalProducts, currentPage: parseInt(page) });
 //     } else {
 //       res.render("products", {
 //         products,
@@ -206,7 +198,10 @@ const loadcontactpage = (req, res) => {
 //         minPrice,
 //         maxPrice,
 //         category,
-//         rating
+//         rating,
+//         totalProducts,
+//         currentPage: parseInt(page),
+//         totalPages: Math.ceil(totalProducts / limit),
 //       });
 //     }
 //   } catch (error) {
@@ -229,27 +224,22 @@ const advancedSearch = async (req, res) => {
       limit = 10,
     } = req.query;
 
-    // Base filter: only fetch listed products
     let filter = { islisted: true };
 
-    // Text search (case-insensitive partial match)
     if (query) {
       filter.name = { $regex: query.trim(), $options: "i" };
     }
 
-    // Stock filter
     if (showOutOfStock === "exclude") {
       filter.stock = { $gt: 0 };
     }
 
-    // Price filter
     if (!isNaN(parseFloat(minPrice)) || !isNaN(parseFloat(maxPrice))) {
       filter.price = {};
       if (!isNaN(parseFloat(minPrice))) filter.price.$gte = parseFloat(minPrice);
       if (!isNaN(parseFloat(maxPrice))) filter.price.$lte = parseFloat(maxPrice);
     }
 
-    // Category filter
     if (category && category !== "all") {
       const categoryDoc = await Category.findOne({ category: category.trim() });
       if (categoryDoc) {
@@ -257,11 +247,6 @@ const advancedSearch = async (req, res) => {
       } else {
         console.warn(`Category not found: ${category}`);
       }
-    }
-
-    // Rating filter
-    if (!isNaN(parseFloat(rating)) && rating !== "all") {
-      filter.averageRating = { $gte: parseFloat(rating) };
     }
 
     // Sorting options
@@ -275,20 +260,16 @@ const advancedSearch = async (req, res) => {
       aToZ: { name: 1 },
       zToA: { name: -1 },
     };
-    const sortOption = sortOptions[sort] || {}; // Default to no sorting
+    const sortOption = sortOptions[sort] || {};
 
-    // Pagination
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    // Fetch filtered, sorted, and paginated products
     const products = await Products.find(filter)
       .sort(sortOption)
       .skip(skip)
       .limit(parseInt(limit))
-      .collation({ locale: "en", strength: 2 }) // Case-insensitive sorting
       .populate("category", "category brand");
 
-    // Total count for pagination
     const totalProducts = await Products.countDocuments(filter);
 
     if (req.xhr) {
@@ -309,7 +290,7 @@ const advancedSearch = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error("Error during advanced search:", error);
+    console.log("Error during advanced search:", error);
     res.status(500).json({ message: "Error fetching products." });
   }
 };

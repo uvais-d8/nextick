@@ -13,14 +13,6 @@ const categorySchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  stock: {
-    type: Number,
-    required: true
-  },
-  status: {
-    type: String,
-    required: true
-  },
   islisted: {
     type: Boolean,
     default: true

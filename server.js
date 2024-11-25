@@ -11,8 +11,11 @@ const hbs = require("hbs");
 const Handlebars = require("./helper");
 const exphbs = require("express-handlebars");
 const passport = require("passport");
-const methodOverride = require("method-override");
+const methodOverride = require('method-override');
+app.use(methodOverride('_method'));  // Enable the use of DELETE in forms
+
 const PORT = process.env.PORT;
+
 require("dotenv").config();
 require("./config/passport");
 
@@ -30,7 +33,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 // Middleware
-app.use(methodOverride("_method"));
 app.use(nocache());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -120,7 +122,7 @@ app.engine(
           ""}&maxPrice=${maxPrice || ""}&category=${category ||
           "all"}&rating=${rating || "all"}&page=${page || 1}`;
       },
-
+   
       // Helper to multiply two values
       multiply: (price, quantity) => {
         return price * quantity;

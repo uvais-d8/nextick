@@ -26,8 +26,7 @@ router.post('/addproducts', adminController.upload, adminController.addproduct);
 
 router.get("/addcoupon",adminAuth.checksession,adminController.loadaddcoupon)
 router.post("/addingcoupon",adminAuth.checksession,adminController.addcoupon)
-
-
+router.post("/deletecoupon/:couponId", adminController.deleteCoupon);
 router.post("/category/add",adminAuth.checksession,adminController.addcategory)
 router.get("/addcategory",adminAuth.checksession,adminController.loadaddcategory)
 router.post("/category/list/:id", adminAuth.checksession,adminController.listcategory)

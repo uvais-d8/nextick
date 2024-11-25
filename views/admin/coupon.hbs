@@ -63,12 +63,11 @@
                         <th>Discount Type</th>
                         <th>Discount Value</th>
                         <th>Products</th>
-                        <th>Minimum Cart Value</th>
+                        <th>Categories</th>
+                        <th>MinCart Value</th>
                         <th>Usage Limit</th>
                         <th>Expiry Date</th>
                         <th>Description</th>
-                        <th>Applicable Products</th>
-                        <th>Applicable Categories</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -78,18 +77,22 @@
                         <td>#{{this.CouponCode}}</td>
                         <td>{{this.DiscountType}}</td>
                         <td>{{this.DiscountValue}}</td>
-                        <td>{{this.Products}}</td>
+                        <td>{{this.Products}}</td>  
+                        <td>{{this.Categories}}</td>
                         <td>{{this.MinimumCartValue}}</td>
                         <td>{{this.UsageLimit}}</td>
                         <td>{{formatDate this.ExpiryDate}}</td> <!-- Use the formatDate helper -->
                         <td>{{this.Description}}</td>
-                        <td>{{this.ApplicableProducts}}</td>
-                        <td>{{this.ApplicableCategories}}</td>
                         <td>
                             <button
                                 style="width: 80px; background-color:rgba(255, 255, 0, 0.807); height:35px; margin-bottom:5px">Edit</button>
-                            <button
-                                style="width: 80px; background-color:rgba(255, 0, 0, 0.858); height:35px; margin-bottom:5px">Delete</button>
+                            <form action="/admin/deletecoupon/{{this.id}}" method="POST">
+                                <input type="submit" value="Delete"
+                                    style="border-width:0px;width: 80px;border-radius:4px;background-color:rgba(255, 0, 0, 0.858); height:35px; margin-bottom:5px">
+                            </form>
+
+
+
                         </td>
                     </tr>
                     {{/each}}
