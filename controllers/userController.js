@@ -18,7 +18,12 @@ const client = new OAuth2Client(
 require("dotenv").config();
 
 const loadhome = async (req, res) => {
+  console.log(req.session)
   try {
+    
+    if(req.session.passport && req.session.passport.user){
+      req.session.userId=req.session.passport.user;
+    }
     // Fetch products and populate their category data
     const products = await Products.find({ islisted: true }) // Fetch only listed products
       .populate({
@@ -111,104 +116,6 @@ const loadaboutpage = (req, res) => {
 const loadcontactpage = (req, res) => {
   res.render("contact");
 };
-// const advancedSearch = async (req, res) => {
-//   try {
-//     const {
-//       query = "",
-//       sort,
-//       showOutOfStock,
-//       minPrice,
-//       maxPrice,
-//       category,
-//       rating,
-//       page = 1,
-//       limit = 10,
-//     } = req.query;
-
-//     // Base filter: only fetch listed products
-//     let filter = { islisted: true };
-
-//     // Text search (case-insensitive partial match)
-//     if (query) {
-//       filter.name = { $regex: query.trim(), $options: "i" };
-//     }
-
-//     // Stock filter
-//     if (showOutOfStock === "exclude") {
-//       filter.stock = { $gt: 0 };
-//     }
-
-//     // Price filter
-//     if (!isNaN(parseFloat(minPrice)) || !isNaN(parseFloat(maxPrice))) {
-//       filter.price = {};
-//       if (!isNaN(parseFloat(minPrice))) filter.price.$gte = parseFloat(minPrice);
-//       if (!isNaN(parseFloat(maxPrice))) filter.price.$lte = parseFloat(maxPrice);
-//     }
-
-//     // Category filter
-//     if (category && category !== "all") {
-//       const categoryDoc = await Category.findOne({ category: category.trim() });
-//       if (categoryDoc) {
-//         filter.category = categoryDoc._id;
-//       } else {
-//         console.warn(`Category not found: ${category}`);
-//       }
-//     }
-
-//     // Rating filter
-//     if (!isNaN(parseFloat(rating)) && rating !== "all") {
-//       filter.averageRating = { $gte: parseFloat(rating) };
-//     }
-
-//     // Sorting options
-//     const sortOptions = {
-//       popularity: { popularity: -1 },
-//       priceLowToHigh: { price: 1 },
-//       priceHighToLow: { price: -1 },
-//       averageRatings: { averageRating: -1 },
-//       featured: { featured: -1 },
-//       newArrivals: { createdAt: -1 },
-//       aToZ: { name: 1 },
-//       zToA: { name: -1 },
-//     };
-//     const sortOption = sortOptions[sort] || {}; // Default to no sorting
-
-//     // Pagination
-//     const skip = (parseInt(page) - 1) * parseInt(limit);
-
-//     // Fetch filtered, sorted, and paginated products
-//     const products = await Products.find(filter)
-//       .sort(sortOption)
-//       .skip(skip)
-//       .limit(parseInt(limit))
-//       .collation({ locale: "en", strength: 2 }) // Case-insensitive sorting
-//       .populate("category", "category brand");
-
-//     // Total count for pagination
-//     const totalProducts = await Products.countDocuments(filter);
-
-//     if (req.xhr) {
-//       return res.json({ products, totalProducts, currentPage: parseInt(page) });
-//     } else {
-//       res.render("products", {
-//         products,
-//         query,
-//         sort,
-//         showOutOfStock,
-//         minPrice,
-//         maxPrice,
-//         category,
-//         rating,
-//         totalProducts,
-//         currentPage: parseInt(page),
-//         totalPages: Math.ceil(totalProducts / limit),
-//       });
-//     }
-//   } catch (error) {
-//     console.error("Error during advanced search:", error);
-//     res.status(500).json({ message: "Error fetching products." });
-//   }
-// };
 
 const advancedSearch = async (req, res) => {
   try {

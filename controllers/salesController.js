@@ -37,43 +37,49 @@ const updateQuantity = async (req, res) => {
   }
 };
 const placeOrder = async (req, res) => {
+  const userId = req.session.userId;
   const {
     email,
     phone,
     paymentMethod,
-    items, // Assume items contain product IDs and quantities
+    items,
     pincode,
     district,
     firstname,
     place,
     city,
     lastname,
-    address
+    address,
   } = req.body;
 
-  const userId = req.session.userId;
+  const errors = {};
+
+  // Validation
+  if (!firstname) errors.firstname = "First name is required";
+  if (!lastname) errors.lastname = "Last name is required";
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "Invalid email address";
+  if (!phone || !/^[0-9]{10}$/.test(phone)) errors.phone = "Invalid phone number";
+  if (!address) errors.address = "Address is required";
+  if (!pincode || !/^[0-9]{6}$/.test(pincode)) errors.pincode = "Invalid pin code";
+  if (!place) errors.place = "Place is required";
+  if (!city) errors.city = "City is required";
+  if (!district) errors.district = "District is required";
+  if (!paymentMethod) errors.paymentMethod = "Payment method is required";
+  if (!items || !Array.isArray(items) || items.length === 0) errors.items = "No items in the cart";
+
+  // If validation errors exist, re-render the form with messages
+  if (Object.keys(errors).length > 0) {
+    return res.render("checkout", {
+      message: "Validation failed",
+      errors,
+      formData: req.body, // Pass the input data back to the form
+    });
+  }
 
   try {
-    if (
-      !email ||
-      !phone ||
-      !paymentMethod ||
-      !items ||
-      !pincode ||
-      !district ||
-      !firstname ||
-      !lastname ||
-      !address ||
-      !place ||
-      !city
-    ) {
-      console.log("all fields required");
-      console.log(place, city, lastname, address);
-      return res.redirect("/checkout");
-    }
     // Fetch product details for each item
     const cartItems = await Promise.all(
-      items.map(async item => {
+      items.map(async (item) => {
         const product = await Products.findById(item.productId);
 
         if (!product) {
@@ -89,7 +95,7 @@ const placeOrder = async (req, res) => {
           productId: product._id,
           price: product.price,
           quantity: item.quantity,
-          total: product.price * item.quantity
+          total: product.price * item.quantity,
         };
       })
     );
@@ -111,9 +117,9 @@ const placeOrder = async (req, res) => {
         place,
         city,
         pincode,
-        district
+        district,
       },
-      orderTotal
+      orderTotal,
     });
 
     // Save the order to the database
@@ -121,7 +127,7 @@ const placeOrder = async (req, res) => {
 
     // Decrease the stock for each product
     await Promise.all(
-      cartItems.map(async item => {
+      cartItems.map(async (item) => {
         await Products.findByIdAndUpdate(
           item.productId,
           { $inc: { stock: -item.quantity } }, // Decrease stock
@@ -130,15 +136,15 @@ const placeOrder = async (req, res) => {
       })
     );
 
-    // Clear the user's cart from the database
-    await Cart.deleteMany({});
+    // Clear the user's cart
+    await Cart.deleteMany({ userId }); // Delete only this user's cart items
 
     res.json({ success: true });
   } catch (error) {
     console.error("Error placing order:", error);
     res.status(500).json({
       success: false,
-      message: error.message || "Failed to place order."
+      message: error.message || "Failed to place order.",
     });
   }
 };

@@ -5,28 +5,26 @@ const Orders = require("../model/ordersmodal");
 
 const checkout = async (req, res) => {
   try {
-    const userId = req.session.userId; // Get the user ID from the session
+    const userId = req.session.userId; 
     if (!userId) {
-      return res.redirect("/login"); // Redirect to login if no user is logged in
-    }
+      return res.redirect("/login"); 
+        }
 
-    const addresses = await Address.find({ user: userId }); // Find addresses for the user
+    const addresses = await Address.find({ user: userId }); 
     console.log("User ID:", userId);
 
     const carts = await Cart.find({ user: userId })
       .populate("user")
       .populate("productId");
 
-    // Filter out carts with unlisted products
     const filteredCarts = carts.filter(cart => cart.productId.islisted);
 
-    // Calculate totals
     const subtotal = filteredCarts.reduce(
       (acc, cart) => acc + cart.productId.price * cart.quantity,
       0
     );
 
-    const shippingRate = 50; // Static shipping rate for now
+    const shippingRate = 50; 
     const total = subtotal + shippingRate;
 
     carts.forEach(cart => {
@@ -46,14 +44,14 @@ const checkout = async (req, res) => {
 
     res.render("checkout", {
       addresses,
-      carts: filteredCarts, // Pass filtered carts to the template
+      carts: filteredCarts,
       subtotal,
       shippingRate,
       total
       });
   }} catch (error) {
-    console.error(error); // Log any errors for debugging
-    res.status(500).send("Internal Server Error"); // Send a response in case of error
+    console.error(error); 
+    res.status(500).send("Internal Server Error"); 
   }
 };
 
@@ -61,7 +59,6 @@ const removeorder = async (req, res) => {
   const { orderId } = req.params;
 
   try {
-    // Find the order to get its items
     const order = await Orders.findById(orderId);
 
     if (!order) {
@@ -77,7 +74,6 @@ const removeorder = async (req, res) => {
         .json({ success: false, message: "Order is already canceled." });
     }
 
-    // Iterate through order items and update product stock
     await Promise.all(
       order.items.map(async item => {
         const product = await Products.findById(item.productId);
@@ -104,7 +100,6 @@ const removeorder = async (req, res) => {
 const removeItem = async (req, res) => {
   const { orderId, itemId } = req.params;
   try {
-    // Find the order and retrieve the item
     const order = await Orders.findOne({ _id: orderId, "items._id": itemId });
 
     if (!order) {
@@ -113,7 +108,6 @@ const removeItem = async (req, res) => {
         .json({ success: false, message: "Order or item not found." });
     }
 
-    // Find the specific item within the order
     const item = order.items.find(item => item._id.toString() === itemId);
 
     if (!item) {
@@ -136,8 +130,7 @@ const removeItem = async (req, res) => {
       { $set: { "items.$.status": "canceled" } }
     );
 
-    // Update the stock of the product
-    const product = await Products.findById(item.productId); // Assuming `productId` is stored in the item
+    const product = await Products.findById(item.productId); 
     if (product) {
       product.stock += item.quantity;
       await product.save();
@@ -163,8 +156,7 @@ const loadorderss = async (req, res) => {
         path: "items.productId",
         select: "name images description price"
       })
-      .sort({ createdAt: -1 }); // Sort orders by creation date, descending
-
+      .sort({ createdAt: -1 }); 
     res.render("orders", { orders });
   } catch (error) {
     console.error("Error during load orders", error);
@@ -175,7 +167,6 @@ const loadorderss = async (req, res) => {
 const ordertracking = async (req, res) => {
   const { id } = req.params;
   try {
-    // Fetch the order by ID and populate items' product details
     const order = await Orders.findById(id);
     const product = await Products.findById(id);
     console.log(order);

@@ -81,8 +81,8 @@
                             <form method="POST" action="/admin/updatestatus">
                                 <div class="status-container" data-status="{{status}}">
                                     <select id="statusSelect{{_id}}" class="statusSelect"
-                                        style="width:140px;color: rgb(255, 255, 255); background-color: rgba(26, 45, 120, 0.752); border-color: rgb(0, 0, 0)"
-                                        name="status" id="statusSelect" required onchange="this.form.submit()">
+                                        style="width:150px;color: rgb(255, 255, 255); background-color: rgba(26, 45, 120, 0.752); border-color: rgb(0, 0, 0)"
+                                        name="status" id="statusSelect" onchange="this.form.submit()">
                                         <option value=""><b>{{status}}</b></option>
                                         <option value="scheduled"><b>Scheduled</b></option>
                                         <option value="pending"><b>Pending</b></option>
@@ -91,55 +91,58 @@
                                         <option value="canceled"><b>Canceled</b></option>
                                     </select>
                                     <input type="hidden" name="orderId" value="{{../_id}}">
-                                    <input type="hidden" name="itemId" value="{{_id}}"> <!-- Pass itemId -->
+                                    <input type="hidden" name="itemId" value="{{_id}}">
                                     <p id="statusWarning{{_id}}" class="statusWarning"
                                         style="display: none; color: rgb(255, 17, 0);font-size:13px">
-                                        order already delivered
+                                        Order status can't update
                                     </p>
+                                </div>
                             </form>
-
                             <script>
-                                // Function to disable status change if the current status is 'Delivered'
                                 document.addEventListener('DOMContentLoaded', function () {
-                                    // Select all status containers (assuming a class is applied for grouping them)
                                     var statusContainers = document.querySelectorAll('.status-container');
-
                                     statusContainers.forEach(function (container) {
-                                        // Get the current status and select elements within each container
-                                        var currentStatus = container.getAttribute('data-status'); // Retrieve status from a data attribute
-                                        var statusSelect = container.querySelector('.statusSelect'); // Target select within this container
-                                        var statusWarning = container.querySelector('.statusWarning'); // Target warning within this container
+                                        var currentStatus = container.getAttribute('data-status');
+                                        var statusSelect = container.querySelector('.statusSelect');
+                                        var statusWarning = container.querySelector('.statusWarning');
 
-                                        // If current status is 'Delivered', disable the select and show warning
+                                        if (currentStatus === "delivered" || currentStatus === "canceled") {
+                                            statusSelect.disabled = true;
+                                            statusWarning.style.display = 'block';
+                                        }
+                                    });
+                                });
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    var statusContainers = document.querySelectorAll('.status-container');
+                                    statusContainers.forEach(function (container) {
+                                        var currentStatus = container.getAttribute('data-status');
+                                        var statusSelect = container.querySelector('.statusSelect');
+                                        var statusWarning = container.querySelector('.statusWarning');
                                         if (currentStatus === "delivered") {
                                             statusSelect.disabled = true;
                                             statusWarning.style.display = 'block';
                                         }
                                     });
                                 });
-
                             </script>
                         </td>
                         <td>
                             <form action="/admin/orders/cancel" method="POST">
                                 <input type="hidden" name="orderId" value="{{../_id}}">
-                                <input type="hidden" name="itemId" value="{{_id}}"> <!-- Pass itemId -->
+                                <input type="hidden" name="itemId" value="{{_id}}">
                                 <button
                                     style="color:rgb(246, 246, 246); background-color: rgba(189, 4, 4, 0.93); height:40px; font-size:12px"
                                     class="action-button unblock-button" {{#if (eq status "delivered"
                                     )}}disabled{{/if}}>
                                     <b>CANCEL</b>
                                 </button>
-
                             </form>
                         </td>
                     </tr>
-
                     {{/each}}
                     {{/each}}
                 </tbody>
             </table>
-
             <div style="margin-left: 44%;" class="pagination">
                 <button style="color:white;background-color: rgb(10, 15, 27);" class="pagination-button">&lt;</button>
                 <span style="margin-top: 8px;">swipe</span>

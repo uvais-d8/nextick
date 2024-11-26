@@ -45,60 +45,6 @@ const removeaddress = async (req, res) => {
     res.redirect("/address");
   }
 };
-// const changepassword = async (req, res) => {
-//   try {
-//     const { currentPassword, newpassword, confirmpassword } = req.body;
-//     const userId = req.session.userId;
-
-//     if (!userId) {
-//       return res.status(401).json({ success: false, message: "Session expired. Please log in again." });
-//     }
-
-//     const user = await User.findOne({ _id: userId });
-//     if (!user) {
-//       return res.status(404).json({ success: false, message: "User not found." });
-//     }
-
-//     const isPasswordMatch = await bcrypt.compare(currentPassword, user.password);
-//     if (!isPasswordMatch) {
-//       return res.status(400).json({ success: false, message: "Current password is incorrect." });
-//     }
-
-//     if (newpassword !== confirmpassword) {
-//       return res.status(400).json({ success: false, message: "New password and confirm password do not match." });
-//     }
-
-//     if (newpassword.length < 6) {
-//       return res.status(400).json({ success: false, message: "Password must be at least 6 characters long." });
-//     }
-
-//     const uppercasePattern = /[A-Z]/;
-//     const lowercasePattern = /[a-z]/;
-//     const numberPattern = /[0-9]/;
-
-//     if (
-//       !uppercasePattern.test(newpassword) ||
-//       !lowercasePattern.test(newpassword) ||
-//       !numberPattern.test(newpassword)
-//     ) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Password must contain at least one uppercase letter, one lowercase letter, and one number.",
-//       });
-//     }
-
-//     const salt = await bcrypt.genSalt(10);
-//     const hashedPassword = await bcrypt.hash(newpassword, salt);
-//     user.password = hashedPassword;
-//     await user.save();
-
-//     return res.json({ success: true, message: "Password updated successfully." });
-//   } catch (error) {
-//     console.error("Error changing password:", error);
-//     return res.status(500).json({ success: false, message: "Internal server error." });
-//   }
-// };
-
 const changepassword = async (req, res) => {
   const { currentPassword, newpassword, confirmpassword } = req.body;
   const userId = req.session.userId;
@@ -189,7 +135,7 @@ const changepassword = async (req, res) => {
         address,
         orders,
         message:
-          "Password must contain at least one uppercase letter, one lowercase letter, and one number."
+          "Password must contain at least one uppercase,lowercase and a number."
       });
     }
 
@@ -251,38 +197,6 @@ const resendotpemail = async (req, res) => {
     });
   }
 };
-
-// const resendotpemail = async (req, res) => {
-//   console.log(req.session.userEmail);
-//   try {
-//     const email = req.session.userEmail;
-//     if (!email) {
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "Email not found in session" });
-//     }
-//     const newotp = generateOtp();
-//     req.session.userOTP = newotp;
-//     const emailSent = await sendVerificationEmail(email, newotp);
-//     if (emailSent) {
-//       console.log("success to resend OTP :",newotp);
-//       console.log("new resend otpp  newopt::",req.session.userOTP)
-//     } else {
-//       console.log("Failed to resend OTP, please try again");
-//       res.status(500).json({
-//         success: false,
-//         message: "Failed to resend OTP, please try again"
-//       });
-//     }
-//   } catch (error) {
-//     console.error("Error resending OTP", error);
-//     return res.render("passwordverification");
-
-//     // return res
-//     //   .status(500)
-//     //   .json({ success: false, message: "Server error, please try again" });
-//   }
-// };
 const updateDefaultAddress = async (req, res) => {
   try {
     console.log("hrlooo");
@@ -346,7 +260,7 @@ const loadprofile = async (req, res) => {
 
     // Format the date of account creation
     const createdAt = user.registered.toLocaleDateString("en-GB");
-    const orders = await Orders.find({ userId: user }).populate({
+    const orders = await Orders.find({ userId: user }).sort({createdAt:-1}).populate({
       path: "items.productId",
       select: "name price images"
     });
@@ -360,7 +274,6 @@ const loadprofile = async (req, res) => {
     res.redirect("/login"); // Redirect on error
   }
 };
-
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
@@ -497,29 +410,6 @@ const sendotptoemail = async (req, res) => {
     res.redirect("/forgotpassword");
   }
 };
-// Function to verify OTP entered by user
-// const verifyotpemail = async (req, res) => {
-//   const { otp } = req.body;
-//   try {
-//     // Check if the OTP from user input matches the OTP stored in the session
-//     if (otp == req.session.userOTP) {
-//       // Clear OTP from session after successful verification
-//       req.session.userOTP = null;
-//       console.log("lastt :null venamm",req.session.userOTP)
-//       res.render("newpassword"); // Load the new password page
-//     } else {
-//       // If OTP doesn't match, show error message on the verification page
-//       console.log("Invalid OTP. Please try again");
-//       res.render("passwordverification", {
-//         message: "Invalid OTP. Please try again"
-//       });
-//     }
-//   } catch (error) {
-//     console.error("OTP verification error", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// };
-
 const verifyotpemail = async (req, res) => {
   const { otp } = req.body; // Extract user-entered OTP
   console.log("Received OTP:", otp);
@@ -546,7 +436,6 @@ const verifyotpemail = async (req, res) => {
     });
   }
 };
-
 // Load New Password Page// Load New Password Page
 const loadnewpassword = (req, res) => {
   res.render("newpassword", { message: req.session.message || null });
@@ -611,33 +500,31 @@ const setnewpassword = async (req, res) => {
 };
 const loadaddress = async (req, res) => {
   try {
-    const userId = req.session.userId; // Get the user ID from the session
+    const userId = req.session.userId; 
     if (!userId) {
-      return res.redirect("/login"); // Redirect to login if no user is logged in
+      return res.redirect("/login"); 
     }
 
-    const addresses = await Address.find({ user: userId }); // Find addresses for the user
+    const addresses = await Address.find({ user: userId }); 
     console.log("User ID:", userId);
-    // console.log("Addresses:", addresses);
 
-    res.render("address", { addresses }); // Render the address page with the fetched addresses
+    res.render("address", { addresses });
   } catch (error) {
     console.error("Error loading addresses:", error);
-    res.status(500).send("Internal server error"); // Handle unexpected errors
+    res.status(500).send("Internal server error"); 
   }
 };
 const addaddress = async (req, res) => {
-  const userId = req.session.userId; // Get the user ID from the session
+  const userId = req.session.userId; 
 
   if (!userId) {
     req.session.message = "User not authenticated.";
-    return res.redirect("/login"); // Redirect to login if no user is logged in
+    return res.redirect("/login");
   }
 
   const addresses = await Address.find({ user: userId }); // Find addresses for the user
 
   try {
-    // Destructure values from req.body
     const {
       firstname,
       lastname,
@@ -650,7 +537,6 @@ const addaddress = async (req, res) => {
       district
     } = req.body;
 
-    // Validation for required fields
     if (
       !firstname ||
       !lastname ||
@@ -669,7 +555,6 @@ const addaddress = async (req, res) => {
       });
     }
 
-    // Email validation (basic check for a valid email)
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
       req.session.message = "Invalid email format.";
@@ -679,7 +564,6 @@ const addaddress = async (req, res) => {
       });
     }
 
-    // Phone validation (basic check for valid phone number)
     const phoneRegex = /^[0-9]{10}$/;
     if (!phoneRegex.test(phone)) {
       req.session.message = "Invalid phone number. Must be 10 digits.";
@@ -745,7 +629,6 @@ const addaddress = async (req, res) => {
     return res.redirect("/address");
   }
 };
-
 module.exports = {
   updateDefaultAddress,
   resendotpemail,

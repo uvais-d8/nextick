@@ -1,13 +1,14 @@
 const checksession = (req, res, next) => {
     if (!req.session.userId) {
-      next();
+      res.redirect("/login"); 
     } else {
-      res.redirect("/user/login");
+     next();
+
     }
   };
   const islogin = (req, res, next) => {
     if (req.session.userId) {
-      res.redirect("/user/home");
+      res.redirect("/home");
     } else {
       next()
     }

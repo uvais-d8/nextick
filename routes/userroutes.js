@@ -40,7 +40,7 @@ router.post("/updateDefaultAddress",profileController.updateDefaultAddress)
 router.post("/resendotpemail", profileController.resendotpemail);
 router.post("/updateUsername",profileController.updateUsername);
 router.post("/editaddress/:id", profileController.editaddress);
-router.get("/profile", profileController.loadprofile);
+router.get("/profile", userAuth.checksession,profileController.loadprofile);
 router.delete("/address/:id", profileController.removeaddress);
 router.get("/newpassword", profileController.loadnewpassword);
 router.post("/email", profileController.sendotptoemail);

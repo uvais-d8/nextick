@@ -210,6 +210,8 @@
 										data-parent="#accordionExample">
 										<div class="card-body">
 											<div class="billing-address-form">
+												<input type="text" style="border-width:0px;color:red"
+													value="{{message}}">
 												<!-- Shipping Address Form -->
 												<form method="post" action="/placeOrder" id="orderForm">
 													<div
@@ -218,45 +220,69 @@
 															<label for="firstname"><b>First Name</b></label>
 															<p><input id="firstname" name="firstname" type="text"
 																	style="width: 100%;"></p>
+															<small class="error-message"
+																style="color: red;">{{errors.firstname}}</small>
+
+
 														</div>
 
 														<div style="flex: 1;">
 															<label for="lastname"><b>Last Name</b></label>
 															<p><input id="lastname" name="lastname" type="text"
 																	style="width: 100%;"></p>
+															<small class="error-message"
+																style="color: red;">{{errors.lastname}}</small>
+
 														</div>
 													</div>
 
 													<label for="email"><b>Email</b></label>
 													<p><input id="email" name="email" type="email"></p>
+													<small class="error-message"
+														style="color: red;">{{errors.email}}</small>
 
 													<label for="address"><b>Address</b></label>
 													<p><input id="address" name="address" type="text"></p>
+													<small class="error-message"
+														style="color: red;">{{errors.address}}</small>
 
 													<label for="phone"><b>Phone</b></label>
 													<p><input id="phone" name="phone" type="tel"></p>
+													<small class="error-message"
+														style="color: red;">{{errors.phone}}</small>
 
 													<label for="pincode"><b>Pin code</b></label>
-													<p><input id="pincode" name="pincode" type="number"></p>
+													<p><input id="pincode" name="pincode" type="text"></p>
+													<small class="error-message"
+														style="color: red;">{{errors.pincode}}</small>
 
 													<div
 														style="display: flex; justify-content: space-between; gap: 20px; align-items: center;">
 														<div style="flex: 1;">
 															<label for="place"><b>Place</b></label>
 															<p><input id="place" name="place" type="text"
-																	style="width: 100%;"></p>
+																	style="width: 100%;"></p> <small
+																class="error-message"
+																style="color: red;">{{errors.place}}</small>
+
 														</div>
 
 														<div style="flex: 1;">
 															<label for="city"><b>City</b></label>
 															<p><input id="city" name="city" type="text"
-																	style="width: 100%;"></p>
+																	style="width: 100%;"></p> <small
+																class="error-message"
+																style="color: red;">{{errors.city}}</small>
+
 														</div>
 													</div>
 
 
 													<label for="district"><b>District</b></label>
-													<p><input id="district" name="district" type="text"></p>
+													<p><input id="district" name="district" type="text"></p> <small
+														class="error-message"
+														style="color: red;">{{errors.district}}</small>
+
 
 
 													<label for="paymentMethod"><b>Payment Method</b></label>
@@ -454,6 +480,63 @@
 		</div>
 	</div>
 	<!-- end copyright -->
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			const form = document.getElementById("orderForm");
+
+			// Add event listener for form submission
+			form.addEventListener("submit", function (event) {
+				// Prevent form submission if validation fails
+				if (!validateForm()) {
+					event.preventDefault();
+				}
+			});
+
+			// Inline validation function
+			function validateForm() {
+				let isValid = true;
+
+				const fields = [
+					{ id: "firstname", message: "First name is required" },
+					{ id: "lastname", message: "Last name is required" },
+					{ id: "email", message: "Valid email is required", pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
+					{ id: "phone", message: "Valid phone number is required", pattern: /^[0-9]{10}$/ },
+					{ id: "address", message: "Address is required" },
+					{ id: "pincode", message: "Pin code is required", pattern: /^[0-9]{6}$/ },
+					{ id: "place", message: "Place is required" },
+					{ id: "city", message: "City is required" },
+					{ id: "district", message: "District is required" },
+					{ id: "paymentMethod", message: "Select a payment method" },
+				];
+
+				fields.forEach(field => {
+					const input = document.getElementById(field.id);
+					const errorMessage = document.querySelector(`#${field.id} + .error-message`);
+
+					if (!input.value || (field.pattern && !field.pattern.test(input.value))) {
+						isValid = false;
+						input.style.borderColor = "red";
+						if (errorMessage) {
+							errorMessage.textContent = field.message;
+							errorMessage.style.display = "block";
+						}
+					} else {
+						input.style.borderColor = "initial";
+						if (errorMessage) {
+							errorMessage.style.display = "none";
+						}
+					}
+				});
+
+				return isValid;
+			}
+
+			// Attach real-time validation for all fields
+			form.querySelectorAll("input, select").forEach(input => {
+				input.addEventListener("input", validateForm);
+			});
+		});
+	</script>
 
 	<script>
 		document.getElementById('orderForm').addEventListener('submit', async function (event) {

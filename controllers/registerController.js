@@ -38,30 +38,32 @@ function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 const logout = (req, res) => {
+ try {
+  console.log("oldddd::",req.session)
+
   req.session.userId = null;
+  req.session.passport = null;
+  console.log("newww ::",req.session)
   res.redirect("/login");
+ } catch (error) {
+  console.log("error to logout",error)
+ }
 };
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     console.log(email);
     console.log(password);
-    // Find the user by email
     const user = await User.findOne({ email });
-
     if (email === "" || password === "") {
       console.log("all fields are required");
       return res.render("login", { message: "All fields are required" });
     }
-
     if (!user) {
       console.log("User doesn't exist");
       return res.render("login", { message: "User doesn't exist" });
     }
-
-    // Compare the provided password with the stored hashed password
     const ismatch = await bcrypt.compare(password, user.password);
-
     if (!ismatch) {
       console.log("Incorrect password");
       return res.render("login", { message: "Incorrect password" });
@@ -73,8 +75,6 @@ const login = async (req, res) => {
     }
     req.session.userId = user._id;
     console.log(req.session);
-
-    // Redirect to home page after successful login
     res.redirect("/home");
   } catch (error) {
     console.error("Error during login:", error);
@@ -94,36 +94,35 @@ const registerUser = async (req, res) => {
   const { username, email, password, confirmPassword } = req.body;
 
   try {
-    // Check for empty fields
     if (!username || !email || !password || !confirmPassword) {
       req.session.message = "All fields are required.";
       return res.render("signup", { message: "All fields are required" });
     }
-
+    const usernameRegex = /^(?!\d+$)[a-zA-Z0-9]+(?: [a-zA-Z0-9]+)*$/;
+    if (!usernameRegex.test(username)) {
+      return res.render("signup", {
+        message: "Must contain letters and numbers, No special characters or spaces",
+      });
+    }
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      // req.session.message = "Invalid email format.";
       return res.render("signup", { message: "Invalid email format" });
     }
-    //check the password length if it is 6 charecters
+
     if (password.length < 6) {
-      // req.session.message = "Password must be at least 6 characters long.";
       return res.render("signup", {
         message: "Password must be at least 6 characters long"
       });
     }
-    // Check if passwords match
+
     if (password !== confirmPassword) {
-      // req.session.message = "Passwords do not match.";
       return res.render("signup", { message: "Passwords do not match" });
     }
 
-    // Password validation (minimum length and complexity)
+    // Password validation 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/;
     if (!passwordRegex.test(password)) {
-      // req.session.message = "Password must include an uppercase letter, a lowercase letter, and a number.";
-
       return res.render("signup", {
         message:
           "Password must include a uppercase letter, lowercase letter,and a number"
@@ -133,31 +132,24 @@ const registerUser = async (req, res) => {
     // Check for existing user
     const alreadyuser = await User.findOne({ email });
     if (alreadyuser) {
-      // req.session.message = "Email is already registered.";
-
       return res.render("signup", {
         message: "Email is already registered"
       });
     }
 
-    // Generate OTP and send verification email
     const otp = generateOtp();
     const emailSent = await sendVerificationEmail(email, otp);
     if (!emailSent) {
-      // req.session.message =
-      //   "Error sending verification email. Please try again.";
       console.log("Error sending verification email. Please try again.");
       return res.redirect("/signup", {
         message: "Error sending verification email. Please try again"
       });
     }
 
-    // Store OTP and user data in session
     req.session.userOTP = otp;
     req.session.userData = { username, email, password };
     console.log(otp);
 
-    // Redirect to OTP verification page
     res.redirect("/verify-otp");
   } catch (error) {
     console.error("Signup error:", error);

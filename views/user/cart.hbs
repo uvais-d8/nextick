@@ -367,14 +367,11 @@
 
 	<script>
 		function updateQuantity(cartId, change) {
-			// Get the current quantity
 			const quantityInput = document.getElementById(`quantity-${cartId}`);
 			let currentQuantity = parseInt(quantityInput.value);
 
-			// Calculate the new quantity
 			let newQuantity = currentQuantity + change;
 
-			// Validation: Ensure the quantity stays within the valid range (1 to 10)
 			if (newQuantity > 10) {
 				Swal.fire({
 					icon: "error",
@@ -383,7 +380,7 @@
 					confirmButtonColor: "#d33",
 					confirmButtonText: "Okay",
 				});
-				return; // Exit function to prevent further execution
+				return; 
 			} else if (newQuantity < 1) {
 				Swal.fire({
 					icon: "warning",
@@ -392,16 +389,13 @@
 					confirmButtonColor: "#d33",
 					confirmButtonText: "Okay",
 				});
-				return; // Exit function to prevent further execution
+				return; 
 			}
 
-			// Now, we fetch the current stock of the product from the server
 			fetch(`/cart/${cartId}/getProductStock`)
 				.then((response) => response.json())
 				.then((data) => {
-					const availableStock = data.stock; // Assuming the server returns { stock: <number> }
-
-					// Check if the new quantity is available in stock
+					const availableStock = data.stock;
 					if (newQuantity > availableStock) {
 						Swal.fire({
 							icon: "error",
@@ -410,13 +404,10 @@
 							confirmButtonColor: "#d33",
 							confirmButtonText: "Okay",
 						});
-						return; // Exit function if quantity exceeds stock
+						return;
 					}
-
-					// Update the input value with the new quantity
 					quantityInput.value = newQuantity;
 
-					// Make an AJAX call to update the cart on the server
 					fetch(`/cart/${cartId}/updateQuantity`, {
 						method: 'POST',
 						headers: {
@@ -454,8 +445,6 @@
 				});
 		}
 
-	</script>
-	<script>
 		document.querySelectorAll('input[name="quantity"]').forEach((input) => {
 			input.addEventListener('change', (event) => {
 				const row = event.target.closest('tr');
@@ -463,10 +452,7 @@
 				const quantity = parseInt(event.target.value);
 				const totalCell = row.querySelector('.product-total');
 
-				// Update the total for the row
 				totalCell.innerText = (price * quantity).toFixed(2);
-
-				// Optionally: Update the subtotal, shipping, and total dynamically
 				updateCartTotals();
 			});
 		});
@@ -475,38 +461,12 @@
 			document.querySelectorAll('.product-total').forEach((cell) => {
 				subtotal += parseFloat(cell.innerText);
 			});
-			const shippingRate = 50; // Fixed for now
+			const shippingRate = 50;
 			const total = subtotal + shippingRate;
-			// Update the totals in the table
 			document.querySelector('#subtotal').innerText = subtotal.toFixed(2);
 			document.querySelector('#shippingRate').innerText = shippingRate.toFixed(2);
 			document.querySelector('#total').innerText = total.toFixed(2);
 		}
-	</script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-	<!-- jquery -->
-	<script src="/assets/js/jquery-1.11.3.min.js"></script>
-	<!-- bootstrap -->
-	<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
-	<!-- count down -->
-	<script src="/assets/js/jquery.countdown.js"></script>
-	<!-- isotope -->
-	<script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
-	<!-- waypoints -->
-	<script src="/assets/js/waypoints.js"></script>
-	<!-- owl carousel -->
-	<script src="/assets/js/owl.carousel.min.js"></script>
-	<!-- magnific popup -->
-	<script src="/assets/js/jquery.magnific-popup.min.js"></script>
-	<!-- mean menu -->
-	<script src="/assets/js/jquery.meanmenu.min.js"></script>
-	<!-- sticker js -->
-	<script src="/assets/js/sticker.js"></script>
-	<!-- main js -->
-	<script src="/assets/js/main.js"></script>
-	<script>
 		$(document).ready(function () {
 			const errorMessage = document.getElementById('error-message').value;
 			if (errorMessage) {
@@ -537,9 +497,29 @@
 			}
 		}
 	</script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
-
+	<!-- jquery -->
+	<script src="/assets/js/jquery-1.11.3.min.js"></script>
+	<!-- bootstrap -->
+	<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+	<!-- count down -->
+	<script src="/assets/js/jquery.countdown.js"></script>
+	<!-- isotope -->
+	<script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
+	<!-- waypoints -->
+	<script src="/assets/js/waypoints.js"></script>
+	<!-- owl carousel -->
+	<script src="/assets/js/owl.carousel.min.js"></script>
+	<!-- magnific popup -->
+	<script src="/assets/js/jquery.magnific-popup.min.js"></script>
+	<!-- mean menu -->
+	<script src="/assets/js/jquery.meanmenu.min.js"></script>
+	<!-- sticker js -->
+	<script src="/assets/js/sticker.js"></script>
+	<!-- main js -->
+	<script src="/assets/js/main.js"></script>
 </body>
 
 </html>

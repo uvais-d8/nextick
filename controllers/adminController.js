@@ -7,7 +7,6 @@ const Category = require("../model/categoryModel");
 const Orders = require("../model/ordersmodal");
 const path = require("path");
 const { default: mongoose } = require("mongoose");
-const Handlebars = require("handlebars");
 const Coupon = require("../model/couponModel");
 const multer = require("multer");
 const storage = multer.diskStorage({
@@ -22,8 +21,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }).any("images", 10);
 const loadcoupon = async (req, res) => {
   try {
-    const coupons = await Coupon.find({}); // Fetching all coupons
-    res.render("admin/coupon", { coupons }); // Passing the coupons array to the view
+    const coupons = await Coupon.find({}); 
+    res.render("admin/coupon", { coupons });
   } catch (error) {
     console.log(error);
   }
@@ -72,13 +71,11 @@ const loaddashboard = async (req, res) => {
     const admin = req.session.admin;
     if (!admin) return res.redirect("/admin/login");
 
-    // Fetch all users from the database
     const users = await User.find({});
 
-    // Pass users to the dashboard view
     res.render("admin/dashboard", { users });
   } catch (error) {
-    console.error(error); // Log the error
+    console.error(error); 
     res.render("admin/login", { message: "Failed to load dashboard" });
   }
 };
@@ -139,7 +136,7 @@ const loadUserMangment = async (req, res) => {
 };
 const loadaddproduct = async (req, res) => {
   try {
-    const categories = await Category.find({}); // Get listed categories
+    const categories = await Category.find({}); 
     res.render("admin/addproduct", { categories });
   } catch (error) {
     console.error("Error fetching categories:", error);
@@ -149,25 +146,22 @@ const loadaddproduct = async (req, res) => {
 const addproduct = async (req, res) => {
   try {
     const { name, category, stock, price, description } = req.body;
-    const { files } = req; // Image files from the request
+    const { files } = req; 
     console.log("Request body:", req.body);
     console.log("Uploaded files:", files);
 
-    // Step 1: Validate required fields
     if (!name || !category || !stock || !price || !description) {
       return res.status(400).render("admin/addproduct", {
         message: "All fields are required."
       });
     }
 
-    // Step 2: Check for at least 3 images
     if (!files || files.length < 3) {
       return res.status(400).render("admin/addproduct", {
         message: "Please upload at least 3 images."
       });
     }
 
-    // Step 3: Check if product already exists
     const existingProduct = await Products.findOne({ name });
     if (existingProduct) {
       const products = await Products.find({});
@@ -178,7 +172,6 @@ const addproduct = async (req, res) => {
       });
     }
 
-    // Step 4: Find category by name (category passed is the category name)
     const categoryObj = await Category.findOne({ category: category });
     if (!categoryObj) {
       return res.status(400).render("admin/addproduct", {
@@ -186,21 +179,18 @@ const addproduct = async (req, res) => {
       });
     }
 
-    // Step 5: Create new product
     const newProduct = new Products({
       name,
       category: categoryObj._id, // Set the category ObjectId
       stock,
       price,
       description: description || "Default description",
-      images: files.map(file => file.path) // Store image paths
+      images: files.map(file => file.path)
     });
 
-    // Step 6: Save the new product
     await newProduct.save();
     console.log("New product saved:", newProduct);
 
-    // Step 7: Redirect to products page
     res.redirect("/admin/products");
   } catch (error) {
     console.error("Error adding product:", error.message);
@@ -240,10 +230,10 @@ const loadeditcategory = async (req, res) => {
     console.log(req.params);
     const { id } = req.params;
     const category = await Category.findById(id);
-    res.render("admin/editcategory", { category }); // Make sure this is only called once
+    res.render("admin/editcategory", { category }); 
   } catch (error) {
     console.error(`Something went wrong: ${error}`);
-    res.redirect("/admin/category"); // Ensure no previous response is sent before this
+    res.redirect("/admin/category");
   }
 };
 const unlistcategory = async (req, res) => {
@@ -280,10 +270,9 @@ const editproducts = async (req, res) => {
     console.log("Price:", price);
     console.log("Deleted Images:", deletedImages);
 
-    // Check if a product with the same name already exists (excluding the current product)
     const existingProduct = await Products.findOne({
       name: name.trim(),
-      _id: { $ne: id }, // Exclude the current product being edited
+      _id: { $ne: id }, 
     });
 
     if (existingProduct) {
@@ -293,26 +282,22 @@ const editproducts = async (req, res) => {
       });
     }
 
-    // Fetch product by ID
     const product = await Products.findById(id);
     if (!product) {
       console.error("Product not found for ID:", id);
       return res.render("admin/products", { message: "Product not found" });
     }
 
-    // Fetch the Category ObjectId
-    const categoryObj = await Category.findById(category); // Fetch by ObjectId
+    const categoryObj = await Category.findById(category); 
     if (!categoryObj) {
       return res.status(400).render("admin/products", { message: "Category not found" });
     }
 
-    // Convert stock to a number for validation
     const stockNumber = parseInt(stock, 10);
     if (isNaN(stockNumber)) {
       return res.render("admin/products", { message: "Stock must be a valid number" });
     }
 
-    // Validation: Stock cannot be negative
     if (stockNumber < 0) {
       return res.render("admin/products", { message: "Stock cannot be negative" });
     }
@@ -356,7 +341,7 @@ const editproducts = async (req, res) => {
       }
     }
 
-    // Ensure at least one image is provided
+    // Ensure at least one image
     if (product.images.length === 0) {
       console.error("No images provided for the product.");
       return res.render("admin/products", { message: "At least one image is required" });
@@ -386,29 +371,27 @@ const editproducts = async (req, res) => {
   }
 };
 const editcategory = async (req, res) => {
-  const categoryId = req.params.id; // Category ID from the request
-  const { category, brand, bandcolor } = req.body; // Extract values from request body
+  const categoryId = req.params.id; 
+  const { category, brand, bandcolor } = req.body; 
   const updatedCategory = { category, brand, bandcolor };
 
   try {
-    // Check if a different category with the same name already exists
     const existingCategory = await Category.findOne({
-      category: category.trim(), // Use category name from req.body
-      _id: { $ne: categoryId }   // Exclude the current category being edited
+      category: category.trim(), 
+      _id: { $ne: categoryId }  
     });
 
     if (existingCategory) {
       console.log("Category already exists");
-      const category  = await Category.find({}); // Fetch all categories to display
+      const category  = await Category.find({}); 
       return res.render("admin/category", {
         category,
         message: "Category with this name already exists."
       });
     }
 
-    // Update the category if no duplicate is found
     await Category.findByIdAndUpdate(categoryId, updatedCategory, { new: true });
-    res.redirect("/admin/category"); // Redirect to the category list after updating
+    res.redirect("/admin/category"); 
   } catch (err) {
     console.error("Error updating category:", err);
     res.status(500).send("Error updating category");
@@ -438,10 +421,12 @@ const listproducts = async (req, res) => {
 };
 const loadorders = async (req, res) => {
   try {
-    // Fetch orders and populate items.productId to get product details
     const orders = await Orders.find({})
-      .populate('items.productId', 'name') // Populate productId with only the 'name' field
-      .exec();
+      .populate('items.productId', 'name') 
+      .sort({ createdAt: -1 })
+      .exec()
+
+
 
     res.render("admin/orders", { orders });
   } catch (error) {
@@ -462,7 +447,6 @@ const cancelOrderItem = async (req, res) => {
   console.log("Request Body for Cancel:", req.body);
 
   try {
-    // Validate orderId and itemId
     if (
       !mongoose.Types.ObjectId.isValid(orderId) ||
       !mongoose.Types.ObjectId.isValid(itemId)
@@ -518,7 +502,6 @@ const updateOrderStatus = async (req, res) => {
   console.log("Request Body:", req.body); // Log the request body for debugging
 
   try {
-    // Validate orderId and itemId
     if (
       !mongoose.Types.ObjectId.isValid(orderId) ||
       !mongoose.Types.ObjectId.isValid(itemId)
@@ -557,7 +540,7 @@ const updateOrderStatus = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Order not found." });
     }
-    // Find the specific item within the order
+
     const item = order.items.id(itemId);
     if (!item) {
       console.log("Item not found for ID:", itemId);
@@ -566,15 +549,13 @@ const updateOrderStatus = async (req, res) => {
         .json({ success: false, message: "Item not found in order." });
     }
 
-    // Update the item status only
     item.status = status;
 
-    // Save the updated order
     await order.save();
 
     console.log("Item status updated successfully for item ID:", itemId);
 
-    res.redirect("/admin/orders"); // Or send a JSON response if needed
+    res.redirect("/admin/orders"); 
   } catch (error) {
     console.error("Error updating item status:", error);
     res
@@ -583,8 +564,8 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 const editinventory = async (req, res) => {
-  const productId = req.params.id; // Product ID from the URL parameter
-  const { name, stock } = req.body; // Product name and stock from the request body
+  const productId = req.params.id;
+  const { name, stock } = req.body; 
 
   try {
     // Find the product by ID
@@ -595,7 +576,6 @@ const editinventory = async (req, res) => {
 if (stock.length<0){
   console.log("not minus allowed")
 }
-    // Check if a product with the same name already exists (excluding the current product)
     const existingProduct = await Products.findOne({
       name: name,
       _id: { $ne: productId }
@@ -607,7 +587,6 @@ if (stock.length<0){
       });
     }
 
-    // Check if the name and stock are the same as before
     if (product.name === name && product.stock === stock) {
       return res.render("admin/inventory", {
         products: await Products.find({}),
@@ -618,10 +597,8 @@ if (stock.length<0){
     product.name = name;
     product.stock = stock;
 
-    // Save the updated product to the database
     await product.save();
 
-    // Redirect to the inventory page with a success message
     res.redirect("/admin/inventory");
   } catch (error) {
     console.error("Error updating product:", error);
@@ -672,7 +649,6 @@ const addcoupon = async (req, res) => {
       });
     }
 
-    // Additional validations (DiscountValue, MinimumCartValue, UsageLimit, ExpiryDate, etc.)
     if (isNaN(DiscountValue) || DiscountValue <= 0) {
       console.log("Invalid DiscountValue");
       return res.render("admin/addcoupon", {
@@ -743,23 +719,19 @@ const deleteCoupon = async (req, res) => {
   console.log("Coupon ID received:", couponId);
 
   try {
-    // Delete the coupon from the Coupon model
     const deletedCoupon = await Coupon.findByIdAndDelete(couponId);
 
     if (!deletedCoupon) {
-      // If no coupon is found with the given ID
       console.log("Coupon not found");
       return res.redirect("/admin/coupon"); // Redirect if coupon not found
     }
 
-    // Log the deleted coupon to verify
     console.log("Deleted coupon:", deletedCoupon);
 
     // Redirect to the coupon list page after deletion
-    return res.redirect("/admin/coupon"); // Adjust the path as per your structure
+    return res.redirect("/admin/coupon"); 
 
   } catch (error) {
-    // Catch any errors during the deletion process
     console.log("Error occurred while deleting coupon:", error);
     return res.status(500).render("admin/coupon", {
       message: "An error occurred while deleting the coupon"
