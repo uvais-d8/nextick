@@ -116,7 +116,6 @@ const loadaboutpage = (req, res) => {
 const loadcontactpage = (req, res) => {
   res.render("contact");
 };
-
 const advancedSearch = async (req, res) => {
   try {
     const {

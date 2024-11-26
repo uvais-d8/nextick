@@ -45,6 +45,10 @@
 			width: 20px;
 		}
 
+		a:hover {
+			color: orange;
+		}
+
 		.banner {
 			width: 100%;
 			height: 500px;
@@ -105,15 +109,15 @@
 								<li>
 									<form method="post" action="/logout">
 										<button class="a" type="submit"
-											style="color:white; background: none; border: none;cursor: pointer; font-weight:bold">Log
-											Out
+											style="color:white; background: none; border: none;cursor: pointer; font-weight:bold">
+											Log Out
+											
 										</button>
 									</form>
 								</li>
 								<li>
 									<div class="header-icons">
-										<a class="shopping-cart" href="/cart"><i
-												class="fas fa-shopping-cart"></i></a>
+										<a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
 										<a class="mobile-hide search-bar-icon" href="#"><i
 												class="fas fa-search"></i></a>
 										<a class="mobile-hide search-bar-icon" href="/profile"><i
@@ -294,7 +298,7 @@
 									type="submit" class="cart-btn">
 									<a class="cart-btn"><i class="fas fa-shopping-cart"> Add to Cart</i></a>
 								</button>
-							</div> 
+							</div>
 
 						</form>
 					</div>
@@ -353,200 +357,247 @@
 	</section>
 	<!-- end cart banner section -->
 
-    <style>
-        
-        .banner {
-            width: 100%;
-            height: 400px;
-            background-image:url(https://m.media-amazon.com/images/S/abs-image-upload-na/b/AmazonStores/A21TJRUUN4KGV/6f51577fc348c89bd69c211a173a9350.w1920.h600.jpg) ;
-            color: white;
+	<style>
+		.banner {
+			width: 100%;
+			height: 400px;
+			background-image: url(https://m.media-amazon.com/images/S/abs-image-upload-na/b/AmazonStores/A21TJRUUN4KGV/6f51577fc348c89bd69c211a173a9350.w1920.h600.jpg);
+			color: white;
 			background-repeat: no-repeat;
-            position: relative;
-            overflow: hidden;
-        }
-        .content-wrapper {
-            display: flex;
-            height: 100%;
-        }
-        .text-content {
-            flex: 1;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+			position: relative;
+			overflow: hidden;
+		}
 
-        .banner p {
-            font-size: 1.2rem;
-            margin-bottom: 1.5rem;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        .cta-button {
-            padding: 10px 20px;
-            font-size: 1rem;
-            background-color: #ec8525;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: scale(0.9);
-            align-self: flex-start;
+		.content-wrapper {
+			display: flex;
+			height: 100%;
+		}
+
+		.text-content {
+			flex: 1;
+			padding: 20px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		.banner p {
+			font-size: 1.2rem;
+			margin-bottom: 1.5rem;
+			opacity: 0;
+			transform: translateY(20px);
+		}
+
+		.cta-button {
+			padding: 10px 20px;
+			font-size: 1rem;
+			background-color: #ec8525;
+			color: white;
+			border: none;
+			border-radius: 25px;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			opacity: 0;
+			transform: scale(0.9);
+			align-self: flex-start;
 			margin-left: 30%;
-        }
-        .cta-button:hover {
-            background-color: #031125ed;
+		}
+
+		.cta-button:hover {
+			background-color: #031125ed;
 			color: orange;
 			border-width: 2px;
 			border-color: orange;
-            transform: scale(1.05);
-        }
-        .watch-showcase {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            perspective: 1000px;
-        }
-        .watch-3d {
-            width: 205px;
-            height: 205px;
-            position: relative;
-            transform-style: preserve-3d;
-            animation: rotate 15s infinite linear;
-        }
-        .watch-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            background: url() no-repeat center/cover;
-            border: 2px solid #ecf0f1;
-            border-radius: 9px;
-        }
-        .front { transform: translateZ(100px); }
-        .back { transform: rotateY(180deg) translateZ(100px); }
-        .right { transform: rotateY(90deg) translateZ(100px); }
-        .left { transform: rotateY(-90deg) translateZ(100px); }
-        .top { transform: rotateX(90deg) translateZ(100px); }
-        .bottom { transform: rotateX(-90deg) translateZ(100px); }
-        @keyframes rotate {
-            1% { transform: rotateY(0); }
-            100% { transform: rotateY(360deg); }
-        }
-        .feature-selector {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            display: flex;
-            gap: 10px;
-        }
-        .feature-button {
-            padding: 5px 10px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 15px;
-        }
-        .feature-button:hover, .feature-button.active {
-            background-color: rgba(255, 255, 255, 0.4);
-        }
-    </style>
+			transform: scale(1.05);
+		}
 
-    <div  class="banner">
-        <div class="content-wrapper">
-            <div class="text-content">
-                <h1 style="margin-left: 30%; color:rgb(255, 255, 255);font-size:47px">The Future on Your<span style="color: orange;"> Wrist</span></h1>
-                <p style="margin-left: 30%;font-weight:bold;color:white">Experience cutting-edge technology with our smartwatches</p>
-                <a href="/products" class="cta-button">Shop Now</a>
-            </div>
-            <div class="watch-showcase">
-                <div class="watch-3d">
-                    <div class="watch-face front" style="background-image: url(https://www.fastrack.in/dw/image/v2/BKDD_PRD/on/demandware.static/-/Sites-titan-master-catalog/default/dw43dda5a9/images/Fastrack/Catalog/38074AP03_1.jpg?sw=600&sh=600);"></div>
-                    <div class="watch-face back" style="background-image: url(https://m.media-amazon.com/images/I/61XESKwObcL.jpg);"></div>
-                    <div class="watch-face right" style="background-image: url(https://rukminim2.flixcart.com/image/850/1000/xif0q/smartwatch/f/5/c/1-33-android-ios-yuy-244y-t800-ultra-smartwatch-1-9-hd-display-original-imagppngdqwucrum.jpeg?q=90&crop=false);"></div>
-                    <div class="watch-face left" style="background-image: url(https://www.zebrs.com/uploads/zebrs/products/untitled-design-402111_l.jpg);"></div>
-                    <div class="watch-face top" style="background-image: url(https://www.jarir.com/cdn-cgi/image/fit=contain,width=350,height=auto,quality=85,metadata=none/https://ak-asset.jarir.com/akeneo-prod/asset/m1/delta/558306.jpg);"></div>
-                    <div class="watch-face bottom" style="background-image: url(https://rukminim2.flixcart.com/image/850/1000/xif0q/smartwatch/y/q/1/-original-imagmwgxvhfv7hdt.jpeg?q=90&crop=false);"></div>
-              
-                </div>
-            </div>
-        </div>
-        
-    </div>
+		.watch-showcase {
+			flex: 1;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			perspective: 1000px;
+		}
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const title = document.querySelector('.banner h1');
-            const subtitle = document.querySelector('.banner p');
-            const cta = document.querySelector('.cta-button');
-            const featureButtons = document.querySelectorAll('.feature-button');
-            const watch3d = document.querySelector('.watch-3d');
+		.watch-3d {
+			width: 205px;
+			height: 205px;
+			position: relative;
+			transform-style: preserve-3d;
+			animation: rotate 15s infinite linear;
+		}
 
-            // Animate text and button
-            setTimeout(() => {
-                title.style.opacity = '1';
-                title.style.transform = 'translateY(0)';
-            }, 500);
+		.watch-face {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			backface-visibility: hidden;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-size: 24px;
+			background: url() no-repeat center/cover;
+			border: 2px solid #ecf0f1;
+			border-radius: 9px;
+		}
 
-            setTimeout(() => {
-                subtitle.style.opacity = '1';
-                subtitle.style.transform = 'translateY(0)';
-            }, 1000);
+		.front {
+			transform: translateZ(100px);
+		}
 
-            setTimeout(() => {
-                cta.style.opacity = '1';
-                cta.style.transform = 'scale(1)';
-            }, 1500);
+		.back {
+			transform: rotateY(180deg) translateZ(100px);
+		}
 
-            // Feature selector functionality
-            featureButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    featureButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    const feature = button.getAttribute('data-feature');
-                    updateWatchFace(feature);
-                });
-            });
+		.right {
+			transform: rotateY(90deg) translateZ(100px);
+		}
 
-            function updateWatchFace(feature) {
-                const faces = watch3d.querySelectorAll('.watch-face');
-                faces.forEach(face => {
-                    face.style.background = `url('/placeholder.svg?height=200&width=200&text=${feature}') no-repeat center/cover`;
-                    face.textContent = feature;
-                });
+		.left {
+			transform: rotateY(-90deg) translateZ(100px);
+		}
 
-                // Update subtitle text
-                subtitle.textContent = `Experience ${feature.toLowerCase()} tracking with our smartwatches`;
+		.top {
+			transform: rotateX(90deg) translateZ(100px);
+		}
 
-                // Pause and resume rotation animation
-                watch3d.style.animationPlayState = 'paused';
-                setTimeout(() => {
-                    watch3d.style.animationPlayState = 'running';
-                }, 100);
-            }
+		.bottom {
+			transform: rotateX(-90deg) translateZ(100px);
+		}
 
-            // Interactive 3D rotation on mouse move
-            const banner = document.querySelector('.banner');
-            banner.addEventListener('mousemove', (e) => {
-                const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
-                const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
-                watch3d.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
-            });
+		@keyframes rotate {
+			1% {
+				transform: rotateY(0);
+			}
 
-            banner.addEventListener('mouseleave', () => {
-                watch3d.style.transform = 'rotateY(0) rotateX(0)';
-            });
-        });
-    </script>
+			100% {
+				transform: rotateY(360deg);
+			}
+		}
+
+		.feature-selector {
+			position: absolute;
+			bottom: 20px;
+			left: 20px;
+			display: flex;
+			gap: 10px;
+		}
+
+		.feature-button {
+			padding: 5px 10px;
+			background-color: rgba(255, 255, 255, 0.2);
+			border: none;
+			color: white;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			border-radius: 15px;
+		}
+
+		.feature-button:hover,
+		.feature-button.active {
+			background-color: rgba(255, 255, 255, 0.4);
+		}
+	</style>
+
+	<div class="banner">
+		<div class="content-wrapper">
+			<div class="text-content">
+				<h1 style="margin-left: 30%; color:rgb(255, 255, 255);font-size:47px">The Future on Your<span
+						style="color: orange;"> Wrist</span></h1>
+				<p style="margin-left: 30%;font-weight:bold;color:white">Experience cutting-edge technology with our
+					smartwatches</p>
+				<a href="/products" class="cta-button">Shop Now</a>
+			</div>
+			<div class="watch-showcase">
+				<div class="watch-3d">
+					<div class="watch-face front"
+						style="background-image: url(https://www.fastrack.in/dw/image/v2/BKDD_PRD/on/demandware.static/-/Sites-titan-master-catalog/default/dw43dda5a9/images/Fastrack/Catalog/38074AP03_1.jpg?sw=600&sh=600);">
+					</div>
+					<div class="watch-face back"
+						style="background-image: url(https://m.media-amazon.com/images/I/61XESKwObcL.jpg);"></div>
+					<div class="watch-face right"
+						style="background-image: url(https://rukminim2.flixcart.com/image/850/1000/xif0q/smartwatch/f/5/c/1-33-android-ios-yuy-244y-t800-ultra-smartwatch-1-9-hd-display-original-imagppngdqwucrum.jpeg?q=90&crop=false);">
+					</div>
+					<div class="watch-face left"
+						style="background-image: url(https://www.zebrs.com/uploads/zebrs/products/untitled-design-402111_l.jpg);">
+					</div>
+					<div class="watch-face top"
+						style="background-image: url(https://www.jarir.com/cdn-cgi/image/fit=contain,width=350,height=auto,quality=85,metadata=none/https://ak-asset.jarir.com/akeneo-prod/asset/m1/delta/558306.jpg);">
+					</div>
+					<div class="watch-face bottom"
+						style="background-image: url(https://rukminim2.flixcart.com/image/850/1000/xif0q/smartwatch/y/q/1/-original-imagmwgxvhfv7hdt.jpeg?q=90&crop=false);">
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const title = document.querySelector('.banner h1');
+			const subtitle = document.querySelector('.banner p');
+			const cta = document.querySelector('.cta-button');
+			const featureButtons = document.querySelectorAll('.feature-button');
+			const watch3d = document.querySelector('.watch-3d');
+
+			// Animate text and button
+			setTimeout(() => {
+				title.style.opacity = '1';
+				title.style.transform = 'translateY(0)';
+			}, 500);
+
+			setTimeout(() => {
+				subtitle.style.opacity = '1';
+				subtitle.style.transform = 'translateY(0)';
+			}, 1000);
+
+			setTimeout(() => {
+				cta.style.opacity = '1';
+				cta.style.transform = 'scale(1)';
+			}, 1500);
+
+			// Feature selector functionality
+			featureButtons.forEach(button => {
+				button.addEventListener('click', () => {
+					featureButtons.forEach(btn => btn.classList.remove('active'));
+					button.classList.add('active');
+					const feature = button.getAttribute('data-feature');
+					updateWatchFace(feature);
+				});
+			});
+
+			function updateWatchFace(feature) {
+				const faces = watch3d.querySelectorAll('.watch-face');
+				faces.forEach(face => {
+					face.style.background = `url('/placeholder.svg?height=200&width=200&text=${feature}') no-repeat center/cover`;
+					face.textContent = feature;
+				});
+
+				// Update subtitle text
+				subtitle.textContent = `Experience ${feature.toLowerCase()} tracking with our smartwatches`;
+
+				// Pause and resume rotation animation
+				watch3d.style.animationPlayState = 'paused';
+				setTimeout(() => {
+					watch3d.style.animationPlayState = 'running';
+				}, 100);
+			}
+
+			// Interactive 3D rotation on mouse move
+			const banner = document.querySelector('.banner');
+			banner.addEventListener('mousemove', (e) => {
+				const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+				const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+				watch3d.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+			});
+
+			banner.addEventListener('mouseleave', () => {
+				watch3d.style.transform = 'rotateY(0) rotateX(0)';
+			});
+		});
+	</script>
 
 	<script>
 		// Set the target date and time

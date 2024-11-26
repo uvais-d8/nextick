@@ -193,14 +193,12 @@ const removecart = async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Step 1: Find the cart item to get the quantity and product ID
     const cartItem = await Cart.findById(id);
     if (!cartItem) {
       console.error("Cart item not found");
       return res.redirect("/cart");
     }
 
-    // Step 3: Delete the cart item
     await Cart.findByIdAndDelete(id);
 
     console.log("Item deleted and stock updated successfully");
@@ -210,31 +208,108 @@ const removecart = async (req, res) => {
     res.redirect("/cart");
   }
 };
-const addtocart = async (req, res) => {
-  const userId = req.session.userId; // Assume `req.user` contains the authenticated user's details
+// const addtocart = async (req, res) => {
+//   const userId = req.session.userId; // Assume `req.user` contains the authenticated user's details
 
-  // Early redirect if no user is authenticated
+//   // Early redirect if no user is authenticated
+//   if (!userId) {
+//     return res.redirect("/login");
+//   }
+
+//   try {
+//     const { quantity, productId } = req.body;
+//     console.log(quantity);
+//     if (!quantity || !productId) {
+//       return res
+//         .status(400)
+//         .json({ error: "Quantity and Product ID are required" });
+//     }
+
+//     // Find the product in the database
+//     const product = await Products.findById(productId);
+//     console.log("hellooo ::", product.stock);
+//     if (!product) {
+//       return res.render("singleproduct", { message: "Product not found" });
+//     }
+
+//     // Check if the product is listed and has enough stock
+//     if (!product.islisted) {
+//       return res.render("singleproduct", {
+//         message: "This product is currently unavailable",
+//         product
+//       });
+//     }
+
+//     if (product.stock < quantity) {
+//       console.log("stock : ", product.stock);
+//       console.log(quantity);
+
+//       return res.render("singleproduct", {
+//         message: "Not enough stock available for this quantity",
+//         product
+//       });
+//     }
+
+//     // Check if the product already exists in the user's cart
+//     const existingItem = await Cart.findOne({ user: userId, productId });
+
+//     if (existingItem) {
+//       // Update the quantity and total
+//       const newQuantity = existingItem.quantity + parseInt(quantity);
+
+//       // Ensure the new quantity doesn't exceed stock or a maximum limit
+//       if (newQuantity > 10) {
+//         return res.render("singleproduct", {
+//           message: "Cannot add more than 10 units of this item to your cart",
+//           product
+//         });
+//       }
+//       existingItem.quantity = newQuantity;
+//       existingItem.total = newQuantity * product.price;
+//       await existingItem.save();
+//     } else {
+//       // Create a new cart item
+//       const cartItem = new Cart({
+//         user: userId,
+//         productId,
+//         quantity,
+//         total: product.price * quantity
+//       });
+//       await cartItem.save();
+//     }
+
+//     // Decrease stock of the product after adding to cart
+//     // product.stock -= quantity;
+//     await product.save();
+
+//     // Redirect to the cart page after successfully adding the product
+//     res.redirect("/cart");
+//   } catch (error) {
+//     console.error("Error adding product to cart:", error);
+//     res.status(500).json({ error: "Failed to add product to cart" });
+//   }
+// };
+
+const addtocart = async (req, res) => {
+  const userId = req.session.userId;
+
   if (!userId) {
     return res.redirect("/login");
   }
 
   try {
     const { quantity, productId } = req.body;
-    console.log(quantity);
+
     if (!quantity || !productId) {
-      return res
-        .status(400)
-        .json({ error: "Quantity and Product ID are required" });
+      return res.status(400).json({ error: "Quantity and Product ID are required" });
     }
 
-    // Find the product in the database
     const product = await Products.findById(productId);
-    console.log("hellooo ::", product.stock);
+
     if (!product) {
       return res.render("singleproduct", { message: "Product not found" });
     }
 
-    // Check if the product is listed and has enough stock
     if (!product.islisted) {
       return res.render("singleproduct", {
         message: "This product is currently unavailable",
@@ -243,29 +318,32 @@ const addtocart = async (req, res) => {
     }
 
     if (product.stock < quantity) {
-      console.log("stock : ", product.stock);
-      console.log(quantity);
-
       return res.render("singleproduct", {
         message: "Not enough stock available for this quantity",
         product
       });
     }
 
-    // Check if the product already exists in the user's cart
     const existingItem = await Cart.findOne({ user: userId, productId });
 
     if (existingItem) {
-      // Update the quantity and total
       const newQuantity = existingItem.quantity + parseInt(quantity);
 
       // Ensure the new quantity doesn't exceed stock or a maximum limit
+      if (newQuantity > product.stock) {
+        return res.render("singleproduct", {
+          message: "Cannot add more than the available stock to your cart",
+          product
+        });
+      }
+
       if (newQuantity > 10) {
         return res.render("singleproduct", {
           message: "Cannot add more than 10 units of this item to your cart",
           product
         });
       }
+
       existingItem.quantity = newQuantity;
       existingItem.total = newQuantity * product.price;
       await existingItem.save();
@@ -281,16 +359,17 @@ const addtocart = async (req, res) => {
     }
 
     // Decrease stock of the product after adding to cart
-    // product.stock -= quantity;
     await product.save();
 
     // Redirect to the cart page after successfully adding the product
     res.redirect("/cart");
+
   } catch (error) {
     console.error("Error adding product to cart:", error);
     res.status(500).json({ error: "Failed to add product to cart" });
   }
 };
+
 module.exports = {
   addtocart,
   loadcartpage,
