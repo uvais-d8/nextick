@@ -150,18 +150,32 @@ const addproduct = async (req, res) => {
     console.log("Request body:", req.body);
     console.log("Uploaded files:", files);
 
+    // Check for required fields
     if (!name || !category || !stock || !price || !description) {
       return res.status(400).render("admin/addproduct", {
         message: "All fields are required."
       });
     }
 
+    // Check if at least 3 images are uploaded
     if (!files || files.length < 3) {
       return res.status(400).render("admin/addproduct", {
         message: "Please upload at least 3 images."
       });
     }
 
+    // Validate the file types (ensure they are images)
+    const validImageTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!validImageTypes.includes(file.mimetype)) {
+        return res.status(400).render("admin/addproduct", {
+          message: `Invalid image format for file: ${file.originalname}. Please upload only image files.`
+        });
+      }
+    }
+
+    // Check if the product already exists
     const existingProduct = await Products.findOne({ name });
     if (existingProduct) {
       const products = await Products.find({});
@@ -172,6 +186,7 @@ const addproduct = async (req, res) => {
       });
     }
 
+    // Check if the category exists
     const categoryObj = await Category.findOne({ category: category });
     if (!categoryObj) {
       return res.status(400).render("admin/addproduct", {
@@ -179,15 +194,17 @@ const addproduct = async (req, res) => {
       });
     }
 
+    // Create the new product
     const newProduct = new Products({
       name,
       category: categoryObj._id, // Set the category ObjectId
       stock,
       price,
       description: description || "Default description",
-      images: files.map(file => file.path)
+      images: files.map(file => file.path) // Save the file paths
     });
 
+    // Save the new product to the database
     await newProduct.save();
     console.log("New product saved:", newProduct);
 
@@ -197,6 +214,8 @@ const addproduct = async (req, res) => {
     res.redirect("/admin/dashboard");
   }
 };
+
+
 const addcategory = async (req, res) => {
   try {
     const { category,brand, bandcolor } = req.body;

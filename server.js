@@ -13,7 +13,12 @@ const exphbs = require("express-handlebars");
 const passport = require("passport");
 const methodOverride = require('method-override');
 app.use(methodOverride('_method'));  // Enable the use of DELETE in forms
+const Razorpay = require("razorpay");
 
+const razorpay = new Razorpay({
+    key_id: "rzp_test_27cbwJ6wd0CuiQ", // Replace with your Razorpay Key ID
+    key_secret: "SfFbZ3vFL1AMEEY0ZvS4d1yF", // Replace with your Razorpay Key Secret
+});
 const PORT = process.env.PORT;
 
 require("dotenv").config();

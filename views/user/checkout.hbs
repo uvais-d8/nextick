@@ -9,7 +9,20 @@
 		content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
 	<style>
 		.btnnn:hover {
-			background-color: brown;
+			background-color: rgb(214, 144, 44);
+			border-width: 1px;
+			border-color: black;
+		}
+
+		.btnnn {
+			width: 150px;
+			height: 50px;
+			background-color: orange;
+			border-radius: 29px;
+			color: white;
+			font-weight: bold;
+			border-width: 0px;
+			margin-top: 20px
 		}
 	</style>
 	<!-- title -->
@@ -188,7 +201,22 @@
 			{{/each}}
 		</div>
 		<!-- check out section -->
+		<script>
+			function handleCardClick(firstname, lastname, address, phone, email, place, city, pincode, district) {
+				// Populate the shipping address form with the selected address
+				document.getElementById('firstname').value = firstname;
+				document.getElementById('lastname').value = lastname;
+				document.getElementById('address').value = address;
+				document.getElementById('phone').value = phone;
+				document.getElementById('email').value = email;
+				document.getElementById('place').value = place;
+				document.getElementById('city').value = city;
+				document.getElementById('pincode').value = pincode;
+				document.getElementById('district').value = district;
 
+			}
+
+		</script>
 		<div class="checkout-section mt-150 mb-150">
 			<div class="container">
 				<div class="row">
@@ -285,11 +313,7 @@
 
 
 
-													<label for="paymentMethod"><b>Payment Method</b></label>
-													<select id="paymentMethod" name="paymentMethod">
-														<option value="cod">COD</option>
-														<option value="upi">UPI</option>
-													</select>
+
 
 													<!-- Hidden fields for cart and total amounts -->
 													<input type="hidden" name="subtotal" value="{{subtotal}}">
@@ -356,10 +380,19 @@
 									</tr>
 								</tbody>
 							</table>
-							<button type="submit" class="btnnn"
-								style="width: 150px; height:50px; background-color:orange;border-radius:29px ;color:white;font-weight:bold;border-width:0px;margin-top:20px">Place
-								Order</button>
+							<label style="margin-top: 30px;" for="paymentMethod"><b>Payment Method</b></label>
+							<div>
+								<input type="radio" id="razorpay" name="paymentMethod" value="razorpay">
+								<label for="razorpay">Razorpay</label><br>
 
+								<input type="radio" id="cod" name="paymentMethod" value="cod">
+								<label for="cod">COD</label><br>
+
+								<input type="radio" id="upi" name="paymentMethod" value="upi">
+								<label for="upi">UPI</label><br>
+							</div>
+
+							<button type="submit" class="btnnn">Place Order</button>
 							</form>
 						</div>
 					</div>
@@ -480,164 +513,141 @@
 		</div>
 	</div>
 	<!-- end copyright -->
-	<script>
-		document.addEventListener("DOMContentLoaded", function () {
-			const form = document.getElementById("orderForm");
 
-			// Add event listener for form submission
-			form.addEventListener("submit", function (event) {
-				// Prevent form submission if validation fails
-				if (!validateForm()) {
-					event.preventDefault();
-				}
-			});
-
-			// Inline validation function
-			function validateForm() {
-				let isValid = true;
-
-				const fields = [
-					{ id: "firstname", message: "First name is required" },
-					{ id: "lastname", message: "Last name is required" },
-					{ id: "email", message: "Valid email is required", pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
-					{ id: "phone", message: "Valid phone number is required", pattern: /^[0-9]{10}$/ },
-					{ id: "address", message: "Address is required" },
-					{ id: "pincode", message: "Pin code is required", pattern: /^[0-9]{6}$/ },
-					{ id: "place", message: "Place is required" },
-					{ id: "city", message: "City is required" },
-					{ id: "district", message: "District is required" },
-					{ id: "paymentMethod", message: "Select a payment method" },
-				];
-
-				fields.forEach(field => {
-					const input = document.getElementById(field.id);
-					const errorMessage = document.querySelector(`#${field.id} + .error-message`);
-
-					if (!input.value || (field.pattern && !field.pattern.test(input.value))) {
-						isValid = false;
-						input.style.borderColor = "red";
-						if (errorMessage) {
-							errorMessage.textContent = field.message;
-							errorMessage.style.display = "block";
-						}
-					} else {
-						input.style.borderColor = "initial";
-						if (errorMessage) {
-							errorMessage.style.display = "none";
-						}
-					}
-				});
-
-				return isValid;
-			}
-
-			// Attach real-time validation for all fields
-			form.querySelectorAll("input, select").forEach(input => {
-				input.addEventListener("input", validateForm);
-			});
-		});
-	</script>
 
 	<script>
-		document.getElementById('orderForm').addEventListener('submit', async function (event) {
+		document.getElementById("orderForm").addEventListener("submit", async function (event) {
 			event.preventDefault(); // Prevent default form submission
+
 			const form = event.target;
 
-			// Collect form field values
-			const firstname = form.elements['firstname'].value;
-			const lastname = form.elements['lastname'].value;
-			const email = form.elements['email'].value;
-			const address = form.elements['address'].value;
-			const phone = form.elements['phone'].value;
-			const pincode = form.elements['pincode'].value;
-			const district = form.elements['district'].value;
-			const paymentMethod = form.elements['paymentMethod'].value;
-			const place = form.elements['place'].value;
-			const city = form.elements['city'].value;
-
-
-			const items = Array.from(document.querySelectorAll('.order-details-body tr')).map(row => ({
-				productId: row.querySelector('.item-id').textContent.trim(),
-				name: row.querySelector('.item-name').textContent,
-				price: parseFloat(row.querySelector('.item-price').textContent),
-				quantity: parseInt(row.querySelector('.item-quantity').textContent),
-				total: parseFloat(row.querySelector('.item-total').textContent),
-				images: row.querySelector('.item-image').textContent,
-			}));
-
-			const orderData = {
-				firstname,
-				lastname,
-				email,
-				address,
-				phone,
-				pincode,
-				district,
-				paymentMethod,
-				items,
-				place,
-				city,
-				paymentMethod: document.getElementById('paymentMethod').value,
+			// Collect form data
+			const formData = {
+				firstname: form.elements['firstname'].value,
+				lastname: form.elements['lastname'].value,
+				email: form.elements['email'].value,
+				address: form.elements['address'].value,
+				phone: form.elements['phone'].value,
+				pincode: form.elements['pincode'].value,
+				district: form.elements['district'].value,
+				paymentMethod: form.elements['paymentMethod'].value,
+				place: form.elements['place'].value,
+				city: form.elements['city'].value,
 				subtotal: parseFloat(document.querySelector('input[name="subtotal"]').value),
 				shippingRate: parseFloat(document.querySelector('input[name="shippingRate"]').value),
 				total: parseFloat(document.querySelector('input[name="total"]').value),
 				addressId: document.getElementById('addressId').textContent,
 			};
 
-			console.log(orderData)
-
-			try {
-				const response = await fetch('/placeOrder', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(orderData)
-				});
-
-				const result = await response.json();
-				if (result.success) {
-					Swal.fire({
-						title: 'Success!',
-						text: 'Your order placed successfully.',
-						icon: 'success',
-						confirmButtonText: 'OK'
-					}).then(() => {
-						// Redirect to orders page after clicking "OK"
-						window.location.href = '/orderss';
+			if (formData.paymentMethod === "razorpay") {
+				// Existing Razorpay logic remains unchanged
+				try {
+					const response = await fetch('/create-razorpay-order', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify(formData),
 					});
-				} else {
+					const order = await response.json();
+
+					const options = {
+						key: "rzp_test_27cbwJ6wd0CuiQ", // Replace with your Razorpay API Key
+						amount: order.amount, // Amount in paisa
+						currency: order.currency,
+						name: "Your Store Name",
+						description: "Payment for your order",
+						order_id: order.id,
+						handler: async function (response) {
+							const verifyResponse = await fetch('/verify-razorpay-payment', {
+								method: 'POST',
+								headers: { 'Content-Type': 'application/json' },
+								body: JSON.stringify({
+									paymentId: response.razorpay_payment_id,
+									orderId: response.razorpay_order_id,
+									signature: response.razorpay_signature,
+								}),
+							});
+							const verifyResult = await verifyResponse.json();
+
+							if (order.success) {
+								Swal.fire({
+									title: 'Success!',
+									text: 'Payment successful! Order placed.',
+									icon: 'success',
+									confirmButtonText: 'OK',
+								}).then(() => {
+									window.location.href = '/orderss';
+								});
+							} else {
+								Swal.fire({
+									title: 'Payment Verification Failed',
+									text: 'Your payment could not be verified.',
+									icon: 'error',
+									confirmButtonText: 'Retry',
+								});
+							}
+						},
+						prefill: {
+							name: `${formData.firstname} ${formData.lastname}`,
+							email: formData.email,
+							contact: formData.phone,
+						},
+						theme: {
+							color: "#F37254",
+						},
+					};
+
+					const rzp = new Razorpay(options);
+					rzp.open();
+				} catch (error) {
+					console.error('Error during Razorpay payment:', error);
 					Swal.fire({
-						title: 'error!',
-						text: 'cannot place the order.',
-						icon: 'failed',
-						confirmButtonText: 'OK'
-					}).then(() => {
-						// Redirect to orders page after clicking "OK"
-						window.location.href = '/checkout';
+						title: 'Error',
+						text: 'Payment could not be initiated.',
+						icon: 'error',
+						confirmButtonText: 'Retry',
 					});
 				}
-			} catch (error) {
-				console.error('Error placing order:', error);
-			}
+			} else {
+				// New: Handle COD and UPI
+				try {
+					const response = await fetch('/placeOrder', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify(formData),
+					});
+					const result = await response.json();
 
+					if (result.success) {
+						Swal.fire({
+							title: 'Order Placed!',
+							text: 'Your order has been successfully placed.',
+							icon: 'success',
+							confirmButtonText: 'OK',
+						}).then(() => {
+							window.location.href = '/orderss';
+						});
+					} else {
+						Swal.fire({
+							title: 'Order Failed',
+							text: result.message || 'Something went wrong while placing your order.',
+							icon: 'error',
+							confirmButtonText: 'Retry',
+						});
+					}
+				} catch (error) {
+					console.error('Error placing order:', error);
+					Swal.fire({
+						title: 'Error',
+						text: 'Order could not be placed.',
+						icon: 'error',
+						confirmButtonText: 'Retry',
+					});
+				}
+			}
 		});
 	</script>
+	
 
-	<script>
-		function handleCardClick(firstname, lastname, address, phone, email, place, city, pincode, district) {
-			// Populate the shipping address form with the selected address
-			document.getElementById('firstname').value = firstname;
-			document.getElementById('lastname').value = lastname;
-			document.getElementById('address').value = address;
-			document.getElementById('phone').value = phone;
-			document.getElementById('email').value = email;
-			document.getElementById('place').value = place;
-			document.getElementById('city').value = city;
-			document.getElementById('pincode').value = pincode;
-			document.getElementById('district').value = district;
-
-		}
-
-	</script>
 	<!-- jquery -->
 	<script src="/assets/js/jquery-1.11.3.min.js"></script>
 	<!-- bootstrap -->
@@ -658,7 +668,8 @@
 	<script src="/assets/js/sticker.js"></script>
 	<!-- main js -->
 	<script src="/assets/js/main.js"></script>
-
+	<!-- Add Razorpay Script -->
+	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </body>
 
 </html>

@@ -60,8 +60,7 @@ const ordersSchema = new mongoose.Schema({
    
     paymentMethod: {
         type: String,
-        enum: ['online', 'cod'],
-        required: true
+        enum: ['upi', 'cod','razorpay'],
     },
     shippingAddress: { 
         // type: mongoose.Schema.Types.ObjectId,

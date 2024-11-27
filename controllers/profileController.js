@@ -199,8 +199,6 @@ const resendotpemail = async (req, res) => {
 };
 const updateDefaultAddress = async (req, res) => {
   try {
-    console.log("hrlooo");
-
     const { addressId } = req.body;
     console.log(addressId);
     const userId = req.session.userId; // Assuming session contains the user ID
