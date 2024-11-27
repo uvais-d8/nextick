@@ -20,7 +20,7 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/signup" }),
   (req, res) => {
     console.log(".");
-    res.redirect("/home");
+    res.redirect("/");
   }
 );
 
@@ -102,7 +102,7 @@ router.get("/product/:id", userController.singleproduct);
 router.get("/about", userController.loadaboutpage);
 router.get("/contact", userController.loadcontactpage);
 router.get("/contact", userController.loadcontactpage);
-router.get("/home", userController.loadhome);
+router.get("/", userController.loadhome);
 
 
 

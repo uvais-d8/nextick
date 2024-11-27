@@ -75,7 +75,7 @@ const login = async (req, res) => {
     }
     req.session.userId = user._id;
     console.log(req.session);
-    res.redirect("/home");
+    res.redirect("/");
   } catch (error) {
     console.error("Error during login:", error);
     return res.render("signup", { message: "Something went wrong" });
@@ -86,7 +86,7 @@ const loadsignup = (req, res) => {
 };
 const loadlogin = (req, res) => {
   if (req.session.userId) {
-    return res.redirect("/home");
+    return res.redirect("/");
   }
   res.render("login", { layout: false });
 };
@@ -202,7 +202,7 @@ const verifyOtp = async (req, res) => {
       req.session.userData = null;
 
       // Redirect to home
-      return res.redirect("/home");
+      return res.redirect("/");
     } else {
       // OTP mismatch
 
