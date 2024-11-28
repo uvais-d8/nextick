@@ -65,7 +65,7 @@ router.get("/forgotpassword", registerController.loadforgotpassword);
 router.post("/updateDefaultAddress",profileController.updateDefaultAddress)
 router.post("/resendotpemail", profileController.resendotpemail);
 router.post("/updateUsername",profileController.updateUsername);
-router.post("/editaddress/:id", profileController.editaddress);
+router.post("/editaddress/:id", userAuth.checksession,profileController.editaddress);
 router.get("/profile", userAuth.checksession,profileController.loadprofile);
 router.delete("/address/:id", profileController.removeaddress);
 router.get("/newpassword", profileController.loadnewpassword);
@@ -73,31 +73,31 @@ router.post("/email", profileController.sendotptoemail);
 router.post("/verifyotpemail", profileController.verifyotpemail);
 router.post("/updatepassword", profileController.setnewpassword);
 router.post("/changepassword",profileController.changepassword)
-router.get("/address", profileController.loadaddress);
-router.post("/addaddress", profileController.addaddress);
+router.get("/address",userAuth.checksession,profileController.loadaddress);
+router.post("/addaddress", userAuth.checksession,profileController.addaddress);
 
 //sales Controller
-router.post("/addtocart", salesController.addtocart);
-router.post("/placeOrder", salesController.placeOrder);
-router.get("/cart", salesController.loadcartpage);
+router.post("/addtocart", userAuth.checksession,salesController.addtocart);
+router.post("/placeOrder", userAuth.checksession,salesController.placeOrder);
+router.get("/cart", userAuth.checksession,salesController.loadcartpage);
 router.get('/cart/:cartId/getProductStock',salesController.getProductStock)
 router.delete("/cart/:id", salesController.removecart);
 router.post('/cart/:id/updateQuantity',salesController.updateQuantity) 
-router.post("/applycoupon",salesController.applycoupon)
-router.post('/create-razorpay-order',salesController.razorpayy)
+router.post("/applycoupon",userAuth.checksession,salesController.applycoupon)
+router.post('/create-razorpay-order',userAuth.checksession,salesController.razorpayy)
 
 //Orders Controller
-router.get("/checkout", orderController.checkout);
-router.get("/viewDetails/:orderId/:itemId",orderController.loadViewDetails)
-router.get("/orderss", orderController.loadorderss);
-router.patch("/orders/:orderId", orderController.removeorder); 
-router.patch("/orders/:orderId/items/:itemId", orderController.removeItem); 
+router.get("/checkout", userAuth.checksession,orderController.checkout);
+router.get("/viewDetails/:orderId/:itemId",userAuth.checksession,orderController.loadViewDetails)
+router.get("/orderss", userAuth.checksession,orderController.loadorderss);
+router.patch("/orders/:orderId", userAuth.checksession,orderController.removeorder); 
+router.patch("/orders/:orderId/items/:itemId", userAuth.checksession,orderController.removeItem); 
 
 
 //pages routes
 router.get("/advancedSearch", userController.advancedSearch);
 router.get("/ordertracking/:id",orderController.ordertracking)
-router.get("/products", userController.loadproducts);
+router.get("/products",userAuth.checksession,userController.loadproducts);
 router.get("/product/:id", userController.singleproduct);
 router.get("/about", userController.loadaboutpage);
 router.get("/contact", userController.loadcontactpage);

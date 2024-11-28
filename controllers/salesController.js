@@ -8,15 +8,68 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 
-const applycoupon = async(req,res)=>{
+// Apply Coupon Controller
+const applycoupon = async (req, res) => {
+  const { couponCode } = req.body;
+
+  // Find the coupon by code
+  const coupon = await Coupons.findOne({ CouponCode: couponCode });
+
   try {
-    console.log("success")
+    if (!coupon) {
+      return res.status(404).json({ message: "Coupon code is invalid" });
+    }
+
+    // Check if the coupon is expired
+    const currentDate = new Date();
+    if (coupon.ExpiryDate < currentDate) {
+      return res.status(400).json({ message: "Coupon code has expired" });
+    }
+
+    // Check if the coupon has any usage limit
+    if (coupon.UsageLimit <= 0) {
+      return res
+        .status(400)
+        .json({ message: "Coupon code usage limit has been reached" });
+    }
+
+    // Check the minimum cart value
+    if (
+      coupon.MinimumCartValue &&
+      req.body.cartTotal < coupon.MinimumCartValue
+    ) {
+      return res
+        .status(400)
+        .json({
+          message: `Minimum cart value for this coupon is $${coupon.MinimumCartValue}`
+        });
+    }
+
+    // Calculate the discount
+    let discount = 0;
+    if (coupon.DiscountType === "percentage") {
+      discount = req.body.cartTotal * coupon.DiscountValue / 100;
+    } else if (coupon.DiscountType === "fixed") {
+      discount = coupon.DiscountValue;
+    }
+
+    // Update cart total after applying the discount
+    const newTotal = req.body.cartTotal - discount;
+
+    // Optionally, you can update the coupon usage count in the database
+    coupon.UsageLimit -= 1;
+    await coupon.save();
+
+    // Send the discount details and new total back to the front end
+    res.status(200).json({
+      message: "Coupon applied successfully",
+      discount,
+      newTotal
+    });
   } catch (error) {
-    console.log("failed")
-
+    console.log("this is the error while applying coupon", erroryyy);
   }
-}
-
+};
 const placeOrder = async (req, res) => {
   console.log("hellooo");
   const userId = req.session.userId;
@@ -118,10 +171,10 @@ const placeOrder = async (req, res) => {
     console.log("New order details:", newOrder);
     await newOrder.save();
     console.log("Order saved successfully.");
-   // Delete all items from the user's cart after placing the order
-   await Cart.deleteMany({ user: userId });
-   console.log(`Cart items for user ${userId} have been deleted.`);
-   
+    // Delete all items from the user's cart after placing the order
+    await Cart.deleteMany({ user: userId });
+    console.log(`Cart items for user ${userId} have been deleted.`);
+
     res.json({ success: true });
   } catch (error) {
     console.log("Error placing order:", error);
@@ -133,6 +186,7 @@ const placeOrder = async (req, res) => {
 };
 const razorpayy = async (req, res) => {
   const userId = req.session.userId;
+  console.log("razorpay processing");
 
   if (!userId) {
     return res.redirect("/login");
@@ -151,10 +205,10 @@ const razorpayy = async (req, res) => {
       place,
       city,
       lastname,
-      address,
+      address
     } = req.body;
-   // Fetch user's cart items
-   const cartItems = await Cart.find({ user: userId }).populate("productId");
+    // Fetch user's cart items
+    const cartItems = await Cart.find({ user: userId }).populate("productId");
     const amount = total * 100; // Razorpay amount is in paisa
 
     // Create Razorpay order
@@ -164,7 +218,6 @@ const razorpayy = async (req, res) => {
       receipt: `order_${Date.now()}`
     });
 
- 
     if (cartItems.length === 0) {
       throw new Error("No items in the cart.");
     }
@@ -183,7 +236,19 @@ const razorpayy = async (req, res) => {
         };
       })
     );
-    shippingAddress = {email, phone, paymentMethod, items, pincode, district, firstname, place, city, lastname, address};
+    shippingAddress = {
+      email,
+      phone,
+      paymentMethod,
+      items,
+      pincode,
+      district,
+      firstname,
+      place,
+      city,
+      lastname,
+      address
+    };
     // Log the shipping address for debugging
     console.log("Received shippingAddress:", shippingAddress);
     const orderTotal = updatedCartItems.reduce(
@@ -202,9 +267,9 @@ const razorpayy = async (req, res) => {
 
     console.log("New order details:", newOrder);
     await newOrder.save();
-   // Delete all items from the user's cart after placing the order
-   await Cart.deleteMany({ user: userId });
-   console.log(`Cart items for user ${userId} have been deleted.`);
+    // Delete all items from the user's cart after placing the order
+    await Cart.deleteMany({ user: userId });
+    console.log(`Cart items for user ${userId} have been deleted.`);
     res.json({
       success: true,
       id: order.id,
@@ -254,35 +319,32 @@ const loadcartpage = async (req, res) => {
   try {
     const userId = req.session.userId;
 
-  
     const carts = await Cart.find({ user: userId }).populate("productId");
-    const coupons = await Coupons.find({})
-    
+    const coupons = await Coupons.find({});
 
+    // Get product names from the cart
+    const cartProductNames = carts.map(item => item.productId.name);
+    const cartCategories = carts.map(item =>
+      item.productId.category.toString()
+    );
+    console.log(cartCategories);
+    // Filter coupons
+    const filteredCoupons = coupons.filter(coupon => {
+      const isProductMatch = coupon.Products.some(productName =>
+        cartProductNames.includes(productName)
+      );
 
- // Get product names from the cart
- const cartProductNames = carts.map(item => item.productId.name);
- const cartCategories = carts.map(item => item.productId.category.toString());
-console.log(cartCategories)
-// Filter coupons
-const filteredCoupons = coupons.filter(coupon => {
-  const isProductMatch = coupon.Products.some(productName =>
-      cartProductNames.includes(productName)
-  );
+      const isCategoryMatch = coupon.Categories.some(category =>
+        cartCategories.includes(category)
+      );
 
-  const isCategoryMatch = coupon.Categories.some(category =>
-      cartCategories.includes(category)
-  );
-
-  return isProductMatch || isCategoryMatch; // Match by either product or category
-});
-// Format filtered coupons
-const formattedCoupons = filteredCoupons.map(coupon => ({
-  ...coupon.toObject(),
-  ExpiryDate: coupon.ExpiryDate.toLocaleString("en-GB") // Include date and time
-}));
-
-
+      return isProductMatch || isCategoryMatch; // Match by either product or category
+    });
+    // Format filtered coupons
+    const formattedCoupons = filteredCoupons.map(coupon => ({
+      ...coupon.toObject(),
+      ExpiryDate: coupon.ExpiryDate.toLocaleString("en-GB") // Include date and time
+    }));
 
     // If no items in the cart, render the page with a message
     if (!carts || carts.length === 0) {
@@ -307,14 +369,14 @@ const formattedCoupons = filteredCoupons.map(coupon => ({
       }
     });
 
-   // Pass to the view
-res.render("cart", {
-  coupons: formattedCoupons,
-  carts,
-  subtotal,
-  shippingRate,
-  total
-});
+    // Pass to the view
+    res.render("cart", {
+      coupons: formattedCoupons,
+      carts,
+      subtotal,
+      shippingRate,
+      total
+    });
   } catch (error) {
     console.error("Error occurred during cart page:", error);
     res.status(500).send("Internal Server Error");

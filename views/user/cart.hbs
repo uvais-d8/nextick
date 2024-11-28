@@ -279,6 +279,14 @@
 									<td colspan="3">{{total}}</td>
 								</tr>
 							</tbody>
+							<div class="discount-section"></div>
+
+							<tbody>
+								<tr class="total-data">
+									<td><strong>Total After Discount: </strong></td>
+									<td colspan="3" class="total">{{total}}</td>
+								</tr>
+							</tbody>
 
 						</table>
 
@@ -297,8 +305,8 @@
 								<h3>Apply Coupon</h3>
 
 								<div class="coupon-form-wrap">
-									<form method="post" action="/applycoupon">
-										<p><input type="text" placeholder="Coupon Code"></p>
+									<form id="couponForm" method="post">
+										<p><input type="text" id="couponCode" placeholder="Coupon Code"></p>
 										<p><input type="submit" value="Apply"></p>
 									</form>
 								</div>
@@ -311,256 +319,290 @@
 			</div>
 		</div>
 	</div>
+<script>
+    document.getElementById('couponForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const couponCode = document.getElementById('couponCode').value;
+        const cartTotal = {{total}}; // Directly pass the Handlebars variable here (without quotes)
+
+        // Send the coupon code and cart total to the server
+        const response = await fetch('/applycoupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ couponCode, cartTotal })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Update the cart total and show the discount
+            const discount = data.discount;
+            const newTotal = data.newTotal;
+
+            // Update the displayed totals
+            document.querySelector('.total-data .total').textContent = `₹${newTotal}`;
+            document.querySelector('.discount-section').textContent = `Discount Applied: ₹${discount}`;
+        } else {
+            alert(data.message); // Show error message
+        }
+    });
+</script>
+
+
 	<div style="margin-top: -150px;" class="coupon-section mb-50">
-	<div class="container">
-  <h4 class="coupon-title">Available Coupons</h4>
-  <div class="row">
-    {{#if coupons.length}}
-      {{#each coupons}}
-        <div class="col-lg-4 col-md-6">
-          <div class="coupon-card">
-            <h3 class="coupon-code">{{this.CouponCode}}</h3>
-            <p class="coupon-description">{{this.Description}}</p>
-            <p class="coupon-validity">Valid till: {{this.ExpiryDate}}</p>
-          </div>
-        </div>
-      {{/each}}
-    {{else}}
-      <p>No coupons available for your cart items.</p>
-    {{/if}}
-  </div>
-</div>
-	<!-- end cart -->
-	<!-- footer -->
-	<div class="footer-area">
 		<div class="container">
+			<h4 class="coupon-title">Available Coupons</h4>
 			<div class="row">
-				<div class="col-lg-3 col-md-6">
-					<div class="footer-box about-widget">
-						<h2 class="widget-title">About us</h2>
-						<p>Ut enim ad minim veniam perspiciatis unde omnis iste natus error sit voluptatem accusantium
-							doloremque laudantium, totam rem aperiam, eaque ipsa quae.</p>
+				{{#if coupons.length}}
+				{{#each coupons}}
+				<div class="col-lg-4 col-md-6">
+					<div class="coupon-card">
+						<h3 class="coupon-code">{{this.CouponCode}}</h3>
+						<p class="coupon-description">{{this.Description}}</p>
+						<p class="coupon-validity">Valid till: {{this.ExpiryDate}}</p>
 					</div>
 				</div>
-				<div class="col-lg-3 col-md-6">
-					<div class="footer-box get-in-touch">
-						<h2 class="widget-title">Get in Touch</h2>
-						<ul>
-							<li>34/8, East Hukupara, Gifirtok, Sadan.</li>
-							<li>support@fruitkha.com</li>
-							<li>+00 111 222 3333</li>
-						</ul>
+				{{/each}}
+				{{else}}
+				<p style="margin-bottom: 50px;color:red	">No coupons available for your cart items.</p>
+				{{/if}}
+			</div>
+		</div>
+		<!-- end cart -->
+		<!-- footer -->
+		<div class="footer-area">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-3 col-md-6">
+						<div class="footer-box about-widget">
+							<h2 class="widget-title">About us</h2>
+							<p>Ut enim ad minim veniam perspiciatis unde omnis iste natus error sit voluptatem
+								accusantium
+								doloremque laudantium, totam rem aperiam, eaque ipsa quae.</p>
+						</div>
 					</div>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<div class="footer-box pages">
-						<h2 class="widget-title">Pages</h2>
-						<ul>
-							<li><a href="index.html">Home</a></li>
-							<li><a href="about.html">About</a></li>
-							<li><a href="services.html">Shop</a></li>
-							<li><a href="news.html">News</a></li>
-							<li><a href="contact.html">Contact</a></li>
-						</ul>
+					<div class="col-lg-3 col-md-6">
+						<div class="footer-box get-in-touch">
+							<h2 class="widget-title">Get in Touch</h2>
+							<ul>
+								<li>34/8, East Hukupara, Gifirtok, Sadan.</li>
+								<li>support@fruitkha.com</li>
+								<li>+00 111 222 3333</li>
+							</ul>
+						</div>
 					</div>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<div class="footer-box subscribe">
-						<h2 class="widget-title">Subscribe</h2>
-						<p>Subscribe to our mailing list to get the latest updates.</p>
-						<form action="index.html">
-							<input type="email" placeholder="Email">
-							<button type="submit"><i class="fas fa-paper-plane"></i></button>
-						</form>
+					<div class="col-lg-3 col-md-6">
+						<div class="footer-box pages">
+							<h2 class="widget-title">Pages</h2>
+							<ul>
+								<li><a href="index.html">Home</a></li>
+								<li><a href="about.html">About</a></li>
+								<li><a href="services.html">Shop</a></li>
+								<li><a href="news.html">News</a></li>
+								<li><a href="contact.html">Contact</a></li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-6">
+						<div class="footer-box subscribe">
+							<h2 class="widget-title">Subscribe</h2>
+							<p>Subscribe to our mailing list to get the latest updates.</p>
+							<form action="index.html">
+								<input type="email" placeholder="Email">
+								<button type="submit"><i class="fas fa-paper-plane"></i></button>
+							</form>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<!-- end footer -->
+		<!-- end footer -->
 
-	<!-- copyright -->
-	<div class="copyright">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-6 col-md-12">
-					<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights
-						Reserved.<br>
-						Distributed By - <a href="https://themewagon.com/">Themewagon</a>
-					</p>
-				</div>
-				<div class="col-lg-6 text-right col-md-12">
-					<div class="social-icons">
-						<ul>
-							<li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-							<li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
-							<li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
-							<li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
-							<li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
-						</ul>
+		<!-- copyright -->
+		<div class="copyright">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-6 col-md-12">
+						<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights
+							Reserved.<br>
+							Distributed By - <a href="https://themewagon.com/">Themewagon</a>
+						</p>
+					</div>
+					<div class="col-lg-6 text-right col-md-12">
+						<div class="social-icons">
+							<ul>
+								<li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+								<li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
+								<li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
+								<li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+								<li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
+							</ul>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<!-- end copyright -->
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<!-- end copyright -->
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-	<script>
-		function updateQuantity(cartId, change) {
-			const quantityInput = document.getElementById(`quantity-${cartId}`);
-			let currentQuantity = parseInt(quantityInput.value);
+		<script>
+			function updateQuantity(cartId, change) {
+				const quantityInput = document.getElementById(`quantity-${cartId}`);
+				let currentQuantity = parseInt(quantityInput.value);
 
-			let newQuantity = currentQuantity + change;
+				let newQuantity = currentQuantity + change;
 
-			if (newQuantity > 10) {
-				Swal.fire({
-					icon: "error",
-					title: "Limit Exceeded",
-					text: "You cannot add more than 10 items of this product.",
-					confirmButtonColor: "#d33",
-					confirmButtonText: "Okay",
-				});
-				return;
-			} else if (newQuantity < 1) {
-				Swal.fire({
-					icon: "warning",
-					title: "Minimum Quantity Reached",
-					text: "You must have at least 1 item in your cart.",
-					confirmButtonColor: "#d33",
-					confirmButtonText: "Okay",
-				});
-				return;
-			}
-
-			fetch(`/cart/${cartId}/getProductStock`)
-				.then((response) => response.json())
-				.then((data) => {
-					const availableStock = data.stock;
-					if (newQuantity > availableStock) {
-						Swal.fire({
-							icon: "error",
-							title: "Stock Limit Exceeded",
-							text: `Only ${availableStock} items are available in stock.`,
-							confirmButtonColor: "#d33",
-							confirmButtonText: "Okay",
-						});
-						return;
-					}
-					quantityInput.value = newQuantity;
-
-					fetch(`/cart/${cartId}/updateQuantity`, {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-						},
-						body: JSON.stringify({ quantity: newQuantity }),
-					})
-						.then((response) => {
-							if (response.ok) {
-								console.log("Cart updated successfully.");
-							} else {
-								throw new Error("Failed to update cart.");
-							}
-						})
-						.catch((error) => {
-							console.error("Error:", error);
-							Swal.fire({
-								icon: "error",
-								title: "Update Failed",
-								text: "Unable to update the cart. Please try again.",
-								confirmButtonColor: "#d33",
-								confirmButtonText: "Okay",
-							});
-						});
-				})
-				.catch((error) => {
-					console.error("Error fetching product stock:", error);
+				if (newQuantity > 10) {
 					Swal.fire({
 						icon: "error",
-						title: "Error",
-						text: "Unable to fetch product stock. Please try again.",
+						title: "Limit Exceeded",
+						text: "You cannot add more than 10 items of this product.",
 						confirmButtonColor: "#d33",
 						confirmButtonText: "Okay",
 					});
-				});
-		}
+					return;
+				} else if (newQuantity < 1) {
+					Swal.fire({
+						icon: "warning",
+						title: "Minimum Quantity Reached",
+						text: "You must have at least 1 item in your cart.",
+						confirmButtonColor: "#d33",
+						confirmButtonText: "Okay",
+					});
+					return;
+				}
 
-		document.querySelectorAll('input[name="quantity"]').forEach((input) => {
-			input.addEventListener('change', (event) => {
-				const row = event.target.closest('tr');
-				const price = parseFloat(row.querySelector('.product-price').innerText);
-				const quantity = parseInt(event.target.value);
-				const totalCell = row.querySelector('.product-total');
+				fetch(`/cart/${cartId}/getProductStock`)
+					.then((response) => response.json())
+					.then((data) => {
+						const availableStock = data.stock;
+						if (newQuantity > availableStock) {
+							Swal.fire({
+								icon: "error",
+								title: "Stock Limit Exceeded",
+								text: `Only ${availableStock} items are available in stock.`,
+								confirmButtonColor: "#d33",
+								confirmButtonText: "Okay",
+							});
+							return;
+						}
+						quantityInput.value = newQuantity;
 
-				totalCell.innerText = (price * quantity).toFixed(2);
-				updateCartTotals();
-			});
-		});
-		function updateCartTotals() {
-			let subtotal = 0;
-			document.querySelectorAll('.product-total').forEach((cell) => {
-				subtotal += parseFloat(cell.innerText);
-			});
-			const shippingRate = 50;
-			const total = subtotal + shippingRate;
-			document.querySelector('#subtotal').innerText = subtotal.toFixed(2);
-			document.querySelector('#shippingRate').innerText = shippingRate.toFixed(2);
-			document.querySelector('#total').innerText = total.toFixed(2);
-		}
-		$(document).ready(function () {
-			const errorMessage = document.getElementById('error-message').value;
-			if (errorMessage) {
-				Swal.fire({
-					title: 'Error!',
-					text: errorMessage,
-					icon: 'error',
-					confirmButtonText: 'OK'
-				});
+						fetch(`/cart/${cartId}/updateQuantity`, {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+							},
+							body: JSON.stringify({ quantity: newQuantity }),
+						})
+							.then((response) => {
+								if (response.ok) {
+									console.log("Cart updated successfully.");
+								} else {
+									throw new Error("Failed to update cart.");
+								}
+							})
+							.catch((error) => {
+								console.error("Error:", error);
+								Swal.fire({
+									icon: "error",
+									title: "Update Failed",
+									text: "Unable to update the cart. Please try again.",
+									confirmButtonColor: "#d33",
+									confirmButtonText: "Okay",
+								});
+							});
+					})
+					.catch((error) => {
+						console.error("Error fetching product stock:", error);
+						Swal.fire({
+							icon: "error",
+							title: "Error",
+							text: "Unable to fetch product stock. Please try again.",
+							confirmButtonColor: "#d33",
+							confirmButtonText: "Okay",
+						});
+					});
 			}
-		});
-		function checkCartLimit(input) {
-			const quantity = parseInt(input.value);
 
-			if (quantity > 10) {
-				Swal.fire({
-					title: 'Cart Limit Exceeded!',
-					text: 'Your cart limit has been reached. You cannot add more than 10 items of this product..',
-					icon: 'warning',
-					confirmButtonText: 'OK'
-				}).then(() => {
-					// Redirect to orders page after clicking "OK"
-					window.location.href = '/cart';
+			document.querySelectorAll('input[name="quantity"]').forEach((input) => {
+				input.addEventListener('change', (event) => {
+					const row = event.target.closest('tr');
+					const price = parseFloat(row.querySelector('.product-price').innerText);
+					const quantity = parseInt(event.target.value);
+					const totalCell = row.querySelector('.product-total');
+
+					totalCell.innerText = (price * quantity).toFixed(2);
+					updateCartTotals();
 				});
-			} else {
-				// Only submit the form if the quantity is within the valid range
-				input.form.submit();
+			});
+			function updateCartTotals() {
+				let subtotal = 0;
+				document.querySelectorAll('.product-total').forEach((cell) => {
+					subtotal += parseFloat(cell.innerText);
+				});
+				const shippingRate = 50;
+				const total = subtotal + shippingRate;
+				document.querySelector('#subtotal').innerText = subtotal.toFixed(2);
+				document.querySelector('#shippingRate').innerText = shippingRate.toFixed(2);
+				document.querySelector('#total').innerText = total.toFixed(2);
 			}
-		}
-	</script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+			$(document).ready(function () {
+				const errorMessage = document.getElementById('error-message').value;
+				if (errorMessage) {
+					Swal.fire({
+						title: 'Error!',
+						text: errorMessage,
+						icon: 'error',
+						confirmButtonText: 'OK'
+					});
+				}
+			});
+			function checkCartLimit(input) {
+				const quantity = parseInt(input.value);
+
+				if (quantity > 10) {
+					Swal.fire({
+						title: 'Cart Limit Exceeded!',
+						text: 'Your cart limit has been reached. You cannot add more than 10 items of this product..',
+						icon: 'warning',
+						confirmButtonText: 'OK'
+					}).then(() => {
+						// Redirect to orders page after clicking "OK"
+						window.location.href = '/cart';
+					});
+				} else {
+					// Only submit the form if the quantity is within the valid range
+					input.form.submit();
+				}
+			}
+		</script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
-	<!-- jquery -->
-	<script src="/assets/js/jquery-1.11.3.min.js"></script>
-	<!-- bootstrap -->
-	<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
-	<!-- count down -->
-	<script src="/assets/js/jquery.countdown.js"></script>
-	<!-- isotope -->
-	<script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
-	<!-- waypoints -->
-	<script src="/assets/js/waypoints.js"></script>
-	<!-- owl carousel -->
-	<script src="/assets/js/owl.carousel.min.js"></script>
-	<!-- magnific popup -->
-	<script src="/assets/js/jquery.magnific-popup.min.js"></script>
-	<!-- mean menu -->
-	<script src="/assets/js/jquery.meanmenu.min.js"></script>
-	<!-- sticker js -->
-	<script src="/assets/js/sticker.js"></script>
-	<!-- main js -->
-	<script src="/assets/js/main.js"></script>
+		<!-- jquery -->
+		<script src="/assets/js/jquery-1.11.3.min.js"></script>
+		<!-- bootstrap -->
+		<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+		<!-- count down -->
+		<script src="/assets/js/jquery.countdown.js"></script>
+		<!-- isotope -->
+		<script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
+		<!-- waypoints -->
+		<script src="/assets/js/waypoints.js"></script>
+		<!-- owl carousel -->
+		<script src="/assets/js/owl.carousel.min.js"></script>
+		<!-- magnific popup -->
+		<script src="/assets/js/jquery.magnific-popup.min.js"></script>
+		<!-- mean menu -->
+		<script src="/assets/js/jquery.meanmenu.min.js"></script>
+		<!-- sticker js -->
+		<script src="/assets/js/sticker.js"></script>
+		<!-- main js -->
+		<script src="/assets/js/main.js"></script>
 </body>
 
 </html>
