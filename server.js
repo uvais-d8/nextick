@@ -110,7 +110,10 @@ app.engine(
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
       },
-
+      contains: (array, value) => {
+        if (!Array.isArray(array)) return false; // Ensure the first argument is an array
+        return array.includes(value); // Check if the array contains the value
+      },
       // Helper to build query string
       buildQuery: (
         query,
@@ -171,8 +174,6 @@ app.engine(
   })
 );
 
-// Connect to the database
-connectdb();
 
 // Start the server
 app.listen(PORT, () => {

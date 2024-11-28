@@ -2,10 +2,20 @@ const Cart = require("../model/cartModel");
 const Products = require("../model/productsmodal");
 const Orders = require("../model/ordersmodal");
 const Razorpay = require("razorpay");
+const Coupons = require("../model/couponModel");
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET
 });
+
+const applycoupon = async(req,res)=>{
+  try {
+    console.log("success")
+  } catch (error) {
+    console.log("failed")
+
+  }
+}
 
 const placeOrder = async (req, res) => {
   console.log("hellooo");
@@ -121,8 +131,6 @@ const placeOrder = async (req, res) => {
     });
   }
 };
-
-
 const razorpayy = async (req, res) => {
   const userId = req.session.userId;
 
@@ -208,7 +216,6 @@ const razorpayy = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 const getProductStock = async (req, res) => {
   const { cartId } = req.params;
   try {
@@ -247,7 +254,35 @@ const loadcartpage = async (req, res) => {
   try {
     const userId = req.session.userId;
 
+  
     const carts = await Cart.find({ user: userId }).populate("productId");
+    const coupons = await Coupons.find({})
+    
+
+
+ // Get product names from the cart
+ const cartProductNames = carts.map(item => item.productId.name);
+ const cartCategories = carts.map(item => item.productId.category.toString());
+console.log(cartCategories)
+// Filter coupons
+const filteredCoupons = coupons.filter(coupon => {
+  const isProductMatch = coupon.Products.some(productName =>
+      cartProductNames.includes(productName)
+  );
+
+  const isCategoryMatch = coupon.Categories.some(category =>
+      cartCategories.includes(category)
+  );
+
+  return isProductMatch || isCategoryMatch; // Match by either product or category
+});
+// Format filtered coupons
+const formattedCoupons = filteredCoupons.map(coupon => ({
+  ...coupon.toObject(),
+  ExpiryDate: coupon.ExpiryDate.toLocaleString("en-GB") // Include date and time
+}));
+
+
 
     // If no items in the cart, render the page with a message
     if (!carts || carts.length === 0) {
@@ -272,13 +307,14 @@ const loadcartpage = async (req, res) => {
       }
     });
 
-    // Render the cart page with items
-    res.render("cart", {
-      carts,
-      subtotal,
-      shippingRate,
-      total
-    });
+   // Pass to the view
+res.render("cart", {
+  coupons: formattedCoupons,
+  carts,
+  subtotal,
+  shippingRate,
+  total
+});
   } catch (error) {
     console.error("Error occurred during cart page:", error);
     res.status(500).send("Internal Server Error");
@@ -384,89 +420,6 @@ const addtocart = async (req, res) => {
   }
 };
 
-// const razorpayy = async (req, res) => {
-//   const userId = req.session.userId;
-
-//   if (!userId) {
-//     return res.redirect("/login");
-//   }
-
-//   try {
-//     const {
-//       total,
-//       email,
-//       phone,
-//       paymentMethod,
-//       items,
-//       pincode,
-//       district,
-//       firstname,
-//       place,
-//       city,
-//       lastname,
-//       address,
-//     } = req.body;
-//    // Fetch user's cart items
-//    const cartItems = await Cart.find({ user: userId }).populate("productId");
-//     const amount = total * 100; // Razorpay amount is in paisa
-
-//     // Create Razorpay order
-//     const order = await razorpay.orders.create({
-//       amount,
-//       currency: "INR",
-//       receipt: `order_${Date.now()}`
-//     });
-
- 
-//     if (cartItems.length === 0) {
-//       throw new Error("No items in the cart.");
-//     }
-
-//     const updatedCartItems = await Promise.all(
-//       cartItems.map(async item => {
-//         const product = item.productId;
-//         if (!product) throw new Error("Product not found.");
-//         if (product.stock < item.quantity) {
-//           throw new Error(`Insufficient stock for ${product.name}.`);
-//         }
-//         return {
-//           ...item.toObject(),
-//           price: product.price,
-//           total: product.price * item.quantity
-//         };
-//       })
-//     );
-//     shippingAddress = {email, phone, paymentMethod, items, pincode, district, firstname, place, city, lastname, address};
-//     // Log the shipping address for debugging
-//     console.log("Received shippingAddress:", shippingAddress);
-//     const orderTotal = updatedCartItems.reduce(
-//       (acc, item) => acc + item.total,
-//       0
-//     );
-
-//     // Save the order to the database
-//     const newOrder = new Orders({
-//       userId,
-//       items: updatedCartItems,
-//       orderTotal,
-//       shippingAddress,
-//       paymentMethod: "razorpay"
-//     });
-
-//     console.log("New order details:", newOrder);
-//     await newOrder.save();
-
-//     res.json({
-//       success: true,
-//       id: order.id,
-//       amount: order.amount,
-//       currency: order.currency
-//     });
-//   } catch (error) {
-//     console.log("Error creating Razorpay order:", error.message);
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-// };
 module.exports = {
   addtocart,
   loadcartpage,
@@ -474,5 +427,6 @@ module.exports = {
   placeOrder,
   updateQuantity,
   getProductStock,
-  razorpayy
+  razorpayy,
+  applycoupon
 };

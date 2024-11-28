@@ -83,7 +83,7 @@ router.get("/cart", salesController.loadcartpage);
 router.get('/cart/:cartId/getProductStock',salesController.getProductStock)
 router.delete("/cart/:id", salesController.removecart);
 router.post('/cart/:id/updateQuantity',salesController.updateQuantity) 
-
+router.post("/applycoupon",salesController.applycoupon)
 router.post('/create-razorpay-order',salesController.razorpayy)
 
 //Orders Controller

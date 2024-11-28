@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Offer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        /* Container for the form */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Heading */
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        /* Form Styling */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Form Group */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        /* Form Labels */
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* Form Inputs and Textarea */
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Button Styling */
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        /* Success/Failure Message */
+        #message {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+            text-align: center;
+            border-radius: 5px;
+            display: none;
+        }
+
+        #message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        #message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Optional Fields */
+        input[type="text"]::placeholder {
+            font-style: italic;
+            color: #888;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Add New Offer</h1>
+        <input id="message-box" type="text" style="border-width: 0px; color: red;" value="{{message}}" readonly>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const message = document.getElementById("message-box");
+                if (message) {
+                    setTimeout(() => {
+                        message.remove();
+                    }, 2000);
+                }
+            });
+        </script>
+        <form method="post" action="/admin/addingOffer">
+            <div class="form-group">
+                <label for="DiscountType">Discount Type:</label>
+                <select id="DiscountType" name="DiscountType">
+                    <option value="percentage">Percentage</option>
+                    <option value="fixed">Fixed Amount</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="DiscountValue">Discount Value:</label>
+                <input type="number" id="DiscountValue" name="DiscountValue" min="0" />
+            </div>
+            <div class="form-group">
+                <label for="Description">Description:</label>
+                <textarea id="Description" name="Description" maxlength="500"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="Products">Applicable Products:</label>
+                <!-- Dropdown Button -->
+                <button id="dropdownToggle" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">
+                    Select Products
+                </button>
+
+                <!-- Dropdown Content -->
+                <div id="ProductsDropdown" class="form-control"
+                    style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
+                    {{#each products}}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
+                        <label for="product-{{this.id}}" style="margin-right: 10px;">{{this.name}}</label>
+                        <input type="checkbox" id="product-{{this.id}}" name="Products[]" value="{{this.name}}">
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+
+            <script>
+                // JavaScript to toggle the dropdown visibility
+                document.getElementById("dropdownToggle").addEventListener("click", function () {
+                    const dropdown = document.getElementById("ProductsDropdown");
+                    dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+                });
+            </script>
+            <div class="form-group">
+                <label for="Category">Applicable Categories:</label>
+                <!-- Dropdown Button -->
+                <button id="dropdownToggles" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">
+                    Select Categories
+                </button>
+
+                <!-- Dropdown Content -->
+                <div id="CategoryDropdown" class="form-control"
+                    style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
+                    {{#each category}}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
+                        <label for="category-{{this.id}}" style="margin-right: 10px;">{{this.category}}</label>
+                        <input type="checkbox" id="category-{{this.id}}" name="Categories[]" value="{{this.category}}">
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+
+            <script>
+                // JavaScript to toggle the dropdown visibility
+                document.getElementById("dropdownToggles").addEventListener("click", function () {
+                    const dropdown = document.getElementById("CategoryDropdown");
+                    dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+                });
+            </script>
+            <div class="form-group">
+                <label for="ExpiryDate">Expiry Date:</label>
+                <input type="date" id="ExpiryDate" name="ExpiryDate" />
+            </div>
+            <div class="form-group">
+                <label for="Status">Offer Status:</label>
+                <select id="Status" name="Status">
+                    <option value="true">Active</option>
+                    <option value="false">Non Active</option>
+                </select>
+            </div>
+
+            <input style="height: 35px;font-weight:bold" type="submit" value="add Offer">
+        </form>
+        <div id="message"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.getElementById('couponForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const OfferData = {
+                DiscountType: document.getElementById('DiscountType').value,
+                DiscountValue: parseFloat(document.getElementById('DiscountValue').value),
+                Description: document.getElementById('Description').value,
+                Products: document.getElementById('Products').value.split(',').map(item => item.trim()),
+                ExpiryDate: new Date(document.getElementById('ExpiryDate').value),
+                Status: document.getElementById('Status').value,
+
+            };
+
+            // Submit to backend API to add the coupon
+            axios.post('/api/Offers', OfferData)
+                .then(response => {
+                    document.getElementById('message').innerHTML = 'Offer added successfully!';
+                    document.getElementById('couponForm').reset();
+                })
+                .catch(error => {
+                    document.getElementById('message').innerHTML = 'Error adding coupon. Please try again.';
+                    console.error(error);
+                });
+        });
+    </script>
+</body>
+
+</html>

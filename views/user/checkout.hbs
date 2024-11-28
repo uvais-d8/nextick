@@ -62,11 +62,11 @@
 <body>
 
 	<!--PreLoader-->
-	<div class="loader">
+	{{!-- <div class="loader">
 		<div class="loader-inner">
 			<div class="circle"></div>
 		</div>
-	</div>
+	</div> --}}
 	<!--PreLoader Ends-->
 
 	<!-- header -->
@@ -380,27 +380,44 @@
 									</tr>
 								</tbody>
 							</table>
-							<label style="margin-top: 30px;" for="paymentMethod"><b>Payment Method</b></label>
-							<div>
-								<input type="radio" id="razorpay" name="paymentMethod" value="razorpay">
-								<label for="razorpay">Razorpay</label><br>
+							{{!-- <label style="margin-top: 30px;" for="paymentMethod"><b>Payment Method</b></label>
+							--}}
 
-								<input type="radio" id="cod" name="paymentMethod" value="cod">
-								<label for="cod">COD</label><br>
-
-								<input type="radio" id="upi" name="paymentMethod" value="upi">
-								<label for="upi">UPI</label><br>
+							<div style="margin-top: 30px;width:390px">
+								<div class="card single-accordion">
+									<div class="card-header" id="headingOne">
+										<h5 class="mb-0">
+											<button class="btn btn-link" type="button" data-toggle="collapse"
+												data-target="#collapseOne" aria-expanded="true"
+												aria-controls="collapseOne">
+												payment Method
+											</button>
+										</h5>
+									</div>
+									<div id="collapseOne" class="collapse show" aria-labelledby="headingOne"
+										data-parent="#accordionExample">
+										<div class="card-body">
+											<div>
+												<input type="radio" id="razorpay" name="paymentMethod" value="razorpay">
+												<label for="razorpay">Razorpay</label><br>
+												<hr>
+												<input type="radio" id="cod" name="paymentMethod" value="cod">
+												<label for="cod">COD</label><br>
+												<hr>
+												<input type="radio" id="upi" name="paymentMethod" value="upi">
+												<label for="upi">UPI</label>
+											</div>
+										</div>
+									</div>
+									</form>
+								</div> <button type="submit" class="btnnn">Place Order</button>
 							</div>
-
-							<button type="submit" class="btnnn">Place Order</button>
-							</form>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-
 	<!-- end check out section -->
 
 	<!-- logo carousel -->
@@ -446,7 +463,8 @@
 				<div class="col-lg-3 col-md-6">
 					<div class="footer-box about-widget">
 						<h2 class="widget-title">About us</h2>
-						<p>Ut enim ad minim veniam perspiciatis unde omnis iste natus error sit voluptatem
+						<p>Ut enim ad minim veniam perspiciatis unde omnis iste natus error sit
+							voluptatem
 							accusantium
 							doloremque laudantium, totam rem aperiam, eaque ipsa quae.</p>
 					</div>
@@ -493,7 +511,8 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-6 col-md-12">
-					<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights
+					<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>,
+						All Rights
 						Reserved.<br>
 						Distributed By - <a href="https://themewagon.com/">Themewagon</a>
 					</p>
@@ -646,7 +665,7 @@
 			}
 		});
 	</script>
-	
+
 
 	<!-- jquery -->
 	<script src="/assets/js/jquery-1.11.3.min.js"></script>

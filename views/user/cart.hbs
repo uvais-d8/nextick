@@ -32,7 +32,53 @@
 	<link rel="stylesheet" href="/assets/css/main.css">
 	<!-- responsive -->
 	<link rel="stylesheet" href="/assets/css/responsive.css">
+	<style>
+		.coupon-section {
+			background-color: #f9f9f9;
+			padding: 50px 0;
+			text-align: left;
+		}
 
+		.coupon-title {
+			font-size: 22px;
+			font-weight: bold;
+			margin-bottom: 30px;
+			color: #333;
+		}
+
+		.coupon-card {
+			background: #ffffff;
+			border: 1px solid #ddd;
+			border-radius: 8px;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			padding: 20px;
+			margin-bottom: 30px;
+			transition: transform 0.3s, box-shadow 0.3s;
+		}
+
+		.coupon-card:hover {
+			transform: translateY(-10px);
+			box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+		}
+
+		.coupon-code {
+			font-size: 24px;
+			font-weight: bold;
+			color: #fd8115;
+			margin-bottom: 10px;
+		}
+
+		.coupon-description {
+			font-size: 16px;
+			color: #555;
+			margin-bottom: 15px;
+		}
+
+		.coupon-validity {
+			font-size: 14px;
+			color: #888;
+		}
+	</style>
 </head>
 
 <body>
@@ -156,7 +202,7 @@
 						<table class="cart-table">
 							<thead class="cart-table-head">
 								<tr class="table-head-row">
-									<th class="product-remove"></th>
+									<th class="product-remove">X</th>
 									<th class="product-image">Product Image</th>
 									<th class="product-name">Name</th>
 									<th class="product-price">Price</th>
@@ -235,6 +281,7 @@
 							</tbody>
 
 						</table>
+
 						<div class="cart-buttons">
 
 
@@ -244,52 +291,46 @@
 							{{else}}
 							<p></p>
 							{{/if}}
-						</div>
-					</div>
-					<div class="coupon-section">
-						<h3>Apply Coupon</h3>
 
-						<div class="coupon-form-wrap">
-							<form action="/home">
-								<p><input type="text" placeholder="Coupon"></p>
-								<p><input type="submit" value="Apply"></p>
-							</form>
+
+							<div style="background-color: white" class="coupon-section">
+								<h3>Apply Coupon</h3>
+
+								<div class="coupon-form-wrap">
+									<form method="post" action="/applycoupon">
+										<p><input type="text" placeholder="Coupon Code"></p>
+										<p><input type="submit" value="Apply"></p>
+									</form>
+								</div>
+							</div>
+
 						</div>
 					</div>
+
 				</div>
 			</div>
 		</div>
 	</div>
+	<div style="margin-top: -150px;" class="coupon-section mb-50">
+	<div class="container">
+  <h4 class="coupon-title">Available Coupons</h4>
+  <div class="row">
+    {{#if coupons.length}}
+      {{#each coupons}}
+        <div class="col-lg-4 col-md-6">
+          <div class="coupon-card">
+            <h3 class="coupon-code">{{this.CouponCode}}</h3>
+            <p class="coupon-description">{{this.Description}}</p>
+            <p class="coupon-validity">Valid till: {{this.ExpiryDate}}</p>
+          </div>
+        </div>
+      {{/each}}
+    {{else}}
+      <p>No coupons available for your cart items.</p>
+    {{/if}}
+  </div>
+</div>
 	<!-- end cart -->
-
-	<!-- logo carousel -->
-	<div class="logo-carousel-section">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-12">
-					<div class="logo-carousel-inner">
-						<div class="single-logo-item">
-							<img src="/assets/img/company-logos/1.png" alt="">
-						</div>
-						<div class="single-logo-item">
-							<img src="/assets/img/company-logos/2.png" alt="">
-						</div>
-						<div class="single-logo-item">
-							<img src="/assets/img/company-logos/3.png" alt="">
-						</div>
-						<div class="single-logo-item">
-							<img src="/assets/img/company-logos/4.png" alt="">
-						</div>
-						<div class="single-logo-item">
-							<img src="/assets/img/company-logos/5.png" alt="">
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- end logo carousel -->
-
 	<!-- footer -->
 	<div class="footer-area">
 		<div class="container">
@@ -380,7 +421,7 @@
 					confirmButtonColor: "#d33",
 					confirmButtonText: "Okay",
 				});
-				return; 
+				return;
 			} else if (newQuantity < 1) {
 				Swal.fire({
 					icon: "warning",
@@ -389,7 +430,7 @@
 					confirmButtonColor: "#d33",
 					confirmButtonText: "Okay",
 				});
-				return; 
+				return;
 			}
 
 			fetch(`/cart/${cartId}/getProductStock`)
