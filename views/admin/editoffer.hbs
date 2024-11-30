@@ -151,7 +151,7 @@
                 }
             });
         </script>
-        <form method="post" action="/admin/editingoffer/{{offer._id}}">
+        <form id="editOfferForm" method="post" action="/admin/editingoffer/{{offer._id}}">
             <div class="form-group">
                 <label for="DiscountType">Discount Type:</label>
                 <select id="DiscountType" name="DiscountType">
@@ -227,7 +227,8 @@
 
 
             <div class="form-group">
-                <label for="ExpiryDate">Expiry Date:{{formatDate offer.ExpiryDate}}</label>
+                <label for="ExpiryDate">Current Expiry Date:{{formatDate offer.ExpiryDate}}</label>
+                <p style="color: red;">Expiry date updation is compelsery</p>
                 <input type="date" id="ExpiryDate" value="{{formatDate offer.ExpiryDate}}" name="ExpiryDate" />
             </div>
             <div class="form-group">
@@ -244,32 +245,31 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script>
-        document.getElementById('couponForm').addEventListener('submit', function (e) {
-            e.preventDefault();
+   <script>
+    document.getElementById('editOfferForm').addEventListener('submit', function (e) {
+       
 
-            const OfferData = {
-                DiscountType: document.getElementById('DiscountType').value,
-                DiscountValue: parseFloat(document.getElementById('DiscountValue').value),
-                Description: document.getElementById('Description').value,
-                Products: document.getElementById('Products').value.split(',').map(item => item.trim()),
-                ExpiryDate: new Date(document.getElementById('ExpiryDate').value),
-                Status: document.getElementById('Status').value,
+        const OfferData = {
+            DiscountType: document.getElementById('DiscountType').value,
+            DiscountValue: parseFloat(document.getElementById('DiscountValue').value),
+            Description: document.getElementById('Description').value,
+            Products: Array.from(document.querySelectorAll('input[name="Products[]"]:checked')).map(checkbox => checkbox.value),
+            Categories: Array.from(document.querySelectorAll('input[name="Categories[]"]:checked')).map(checkbox => checkbox.value),
+            ExpiryDate: new Date(document.getElementById('ExpiryDate').value),
+            Status: document.getElementById('Status').value === 'true', // Make sure it’s a boolean
+        };
 
-            };
-
-            // Submit to backend API to add the coupon
-            axios.post('/api/Offers', OfferData)
-                .then(response => {
-                    document.getElementById('message').innerHTML = 'Offer added successfully!';
-                    document.getElementById('couponForm').reset();
-                })
-                .catch(error => {
-                    document.getElementById('message').innerHTML = 'Error adding coupon. Please try again.';
-                    console.error(error);
-                });
-        });
-    </script>
+        // Submit to the backend API to update the offer
+        axios.post(`/api/Offers/${offer._id}`, OfferData)  // Use dynamic offer._id in URL
+            .then(response => {
+                document.getElementById('message').innerHTML = 'Offer updated successfully!';
+            })
+            .catch(error => {
+                document.getElementById('message').innerHTML = 'Error updating offer. Please try again.';
+                console.error(error);
+            });
+    });
+</script>
 </body>
 
 </html>

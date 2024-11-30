@@ -2,10 +2,17 @@ const Products = require("../model/productsmodal");
 const Cart = require("../model/cartModel");
 const Address = require("../model/addressModel");
 const Orders = require("../model/ordersmodal");
+const Coupons =require("../model/couponModel")
 
 const checkout = async (req, res) => {
   try {
     const userId = req.session.userId; 
+
+    const carts = await Cart.find({ user: userId })
+    .populate("user")
+    .populate("productId");
+    const coupons = await Coupons.find({});
+
     if (!userId) {
       return res.redirect("/login"); 
         }
@@ -13,10 +20,39 @@ const checkout = async (req, res) => {
     const addresses = await Address.find({ user: userId }); 
     console.log("User ID:", userId);
 
-    const carts = await Cart.find({ user: userId })
-      .populate("user")
-      .populate("productId");
+   
 
+    // Get product names from the cart
+    const cartProductNames = carts.map(item => item.productId.name);
+    const cartCategories = carts.map(item =>
+      item.productId.category.toString()
+    );
+    console.log(cartCategories);
+    // Filter coupons
+    const filteredCoupons = coupons.filter(coupon => {
+      const isProductMatch = coupon.Products.some(productName =>
+        cartProductNames.includes(productName)
+      );
+
+      const isCategoryMatch = coupon.Categories.some(category =>
+        cartCategories.includes(category)
+      );
+
+      return isProductMatch || isCategoryMatch; // Match by either product or category
+    });
+    // Format filtered coupons
+    const formattedCoupons = filteredCoupons.map(coupon => ({
+      ...coupon.toObject(),
+      ExpiryDate: coupon.ExpiryDate.toLocaleString("en-GB") // Include date and time
+    }));
+
+    // If no items in the cart, render the page with a message
+    if (!carts || carts.length === 0) {
+      return res.render("cart", {
+        carts: [], // Pass an empty array to avoid errors
+        message: "There are no items in your cart at the moment"
+      });
+    }
     const filteredCarts = carts.filter(cart => cart.productId.islisted);
 
     const subtotal = filteredCarts.reduce(
@@ -44,6 +80,7 @@ const checkout = async (req, res) => {
 
     res.render("checkout", {
       addresses,
+      coupons: formattedCoupons,
       carts: filteredCarts,
       subtotal,
       shippingRate,

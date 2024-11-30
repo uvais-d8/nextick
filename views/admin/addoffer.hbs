@@ -141,17 +141,8 @@
     <div class="container">
         <h1>Add New Offer</h1>
         <input id="message-box" type="text" style="border-width: 0px; color: red;" value="{{message}}" readonly>
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const message = document.getElementById("message-box");
-                if (message) {
-                    setTimeout(() => {
-                        message.remove();
-                    }, 2000);
-                }
-            });
-        </script>
-        <form method="post" action="/admin/addingOffer">
+        <form id="couponForm" method="post" action="/admin/addingOffer">
+
             <div class="form-group">
                 <label for="DiscountType">Discount Type:</label>
                 <select id="DiscountType" name="DiscountType">
@@ -180,7 +171,7 @@
                     {{#each products}}
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
                         <label for="product-{{this.id}}" style="margin-right: 10px;">{{this.name}}</label>
-                        <input type="checkbox" id="product-{{this.id}}" name="Products[]" value="{{this.name}}">
+                        <input type="checkbox" id="product-{{this._id}}" name="Products[]" value="{{this._id}}">
                     </div>
                     {{/each}}
                 </div>
@@ -206,7 +197,7 @@
                     {{#each category}}
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
                         <label for="category-{{this.id}}" style="margin-right: 10px;">{{this.category}}</label>
-                        <input type="checkbox" id="category-{{this.id}}" name="Categories[]" value="{{this.category}}">
+                        <input type="checkbox" id="category-{{this._id}}" name="Categories[]" value="{{this._id}}">
                     </div>
                     {{/each}}
                 </div>
@@ -241,15 +232,28 @@
         document.getElementById('couponForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
+            // Get all selected products (checkboxes)
+            const selectedProducts = [];
+            document.querySelectorAll('input[name="Products[]"]:checked').forEach((checkbox) => {
+                selectedProducts.push(checkbox.value);
+            });
+
+            // Get all selected categories (checkboxes)
+            const selectedCategories = [];
+            document.querySelectorAll('input[name="Categories[]"]:checked').forEach((checkbox) => {
+                selectedCategories.push(checkbox.value);
+            });
+
             const OfferData = {
                 DiscountType: document.getElementById('DiscountType').value,
                 DiscountValue: parseFloat(document.getElementById('DiscountValue').value),
                 Description: document.getElementById('Description').value,
-                Products: document.getElementById('Products').value.split(',').map(item => item.trim()),
+                Products: document.getElementById('ProductsDropdown').style.display = 'none';
+                Categories: document.getElementById('CategoryDropdown').style.display = 'none';
                 ExpiryDate: new Date(document.getElementById('ExpiryDate').value),
-                Status: document.getElementById('Status').value,
-
+                Status: document.getElementById('Status').value === 'true',
             };
+
 
             // Submit to backend API to add the coupon
             axios.post('/api/Offers', OfferData)

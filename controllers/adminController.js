@@ -804,30 +804,29 @@ const addoffer = async (req, res) => {
       DiscountType,
       DiscountValue,
       Description,
-      Products,
+      Products,  // This should be an array of product IDs
       Categories,
       ExpiryDate,
       Status
     } = req.body;
-    console.log("request Body :", req.body);
 
     if (
       !DiscountType ||
       !DiscountValue ||
       !Description ||
-      !Products.length ||
+      !Products || !Products.length ||
+      !Categories || !Categories.length ||
       !ExpiryDate ||
       !Status
     ) {
       console.log("All fields are required");
-      const formattedExpiryDate = new Date(ExpiryDate);
-
       return res.render("admin/addoffer", {
         message: "All fields are required",
         products,
         category
       });
     }
+
     const formattedExpiryDate = new Date(ExpiryDate);
     const newoffer = new Offer({
       DiscountType,
@@ -839,18 +838,29 @@ const addoffer = async (req, res) => {
       Status
     });
 
+    // Save the offer
     await newoffer.save();
-    console.log("new offer is :", newoffer);
+    console.log("New offer created: ", newoffer);
+
+    // Now associate the offer with the products
+    await Products.updateMany(
+      { _id: { $in: Products } },
+      { $set: { offer: newoffer._id } }
+    );
+
     res.redirect("/admin/offer");
   } catch (error) {
     console.log("Error while saving the offer:", error);
-    return res.status(500).render("admin/addoffer", {
-      message: "make sure you entered everything correctly",
+    res.status(500).render("admin/addoffer", {
+      message: "Make sure you entered everything correctly.",
       products,
       category
     });
   }
 };
+
+
+
 const loadeditOffer = async (req, res) => {
   const { id : offerId  } =req.params;
    const products = await Products.find({});
@@ -863,6 +873,7 @@ const loadeditOffer = async (req, res) => {
 
   try {
     res.render("admin/editoffer", { offer,products, category });
+    console.log(offer)
   } catch (error) {
     console.log("error while loading edit offer page",error)
   }
@@ -954,68 +965,54 @@ const editOffer = async (req, res) => {
   const { id: offerId } = req.params;
   const products = await Products.find({});
   const categories = await Category.find({});
+
   try {
     const {
       DiscountType,
       DiscountValue,
       Description,
-      Products,
-      Categories,
+      Products: reqProducts,
+      Categories: reqCategories,
       ExpiryDate,
       Status
     } = req.body;
 
-    console.log("Request Body:", req.body);  // Log request body for debugging
-    console.log("Categories from request body:", Categories); // Check the categories field in the request body
+    // Normalize and validate input
+    const productIds = Array.isArray(reqProducts) ? reqProducts : [reqProducts];
+    const categoryIds = Array.isArray(reqCategories) ? reqCategories : [reqCategories];
 
-    // Validate required fields
     if (
       !DiscountType ||
       !DiscountValue ||
       !Description ||
-      !Products.length ||
-      !Categories.length ||  // Ensure Categories has valid data
+      !productIds.length ||
+      !categoryIds.length ||
       !ExpiryDate ||
-      !Status
+      Status == null
     ) {
       console.log("All fields are required");
-      const formattedExpiryDate = new Date(ExpiryDate);
-
-      return res.render("admin/addoffer", {
+      return res.render("admin/editoffer", {
         message: "All fields are required",
         products,
-        categories
+        categories,
       });
     }
 
     const formattedExpiryDate = new Date(ExpiryDate);
 
-    // Map product IDs to product names
-    const productNames = await Products.find({
-      _id: { $in: Products }
-    }).select("name");
-
-    // Map category IDs to category names
-    const categoryNames = await Category.find({
-      _id: { $in: Categories }
-    }).select("category");
-
-    console.log("Mapped Products Names:", productNames); // Check the product names being mapped
-    console.log("Mapped Categories Names:", categoryNames); // Check the category names being mapped
-
-    // Update the offer with product and category names
+    // Update the offer using reference IDs
     const updatedOffer = await Offer.findByIdAndUpdate(
       offerId,
       {
         DiscountType,
         DiscountValue,
         Description,
-        Products: productNames.map(product => product.name), // Store product names
-        Categories: categoryNames.map(category => category.category), // Store category names
+        Products: productIds, // Store product IDs as references
+        Categories: categoryIds, // Store category IDs as references
         ExpiryDate: formattedExpiryDate,
         Status
       },
-      { new: true }
+      { new: true } // Return the updated document
     );
 
     if (!updatedOffer) {
@@ -1030,14 +1027,15 @@ const editOffer = async (req, res) => {
     console.log("Updated offer:", updatedOffer);
     res.redirect("/admin/offer");
   } catch (error) {
-    console.log("Error while saving the offer:", error);
-    return res.status(500).render("admin/addoffer", {
-      message: "Make sure you entered everything correctly",
+    console.log("Error while updating the offer:", error);
+    return res.status(500).render("admin/editoffer", {
+      message: "An error occurred while updating the offer",
       products,
       categories
     });
   }
 };
+
 
 const loadaddoffer = async (req, res) => {
   const products = await Products.find({});
@@ -1050,15 +1048,18 @@ const loadaddoffer = async (req, res) => {
   }
 };
 const loadoffers = async (req, res) => {
-  const offer = await Offer.find({});
-
   try {
+    const offer = await Offer.find({})
+      .populate("Products") // Populates multiple products if schema is updated
+      .populate("Categories"); // Populates multiple categories if schema is updated
+    console.log("Loaded offers: ", offer);
     res.render("admin/offer", { offer });
   } catch (error) {
-    console.log("error", error);
+    console.log("Error in loading offers: ", error);
     res.redirect("/admin/dashboard");
   }
 };
+
 const deleteOffer = async (req, res) => {
   const { id: offerId } = req.params; // Extract the ID from req.params
   console.log("oferId : ", offerId);

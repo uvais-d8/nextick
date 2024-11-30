@@ -97,7 +97,7 @@ router.patch("/orders/:orderId/items/:itemId", userAuth.checksession,orderContro
 //pages routes
 router.get("/advancedSearch", userController.advancedSearch);
 router.get("/ordertracking/:id",orderController.ordertracking)
-router.get("/products",userAuth.checksession,userController.loadproducts);
+router.get("/products",userController.loadproducts);
 router.get("/product/:id", userController.singleproduct);
 router.get("/about", userController.loadaboutpage);
 router.get("/contact", userController.loadcontactpage);

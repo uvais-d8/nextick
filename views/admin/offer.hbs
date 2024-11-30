@@ -75,24 +75,46 @@
                         <td>{{this.DiscountType}}</td>
                         <td>{{this.DiscountValue}}</td>
                         <td>{{this.Description}}</td>
-                        <td>{{this.Products}}</td>
-                        <td>{{this.Categories}}</td>
+
+                        <!-- Display Products -->
+                        <td>
+                            {{#each this.Products}}
+                            <p>{{this.name}} (₹{{this.price}})</p>
+                            <!-- Assuming Products have 'name' and 'price' properties -->
+                            {{else}}
+                            <p>No Products</p>
+                            {{/each}}
+                        </td>
+
+                        <!-- Display Categories -->
+                        <td>
+                            {{#each this.Categories}}
+                            <p>{{this.name}}</p> <!-- Assuming Categories have a 'name' property -->
+                            {{else}}
+                            <p>No Categories</p>
+                            {{/each}}
+                        </td>
+
+                        <!-- Display Expiry Date -->
                         <td>{{formatDate this.ExpiryDate}}</td> <!-- Use the formatDate helper -->
-                        <td> {{#if this.Status}}Active{{else}}Inactive{{/if}}</td>
-                          <td><form action="/admin/editOffer/{{this.id}}" method="POST">
+
+                        <!-- Display Status -->
+                        <td>{{#if this.Status}}Active{{else}}Inactive{{/if}}</td>
+
+                        <!-- Edit and Delete Forms -->
+                        <td>
+                            <form action="/admin/editOffer/{{this._id}}" method="POST">
                                 <input type="submit" value="Edit"
                                     style="border-width:0px;width: 80px;border-radius:4px;background-color:rgba(255, 183, 0, 0.858); height:35px; margin-bottom:5px">
                             </form>
-                            <form action="/admin/deleteoffer/{{this.id}}" method="POST">
+                            <form action="/admin/deleteoffer/{{this._id}}" method="POST">
                                 <input type="submit" value="Delete"
                                     style="border-width:0px;width: 80px;border-radius:4px;background-color:rgba(255, 0, 0, 0.858); height:35px; margin-bottom:5px">
                             </form>
-
-
-
                         </td>
                     </tr>
                     {{/each}}
+
                 </tbody>
 
             </table>

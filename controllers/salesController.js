@@ -67,7 +67,7 @@ const applycoupon = async (req, res) => {
       newTotal
     });
   } catch (error) {
-    console.log("this is the error while applying coupon", erroryyy);
+    console.log("this is the error while applying coupon", error);
   }
 };
 const placeOrder = async (req, res) => {

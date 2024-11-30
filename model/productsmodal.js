@@ -21,7 +21,7 @@ const productsShema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  name:{
+  name: {
     type: String,
     required: true
   },
@@ -29,6 +29,11 @@ const productsShema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, // Reference to the category model
     ref: "category",
     required: true
+  },
+  offer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Offer",
+    default:null
   },
   stock: {
     type: Number,
@@ -44,7 +49,14 @@ const productsShema = new mongoose.Schema({
   priceWithDiscount: {
     type: Number,
     default: function () {
-      return this.discount ? this.price - this.discount : this.price;
+      if (this.offer) {
+        if (this.offer.DiscountType === "percentage") {
+          return this.price - (this.price * this.offer.DiscountValue) / 100;
+        } else if (this.offer.DiscountType === "fixed") {
+          return this.price - this.offer.DiscountValue;
+        }
+      }
+      return this.price; // If no offer, just return the original price
     }
   },
   price: {
@@ -72,11 +84,3 @@ productsShema.index({ name: "text", description: "text" });
 
 const products = mongoose.model("products", productsShema);
 module.exports = products;
-
-
-
-
-
-
-
-

@@ -11,6 +11,7 @@ const Orders = require("../model/ordersmodal");
 const { OAuth2Client } = require("google-auth-library");
 const { Console, profile, log, error } = require("console");
 const Category = require("../model/categoryModel");
+const Offer = require("../model/offermodel");
 const client = new OAuth2Client(
   "458432719748-rs94fgenq571a8jfulbls7dk9i10mv2o.apps.googleusercontent.com"
 );
@@ -18,11 +19,10 @@ const client = new OAuth2Client(
 require("dotenv").config();
 
 const loadhome = async (req, res) => {
-  console.log(req.session)
+  console.log(req.session);
   try {
-    
-    if(req.session.passport && req.session.passport.user){
-      req.session.userId=req.session.passport.user;
+    if (req.session.passport && req.session.passport.user) {
+      req.session.userId = req.session.passport.user;
     }
     // Fetch products and populate their category data
     const products = await Products.find({ islisted: true }) // Fetch only listed products
@@ -42,52 +42,106 @@ const loadhome = async (req, res) => {
     res.status(500).send("Failed to load home page");
   }
 };
+
+// const loadproducts = async (req, res) => {
+//   try {
+//     // Fetch all categories and products
+//     const categories = await Category.find({});
+//     const products = await Products.find({})
+//       .populate("offer") // Populating offer field
+//       .populate("category"); // Populating category field
+//     const activeoffer = await Offer.find({ Status: true });
+
+//     const productsWithOfferPrice = products.map((product) => {
+//       let discountValue = null;
+//       let discountType = null;
+//       let offerPrice = product.price; // Default to original price
+
+//       // Find the matched offer for the product
+//       const matchedOffer = activeoffer.find(offer => offer.Products.includes(product._id));
+
+//       if (matchedOffer) {
+//         discountType = matchedOffer.DiscountType;
+//         if (discountType === "percentage") {
+//           offerPrice = product.price - (product.price * matchedOffer.DiscountValue) / 100;
+//           discountValue = `${matchedOffer.DiscountValue}%`;
+//         } else if (discountType === "fixed") {
+//           offerPrice = product.price - matchedOffer.DiscountValue;
+//           discountValue = `${matchedOffer.DiscountValue}`;
+//         }
+//       }
+
+//       return {
+//         _id: product._id,
+//         name: product.name,
+//         images:product.images,
+//         category:product.category,
+//         price: product.price,
+//         offerPrice: offerPrice,  // New field for offer price
+//         discountValue: discountValue,  // Discount value (e.g., 10% or ₹500)
+//         offerType: discountType,  // Discount type (percentage or fixed)
+//       };
+//     });
+
+//     // Render the page with updated products and categories
+//     res.render("products", { products: productsWithOfferPrice, categories });
+//   } catch (error) {
+//     console.error("Error fetching and updating products:", error);
+//     res.status(500).send("Failed to fetch or update products.");
+//   }
+// };
+
+
 const loadproducts = async (req, res) => {
   try {
-    // Step 1: Fetch all categories and products
+    // Fetch all categories and products
     const categories = await Category.find({});
-    const products = await Products.find({});
+    const products = await Products.find({})
+      .populate("offer") // Populating offer field
+      .populate("category"); // Populating category field
+    const activeoffer = await Offer.find({ Status: true });
 
-    // Step 2: Update product categories with ObjectId if necessary
-    for (const product of products) {
-      const category = categories.find(
-        cat => cat.category === product.category
-      );
+    const productsWithOfferPrice = products.map((product) => {
+      let discountValue = null;
+      let discountType = null;
+      let offerPrice = product.price; // Default to original price
 
-      if (category) {
-        product.category = category._id; // Update product with category's ObjectId
-        await product.save();
-        console.log(
-          `Updated product ${product.name} with category ${category.category}`
-        );
-      } else {
-        // console.warn(`No matching category found for product ${product.name}`);
+      // Find the matched offer for the product
+      const matchedOffer = activeoffer.find(offer => offer.Products.some(productId => productId.equals(product._id)));
+
+      if (matchedOffer) {
+        discountType = matchedOffer.DiscountType;
+        if (discountType === "percentage") {
+          offerPrice = product.price - (product.price * matchedOffer.DiscountValue) / 100;
+          discountValue = `${matchedOffer.DiscountValue}%`;
+        } else if (discountType === "fixed") {
+          offerPrice = product.price - matchedOffer.DiscountValue;
+          discountValue = `₹${matchedOffer.DiscountValue}`;
+        }
       }
-    }
 
-    // Step 3: Fetch listed products with their populated category data
-    const listedProducts = await Products.find({ islisted: true }) // Only fetch listed products
-      .populate({
-        path: "category", // Populate the 'category' field
-        match: { islisted: true }, // Only include listed categories
-        select: "category brand islisted" // Select relevant fields
-      });
+      return {
+        _id: product._id,
+        name: product.name,
+        images: product.images,
+        category: product.category,
+        price: product.price,
+        offerPrice: offerPrice, // New field for offer price
+        discountValue: discountValue, // Discount value (e.g., 10% or ₹500)
+        offerType: discountType, // Discount type (percentage or fixed)
+        stock:product.stock,
+      };
+    });
 
-    // Step 4: Filter products that have a valid category (category exists)
-    const filteredProducts = listedProducts.filter(product => product.category);
-
-    if (filteredProducts.length === 0) {
-      console.warn("No products with valid listed categories found.");
-      return res.render("products", { message: "No products available." });
-    }
-
-    // Step 5: Render the products page with filtered products
-    res.render("products", { products: filteredProducts, categories });
+    // Render the page with updated products and categories
+    res.render("products", { products: productsWithOfferPrice, categories });
   } catch (error) {
     console.error("Error fetching and updating products:", error);
     res.status(500).send("Failed to fetch or update products.");
   }
 };
+
+
 const singleproduct = async (req, res) => {
   const productId = req.params.id;
   // console.log(productId);
@@ -127,7 +181,7 @@ const advancedSearch = async (req, res) => {
       category,
       rating,
       page = 1,
-      limit = 10,
+      limit = 10
     } = req.query;
 
     let filter = { islisted: true };
@@ -142,8 +196,10 @@ const advancedSearch = async (req, res) => {
 
     if (!isNaN(parseFloat(minPrice)) || !isNaN(parseFloat(maxPrice))) {
       filter.price = {};
-      if (!isNaN(parseFloat(minPrice))) filter.price.$gte = parseFloat(minPrice);
-      if (!isNaN(parseFloat(maxPrice))) filter.price.$lte = parseFloat(maxPrice);
+      if (!isNaN(parseFloat(minPrice)))
+        filter.price.$gte = parseFloat(minPrice);
+      if (!isNaN(parseFloat(maxPrice)))
+        filter.price.$lte = parseFloat(maxPrice);
     }
 
     if (category && category !== "all") {
@@ -164,7 +220,7 @@ const advancedSearch = async (req, res) => {
       featured: { featured: -1 },
       newArrivals: { createdAt: -1 },
       aToZ: { name: 1 },
-      zToA: { name: -1 },
+      zToA: { name: -1 }
     };
     const sortOption = sortOptions[sort] || {};
 
@@ -192,7 +248,7 @@ const advancedSearch = async (req, res) => {
         rating,
         totalProducts,
         currentPage: parseInt(page),
-        totalPages: Math.ceil(totalProducts / limit),
+        totalPages: Math.ceil(totalProducts / limit)
       });
     }
   } catch (error) {
@@ -208,5 +264,5 @@ module.exports = {
   loadaboutpage,
   loadhome,
   loadproducts,
-  singleproduct,
+  singleproduct
 };

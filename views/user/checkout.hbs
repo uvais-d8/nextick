@@ -24,6 +24,52 @@
 			border-width: 0px;
 			margin-top: 20px
 		}
+
+		.coupon-section {
+			background-color: #f9f9f9;
+			padding: 50px 0;
+			text-align: left;
+		}
+
+		.coupon-title {
+			font-size: 22px;
+			font-weight: bold;
+			margin-bottom: 30px;
+			color: #333;
+		}
+
+		.coupon-card {
+			background: #ffffff;
+			border: 1px solid #ddd;
+			border-radius: 8px;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			padding: 20px;
+			margin-bottom: 30px;
+			transition: transform 0.3s, box-shadow 0.3s;
+		}
+
+		.coupon-card:hover {
+			transform: translateY(-10px);
+			box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+		}
+
+		.coupon-code {
+			font-size: 24px;
+			font-weight: bold;
+			color: #fd8115;
+			margin-bottom: 10px;
+		}
+
+		.coupon-description {
+			font-size: 16px;
+			color: #555;
+			margin-bottom: 15px;
+		}
+
+		.coupon-validity {
+			font-size: 14px;
+			color: #888;
+		}
 	</style>
 	<!-- title -->
 	<title>Check Out</title>
@@ -240,6 +286,11 @@
 											<div class="billing-address-form">
 												<input type="text" style="border-width:0px;color:red"
 													value="{{message}}">
+
+												<script>
+
+												</script>
+
 												<!-- Shipping Address Form -->
 												<form method="post" action="/placeOrder" id="orderForm">
 													<div
@@ -248,83 +299,58 @@
 															<label for="firstname"><b>First Name</b></label>
 															<p><input id="firstname" name="firstname" type="text"
 																	style="width: 100%;"></p>
-															<small class="error-message"
-																style="color: red;">{{errors.firstname}}</small>
-
-
+															<span class="error-message" style="color: red;"></span>
 														</div>
-
+														
 														<div style="flex: 1;">
 															<label for="lastname"><b>Last Name</b></label>
 															<p><input id="lastname" name="lastname" type="text"
 																	style="width: 100%;"></p>
-															<small class="error-message"
-																style="color: red;">{{errors.lastname}}</small>
-
+															<span class="error-message" style="color: red;"></span>
 														</div>
 													</div>
-
 													<label for="email"><b>Email</b></label>
 													<p><input id="email" name="email" type="email"></p>
-													<small class="error-message"
-														style="color: red;">{{errors.email}}</small>
+													<span class="error-message" style="color: red;"></span>
 
 													<label for="address"><b>Address</b></label>
 													<p><input id="address" name="address" type="text"></p>
-													<small class="error-message"
-														style="color: red;">{{errors.address}}</small>
+													<span class="error-message" style="color: red;"></span>
 
 													<label for="phone"><b>Phone</b></label>
 													<p><input id="phone" name="phone" type="tel"></p>
-													<small class="error-message"
-														style="color: red;">{{errors.phone}}</small>
+													<span class="error-message" style="color: red;"></span>
 
 													<label for="pincode"><b>Pin code</b></label>
 													<p><input id="pincode" name="pincode" type="text"></p>
-													<small class="error-message"
-														style="color: red;">{{errors.pincode}}</small>
+													<span class="error-message" style="color: red;"></span>
+
 
 													<div
 														style="display: flex; justify-content: space-between; gap: 20px; align-items: center;">
 														<div style="flex: 1;">
 															<label for="place"><b>Place</b></label>
 															<p><input id="place" name="place" type="text"
-																	style="width: 100%;"></p> <small
-																class="error-message"
-																style="color: red;">{{errors.place}}</small>
-
+																	style="width: 100%;"></p> <span
+																class="error-message" style="color: red;"></span>
 														</div>
-
 														<div style="flex: 1;">
 															<label for="city"><b>City</b></label>
 															<p><input id="city" name="city" type="text"
-																	style="width: 100%;"></p> <small
-																class="error-message"
-																style="color: red;">{{errors.city}}</small>
-
+																	style="width: 100%;"></p> <span
+																class="error-message" style="color: red;"></span>
 														</div>
 													</div>
 
-
 													<label for="district"><b>District</b></label>
-													<p><input id="district" name="district" type="text"></p> <small
-														class="error-message"
-														style="color: red;">{{errors.district}}</small>
-
-
-
-
+													<p><input id="district" name="district" type="text"></p> <span
+														class="error-message" style="color: red;"></span>
 
 													<!-- Hidden fields for cart and total amounts -->
 													<input type="hidden" name="subtotal" value="{{subtotal}}">
 													<input type="hidden" name="shippingRate" value="{{shippingRate}}">
 													<input type="hidden" name="total" value="{{total}}">
 													<input type="hidden" name="addressId" value="{{addresses._id}}">
-
-
-													{{!-- <a href="/user/address"
-														style="margin-left:80%;width: 130px; height:40px; color:rgb(0, 0, 0);font-weight:bold;border-width:0px;margin-top:20px">Change
-														Address</a> --}}
 											</div>
 										</div>
 									</div>
@@ -351,37 +377,39 @@
 									<tr>
 										<td class="item-id" hidden>{{this.productId._id}}</td>
 										<td class="item-name">{{this.productId.name}}</td>
-										<td class="item-price">{{this.productId.price}}</td>
+										<td class="item-price">₹{{this.productId.price}}</td>
 										<td class="item-quantity">{{this.quantity}}</td>
-										<td class="item-total">{{multiply this.productId.price this.quantity}}</td>
+										<td class="item-total">₹{{multiply this.productId.price this.quantity}}</td>
 										<td class="item-image" hidden>{{this.productId.images}}</td>
 									</tr>
 									{{/each}}
 								</tbody>
-
 								<tbody class="checkout-details">
 									<tr>
 										<td><b>Subtotal</b></td>
 										<td><b></b></td>
 										<td><b></b></td>
-										<td><b>{{subtotal}}</b></td>
+										<td><b>₹ {{subtotal}}</b></td>
 									</tr>
 									<tr>
 										<td><b>Shipping</b></td>
 										<td><b></b></td>
 										<td><b></b></td>
-										<td><b>{{shippingRate}}</b></td>
-									</tr>
-									<tr>
-										<td><b>Total</b></td>
-										<td><b></b></td>
-										<td><b></b></td>
-										<td><b>{{total}}</b></td>
+										<td><b>₹ {{shippingRate}}</b></td>
 									</tr>
 								</tbody>
+								<div class="discount-section">{{#if discount}}Discount Applied: ₹{{discount}}{{/if}}
+								</div>
+								<tbody>
+									<tr class="total-data">
+										<td><strong>Total After Discount: </strong></td>
+										<td><b></b></td>
+										<td><b></b></td>
+										<td colspan="3" class="total"><b>₹{{total}}</b></td>
+									</tr>
+								</tbody>
+
 							</table>
-							{{!-- <label style="margin-top: 30px;" for="paymentMethod"><b>Payment Method</b></label>
-							--}}
 
 							<div style="margin-top: 30px;width:390px">
 								<div class="card single-accordion">
@@ -410,7 +438,19 @@
 										</div>
 									</div><button type="submit" class="btnnn">Place Order</button>
 									</form>
-								</div> 
+								</div>
+							</div>
+						</div>
+
+
+						<div style="background-color: white" class="coupon-section">
+							<h3>Apply Coupon</h3>
+
+							<div class="coupon-form-wrap">
+								<form id="couponForm" method="post">
+									<p><input type="text" id="couponCode" placeholder="Coupon Code"></p>
+									<p><input type="submit" value="Apply"></p>
+								</form>
 							</div>
 						</div>
 					</div>
@@ -418,7 +458,28 @@
 			</div>
 		</div>
 	</div>
+
 	<!-- end check out section -->
+	<div style="margin-top: -150px;" class="coupon-section mb-50">
+		<div class="container">
+			<h4 class="coupon-title">Available Coupons</h4>
+			<div class="row">
+				{{#if coupons.length}}
+				{{#each coupons}}
+				<div class="col-lg-4 col-md-6">
+					<div class="coupon-card">
+						<h3 class="coupon-code">{{this.CouponCode}}</h3>
+						<p class="coupon-description">{{this.Description}}</p>
+						<p class="coupon-validity">Valid till: {{this.ExpiryDate}}</p>
+					</div>
+				</div>
+				{{/each}}
+				{{else}}
+				<p style="margin-bottom: 50px;color:red">No coupons available for your cart items.</p>
+				{{/if}}
+			</div>
+		</div>
+	</div>
 
 	<!-- logo carousel -->
 	<div class="logo-carousel-section">
@@ -533,37 +594,62 @@
 	</div>
 	<!-- end copyright -->
 
-
 	<script>
-		document.getElementById("orderForm").addEventListener("submit", async function (event) {
-			event.preventDefault(); // Prevent default form submission
+		document.getElementById("orderForm").addEventListener("submit", async (e) => {
+			e.preventDefault(); // Prevent form submission
 
-			const form = event.target;
+			const form = e.target;
 
 			// Collect form data
 			const formData = {
-				firstname: form.elements['firstname'].value,
-				lastname: form.elements['lastname'].value,
-				email: form.elements['email'].value,
-				address: form.elements['address'].value,
-				phone: form.elements['phone'].value,
-				pincode: form.elements['pincode'].value,
-				district: form.elements['district'].value,
-				paymentMethod: form.elements['paymentMethod'].value,
-				place: form.elements['place'].value,
-				city: form.elements['city'].value,
+				firstname: form.elements["firstname"].value.trim(),
+				lastname: form.elements["lastname"].value.trim(),
+				email: form.elements["email"].value.trim(),
+				address: form.elements["address"].value.trim(),
+				phone: form.elements["phone"].value.trim(),
+				pincode: form.elements["pincode"].value.trim(),
+				district: form.elements["district"].value.trim(),
+				place: form.elements["place"].value.trim(),
+				city: form.elements["city"].value.trim(),
+				paymentMethod: form.elements["paymentMethod"].value,
 				subtotal: parseFloat(document.querySelector('input[name="subtotal"]').value),
 				shippingRate: parseFloat(document.querySelector('input[name="shippingRate"]').value),
 				total: parseFloat(document.querySelector('input[name="total"]').value),
-				addressId: document.getElementById('addressId').textContent,
+				addressId: document.getElementById("addressId").textContent,
 			};
 
+			const errorMessages = [];
+			// Validate inputs
+			if (!formData.firstname) errorMessages.push("First name is required.");
+			if (!formData.lastname) errorMessages.push("Last name is required.");
+			if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+				errorMessages.push("Invalid email.");
+			if (!formData.phone || !/^[0-9]{10}$/.test(formData.phone))
+				errorMessages.push("Invalid phone number.");
+			if (!formData.address) errorMessages.push("Address is required.");
+			if (!formData.pincode || !/^[0-9]{6}$/.test(formData.pincode))
+				errorMessages.push("Invalid pin code.");
+			{{!-- if (!formData.district) errorMessages.push("District is required."); --}}
+			if (!formData.place) errorMessages.push("Place is required.");
+			{{!-- if (!formData.city) errorMessages.push("City is required."); --}}
+
+			// Show validation errors
+			if (errorMessages.length > 0) {
+				Swal.fire({
+					title: "Validation Errors",
+					html: errorMessages.join("<br>"),
+					icon: "error",
+					confirmButtonText: "OK",
+				});
+				return;
+			}
+
+			// Handle payment method
 			if (formData.paymentMethod === "razorpay") {
-				// Existing Razorpay logic remains unchanged
 				try {
-					const response = await fetch('/create-razorpay-order', {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
+					const response = await fetch("/create-razorpay-order", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
 						body: JSON.stringify(formData),
 					});
 					const order = await response.json();
@@ -576,9 +662,9 @@
 						description: "Payment for your order",
 						order_id: order.id,
 						handler: async function (response) {
-							const verifyResponse = await fetch('/verify-razorpay-payment', {
-								method: 'POST',
-								headers: { 'Content-Type': 'application/json' },
+							const verifyResponse = await fetch("/verify-razorpay-payment", {
+								method: "POST",
+								headers: { "Content-Type": "application/json" },
 								body: JSON.stringify({
 									paymentId: response.razorpay_payment_id,
 									orderId: response.razorpay_order_id,
@@ -587,21 +673,21 @@
 							});
 							const verifyResult = await verifyResponse.json();
 
-							if (order.success) {
+							if (verifyResult.success) {
 								Swal.fire({
-									title: 'Success!',
-									text: 'Payment successful! Order placed.',
-									icon: 'success',
-									confirmButtonText: 'OK',
+									title: "Success!",
+									text: "Payment successful! Order placed.",
+									icon: "success",
+									confirmButtonText: "OK",
 								}).then(() => {
-									window.location.href = '/orderss';
+									window.location.href = "/orderss";
 								});
 							} else {
 								Swal.fire({
-									title: 'Payment Verification Failed',
-									text: 'Your payment could not be verified.',
-									icon: 'error',
-									confirmButtonText: 'Retry',
+									title: "Payment Verification Failed",
+									text: "Your payment could not be verified.",
+									icon: "error",
+									confirmButtonText: "Retry",
 								});
 							}
 						},
@@ -618,55 +704,90 @@
 					const rzp = new Razorpay(options);
 					rzp.open();
 				} catch (error) {
-					console.error('Error during Razorpay payment:', error);
+					console.error("Error during Razorpay payment:", error);
 					Swal.fire({
-						title: 'Error',
-						text: 'Payment could not be initiated.',
-						icon: 'error',
-						confirmButtonText: 'Retry',
+						title: "Error",
+						text: "Payment could not be initiated.",
+						icon: "error",
+						confirmButtonText: "Retry",
 					});
 				}
 			} else {
-				// New: Handle COD and UPI
+				// Handle COD and UPI payment
 				try {
-					const response = await fetch('/placeOrder', {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
+					const response = await fetch("/placeOrder", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
 						body: JSON.stringify(formData),
 					});
 					const result = await response.json();
 
 					if (result.success) {
 						Swal.fire({
-							title: 'Order Placed!',
-							text: 'Your order has been successfully placed.',
-							icon: 'success',
-							confirmButtonText: 'OK',
+							title: "Order Placed!",
+							text: "Your order has been successfully placed.",
+							icon: "success",
+							confirmButtonText: "OK",
 						}).then(() => {
-							window.location.href = '/orderss';
+							window.location.href = "/orderss";
 						});
 					} else {
 						Swal.fire({
-							title: 'Order Failed',
-							text: result.message || 'Something went wrong while placing your order.',
-							icon: 'error',
-							confirmButtonText: 'Retry',
+							title: "Order Failed",
+							text:  "Select any Payment Methode",
+							icon: "error",
+							confirmButtonText: "Retry",
 						});
 					}
 				} catch (error) {
-					console.error('Error placing order:', error);
+					console.error("Error placing order:", error);
 					Swal.fire({
-						title: 'Error',
-						text: 'Order could not be placed.',
-						icon: 'error',
-						confirmButtonText: 'Retry',
+						title: "Error",
+						text: "Order could not be placed.",
+						icon: "error",
+						confirmButtonText: "Retry",
 					});
 				}
 			}
 		});
+	</script> 
+
+
+	<script>document.getElementById('couponForm').addEventListener('submit', async function (event) {
+			event.preventDefault();
+
+			const couponCode = document.getElementById('couponCode').value;
+			const cartTotal = parseFloat(document.querySelector('input[name="total"]').value);
+
+			try {
+				// Send the coupon code and cart total to the server
+				const response = await fetch('/applycoupon', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ couponCode, cartTotal }),
+				});
+
+				const data = await response.json();
+
+				if (response.ok) {
+					const discount = data.discount;
+					const newTotal = data.newTotal;
+
+					// Update the displayed total and discount
+					document.querySelector('.total-data .total').textContent = `₹${newTotal.toFixed(2)}`;
+					document.querySelector('.discount-section').textContent = `Discount Applied: ₹${discount.toFixed(2)}`;
+
+					// Update hidden total input for order processing
+					document.querySelector('input[name="total"]').value = newTotal.toFixed(2);
+				} else {
+					alert(data.message); // Show error message
+				}
+			} catch (error) {
+				console.error('Error applying coupon:', error);
+				alert('An error occurred while applying the coupon.');
+			}
+		});
 	</script>
-
-
 	<!-- jquery -->
 	<script src="/assets/js/jquery-1.11.3.min.js"></script>
 	<!-- bootstrap -->
