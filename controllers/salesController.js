@@ -3,6 +3,7 @@ const Products = require("../model/productsmodal");
 const Orders = require("../model/ordersmodal");
 const Razorpay = require("razorpay");
 const Coupons = require("../model/couponModel");
+const Offer = require("../model/offermodel");
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET
@@ -38,11 +39,9 @@ const applycoupon = async (req, res) => {
       coupon.MinimumCartValue &&
       req.body.cartTotal < coupon.MinimumCartValue
     ) {
-      return res
-        .status(400)
-        .json({
-          message: `Minimum cart value for this coupon is $${coupon.MinimumCartValue}`
-        });
+      return res.status(400).json({
+        message: `Minimum cart value for this coupon is $${coupon.MinimumCartValue}`
+      });
     }
 
     // Calculate the discount
@@ -133,7 +132,9 @@ const placeOrder = async (req, res) => {
         if (product.stock < item.quantity) {
           throw new Error(`Insufficient stock for ${product.name}.`);
         }
-
+        // Deduct stock from the product
+        product.stock -= item.quantity;
+        await product.save();
         return {
           ...item.toObject(), // Convert the Mongoose document to a plain object
           price: product.price,
@@ -315,36 +316,60 @@ const updateQuantity = async (req, res) => {
       .json({ success: false, message: "Error updating quantity." });
   }
 };
+// const loadcartpage = async (req, res) => {
+//   const userId = req.session.userId;
+
+//   if (!userId) {
+//     return res.redirect("/login");
+//   }
+
+//   try {
+//     // Fetch cart items and populate product details
+//     const carts = await Cart.find({ user: userId })
+//       .populate({
+//         path: "productId",
+//         populate: {
+//           path: "offer" // Populate offer details within the product
+//         }
+//       });
+
+//     // Map the cart items to include calculated discounted price
+//     const cartItems = carts.map((item) => {
+//       const product = item.productId;
+
+//       // Default price is the original product price
+//       let discountedPrice = product.price;
+
+//       // Calculate discounted price if the offer exists
+//       if (product.offer) {
+//         if (product.offer.DiscountType === "percentage") {
+//           const discount = (product.price * product.offer.DiscountValue) / 100;
+//           discountedPrice = Math.max(0, product.price - discount);
+//         } else if (product.offer.DiscountType === "fixed") {
+//           discountedPrice = Math.max(0, product.price - product.offer.DiscountValue);
+//         }
+//       }
+
+//       return {
+//         ...item._doc, // Include other fields in the cart item
+//         discountedPrice // Add the calculated discounted price
+//       };
+//     });
+
+//     res.render("cart", { carts: cartItems ,carts});
+//   } catch (error) {
+//     console.error("Error fetching cart:", error);
+//     res.status(500).json({ error: "Failed to load cart" });
+//   }
+// };
+
 const loadcartpage = async (req, res) => {
   try {
     const userId = req.session.userId;
+    console.log("sesssio user id::", userId);
 
     const carts = await Cart.find({ user: userId }).populate("productId");
-    const coupons = await Coupons.find({});
-
-    // Get product names from the cart
-    const cartProductNames = carts.map(item => item.productId.name);
-    const cartCategories = carts.map(item =>
-      item.productId.category.toString()
-    );
-    console.log(cartCategories);
-    // Filter coupons
-    const filteredCoupons = coupons.filter(coupon => {
-      const isProductMatch = coupon.Products.some(productName =>
-        cartProductNames.includes(productName)
-      );
-
-      const isCategoryMatch = coupon.Categories.some(category =>
-        cartCategories.includes(category)
-      );
-
-      return isProductMatch || isCategoryMatch; // Match by either product or category
-    });
-    // Format filtered coupons
-    const formattedCoupons = filteredCoupons.map(coupon => ({
-      ...coupon.toObject(),
-      ExpiryDate: coupon.ExpiryDate.toLocaleString("en-GB") // Include date and time
-    }));
+    console.log("Cart Items:", carts);
 
     // If no items in the cart, render the page with a message
     if (!carts || carts.length === 0) {
@@ -371,7 +396,6 @@ const loadcartpage = async (req, res) => {
 
     // Pass to the view
     res.render("cart", {
-      coupons: formattedCoupons,
       carts,
       subtotal,
       shippingRate,
@@ -382,6 +406,7 @@ const loadcartpage = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
 const removecart = async (req, res) => {
   const { id } = req.params;
 
@@ -401,6 +426,87 @@ const removecart = async (req, res) => {
     res.redirect("/cart");
   }
 };
+// const addtocart = async (req, res) => {
+//   const userId = req.session.userId;
+
+//   if (!userId) {
+//     return res.redirect("/login");
+//   }
+
+//   try {
+//     const { quantity, productId } = req.body;
+
+//     if (!quantity || !productId) {
+//       return res
+//         .status(400)
+//         .json({ error: "Quantity and Product ID are required" });
+//     }
+
+//     const product = await Products.findById(productId);
+
+//     if (!product) {
+//       return res.render("singleproduct", { message: "Product not found" });
+//     }
+
+//     if (!product.islisted) {
+//       return res.render("singleproduct", {
+//         message: "This product is currently unavailable",
+//         product
+//       });
+//     }
+
+//     if (product.stock < quantity) {
+//       return res.render("singleproduct", {
+//         message: "Not enough stock available for this quantity",
+//         product
+//       });
+//     }
+
+//     const existingItem = await Cart.findOne({ user: userId, productId });
+
+//     if (existingItem) {
+//       const newQuantity = existingItem.quantity + parseInt(quantity);
+
+//       // Ensure the new quantity doesn't exceed stock or a maximum limit
+//       if (newQuantity > product.stock) {
+//         return res.render("singleproduct", {
+//           message: "Cannot add more than the available stock to your cart",
+//           product
+//         });
+//       }
+
+//       if (newQuantity > 10) {
+//         return res.render("singleproduct", {
+//           message: "Cannot add more than 10 units of this item to your cart",
+//           product
+//         });
+//       }
+
+//       existingItem.quantity = newQuantity;
+//       existingItem.total = newQuantity * product.price;
+//       await existingItem.save();
+//     } else {
+//       // Create a new cart item
+//       const cartItem = new Cart({
+//         user: userId,
+//         productId,
+//         quantity,
+//         total: product.price * quantity
+//       });
+//       await cartItem.save();
+//     }
+
+//     // Decrease stock of the product after adding to cart
+//     await product.save();
+
+//     // Redirect to the cart page after successfully adding the product
+//     res.redirect("/cart");
+//   } catch (error) {
+//     console.error("Error adding product to cart:", error);
+//     res.status(500).json({ error: "Failed to add product to cart" });
+//   }
+// };
+
 const addtocart = async (req, res) => {
   const userId = req.session.userId;
 
@@ -411,14 +517,15 @@ const addtocart = async (req, res) => {
   try {
     const { quantity, productId } = req.body;
 
-    if (!quantity || !productId) {
-      return res
-        .status(400)
-        .json({ error: "Quantity and Product ID are required" });
+    // Default quantity to 1 if not provided
+    const productQuantity = parseInt(quantity) || 1;
+
+    if (!productId) {
+      return res.status(400).json({ error: "Product ID is required" });
     }
 
-    const product = await Products.findById(productId);
-
+    const product = await Products.findById(productId).populate("offer");
+    console.log("producctttctctct::", product);
     if (!product) {
       return res.render("singleproduct", { message: "Product not found" });
     }
@@ -430,17 +537,33 @@ const addtocart = async (req, res) => {
       });
     }
 
-    if (product.stock < quantity) {
+    if (product.stock < productQuantity) {
       return res.render("singleproduct", {
         message: "Not enough stock available for this quantity",
         product
       });
     }
 
+    // Calculate discounted price if offer exists
+    const discountedPrice = null;
+    console.log("kkkoooiiii", product.offer);
+    if (product.offer && product.Status) {
+      if (product.offer.DiscountType === "percentage") {
+        const discount = product.price * product.offer.DiscountValue / 100;
+        discountedPrice = Math.max(0, product.price - discount); // Prevent negative price
+      } else if (product.offer.DiscountType === "fixed") {
+        discountedPrice = Math.max(
+          0,
+          product.price - product.offer.DiscountValue
+        ); // Prevent negative price
+      }
+    }
+    console.log("discountedPrice", discountedPrice);
+
     const existingItem = await Cart.findOne({ user: userId, productId });
 
     if (existingItem) {
-      const newQuantity = existingItem.quantity + parseInt(quantity);
+      const newQuantity = existingItem.quantity + productQuantity;
 
       // Ensure the new quantity doesn't exceed stock or a maximum limit
       if (newQuantity > product.stock) {
@@ -458,21 +581,19 @@ const addtocart = async (req, res) => {
       }
 
       existingItem.quantity = newQuantity;
-      existingItem.total = newQuantity * product.price;
+      existingItem.totalPrice = newQuantity * discountedPrice;
       await existingItem.save();
     } else {
       // Create a new cart item
       const cartItem = new Cart({
         user: userId,
         productId,
-        quantity,
-        total: product.price * quantity
+        quantity: productQuantity,
+        discountedPrice: discountedPrice * productQuantity,
+        totalPrice: discountedPrice * productQuantity
       });
       await cartItem.save();
     }
-
-    // Decrease stock of the product after adding to cart
-    await product.save();
 
     // Redirect to the cart page after successfully adding the product
     res.redirect("/cart");

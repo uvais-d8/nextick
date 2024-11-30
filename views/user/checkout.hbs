@@ -398,8 +398,6 @@
 										<td><b>₹ {{shippingRate}}</b></td>
 									</tr>
 								</tbody>
-								<div class="discount-section">{{#if discount}}Discount Applied: ₹{{discount}}{{/if}}
-								</div>
 								<tbody>
 									<tr class="total-data">
 										<td><strong>Total After Discount: </strong></td>
@@ -435,8 +433,10 @@
 												<input type="radio" id="upi" name="paymentMethod" value="upi">
 												<label for="upi">UPI</label>
 											</div>
-										</div>
-									</div><button type="submit" class="btnnn">Place Order</button>
+										</div>	<div style="margin-left: 15px;color:rgb(18, 175, 18);font-weight:bold" class="discount-section">{{#if discount}}Discount Applied successfully: ₹{{discount}}{{/if}}
+								</div>
+							
+									</div><button style="margin-left: 15px;margin-bottom:15px" type="submit" class="btnnn">Place Order</button>
 									</form>
 								</div>
 							</div>
@@ -780,7 +780,7 @@
 					// Update hidden total input for order processing
 					document.querySelector('input[name="total"]').value = newTotal.toFixed(2);
 				} else {
-					alert(data.message); // Show error message
+					(data.message); // Show error message
 				}
 			} catch (error) {
 				console.error('Error applying coupon:', error);

@@ -4,6 +4,7 @@ const saltround = 10;
 const nodemailer = require("nodemailer");
 const Address = require("../model/addressModel");
 const Orders = require("../model/ordersmodal");
+const Wallet = require("../model/walletModel");
 
 async function sendVerificationEmail(email, otp) {
   try {
@@ -627,9 +628,31 @@ const addaddress = async (req, res) => {
     return res.redirect("/address");
   }
 };
+const loadWallet = async (req, res) => {
+  try {
+      const userId = req.session.user        
+
+      const wallet = await Wallet.findOne({});        
+
+      if (!wallet) {
+          return res.status(404).send('Wallet not found');
+      }
+      console.log("balance",wallet.balance)
+      console.log("transactions",wallet.transactions)
+      res.render('wallet', {
+          balance: wallet.balance,
+          transactions: wallet.transactions,
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send('Server Error');
+  }
+};
+
 module.exports = {
   updateDefaultAddress,
   resendotpemail,
+  loadWallet,
   changepassword,
   loadprofile,
   loadaddress,

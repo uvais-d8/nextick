@@ -429,12 +429,13 @@
                             <p style="color: rgb(29, 29, 29);font-size :13px;">Phone No :{{user.phone}}</p>
                             <p style="color: rgb(29, 29, 29); font-size :13px;">Email: {{user.email}}</p>
                             <p style="color: white;">.</p>
-
+                            <form method="get" action="/wallet" style="font-size:15px;margin-bottom:-25px;font-weight:bold;color:black"><button type="submit" style="background-color: white;border-width:0px;font-weight:bold" value="See My Wallet">See My Wallet</button></form>
                             <button
                                 style="font-size:13px;width: 90px; margin-left:75%;background-color:rgba(228, 154, 17, 0.908)"
                                 class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editUsernameModal">
                                 <b>Edit</b>
                             </button>
+
                             {{!-- <button class="gradient-button">Save</button> --}}
                         </div>
                     </div>
@@ -483,18 +484,18 @@
                                             <label style="font-size: 13px;" for="currentPassword">Current
                                                 Password</label>
                                             <input style="font-size: 13px;" type="password" id="currentPassword"
-                                                name="currentPassword" >
+                                                name="currentPassword">
                                         </div>
                                         <div class="form-group">
                                             <label style="font-size: 13px;" for="newpassword">New Password</label>
                                             <input style="font-size: 13px;" type="password" id="newpassword"
-                                                name="newpassword" >
+                                                name="newpassword">
                                         </div>
                                         <div class="form-group">
                                             <label style="font-size: 13px;" for="confirmpassword">Confirm
                                                 Password</label>
                                             <input style="font-size: 13px;" type="password" id="confirmpassword"
-                                                name="confirmpassword" >
+                                                name="confirmpassword">
                                         </div>
                                         <div class="form-group">
                                             <button class="btn-warning"

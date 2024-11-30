@@ -75,11 +75,13 @@ router.post("/updatepassword", profileController.setnewpassword);
 router.post("/changepassword",profileController.changepassword)
 router.get("/address",userAuth.checksession,profileController.loadaddress);
 router.post("/addaddress", userAuth.checksession,profileController.addaddress);
+router.get("/wallet",userAuth.checksession,profileController.loadWallet)
+
 
 //sales Controller
 router.post("/addtocart", userAuth.checksession,salesController.addtocart);
 router.post("/placeOrder", userAuth.checksession,salesController.placeOrder);
-router.get("/cart", userAuth.checksession,salesController.loadcartpage);
+router.get("/cart",salesController.loadcartpage);
 router.get('/cart/:cartId/getProductStock',salesController.getProductStock)
 router.delete("/cart/:id", salesController.removecart);
 router.post('/cart/:id/updateQuantity',salesController.updateQuantity) 
@@ -103,7 +105,8 @@ router.get("/about", userController.loadaboutpage);
 router.get("/contact", userController.loadcontactpage);
 router.get("/contact", userController.loadcontactpage);
 router.get("/", userController.loadhome);
-
+router.get("/wishlist",userController.loadWishlist)
+router.post('/toggle/:productId', userController.toggleWishlist);
 
 
 module.exports = router;

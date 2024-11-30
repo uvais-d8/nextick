@@ -338,9 +338,19 @@
 						<p>{{product.description}}</p>
 						<p style="margin-top: -20px;color:orange" class="rating">★★★★★</p>
 						<p class="single-product-pricing">
-							<span style="font-size: 15px;margin-top:-20px">Discount: {{#if product.discount}}%{{product.discount}} off{{/if}}</span>
-							₹ {{product.price}}
+							{{#if product.discountValue}}
+							<span class="price"
+								style="text-decoration: line-through; color: red;font-size:15px">₹{{product.price}}</span>
+							<span class="offer-price"
+								style="color: green; font-weight: bold;font-size:21px;margin-top:-5px">₹{{product.priceWithDiscount}}</span>
+							<span class="discount-tag"
+								style="color: rgb(255, 140, 0);font-size:13px;margin-top:-10px">({{product.discountValue}}
+								OFF)</span>
+							{{else}}
+							<span class="price" style="font-weight: bold; color: black;">₹{{product.price}}</span>
+							{{/if}}
 						</p>
+
 						<p><strong>Colors:</strong> red, black, white</p>
 						<p class="card-text stock">
 							Stock:

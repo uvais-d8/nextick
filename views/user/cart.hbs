@@ -311,37 +311,6 @@
 			</div>
 		</div>
 	</div>
-<script>
-    document.getElementById('couponForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
-
-        const couponCode = document.getElementById('couponCode').value;
-        const cartTotal = {{total}}; // Directly pass the Handlebars variable here (without quotes)
-
-        // Send the coupon code and cart total to the server
-        const response = await fetch('/applycoupon', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ couponCode, cartTotal })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            // Update the cart total and show the discount
-            const discount = data.discount;
-            const newTotal = data.newTotal;
-
-            // Update the displayed totals
-            document.querySelector('.total-data .total').textContent = `₹${newTotal}`;
-            document.querySelector('.discount-section').textContent = `Discount Applied: ₹${discount}`;
-        } else {
-            alert(data.message); // Show error message
-        }
-    });
-</script>
 
 {{!-- 
 	<div style="margin-top: -150px;" class="coupon-section mb-50">
@@ -356,7 +325,7 @@
 						<p class="coupon-description">{{this.Description}}</p>
 						<p class="coupon-validity">Valid till: {{this.ExpiryDate}}</p>
 					</div>
-				</div>
+				</div>      
 				{{/each}}
 				{{else}}
 				<p style="margin-bottom: 50px;color:red	">No coupons available for your cart items.</p>

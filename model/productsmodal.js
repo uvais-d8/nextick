@@ -46,19 +46,6 @@ const productsShema = new mongoose.Schema({
       return this.stock > 0 ? "in-stock" : "out-of-stock";
     }
   },
-  priceWithDiscount: {
-    type: Number,
-    default: function () {
-      if (this.offer) {
-        if (this.offer.DiscountType === "percentage") {
-          return this.price - (this.price * this.offer.DiscountValue) / 100;
-        } else if (this.offer.DiscountType === "fixed") {
-          return this.price - this.offer.DiscountValue;
-        }
-      }
-      return this.price; // If no offer, just return the original price
-    }
-  },
   price: {
     type: Number,
     required: false
@@ -71,7 +58,31 @@ const productsShema = new mongoose.Schema({
     type: Number,
     required: true,
     default: 1
+  }, 
+  wishlist:{
+    type:Boolean,
+    default:false
   },
+  priceWithDiscount:{
+    type:Number,
+    required:false,
+    default:0,
+  },
+  // priceWithDiscount: {
+  //   type: Number,
+  //   default: function () {
+  //     if (this.offer && this.price) {
+  //       if (this.offer.DiscountType === "percentage") {
+  //         const discount = (this.price * this.offer.DiscountValue) / 100;
+  //         return Math.max(0, this.price - discount); // Prevent negative price
+  //       } else if (this.offer.DiscountType === "fixed") {
+  //         return Math.max(0, this.price - this.offer.DiscountValue); // Prevent negative price
+  //       }
+  //     }
+  //     return this.price || 0; // Fallback to original price or 0 if price is missing
+  //   }
+  // },
+  
   images: [
     {
       type: String,

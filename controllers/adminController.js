@@ -804,7 +804,7 @@ const addoffer = async (req, res) => {
       DiscountType,
       DiscountValue,
       Description,
-      Products,  // This should be an array of product IDs
+      Products,
       Categories,
       ExpiryDate,
       Status
@@ -814,8 +814,10 @@ const addoffer = async (req, res) => {
       !DiscountType ||
       !DiscountValue ||
       !Description ||
-      !Products || !Products.length ||
-      !Categories || !Categories.length ||
+      !Products ||
+      !Products.length ||
+      !Categories ||
+      !Categories.length ||
       !ExpiryDate ||
       !Status
     ) {
@@ -841,7 +843,18 @@ const addoffer = async (req, res) => {
     // Save the offer
     await newoffer.save();
     console.log("New offer created: ", newoffer);
+    // await Products.findByIdAndUpdate(
+    //   { _id: products._id },
+    //   { priceWithDiscount: DiscountValue }
+    // );
 
+    // const newprice = new Products.findByIdAndUpdate({
+    //   priceWithDiscount
+    // });
+
+    // Save the offer
+    // await newprice.save();
+    // console.log("New offer created: ", newprice);
     // Now associate the offer with the products
     await Products.updateMany(
       { _id: { $in: Products } },
@@ -859,23 +872,21 @@ const addoffer = async (req, res) => {
   }
 };
 
-
-
 const loadeditOffer = async (req, res) => {
-  const { id : offerId  } =req.params;
-   const products = await Products.find({});
+  const { id: offerId } = req.params;
+  const products = await Products.find({});
   const category = await Category.find({});
-  const offer = await Offer.findById(offerId)
+  const offer = await Offer.findById(offerId);
   if (!offer) {
     console.log("Offer not found");
     return res.redirect("/admin/offer"); // Redirect if the offer is not found
   }
 
   try {
-    res.render("admin/editoffer", { offer,products, category });
-    console.log(offer)
+    res.render("admin/editoffer", { offer, products, category });
+    console.log(offer);
   } catch (error) {
-    console.log("error while loading edit offer page",error)
+    console.log("error while loading edit offer page", error);
   }
 };
 // const editOffer = async (req, res) => {
@@ -979,7 +990,9 @@ const editOffer = async (req, res) => {
 
     // Normalize and validate input
     const productIds = Array.isArray(reqProducts) ? reqProducts : [reqProducts];
-    const categoryIds = Array.isArray(reqCategories) ? reqCategories : [reqCategories];
+    const categoryIds = Array.isArray(reqCategories)
+      ? reqCategories
+      : [reqCategories];
 
     if (
       !DiscountType ||
@@ -994,7 +1007,7 @@ const editOffer = async (req, res) => {
       return res.render("admin/editoffer", {
         message: "All fields are required",
         products,
-        categories,
+        categories
       });
     }
 
@@ -1035,7 +1048,6 @@ const editOffer = async (req, res) => {
     });
   }
 };
-
 
 const loadaddoffer = async (req, res) => {
   const products = await Products.find({});

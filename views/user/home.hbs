@@ -290,8 +290,8 @@
 						<h3>{{this.name}}</h3>
 						<p class="product-price"><span>20% off today</span> ₹ {{this.price}}</p>
 						<form action="/addtocart" method="post">
-							<input type="hidden" name="productId" value="{{this._id}}">
-							<input type="hidden" name="quantity" value="{{this.quantity}}">
+							<input type="hidden" name="productId" value="{{products._id}}">
+							<input type="hidden" name="quantity" value="{{products.quantity}}">
 							<div style="margin-left:30%">
 								<button
 									style="background-color: transparent;border: none;padding: 0;margin: 0;cursor: pointer;display: flex;align-items: center;font: inherit;color: inherit;outline:none "
