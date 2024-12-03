@@ -49,8 +49,7 @@ const loadproducts = async (req, res) => {
   try {
     // Fetch all categories and products
     const categories = await Category.find({});
-    const product = await Products.find({islisted:true})
-    const products = await Products.find({})
+    const products = await Products.find({islisted:true})
       .populate("offer") // Populate the offer field to get offer details
       .populate("category"); // Populate the category field for product categorization
 
@@ -59,17 +58,16 @@ const loadproducts = async (req, res) => {
 
     // Process products to include calculated offer price and discount details
     const productsWithOfferPrice = products.map((product) => {
-      // Initialize default values
       let discountValue = null;
       let discountType = null;
-      let offerPrice = product.price; // Default to the original price
+      let offerPrice = product.price; // Set the offer price to the base price by default
+      let discountDisplay = null;
 
-      // Find the active offer applicable to the product
+      // Find matching offer
       const matchedOffer = activeOffers.find(offer =>
         offer.Products.some(productId => productId.equals(product._id))
       );
 
-      // If an offer is matched, calculate offer price and discount details
       if (matchedOffer) {
         discountType = matchedOffer.DiscountType;
 
@@ -82,46 +80,28 @@ const loadproducts = async (req, res) => {
         }
       }
 
-      // Return the product object with all necessary fields
+      // Include the offerPrice and discount information
       return {
         _id: product._id,
         name: product.name,
         images: product.images,
         category: product.category,
-        price: product.priceWithDiscount,
-        ...(matchedOffer && { // Only include offer-related fields if an offer exists
-          offerPrice: offerPrice,
-          discountValue: discountValue,
-          offerType: discountType,
-        }),
+        price: product.price, // Original price without discount
+        offerPrice: offerPrice, // Calculated price after discount
+        discountValue: discountValue, 
+        discountType: discountType,
         stock: product.stock,
       };
     });
 
     // Render the page with updated products and categories
-    res.render("products", {product, products: productsWithOfferPrice, categories });
+    res.render("products", { products: productsWithOfferPrice, categories });
   } catch (error) {
     console.error("Error fetching and updating products:", error);
     res.status(500).send("Failed to fetch or update products.");
   }
 };
 
-
-// const singleproduct = async (req, res) => {
-//   const productId = req.params.id;
-//   // console.log(productId);
-//   try {
-//     const product = await Products.findById(productId);
-//     const products = await Products.find({ islisted: true });
-//     // console.log(product);
-//     if (!product) {
-//       return res.status(404).send("Product not found");
-//     }
-//     res.render("singleproduct", { product, products });
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
 const singleproduct = async (req, res) => {
   const productId = req.params.id;
 
@@ -235,19 +215,11 @@ const loadWishlist = async(req,res)=>{
 const toggleWishlist = async (req, res) => {
   try {
     const { productId } = req.params;
-    const userId = req.session.userId; // Assuming the user is logged in
-
-    // Find the product by ID
+    const userId = req.session.userId;
     const product = await Products.findById(productId);
-
-    // Check if the product is already in the user's wishlist
     const isInWishlist = product.wishlist;
-
-    // Toggle wishlist status
     product.wishlist = !isInWishlist;
     await product.save();
-
-    // Return success response
     res.json({ success: true, wishlist: product.wishlist });
   } catch (error) {
     console.error("Error toggling wishlist:", error);

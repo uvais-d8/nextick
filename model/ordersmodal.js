@@ -1,40 +1,44 @@
 const mongoose = require("mongoose");
 
 const ordersSchema = new mongoose.Schema({
-  
-    userId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"user",
-        require:true
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+        required: true
     },
-    islisted:{
-        type:Boolean,
-        default:true
+    islisted: {
+        type: Boolean,
+        default: true
     },
-    status:{
-        type:String,
-        enum:["scheduled", "pending", "delivered", "shipped", "canceled"],
-        require:true,
-        default:"scheduled" 
+    status: {
+        type: String,
+        enum: ["scheduled", "pending", "delivered", "shipped", "canceled"],
+        required: true,
+        default: "scheduled"
     },
-    items: [{      
-        productId:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"products",
-            require:true
+    items: [{
+        productId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "products",
+            required: true
         },
-        status:{
-            type:String,
-            enum:["scheduled", "pending", "delivered", "shipped", "canceled"],
-            require:true,
-            default:"scheduled"
+        status: {
+            type: String,
+            enum: ["scheduled", "pending", "delivered", "shipped", "canceled"],
+            required: true,
+            default: "scheduled"
         },
-        stock:{
-            type:Number
+        stock: {
+            type: Number
         },
         price: {
             type: Number,
             required: true
+        },
+        priceWithDiscount: {
+            type: Number,
+            required: false,
+            default: 0
         },
         quantity: {
             type: Number,
@@ -43,66 +47,50 @@ const ordersSchema = new mongoose.Schema({
         },
         total: {
             type: Number,
-            required: true,
-            default: function() {
-                return this.price * this.quantity;
-            }
+            required: true
         },
-        description:{
-            type: String,
-
+        description: {
+            type: String
         },
         images: [{
             type: String,
             required: false
         }]
     }],
-   
     paymentMethod: {
         type: String,
-        enum: ['upi', 'cod','razorpay'],
+        enum: ['upi', 'cod', 'razorpay'],
+        required: true
     },
     shippingAddress: { 
-        // type: mongoose.Schema.Types.ObjectId,
-        // ref: "addresses", 
-        // required: true
-        firstname:{
-            type:String,
-        },lastname:{
-            type:String,
-        },address:{
-            type:String,
-        },phone:{
-            type:Number,
-        },email:{
-            type:String,
-        },place:{
-            type:String,
-        },city:{
-            type:String,
-        },pincode:{
-            type:Number,
-        },district:{
-            type:String
-        }
+        firstname: { type: String, required: true },
+        lastname: { type: String },
+        address: { type: String, required: true },
+        phone: { type: Number, required: true },
+        email: { type: String, required: true },
+        place: { type: String, required: true },
+        city: { type: String, required: true },
+        pincode: { type: Number, required: true },
+        district: { type: String, required: true }
     },
     orderTotal: {
         type: Number,
-        required: true,
-        default: 0 // This will be calculated based on the items' totals
+        required: true
     },
     time: {
-        type: Date, 
-        default: Date.now 
+        type: Date,
+        default: Date.now
     }
-},{ timestamps: true });
+}, { timestamps: true });
 
-// Calculate the total order amount based on items' total values
+// Middleware for recalculating item totals and orderTotal
 ordersSchema.pre('save', function(next) {
+    this.items.forEach(item => {
+        item.total = item.priceWithDiscount || item.price * item.quantity;
+    });
     this.orderTotal = this.items.reduce((sum, item) => sum + item.total, 0);
     next();
 });
 
 const orders = mongoose.model("orders", ordersSchema);
 module.exports = orders;
-

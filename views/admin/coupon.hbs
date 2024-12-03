@@ -53,8 +53,16 @@
             <div class="controls">
                 <h1 style="font-size:43px;">COUPON MANAGEMENT</h1>
             </div>
-            <form method="get" action="/admin/addcoupon"><button style="margin-bottom:30px" class="sort-button">ADD
-                    COUPON</button></form>
+            <div><form >
+            </form>
+            </div>
+                   <div class="controls">
+            
+                <form method="get"  action="/admin/addcoupon"><button style="background-color: rgb(3, 139, 39);"  class="sort-button">ADD
+                    COUPON (products)</button>
+                </form><form method="get" action="/admin/addcoupons"><button style="background-color: rgb(3, 139, 39);" class="sort-button">ADD
+                    COUPON (category)</button></form>
+            </div>  
 
             <table>
                 <thead>
@@ -86,7 +94,7 @@
                         <td>
                             <form action="/admin/deletecoupon/{{this.id}}" method="POST">
                                 <input type="submit" value="Delete"
-                                    style="border-width:0px;width: 80px;border-radius:4px;background-color:rgba(255, 0, 0, 0.858); height:35px; margin-bottom:5px">
+                                    style="border-width:0px;width: 80px;border-radius:4px;background-color:rgba(255, 0, 0, 0.858); height:35px; margin-bottom:5px;color:white">
                             </form>
 
 
@@ -99,11 +107,36 @@
             </table>
 
 
-            <div style="margin-left: 44%;" class="pagination">
-                <button style="color:white;background-color: rgb(10, 15, 27);" class="pagination-button">&lt;</button>
-                <span style="margin-top: 8px;">swipe</span>
-                <button style="color:white;background-color: rgb(10, 15, 27);" class="pagination-button">&gt;</button>
-            </div>
+           
+<!-- Pagination -->
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center pages custom-pagination">
+    <!-- Show the "Previous" button if there is a previous page -->
+    {{#if previousPage}}
+      <li class="page-item">
+        <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+    {{/if}}
+
+    <!-- Generate page numbers -->
+    {{#each (range 1 totalPages)}}
+      <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
+        <a class="page-link" href="?page={{this}}">{{this}}</a>
+      </li>
+    {{/each}}
+
+    <!-- Show the "Next" button if there is a next page -->
+    {{#if nextPage}}
+      <li class="page-item">
+        <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    {{/if}}
+  </ul>
+</nav>
         </main>
     </div>
 </body>

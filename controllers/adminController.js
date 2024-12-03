@@ -10,6 +10,10 @@ const { default: mongoose } = require("mongoose");
 const Coupon = require("../model/couponModel");
 const multer = require("multer");
 const Offer = require("../model/offermodel");
+const Coupons = require("../model/couponModel");
+const PDFDocument = require('pdfkit');
+const ExcelJS = require('exceljs');
+
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, "uploads/");
@@ -94,13 +98,56 @@ const unblockUser = async (req, res) => {
     res.redirect("/admin/dashboard");
   }
 };
+// const loadUserMangment = async (req, res) => {
+//   try {
+//     const users = await User.find({});
+//     res.render("admin/userManagement", { users });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send("Server Error");
+//   }
+// };
+
 const loadUserMangment = async (req, res) => {
   try {
-    const users = await User.find({});
-    res.render("admin/userManagement", { users });
+    // Get the current page from the query parameter, default to 1 if not provided
+    const page = parseInt(req.query.page) || 1;
+
+    // Set the number of users per page, default to 4 if not provided
+    const limit = parseInt(req.query.limit) || 4;
+
+    // Calculate how many items to skip based on the current page
+    const skip = (page - 1) * limit;
+
+    // Fetch the total number of users
+    const totalUsers = await User.countDocuments();
+
+    // Fetch users with pagination
+    const users = await User.find({})
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }) // Sort by creation date (or change if needed)
+      .exec();
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    // Get previous and next page numbers
+    const previousPage = page > 1 ? page - 1 : null;
+    const nextPage = page < totalPages ? page + 1 : null;
+
+    // Render the user page with pagination data
+    res.render("admin/userManagement", {
+      users,
+      currentPage: page,
+      totalPages: totalPages,
+      totalUsers: totalUsers,
+      previousPage: previousPage,
+      nextPage: nextPage
+    });
   } catch (error) {
-    console.log(error);
-    res.status(500).send("Server Error");
+    console.log(`Error fetching users: ${error}`);
+    res.status(500).send("Failed to load users.");
   }
 };
 
@@ -195,12 +242,45 @@ const editcategory = async (req, res) => {
     res.status(500).send("Error updating category");
   }
 };
+// const loadcategory = async (req, res) => {
+//   try {
+//     const category = await Category.find({});
+//     res.render("admin/category", {
+//       category
+//     });
+//   } catch (error) {
+//     console.log(`No data found: ${error}`);
+//     res.status(500).send("Failed to load categories.");
+//   }
+// };
 const loadcategory = async (req, res) => {
   try {
-    const category = await Category.find({});
-    res.render("admin/category", { category });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 3;
+    const skip = (page - 1) * limit;
+
+    const totalCategories = await Category.countDocuments();
+    const categories = await Category.find({})
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .exec();
+    console.log("categories", categories);
+    const totalPages = Math.ceil(totalCategories / limit);
+    const previousPage = page > 1 ? page - 1 : null;
+    const nextPage = page < totalPages ? page + 1 : null;
+
+    res.render("admin/category", {
+      categories,
+      currentPage: page,
+      totalPages,
+      totalCategories,
+      previousPage,
+      nextPage
+    });
   } catch (error) {
-    console.log(`No data found : ${error}`);
+    console.log(`No data found: ${error}`);
+    res.status(500).send("Failed to load categories.");
   }
 };
 
@@ -434,17 +514,40 @@ const addproduct = async (req, res) => {
     res.redirect("/admin/dashboard");
   }
 };
+
 const loadproducts = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 4;
+    const skip = (page - 1) * limit;
+
+    const totalProducts = await Products.countDocuments();
     const categories = await Category.find({});
-    const products = await Products.find({}).populate("category", "category");
-    res.render("admin/products", { products, categories });
-    console.log("categoreiesss:", categories);
+    const products = await Products.find({})
+      .populate("category", "category")
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    const totalPages = Math.ceil(totalProducts / limit);
+    const previousPage = page > 1 ? page - 1 : null;
+    const nextPage = page < totalPages ? page + 1 : null;
+
+    res.render("admin/products", {
+      products,
+      categories,
+      currentPage: page,
+      totalPages: totalPages,
+      totalProducts: totalProducts,
+      previousPage: previousPage,
+      nextPage: nextPage
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("server error");
+    console.log(`Error fetching products: ${error}`);
+    res.status(500).send("Failed to load products.");
   }
 };
+
 const loadeditproducts = async (req, res) => {
   const { id } = req.params;
   console.log("hello");
@@ -628,17 +731,38 @@ const updateOrderStatus = async (req, res) => {
       .json({ success: false, message: "Failed to update item status." });
   }
 };
-const loadorders = async (req, res) => {
+const loadOrder = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 4;
+    const skip = (page - 1) * limit;
+    const totalOrders = await Orders.countDocuments();
     const orders = await Orders.find({})
       .populate("items.productId", "name")
-      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }) // Sort by creation date (or change if needed)
       .exec();
 
-    res.render("admin/orders", { orders });
+    // Calculate total pages
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    // Get previous and next page numbers
+    const previousPage = page > 1 ? page - 1 : null;
+    const nextPage = page < totalPages ? page + 1 : null;
+
+    // Render the orders page with pagination data
+    res.render("admin/orders", {
+      orders,
+      currentPage: page,
+      totalPages: totalPages,
+      totalOrders: totalOrders,
+      previousPage: previousPage,
+      nextPage: nextPage
+    });
   } catch (error) {
-    console.error("Error during load orders:", error);
-    res.status(500).send("Failed to load orders");
+    console.log(`Error fetching orders: ${error}`);
+    res.status(500).send("Failed to load orders.");
   }
 };
 
@@ -646,16 +770,133 @@ const loadorders = async (req, res) => {
 const loadaddcoupon = async (req, res) => {
   try {
     const products = await Products.find({});
-    const Categories = await Category.find({});
     console.log(Categories);
 
-    res.render("admin/addcoupon", { products, Categories });
+    res.render("admin/addcoupon", { products });
   } catch (error) {
     console.log("errorr");
     res.render("admin/addcoupon", { message: "errorr" });
   }
 };
+const loadaddcoupons = async (req, res) => {
+  try {
+    const Categories = await Category.find({});
+    console.log(Categories);
+
+    res.render("admin/addcoupons", { Categories });
+  } catch (error) {
+    console.log("errorr");
+    res.render("admin/addcoupons", { message: "errorr" });
+  }
+};
 const addcoupon = async (req, res) => {
+  try {
+    const {
+      CouponCode,
+      DiscountType,
+      DiscountValue,
+      Products,
+      MinimumCartValue,
+      UsageLimit,
+      ExpiryDate,
+      Description
+    } = req.body;
+
+    console.log("Request body:", req.body);
+
+    if (
+      !CouponCode ||
+      !DiscountType ||
+      !DiscountValue ||
+      !Products.length ||
+      !ExpiryDate
+    ) {
+      console.log("Missing required fields");
+      return res.render("admin/addcoupon", {
+        message: "All fields are required"
+      });
+    }
+
+    // Check for existing coupon code
+    const existingcoupon = await Coupon.findOne({ CouponCode });
+    if (existingcoupon) {
+      console.log("coupon already exists");
+      return res.render("admin/addcoupon", {
+        message: "Coupon already exists"
+      });
+    }
+
+    if (isNaN(DiscountValue) || DiscountValue <= 0) {
+      console.log("Invalid DiscountValue");
+      return res.render("admin/addcoupon", {
+        message: "Discount value must be a positive number"
+      });
+    }
+
+    if (MinimumCartValue && (isNaN(MinimumCartValue) || MinimumCartValue < 0)) {
+      console.log("Invalid MinimumCartValue");
+      return res.render("admin/addcoupon", {
+        message: "Minimum cart value must be a positive number"
+      });
+    }
+
+    if (
+      UsageLimit &&
+      (isNaN(UsageLimit) ||
+        UsageLimit <= 0 ||
+        !Number.isInteger(Number(UsageLimit)))
+    ) {
+      console.log("Invalid UsageLimit");
+      return res.render("admin/addcoupon", {
+        message: "Usage limit must be a positive integer"
+      });
+    }
+
+    const formattedExpiryDate = new Date(ExpiryDate);
+    if (isNaN(formattedExpiryDate)) {
+      console.log("Invalid ExpiryDate");
+      return res.render("admin/addcoupon", {
+        message: "Expiry date is invalid"
+      });
+    }
+
+    if (formattedExpiryDate < new Date()) {
+      console.log("Expiry date is in the past");
+      return res.render("admin/addcoupon", {
+        message: "Expiry date cannot be in the past"
+      });
+    }
+
+    if (Description && typeof Description !== "string") {
+      console.log("Invalid Description");
+      return res.render("admin/addcoupon", {
+        message: "Description must be a valid string"
+      });
+    }
+
+    // Create a new coupon object
+    const newCoupon = new Coupon({
+      CouponCode,
+      DiscountType,
+      DiscountValue,
+      Products, // Now it correctly stores an array of selected products
+      Categories, // Now it correctly stores an array of selected categories
+      MinimumCartValue,
+      UsageLimit,
+      ExpiryDate: formattedExpiryDate,
+      Description
+    });
+
+    await newCoupon.save();
+    console.log("New coupon saved:", newCoupon);
+
+    return res.redirect("/admin/coupon");
+  } catch (error) {
+    console.error("Error adding coupon:", error.message);
+    res.redirect("/admin/dashboard");
+  }
+};
+const addcoupons = async (req, res) => {
   try {
     const {
       CouponCode,
@@ -765,10 +1006,44 @@ const addcoupon = async (req, res) => {
 };
 const loadcoupon = async (req, res) => {
   try {
-    const coupons = await Coupon.find({});
-    res.render("admin/coupon", { coupons });
+    // Get the current page from the query parameter, default to 1 if not provided
+    const page = parseInt(req.query.page) || 1;
+
+    // Set the number of products per page, default to 4 if not provided
+    const limit = parseInt(req.query.limit) || 4;
+
+    // Calculate how many items to skip based on the current page
+    const skip = (page - 1) * limit;
+
+    // Fetch the total number of products
+    const totalcoupons = await Coupon.countDocuments();
+
+    // Fetch products with pagination
+    const coupons = await Coupon.find({})
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })  // Sort by creation date (or change if needed)
+      .exec();
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalcoupons / limit);
+
+    // Get previous and next page numbers
+    const previousPage = page > 1 ? page - 1 : null;
+    const nextPage = page < totalPages ? page + 1 : null;
+
+    // Render the product page with pagination data
+    res.render("admin/coupon", {
+      coupons,
+      currentPage: page,
+      totalPages: totalPages,
+      totalProducts: totalcoupons,
+      previousPage: previousPage,
+      nextPage: nextPage
+    });
   } catch (error) {
-    console.log(error);
+    console.log(`Error fetching coupons: ${error}`);
+    res.status(500).send("Failed to load coupons.");
   }
 };
 const deleteCoupon = async (req, res) => {
@@ -796,16 +1071,91 @@ const deleteCoupon = async (req, res) => {
 };
 
 // -------------------------------------------------Offers Management------------------------------------------------------
+// const addoffer = async (req, res) => {
+//   const products = await Products.find({});
+//   const category = await Category.find({});
+//   try {
+//     const {
+//       DiscountType,
+//       DiscountValue,
+//       Description,
+//       Products,
+//       Categories,
+//       ExpiryDate,
+//       Status
+//     } = req.body;
+
+//     if (
+//       !DiscountType ||
+//       !DiscountValue ||
+//       !Description ||
+//       !Products ||
+//       !Products.length ||
+//       !Categories ||
+//       !Categories.length ||
+//       !ExpiryDate ||
+//       !Status
+//     ) {
+//       console.log("All fields are required");
+//       return res.render("admin/addoffer", {
+//         message: "All fields are required",
+//         products,
+//         category
+//       });
+//     }
+
+//     const formattedExpiryDate = new Date(ExpiryDate);
+//     const newoffer = new Offer({
+//       DiscountType,
+//       DiscountValue,
+//       Description,
+//       Products,
+//       Categories,
+//       ExpiryDate: formattedExpiryDate,
+//       Status
+//     });
+
+//     // Save the offer
+//     await newoffer.save();
+//     console.log("New offer created: ", newoffer);
+//     await Products.findByIdAndUpdate(
+//       { _id: products._id },
+//       { priceWithDiscount: DiscountValue }
+//     );
+
+//     const newprice = new Products.findByIdAndUpdate({
+//       priceWithDiscount
+//     });
+
+//     await newprice.save();
+//     console.log("New offer created: ", newprice);
+//     await Products.updateMany(
+//       { _id: { $in: Products } },
+//       { $set: { offer: newoffer._id } }
+//     );
+
+//     res.redirect("/admin/offer");
+//   } catch (error) {
+//     console.log("Error while saving the offer:", error);
+//     res.status(500).render("admin/addoffer", {
+//       message: "Make sure you entered everything correctly.",
+//       products,
+//       category
+//     });
+//   }
+// };
+
 const addoffer = async (req, res) => {
   const products = await Products.find({});
   const category = await Category.find({});
+
   try {
     const {
       DiscountType,
       DiscountValue,
       Description,
-      Products,
-      Categories,
+      Products: productIds,
+      Categories: categoryIds,
       ExpiryDate,
       Status
     } = req.body;
@@ -814,10 +1164,10 @@ const addoffer = async (req, res) => {
       !DiscountType ||
       !DiscountValue ||
       !Description ||
-      !Products ||
-      !Products.length ||
-      !Categories ||
-      !Categories.length ||
+      !Array.isArray(productIds) ||
+      productIds.length === 0 ||
+      !Array.isArray(categoryIds) ||
+      categoryIds.length === 0 ||
       !ExpiryDate ||
       !Status
     ) {
@@ -830,40 +1180,42 @@ const addoffer = async (req, res) => {
     }
 
     const formattedExpiryDate = new Date(ExpiryDate);
+    if (isNaN(formattedExpiryDate.getTime())) {
+      return res.render("admin/addoffer", {
+        message: "Invalid Expiry Date",
+        products,
+        category
+      });
+    }
+
     const newoffer = new Offer({
       DiscountType,
       DiscountValue,
       Description,
-      Products,
-      Categories,
+      Products: productIds,
+      Categories: categoryIds,
       ExpiryDate: formattedExpiryDate,
       Status
     });
 
-    // Save the offer
     await newoffer.save();
-    console.log("New offer created: ", newoffer);
-    // await Products.findByIdAndUpdate(
-    //   { _id: products._id },
-    //   { priceWithDiscount: DiscountValue }
-    // );
 
-    // const newprice = new Products.findByIdAndUpdate({
-    //   priceWithDiscount
-    // });
-
-    // Save the offer
-    // await newprice.save();
-    // console.log("New offer created: ", newprice);
-    // Now associate the offer with the products
+    // Update products with the offer
     await Products.updateMany(
-      { _id: { $in: Products } },
-      { $set: { offer: newoffer._id } }
+      { _id: { $in: productIds } },
+      {
+        $set: {
+          priceWithDiscount:
+            DiscountType === "fixed" ? DiscountValue : undefined, // Add logic for percentage if needed
+          offer: newoffer._id
+        }
+      }
     );
 
+    console.log("New offer created: ", newoffer);
     res.redirect("/admin/offer");
   } catch (error) {
-    console.log("Error while saving the offer:", error);
+    console.error("Error while saving the offer:", error);
     res.status(500).render("admin/addoffer", {
       message: "Make sure you entered everything correctly.",
       products,
@@ -1048,30 +1400,69 @@ const editOffer = async (req, res) => {
     });
   }
 };
-
-const loadaddoffer = async (req, res) => {
+const loadaddoffers = async (req, res) => {
   const products = await Products.find({});
   const category = await Category.find({});
 
   try {
-    res.render("admin/addoffer", { products, category });
+    res.render("admin/addoffers", { products, category });
+  } catch (error) {
+    console.log("error while loading", error);
+  }
+};
+const loadaddoffer = async (req, res) => { 
+  const category = await Category.find({});
+
+  try {
+    res.render("admin/addoffers", { products, category });
   } catch (error) {
     console.log("error while loading", error);
   }
 };
 const loadoffers = async (req, res) => {
   try {
-    const offer = await Offer.find({})
-      .populate("Products") // Populates multiple products if schema is updated
-      .populate("Categories"); // Populates multiple categories if schema is updated
-    console.log("Loaded offers: ", offer);
-    res.render("admin/offer", { offer });
-  } catch (error) {
-    console.log("Error in loading offers: ", error);
-    res.redirect("/admin/dashboard");
-  }
-};
+    // Get the current page from the query parameter, default to 1 if not provided
+    const page = parseInt(req.query.page) || 1;
 
+    // Set the number of products per page, default to 4 if not provided
+    const limit = parseInt(req.query.limit) || 4;
+
+    // Calculate how many items to skip based on the current page
+    const skip = (page - 1) * limit;
+
+    // Fetch the total number of products
+    const totalcoupons = await Offer.countDocuments();
+
+    // Fetch products with pagination
+    const offer = await Offer.find({})
+    .populate("Products")
+    .populate("Categories")
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })  // Sort by creation date (or change if needed)
+      .exec();
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalcoupons / limit);
+
+    // Get previous and next page numbers
+    const previousPage = page > 1 ? page - 1 : null;
+    const nextPage = page < totalPages ? page + 1 : null;
+
+    // Render the product page with pagination data
+    res.render("admin/offer", {
+      offer,
+      currentPage: page,
+      totalPages: totalPages,
+      totalProducts: totalcoupons,
+      previousPage: previousPage,
+      nextPage: nextPage
+    });
+  }catch (error) {
+    console.log(`Error fetching offers: ${error}`);
+    res.redirect("/admin/dashboard")
+  }
+} 
 const deleteOffer = async (req, res) => {
   const { id: offerId } = req.params; // Extract the ID from req.params
   console.log("oferId : ", offerId);
@@ -1092,7 +1483,226 @@ const deleteOffer = async (req, res) => {
     console.log("error", error);
   }
 };
+
+//-------------sales report-------------------------------------------------
+const getSalesReport = async (req, res) => {
+  try {
+    const { startDate, endDate, filter, page = 1, limit = 5 } = req.query;
+
+    const filterConditions = { "items.status": "delivered" };
+
+    // Handle date filtering
+    if (startDate && endDate) {
+      filterConditions.time = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
+    }
+
+    // Fetch and process data
+    const orders = await Orders.find(filterConditions).populate("items.productId");
+
+    // Reduce data into a grouped report by month or day based on the filter
+    const groupByKey = (filter === "daily") 
+      ? (order) => order.time.toISOString().split("T")[0]
+      : (filter === "monthly") 
+        ? (order) => `${order.time.getMonth() + 1}-${order.time.getFullYear()}`
+        : (filter === "weekly")
+          ? (order) => `Week-${Math.ceil(order.time.getDate() / 7)} ${order.time.getFullYear()}`
+          : (order) => `${order.time.getFullYear()}`; // Default yearly grouping
+    
+    const salesData = orders.reduce((acc, order) => {
+      const key = groupByKey(order);
+
+      if (!acc[key]) {
+        acc[key] = {
+          key,
+          totalSales: 0,
+          totalDiscount: 0,
+          orders: [],
+        };
+      }
+
+      const totalDiscount = order.items.reduce((sum, item) => sum + (item.price - (item.priceWithDiscount || item.price)) * item.quantity, 0);
+
+      acc[key].totalSales += order.orderTotal;
+      acc[key].totalDiscount += totalDiscount;
+      acc[key].orders.push({
+        orderId: order._id,
+        date: order.time,
+        customer: `${order.shippingAddress.firstname} ${order.shippingAddress.lastname}`,
+        paymentMethod: order.paymentMethod,
+        totalAmount: order.orderTotal,
+        discount: totalDiscount,
+        netSale: order.orderTotal - totalDiscount,
+      });
+
+      return acc;
+    }, {});
+
+    const salesReport = Object.values(salesData);
+console.log("salesReport",salesReport)
+console.log("salesData",salesData)
+    // Pagination
+    const skip = (page - 1) * limit;
+    const paginatedReports = salesReport.slice(skip, skip + limit);
+    const totalPages = Math.ceil(salesReport.length / limit);
+
+    res.render("admin/salesreport", {
+      salesReport: paginatedReports,
+      totalPages,
+      currentPage: page,
+      filter,
+      startDate,
+      endDate,
+      salesData: JSON.stringify(paginatedReports), // Stringify salesData for hidden input
+    });
+    
+  } catch (error) {
+    console.error("Error fetching sales report:", error);
+    res.status(500).send("Failed to load sales report.");
+  }
+};
+const exportPDF = async (req, res) => {
+  try {
+    const salesData = JSON.parse(req.body.salesData); // Parse the stringified salesData
+
+    const doc = new PDFDocument({ margin: 20 });
+    const filename = `Sales_Report_${Date.now()}.pdf`;
+
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader("Content-Type", "application/pdf");
+
+    doc.pipe(res);
+
+    // Title
+    doc.fontSize(20).font("Helvetica-Bold").text("Sales Report", { align: "center" });
+    doc.moveDown(1);
+
+    // Table header style
+    const tableHeaders = [
+      "Order Date",
+      "Order ID",
+      "User Name",
+      "paying Type",
+      "Amount",
+      "Discount",
+      "Net Sale",
+    ];
+
+  // Function to draw a horizontal line
+const drawLine = (y) => {
+  doc.moveTo(30, y + 10).lineTo(560, y + 10).stroke(); // Line moved slightly further down
+};
+
+let currentY = doc.y + 100; // Increased starting position to move everything down
+
+
+salesData.forEach((report, index) => {
+  // Group Title
+  doc.fontSize(14).font("Helvetica-Bold").text(`Group: ${report.key}`, 40, currentY);
+  currentY = doc.y + 20; // More space below the group title
+ 
+drawLine(currentY);
+  // Table Headers
+  currentY += 25; // Add more space before table headers
+  doc.fontSize(12).font("Helvetica-Bold");
+  tableHeaders.forEach((header, i) => {
+    const x = 40 + i * 75;
+    doc.text(header, x, currentY, { width: 70, align: "left" });
+  });
+  currentY += 25; // Add more space after table headers
+ 
+
+  // Table Rows
+  report.orders.forEach((order) => {
+    doc.fontSize(10).font("Helvetica");
+    const rowData = [
+      new Date(order.date).toLocaleDateString(),
+      order.orderId,
+      order.customer,
+      order.paymentMethod,
+      `₹${order.totalAmount.toLocaleString()}`,
+      `₹${order.discount.toLocaleString()}`,
+      `₹${order.netSale.toLocaleString()}`,
+    ];
+
+    rowData.forEach((data, i) => {
+      const x = 40 + i * 75;
+      doc.text(data, x, currentY, { width: 70, align: "left" });
+    });
+
+    currentY += 30; // Increased spacing between rows for better readability
+
+    // Check if the page is running out of space
+    if (currentY > 750) {
+      doc.addPage();
+      currentY = 70; // Reset position on new page with additional top margin
+      drawLine(currentY);
+    }
+  });
+
+  currentY += 30; // Add more space after each group
+});
+drawLine(currentY);
+
+
+    // Footer
+    const footerY = doc.page.height - 30;
+    doc
+      .fontSize(10)
+      .font("Helvetica")
+      .text("Sales Report Generated Automatically", 40, footerY, { align: "left" })
+      .text(`Date: ${new Date().toLocaleDateString()}`, 500, footerY, { align: "right" });
+
+    doc.end();
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    res.status(500).send("Failed to generate PDF.");
+  }
+};
+
+
+
+
+const exportExcel = async (req, res) => {
+  const { salesData } = req.body;
+
+  try {
+    const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Sales Report");
+
+  worksheet.columns = [
+    { header: "Order Date", key: "date" },
+    { header: "Order ID", key: "orderId" },
+    { header: "Customer Name", key: "customer" },
+    { header: "Payment Method", key: "paymentMethod" },
+    { header: "Total Amount", key: "totalAmount" },
+    { header: "Discount", key: "discount" },
+    { header: "Net Sale", key: "netSale" },
+  ];
+
+  salesData.forEach((report) => {
+    report.orders.forEach((order) => worksheet.addRow(order));
+  });
+
+  const filename = `Sales_Report_${Date.now()}.xlsx`;
+
+  res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+  res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+  await workbook.xlsx.write(res);
+  res.end();
+  } catch (error) {
+    console.log("error:",error)
+  }
+};
+
+
+
 module.exports = {
+  exportPDF,
+  getSalesReport,
   editOffer,
   loadeditOffer,
   deleteOffer,
@@ -1105,7 +1715,7 @@ module.exports = {
   cancelOrderItem,
   upload,
   loadinventory,
-  loadorders,
+  loadOrder,
   listproducts,
   unlistproducts,
   listcategory,
@@ -1129,5 +1739,9 @@ module.exports = {
   editcategory,
   loadoffers,
   addoffer,
-  loadaddoffer
+  loadaddoffer,
+  exportExcel,
+  addcoupons,
+  loadaddcoupons,
+  loadaddoffers
 };

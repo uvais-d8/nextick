@@ -15,7 +15,7 @@ router.post("/block/:id",adminAuth.checksession,adminController.blockUser);
 router.post("/unblock/:id",adminAuth.checksession,adminController.unblockUser);
 
 //Orders Management
-router.get('/orders',adminController.loadorders)
+router.get('/orders',adminController.loadOrder)
 router.post("/orders/cancel", adminController.cancelOrderItem);
 router.post("/updatestatus", adminAuth.checksession,adminController.updateOrderStatus);
 
@@ -45,17 +45,26 @@ router.post("/products/list/:id", adminAuth.checksession, adminController.listpr
 //Coupon Management
 router.get("/coupon",adminAuth.checksession,adminController.loadcoupon)
 router.get("/addcoupon",adminAuth.checksession,adminController.loadaddcoupon)
+router.get("/addcoupons",adminAuth.checksession,adminController.loadaddcoupons)
 router.post("/addingcoupon",adminAuth.checksession,adminController.addcoupon)
+router.post("/addingcoupons",adminAuth.checksession,adminController.addcoupons)
 router.post("/deletecoupon/:couponId", adminController.deleteCoupon);
 
 //Offer Management
 router.get("/offer",adminAuth.checksession,adminController.loadoffers)
 router.get("/addoffer",adminAuth.checksession,adminController.loadaddoffer)
+router.get("/addoffers",adminAuth.checksession,adminController.loadaddoffers)
+
 router.post("/addingOffer",adminAuth.checksession,adminController.addoffer)
 router.post("/deleteoffer/:id",adminAuth.checksession,adminController.deleteOffer)
 router.post("/editOffer/:id",adminAuth.checksession,adminController.loadeditOffer)
 router.post("/editingoffer/:id",adminAuth.checksession,adminController.editOffer)
 
+
+//sales report
+router.get("/salesreport", adminAuth.checksession,adminController.getSalesReport);
+router.post('/salesreport/pdf', adminAuth.checksession,adminController.exportPDF);
+router.post('/salesreport/excel', adminAuth.checksession,adminController.exportExcel);
 
 // Export the router to use it in server.js
 module.exports = router;

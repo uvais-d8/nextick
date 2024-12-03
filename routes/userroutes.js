@@ -91,7 +91,7 @@ router.post('/create-razorpay-order',userAuth.checksession,salesController.razor
 //Orders Controller
 router.get("/checkout", userAuth.checksession,orderController.checkout);
 router.get("/viewDetails/:orderId/:itemId",userAuth.checksession,orderController.loadViewDetails)
-router.get("/orderss", userAuth.checksession,orderController.loadorderss);
+router.get("/orderss", userAuth.checksession,orderController.loadOrders);
 router.patch("/orders/:orderId", userAuth.checksession,orderController.removeorder); 
 router.patch("/orders/:orderId/items/:itemId", userAuth.checksession,orderController.removeItem); 
 

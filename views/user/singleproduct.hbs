@@ -334,33 +334,44 @@
 
 				<div class="col-md-7">
 					<div class="single-product-content">
-						<h3>{{product.name}}</h3>
-						<p>{{product.description}}</p>
-						<p style="margin-top: -20px;color:orange" class="rating">★★★★★</p>
-						<p class="single-product-pricing">
-							{{#if product.discountValue}}
-							<span class="price"
-								style="text-decoration: line-through; color: red;font-size:15px">₹{{product.price}}</span>
-							<span class="offer-price"
-								style="color: green; font-weight: bold;font-size:21px;margin-top:-5px">₹{{product.priceWithDiscount}}</span>
-							<span class="discount-tag"
-								style="color: rgb(255, 140, 0);font-size:13px;margin-top:-10px">({{product.discountValue}}
-								OFF)</span>
-							{{else}}
-							<span class="price" style="font-weight: bold; color: black;">₹{{product.price}}</span>
-							{{/if}}
-						</p>
+  <h3>{{product.name}}</h3>
+  <p>{{product.description}}</p>
+  <p style="margin-top: -20px; color: orange;" class="rating">★★★★★</p>
+  <p class="single-product-pricing">
+    {{#if product.discountValue}}
+      <span class="price" style="text-decoration: line-through; color: red; font-size: 15px">
+        ₹{{product.price}} <!-- Original price -->
+      </span>
+      {{#if (gte product.priceWithDiscount 0)}}  <!-- Check if offer price is not negative -->
+        <span class="offer-price" style="color: green; font-weight: bold; font-size: 21px; margin-top: -5px">
+          ₹{{product.priceWithDiscount}} <!-- Discounted price -->
+        </span>
+      {{else}}
+        <span class="offer-price" style="color: green; font-weight: bold; font-size: 21px; margin-top: -5px">
+          ₹{{product.price}} <!-- Show original price if offer price is negative -->
+        </span>
+      {{/if}}
+      <span class="discount-tag" style="color: rgb(255, 140, 0); font-size: 13px; margin-top: -10px">
+        ({{product.discountValue}} OFF)
+      </span>
+    {{else}}
+      <span class="price" style="font-weight: bold; color: black;">
+        ₹{{product.price}} <!-- No discount price -->
+      </span>
+    {{/if}}
+  </p>
 
-						<p><strong>Colors:</strong> red, black, white</p>
-						<p class="card-text stock">
-							Stock:
-							{{#if product.stock}}
-							<span style="font-weight:bold;color: green;" class="in-stock">{{product.stock}}
-								Available</span>
-							{{else}}
-							<span style="font-weight:bold;color: red;" class="out-of-stock">Out of Stock</span>
-							{{/if}}
-						</p>
+  <p><strong>Colors:</strong> red, black, white</p>
+  <p class="card-text stock">
+    Stock:
+    {{#if product.stock}}
+      <span style="font-weight: bold; color: green;" class="in-stock">{{product.stock}} Available</span>
+    {{else}}
+      <span style="font-weight: bold; color: red;" class="out-of-stock">Out of Stock</span>
+    {{/if}}
+  </p>
+</div>
+
 						<div class="single-product-form">
 							<form action="/addtocart" method="post">
 								<input type="hidden" name="productId" value="{{product._id}}">

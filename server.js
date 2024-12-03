@@ -81,6 +81,7 @@ app.engine(
       allowProtoPropertiesByDefault: true,
       allowProtoMethodsByDefault: true
     },
+    
     helpers: {
       // Helper to calculate subtotal
       calculateSubtotal: carts => {
@@ -130,12 +131,23 @@ app.engine(
           ""}&maxPrice=${maxPrice || ""}&category=${category ||
           "all"}&rating=${rating || "all"}&page=${page || 1}`;
       },
-   
+      range: (start, end) => {
+        let result = [];
+        for (let i = start; i <= end; i++) {
+          result.push(i);
+        }
+        return result;
+      },
+
+      // Helper to check if two values are equal
+      isEqual: (a, b) => {
+        return a === b;
+      },
       // Helper to multiply two values
       multiply: (price, quantity) => {
         return price * quantity;
       },
-
+      gte: (a,b)=>a>=b,
       // Helper to add two values
       add: (a, b) => a + b,
 

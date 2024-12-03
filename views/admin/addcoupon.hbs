@@ -7,7 +7,6 @@
     <title>Add Coupon</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
-
     <style>
         /* Basic Reset */
         * {
@@ -36,10 +35,10 @@
         }
 
         /* Heading */
-        h1 {
+        h2 {
             text-align: center;
             color: #333;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         /* Form Styling */
@@ -148,7 +147,7 @@
                 }, 3000);
             })
         </script>
-        <h1>Add New Coupon</h1>
+        <h2>Add Coupon-(products)</h2>
         <form method="post" action="/admin/addingcoupon">
             <div class="form-group">
                 <label for="CouponCode">Coupon Code:</label>
@@ -191,24 +190,7 @@
                     dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
                 });
             </script>
-            <div class="form-group">
-                <label for="Category">Applicable Categories:</label>
-                <!-- Dropdown Button -->
-                <button id="dropdownToggles" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">
-                    Select Categories
-                </button>
-
-                <!-- Dropdown Content -->
-                <div id="CategoryDropdown" class="form-control"
-                    style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
-                    {{#each Categories}}
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
-                        <label for="category-{{this.id}}" style="margin-right: 10px;">{{this.category}}</label>
-                        <input type="checkbox" id="category-{{this.id}}" name="Categories[]" value="{{this.category}}">
-                    </div>
-                    {{/each}}
-                </div>
-            </div>
+            
 
             <script>
                 // JavaScript to toggle the dropdown visibility

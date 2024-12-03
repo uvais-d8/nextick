@@ -159,42 +159,31 @@
                 <textarea id="Description" name="Description" maxlength="500"></textarea>
             </div>
           <div class="form-group">
-    <label for="Products">Applicable Products:</label>
-    <!-- Dropdown Button -->
-    <button id="dropdownToggle" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">
-        Select Products
-    </button>
 
-    <!-- Dropdown Content -->
-    <div id="ProductsDropdown" class="form-control"
-        style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
-        {{#each products}}
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
-            <label for="product-{{this.id}}" style="margin-right: 10px;">{{this.name}}</label>
-            <input type="checkbox" id="product-{{this._id}}" name="Products[]" value="{{this._id}}">
-        </div>
-        {{/each}}
-    </div>
+  
 </div>
 
 <script>
     // JavaScript to toggle the Products dropdown visibility
     document.getElementById("dropdownToggle").addEventListener("click", function () {
-        const productsDropdown = document.getElementById("ProductsDropdown");
-        const categoriesDropdown = document.getElementById("CategoryDropdown");
+         const categoriesDropdown = document.getElementById("CategoryDropdown");
 
-        // If Categories dropdown is visible, hide it and show Products dropdown
+        // If Categories  is visible, hide it and show Products dropdown
         if (categoriesDropdown.style.display === "block") {
             categoriesDropdown.style.display = "none";
         }
 
-        // Toggle visibility of the Products dropdown
-        productsDropdown.style.display = productsDropdown.style.display === "none" ? "block" : "none";
-    });
+          });
 </script>
 
 <div class="form-group">
- <!-- Dropdown Content -->
+    <label for="Category">Applicable Categories:</label>
+    <!-- Dropdown Button -->
+    <button id="dropdownToggles" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">
+        Select Categories
+    </button>
+
+    <!-- Dropdown Content -->
     <div id="CategoryDropdown" class="form-control"
         style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
         {{#each category}}
@@ -210,13 +199,6 @@
     // JavaScript to toggle the Categories dropdown visibility
     document.getElementById("dropdownToggles").addEventListener("click", function () {
         const categoriesDropdown = document.getElementById("CategoryDropdown");
-        const productsDropdown = document.getElementById("ProductsDropdown");
-
-        // If Products dropdown is visible, hide it and show Categories dropdown
-        if (productsDropdown.style.display === "block") {
-            productsDropdown.style.display = "none";
-        }
-
         // Toggle visibility of the Categories dropdown
         categoriesDropdown.style.display = categoriesDropdown.style.display === "none" ? "block" : "none";
     });
@@ -244,12 +226,7 @@
         document.getElementById('couponForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
-            // Get all selected products (checkboxes)
-            const selectedProducts = [];
-            document.querySelectorAll('input[name="Products[]"]:checked').forEach((checkbox) => {
-                selectedProducts.push(checkbox.value);
-            });
-
+         
             // Get all selected categories (checkboxes)
             const selectedCategories = [];
             document.querySelectorAll('input[name="Categories[]"]:checked').forEach((checkbox) => {
@@ -260,7 +237,6 @@
                 DiscountType: document.getElementById('DiscountType').value,
                 DiscountValue: parseFloat(document.getElementById('DiscountValue').value),
                 Description: document.getElementById('Description').value,
-                Products: document.getElementById('ProductsDropdown').style.display = 'none';
                 Categories: document.getElementById('CategoryDropdown').style.display = 'none';
                 ExpiryDate: new Date(document.getElementById('ExpiryDate').value),
                 Status: document.getElementById('Status').value === 'true',

@@ -228,8 +228,16 @@
 
 
 									<td class="product-name">{{this.productId.name}}</td>
-									<td class="product-price">{{this.productId.price}}</td>
+									{{!-- <td class="product-price">{{this.productId.price}}</td> --}}
+									<td class="product-price">
+										{{#if this.priceWithDiscount}}
+										<del class="original-price">{{this.productId.price}}</del> <span
+											class="discounted-price">{{this.priceWithDiscount}}</span>
 
+										{{else}}
+										{{this.productId.price}}
+										{{/if}}
+									</td>
 									<td class="product-quantity">
 										<button type="button"
 											style="border-width: 0px;border-radius:3px;background-color:rgb(255, 74, 71);width:20px"
@@ -243,7 +251,13 @@
 									<input type="hidden" name="quantity" value="{{subtract this.quantity 1}}">
 									<input type="hidden" name="quantity" value="{{add this.quantity 1}}">
 
-									<td class="product-total">{{multiply this.productId.price this.quantity}}</td>
+									<td class="product-total">
+										{{#if this.priceWithDiscount}}
+										{{multiply this.priceWithDiscount this.quantity}}
+										{{else}}
+										{{multiply this.productId.price this.quantity}}
+										{{/if}}
+									</td>
 
 								</tr>
 								{{/each}}
@@ -268,8 +282,10 @@
 							<tbody>
 								<tr class="total-data">
 									<td><strong>Subtotal: </strong></td>
-									<td colspan="3">{{subtotal}}</td>
+								
+  <td> {{subtotal}}</td>
 								</tr>
+
 								<tr class="total-data">
 									<td><strong>Shipping: </strong></td>
 									<td colspan="3">{{shippingRate}}</td>
@@ -312,7 +328,7 @@
 		</div>
 	</div>
 
-{{!-- 
+	{{!--
 	<div style="margin-top: -150px;" class="coupon-section mb-50">
 		<div class="container">
 			<h4 class="coupon-title">Available Coupons</h4>
@@ -325,7 +341,7 @@
 						<p class="coupon-description">{{this.Description}}</p>
 						<p class="coupon-validity">Valid till: {{this.ExpiryDate}}</p>
 					</div>
-				</div>      
+				</div>
 				{{/each}}
 				{{else}}
 				<p style="margin-bottom: 50px;color:red	">No coupons available for your cart items.</p>

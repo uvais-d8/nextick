@@ -70,6 +70,7 @@ const productsShema = new mongoose.Schema({
   },
   // priceWithDiscount: {
   //   type: Number,
+  //   require:false,
   //   default: function () {
   //     if (this.offer && this.price) {
   //       if (this.offer.DiscountType === "percentage") {

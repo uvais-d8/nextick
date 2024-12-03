@@ -377,9 +377,25 @@
 									<tr>
 										<td class="item-id" hidden>{{this.productId._id}}</td>
 										<td class="item-name">{{this.productId.name}}</td>
-										<td class="item-price">₹{{this.productId.price}}</td>
+										{{!-- <td class="item-price">₹{{this.productId.price}}</td> --}}
+											<td class="product-price">
+										{{#if this.priceWithDiscount}}
+										<del class="original-price">{{this.productId.price}}</del> <span
+											class="discounted-price">{{this.priceWithDiscount}}</span>
+
+										{{else}}
+										{{this.productId.price}}
+										{{/if}}
+									</td>
 										<td class="item-quantity">{{this.quantity}}</td>
-										<td class="item-total">₹{{multiply this.productId.price this.quantity}}</td>
+										{{!-- <td class="item-total">₹{{multiply this.productId.price this.quantity}}</td> --}}
+										<td class="product-total">
+										{{#if this.priceWithDiscount}}
+										{{multiply this.priceWithDiscount this.quantity}}
+										{{else}}
+										{{multiply this.productId.price this.quantity}}
+										{{/if}}
+									</td>
 										<td class="item-image" hidden>{{this.productId.images}}</td>
 									</tr>
 									{{/each}}
@@ -389,7 +405,7 @@
 										<td><b>Subtotal</b></td>
 										<td><b></b></td>
 										<td><b></b></td>
-										<td><b>₹ {{subtotal}}</b></td>
+										<td> {{subtotal}}</td>
 									</tr>
 									<tr>
 										<td><b>Shipping</b></td>

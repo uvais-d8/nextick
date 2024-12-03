@@ -167,7 +167,7 @@ const resendotpemail = async (req, res) => {
     if (!email) {
       return res.status(400).json({
         success: false,
-        message: "Email not found in session",
+        message: "Email not found in session"
       });
     }
 
@@ -180,21 +180,21 @@ const resendotpemail = async (req, res) => {
     const emailSent = await sendVerificationEmail(email, newotp);
     if (emailSent) {
       console.log("OTP resent successfully");
-      return res.render("passwordverification",{
-        success: "OTP resent successfully",
+      return res.render("passwordverification", {
+        success: "OTP resent successfully"
       });
     } else {
       console.log("Failed to send OTP");
       return res.status(500).json({
         success: false,
-        message: "Failed to resend OTP, please try again",
+        message: "Failed to resend OTP, please try again"
       });
     }
   } catch (error) {
     console.error("Error resending OTP:", error);
     return res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: "Internal server error"
     });
   }
 };
@@ -205,24 +205,20 @@ const updateDefaultAddress = async (req, res) => {
     const userId = req.session.userId; // Assuming session contains the user ID
 
     if (!addressId || !userId) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Invalid request: Missing address ID or user ID."
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid request: Missing address ID or user ID."
+      });
     }
 
     // Check if the address exists and belongs to the user
     const address = await Address.findOne({ _id: addressId, user: userId });
     console.log("found address is: ", address);
     if (!address) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Address not found or does not belong to the user."
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Address not found or does not belong to the user."
+      });
     }
 
     // Update all addresses for the user to `default: false`
@@ -237,12 +233,10 @@ const updateDefaultAddress = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating default address:", error);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Internal server error. Please try again."
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error. Please try again."
+    });
   }
 };
 const loadprofile = async (req, res) => {
@@ -259,10 +253,12 @@ const loadprofile = async (req, res) => {
 
     // Format the date of account creation
     const createdAt = user.registered.toLocaleDateString("en-GB");
-    const orders = await Orders.find({ userId: user }).sort({createdAt:-1}).populate({
-      path: "items.productId",
-      select: "name price images"
-    });
+    const orders = await Orders.find({ userId: user })
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "items.productId",
+        select: "name price images"
+      });
     const address = await Address.findOne({ isDefault: true, user: userId });
 
     // Render profile page with user info, formatted date, and address if found
@@ -424,14 +420,14 @@ const verifyotpemail = async (req, res) => {
     } else {
       console.log("Invalid OTP entered");
       return res.render("passwordverification", {
-        message: "Invalid OTP. Please try again",
+        message: "Invalid OTP. Please try again"
       });
     }
   } catch (error) {
     console.error("Error during OTP verification:", error);
     return res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: "Internal server error"
     });
   }
 };
@@ -499,22 +495,22 @@ const setnewpassword = async (req, res) => {
 };
 const loadaddress = async (req, res) => {
   try {
-    const userId = req.session.userId; 
+    const userId = req.session.userId;
     if (!userId) {
-      return res.redirect("/login"); 
+      return res.redirect("/login");
     }
 
-    const addresses = await Address.find({ user: userId }); 
+    const addresses = await Address.find({ user: userId });
     console.log("User ID:", userId);
 
     res.render("address", { addresses });
   } catch (error) {
     console.error("Error loading addresses:", error);
-    res.status(500).send("Internal server error"); 
+    res.status(500).send("Internal server error");
   }
 };
 const addaddress = async (req, res) => {
-  const userId = req.session.userId; 
+  const userId = req.session.userId;
 
   if (!userId) {
     req.session.message = "User not authenticated.";
@@ -630,24 +626,35 @@ const addaddress = async (req, res) => {
 };
 const loadWallet = async (req, res) => {
   try {
-      const userId = req.session.user        
-
-      const wallet = await Wallet.findOne({});        
-
-      if (!wallet) {
-          return res.status(404).send('Wallet not found');
-      }
-      console.log("balance",wallet.balance)
-      console.log("transactions",wallet.transactions)
-      res.render('wallet', {
-          balance: wallet.balance,
-          transactions: wallet.transactions,
+    const userId = req.session.userId;
+console.log("user id  ::",userId)
+    // Use findOne to fetch a single wallet for the user
+    const wallet = await Wallet.findOne({ user:userId });
+console.log("walletwallet::",wallet)
+    if (!wallet) {
+      return res.render("wallet", {
+        message: "There is nothing in your wallet",
+        balance: 0,
+        transactions: []
       });
+    }
+
+    // Log wallet data for debugging
+    console.log("Balance:", wallet.balance);
+    console.log("Transactions:", wallet.transactions);
+
+    // Render the wallet page with data
+    res.render("wallet", {
+      balance: wallet.balance,
+      transactions: wallet.transactions,
+      message: "Your recent refund was successful!"
+    });
   } catch (error) {
-      console.error(error);
-      res.status(500).send('Server Error');
+    console.error("Error loading wallet:", error);
+    res.status(500).send("Server Error");
   }
 };
+
 
 module.exports = {
   updateDefaultAddress,

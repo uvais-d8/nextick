@@ -9,14 +9,13 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 
-// Apply Coupon Controller
 const applycoupon = async (req, res) => {
   const { couponCode } = req.body;
 
-  // Find the coupon by code
-  const coupon = await Coupons.findOne({ CouponCode: couponCode });
-
   try {
+    // Find the coupon by code
+    const coupon = await Coupons.findOne({ CouponCode: couponCode });
+
     if (!coupon) {
       return res.status(404).json({ message: "Coupon code is invalid" });
     }
@@ -27,11 +26,10 @@ const applycoupon = async (req, res) => {
       return res.status(400).json({ message: "Coupon code has expired" });
     }
 
-    // Check if the coupon has any usage limit
+    // Check if the coupon has any usage limit and if it is less than or equal to 0
     if (coupon.UsageLimit <= 0) {
-      return res
-        .status(400)
-        .json({ message: "Coupon code usage limit has been reached" });
+      // You can choose to skip applying this coupon, or reset usage limit to 1 or any custom logic.
+      return res.status(400).json({ message: "Coupon code usage limit has been reached" });
     }
 
     // Check the minimum cart value
@@ -40,7 +38,7 @@ const applycoupon = async (req, res) => {
       req.body.cartTotal < coupon.MinimumCartValue
     ) {
       return res.status(400).json({
-        message: `Minimum cart value for this coupon is $${coupon.MinimumCartValue}`
+        message: `Minimum cart value for this coupon is ₹${coupon.MinimumCartValue}`
       });
     }
 
@@ -56,8 +54,10 @@ const applycoupon = async (req, res) => {
     const newTotal = req.body.cartTotal - discount;
 
     // Optionally, you can update the coupon usage count in the database
-    coupon.UsageLimit -= 1;
-    await coupon.save();
+    if (coupon.UsageLimit > 0) {
+      coupon.UsageLimit -= 1;
+      await coupon.save(); // Save the coupon after decrementing the usage limit
+    }
 
     // Send the discount details and new total back to the front end
     res.status(200).json({
@@ -66,9 +66,11 @@ const applycoupon = async (req, res) => {
       newTotal
     });
   } catch (error) {
-    console.log("this is the error while applying coupon", error);
+    console.log("Error while applying coupon:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
+
 const placeOrder = async (req, res) => {
   console.log("hellooo");
   const userId = req.session.userId;
@@ -116,9 +118,8 @@ const placeOrder = async (req, res) => {
   }
 
   try {
-    // Fetch the cart items from the cart model for a specific user
-    const cartItems = await Cart.find({ user: userId }) // Filter by the userId to get the cart items for that user
-      .populate("productId"); // Populate productId to get the full product details (name, price, etc.)
+    const cartItems = await Cart.find({ user: userId }) 
+      .populate("productId");
 
     if (cartItems.length === 0) {
       throw new Error("No items in the cart.");
@@ -223,15 +224,19 @@ const razorpayy = async (req, res) => {
       throw new Error("No items in the cart.");
     }
 
+     // Process cart items and stock checks
     const updatedCartItems = await Promise.all(
       cartItems.map(async item => {
-        const product = item.productId;
-        if (!product) throw new Error("Product not found.");
+        const product = item.productId; // The product is populated already
+        if (!product) throw new Error(`Product not found.`);
         if (product.stock < item.quantity) {
           throw new Error(`Insufficient stock for ${product.name}.`);
         }
+        // Deduct stock from the product
+        product.stock -= item.quantity;
+        await product.save();
         return {
-          ...item.toObject(),
+          ...item.toObject(), // Convert the Mongoose document to a plain object
           price: product.price,
           total: product.price * item.quantity
         };
@@ -379,13 +384,13 @@ const loadcartpage = async (req, res) => {
       });
     }
 
-    // Calculate totals
-    const subtotal = carts.reduce(
-      (acc, cart) => acc + (cart.productId.price || 0) * cart.quantity,
-      0
-    );
-    const shippingRate = 50; // Static shipping rate for now
-    const total = subtotal + shippingRate;
+    // // Calculate totals
+    // const subtotal = carts.reduce(
+    //   (acc, cart) => acc + (cart.productId.price || 0) * cart.quantity,
+    //   0
+    // );
+    // const shippingRate = 50; // Static shipping rate for now
+    // const total = subtotal + shippingRate;
 
     // Add the first image of each product to the cart items
     carts.forEach(cart => {
@@ -393,14 +398,23 @@ const loadcartpage = async (req, res) => {
         cart.firstImage = cart.productId.images[0];
       }
     });
-
-    // Pass to the view
+    let subtotal = 0;
+    carts.forEach((item) => {
+      if (item.priceWithDiscount) {
+        subtotal += item.priceWithDiscount * item.quantity;
+      } else {
+        subtotal += item.productId.price * item.quantity;
+      }
+    });
+    
     res.render("cart", {
       carts,
       subtotal,
-      shippingRate,
-      total
+      shippingRate: 50, // Example shipping rate
+      total: subtotal + 50, // Example total with shipping
     });
+    
+
   } catch (error) {
     console.error("Error occurred during cart page:", error);
     res.status(500).send("Internal Server Error");
@@ -507,6 +521,104 @@ const removecart = async (req, res) => {
 //   }
 // };
 
+// const addtocart = async (req, res) => {
+//   const userId = req.session.userId;
+
+//   if (!userId) {
+//     return res.redirect("/login");
+//   }
+
+//   try {
+//     const { quantity, productId } = req.body;
+
+//     // Default quantity to 1 if not provided
+//     const productQuantity = parseInt(quantity) || 1;
+
+//     if (!productId) {
+//       return res.status(400).json({ error: "Product ID is required" });
+//     }
+
+//     const product = await Products.findById(productId).populate("offer");
+//     console.log("producctttctctct::", product);
+//     if (!product) {
+//       return res.render("singleproduct", { message: "Product not found" });
+//     }
+
+//     if (!product.islisted) {
+//       return res.render("singleproduct", {
+//         message: "This product is currently unavailable",
+//         product
+//       });
+//     }
+
+//     if (product.stock < productQuantity) {
+//       return res.render("singleproduct", {
+//         message: "Not enough stock available for this quantity",
+//         product
+//       });
+//     }
+
+//     // Calculate discounted price if offer exists
+//     let priceWithDiscount = null;
+//     console.log("kkkoooiiii", product.offer);
+//     if (product.offer && product.Status) {
+//       if (product.offer.DiscountType === "percentage") {
+//         const discount = product.price * product.offer.DiscountValue / 100;
+//         priceWithDiscount = Math.max(0, product.price - discount); // Prevent negative price
+//       } else if (product.offer.DiscountType === "fixed") {
+//         priceWithDiscount = Math.max(
+//           0,
+//           product.price - product.offer.DiscountValue
+//         ); 
+//       }
+//     }
+//     console.log("priceWithDiscount", priceWithDiscount);
+
+//     const existingItem = await Cart.findOne({ user: userId, productId });
+
+//     if (existingItem) {
+//       const newQuantity = existingItem.quantity + productQuantity;
+
+//       // Ensure the new quantity doesn't exceed stock or a maximum limit
+//       if (newQuantity > product.stock) {
+//         return res.render("singleproduct", {
+//           message: "Cannot add more than the available stock to your cart",
+//           product
+//         });
+//       }
+
+//       if (newQuantity > 10) {
+//         return res.render("singleproduct", {
+//           message: "Cannot add more than 10 units of this item to your cart",
+//           product
+//         });
+//       }
+
+//       existingItem.quantity = newQuantity;
+//       existingItem.totalPrice = newQuantity * priceWithDiscount;
+//       await existingItem.save();
+//     } else {
+//       // Create a new cart item
+//       const cartItem = new Cart({
+//         user: userId,
+//         productId,
+//         quantity: productQuantity,
+//         priceWithDiscount: priceWithDiscount * productQuantity,
+//         totalPrice: priceWithDiscount * productQuantity
+//       });
+//       await cartItem.save();     
+//       console.log("cart itemsssss::",cartItem)
+
+//     }
+
+//     // Redirect to the cart page after successfully adding the product
+//     res.redirect("/cart");
+//   } catch (error) {
+//     console.error("Error adding product to cart:", error);
+//     res.status(500).json({ error: "Failed to add product to cart" });
+//   }
+// };
+
 const addtocart = async (req, res) => {
   const userId = req.session.userId;
 
@@ -524,8 +636,9 @@ const addtocart = async (req, res) => {
       return res.status(400).json({ error: "Product ID is required" });
     }
 
+    // Fetch the product with the offer populated
     const product = await Products.findById(productId).populate("offer");
-    console.log("producctttctctct::", product);
+
     if (!product) {
       return res.render("singleproduct", { message: "Product not found" });
     }
@@ -544,21 +657,16 @@ const addtocart = async (req, res) => {
       });
     }
 
-    // Calculate discounted price if offer exists
-    const discountedPrice = null;
-    console.log("kkkoooiiii", product.offer);
-    if (product.offer && product.Status) {
+    // Calculate discounted price if offer exists and is active
+    let discountedPrice = product.price;
+    if (product.offer && product.offer.Status && product.offer.ExpiryDate > Date.now()) {
       if (product.offer.DiscountType === "percentage") {
-        const discount = product.price * product.offer.DiscountValue / 100;
+        const discount = (product.price * product.offer.DiscountValue) / 100;
         discountedPrice = Math.max(0, product.price - discount); // Prevent negative price
       } else if (product.offer.DiscountType === "fixed") {
-        discountedPrice = Math.max(
-          0,
-          product.price - product.offer.DiscountValue
-        ); // Prevent negative price
+        discountedPrice = Math.max(0, product.price - product.offer.DiscountValue);
       }
     }
-    console.log("discountedPrice", discountedPrice);
 
     const existingItem = await Cart.findOne({ user: userId, productId });
 
@@ -581,6 +689,7 @@ const addtocart = async (req, res) => {
       }
 
       existingItem.quantity = newQuantity;
+      existingItem.priceWithDiscount = discountedPrice;
       existingItem.totalPrice = newQuantity * discountedPrice;
       await existingItem.save();
     } else {
@@ -589,8 +698,8 @@ const addtocart = async (req, res) => {
         user: userId,
         productId,
         quantity: productQuantity,
-        discountedPrice: discountedPrice * productQuantity,
-        totalPrice: discountedPrice * productQuantity
+        priceWithDiscount: discountedPrice,
+        totalPrice: productQuantity * discountedPrice
       });
       await cartItem.save();
     }
