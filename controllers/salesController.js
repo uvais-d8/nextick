@@ -9,64 +9,136 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 
+// const applycoupon = async (req, res) => {
+//   const { couponCode } = req.body;
+
+//   try {
+//     const coupon = await Coupons.findOne({ CouponCode: couponCode });
+
+//     if (!coupon) {
+//       console.log("Coupon code is invalid")
+//       return res.status(404).json({ message: "Coupon code is invalid" });
+//     }
+
+//     // Check if the coupon is expired
+//     const currentDate = new Date();
+//     if (coupon.ExpiryDate < currentDate) {
+//       return res.status(400).json({ message: "Coupon code has expired" });
+//     }
+
+//     // Check if the coupon has any usage limit and if it is less than or equal to 0
+//     if (coupon.UsageLimit <= 0) {
+//       // You can choose to skip applying this coupon, or reset usage limit to 1 or any custom logic.
+//       return res.status(400).json({ message: "Coupon code usage limit has been reached" });
+//     }
+
+//     // Check the minimum cart value
+//     if (
+//       coupon.MinimumCartValue &&
+//       req.body.cartTotal < coupon.MinimumCartValue
+//     ) {
+//       return res.status(400).json({
+//         message: `Minimum cart value for this coupon is ₹${coupon.MinimumCartValue}`
+//       });
+//     }
+
+//     // Calculate the discount
+//     let discount = 0;
+//     if (coupon.DiscountType === "percentage") {
+//       discount = req.body.cartTotal * coupon.DiscountValue / 100;
+//     } else if (coupon.DiscountType === "fixed") {
+//       discount = coupon.DiscountValue;
+//     }
+
+//     // Update cart total after applying the discount
+//     const newTotal = req.body.cartTotal - discount;
+
+//     // Optionally, you can update the coupon usage count in the database
+//     if (coupon.UsageLimit > 0) {
+//       coupon.UsageLimit -= 1;
+//       await coupon.save(); // Save the coupon after decrementing the usage limit
+//     }
+
+//     // Send the discount details and new total back to the front end
+//     res.status(200).json({
+//       message: "Coupon applied successfully",
+//       discount,
+//       newTotal
+//     });
+//   } catch (error) {
+//     console.log("Error while applying coupon:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
 const applycoupon = async (req, res) => {
-  const { couponCode } = req.body;
+  const { couponCode, cartTotal } = req.body;
 
   try {
-    // Find the coupon by code
+    // Check if coupon code is provided
+    if (!couponCode) {
+      console.log("Coupon code is required")
+      return res.status(400).json({ message: "Coupon code is required" });
+    }
+
+    // Find the coupon in the database
     const coupon = await Coupons.findOne({ CouponCode: couponCode });
 
     if (!coupon) {
+      console.log("Coupon code is invalid")
       return res.status(404).json({ message: "Coupon code is invalid" });
     }
 
     // Check if the coupon is expired
     const currentDate = new Date();
     if (coupon.ExpiryDate < currentDate) {
+      console.log("Coupon code has expired")
+
       return res.status(400).json({ message: "Coupon code has expired" });
     }
 
-    // Check if the coupon has any usage limit and if it is less than or equal to 0
+    // Check usage limit
     if (coupon.UsageLimit <= 0) {
-      // You can choose to skip applying this coupon, or reset usage limit to 1 or any custom logic.
+      console.log("Coupon code usage limit has been reached")
       return res.status(400).json({ message: "Coupon code usage limit has been reached" });
     }
 
-    // Check the minimum cart value
-    if (
-      coupon.MinimumCartValue &&
-      req.body.cartTotal < coupon.MinimumCartValue
-    ) {
+    // Check minimum cart value
+    if (coupon.MinimumCartValue && cartTotal < coupon.MinimumCartValue) {
+      console.log(`Minimum cart value for this coupon is ₹${coupon.MinimumCartValue}`)
       return res.status(400).json({
-        message: `Minimum cart value for this coupon is ₹${coupon.MinimumCartValue}`
+        message: `Minimum cart value for this coupon is ₹${coupon.MinimumCartValue}`,
       });
     }
 
     // Calculate the discount
     let discount = 0;
     if (coupon.DiscountType === "percentage") {
-      discount = req.body.cartTotal * coupon.DiscountValue / 100;
+      discount = (cartTotal * coupon.DiscountValue) / 100;
     } else if (coupon.DiscountType === "fixed") {
       discount = coupon.DiscountValue;
     }
 
-    // Update cart total after applying the discount
-    const newTotal = req.body.cartTotal - discount;
+    // Ensure discount does not exceed cart total
+    discount = Math.min(discount, cartTotal);
 
-    // Optionally, you can update the coupon usage count in the database
+    // Calculate the new total
+    const newTotal = cartTotal - discount;
+
+    // Decrement usage limit and save the coupon
     if (coupon.UsageLimit > 0) {
       coupon.UsageLimit -= 1;
-      await coupon.save(); // Save the coupon after decrementing the usage limit
+      await coupon.save();
     }
 
-    // Send the discount details and new total back to the front end
+    // Send success response
     res.status(200).json({
       message: "Coupon applied successfully",
       discount,
-      newTotal
+      newTotal,
     });
   } catch (error) {
-    console.log("Error while applying coupon:", error);
+    console.error("Error while applying coupon:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

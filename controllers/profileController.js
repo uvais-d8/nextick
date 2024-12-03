@@ -627,10 +627,10 @@ const addaddress = async (req, res) => {
 const loadWallet = async (req, res) => {
   try {
     const userId = req.session.userId;
-console.log("user id  ::",userId)
-    // Use findOne to fetch a single wallet for the user
-    const wallet = await Wallet.findOne({ user:userId });
-console.log("walletwallet::",wallet)
+    console.log("User ID:", userId);
+    // Fetch the wallet for the user
+    const wallet = await Wallet.findOne({ user: userId });
+
     if (!wallet) {
       return res.render("wallet", {
         message: "There is nothing in your wallet",
@@ -647,7 +647,6 @@ console.log("walletwallet::",wallet)
     res.render("wallet", {
       balance: wallet.balance,
       transactions: wallet.transactions,
-      message: "Your recent refund was successful!"
     });
   } catch (error) {
     console.error("Error loading wallet:", error);

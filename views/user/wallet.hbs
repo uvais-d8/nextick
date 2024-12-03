@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
+    <title>Wallet</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
@@ -556,7 +556,7 @@
                     <div class="col-lg-8 offset-lg-2 text-center">
                         <div class="breadcrumb-text">
                             <p>Your account,your shopping adventure!</p>
-                            <h1>Profile</h1>
+                            <h1>Wallet</h1>
                         </div>
                     </div>
                 </div>
@@ -576,7 +576,7 @@
                 <section class="wallet-balance">
                     <h2>Balance</h2>
                     <div class="balance">
-                        <span>₹</span><span>1999{{balance}}</span>
+                        <span>₹</span><span>{{balance}}</span>
                     </div>
                 </section>
                 <input style="color: red;margin-left:40%;border-width:0px;width:310px" type="text" value="{{message}}">
@@ -592,17 +592,21 @@
                             </tr>
                         </thead>
                         <tbody id="transaction-list">
-                            {{#each wallet}}
+                            {{#each transactions}}
                             <tr>
-                                dsjnk
-                                <td>werty{{this.type}}</td>
-                                <td>₹{{this.amount}}12345</td>
-                                <td>qwerty{{this.description}}</td>
-                                <td>1234{{formatDate this.date}}</td>
+                                <td><b>{{this.type}}</b></td>
+                                <td><b>₹{{this.amount}}</b></td>
+                                <td style="font-weight:500">{{this.description}}</td>
+                                <td><b>{{formatDate this.date}}</b></td>
+                            </tr>
+                            {{else}}
+                            <tr>
+                                <td colspan="4">No transactions available</td>
                             </tr>
                             {{/each}}
                         </tbody>
                     </table>
+
                 </section>
             </div>
 

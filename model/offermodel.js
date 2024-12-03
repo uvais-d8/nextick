@@ -30,7 +30,7 @@ const offerSchema = new mongoose.Schema({
     Status:{
         type:Boolean,
         default:true
-    }
+    },
 });
 
 const Offer = mongoose.model("Offer",offerSchema)

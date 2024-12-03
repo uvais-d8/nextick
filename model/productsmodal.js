@@ -59,10 +59,7 @@ const productsShema = new mongoose.Schema({
     required: true,
     default: 1
   }, 
-  wishlist:{
-    type:Boolean,
-    default:false
-  },
+
   priceWithDiscount:{
     type:Number,
     required:false,

@@ -209,7 +209,7 @@
                     style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
                     {{#each category}}
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
-                        <label for="category-{{this._id}}" style="margin-right: 10px;">{{this.name}}</label>
+                        <label for="category-{{this._id}}" style="margin-right: 10px;">{{this.category}}</label>
                         <input type="checkbox" id="category-{{this._id}}" name="Categories[]" value="{{this._id}}" {{#if
                             (contains ../offer.Categories this._id)}}checked{{/if}}>
                     </div>

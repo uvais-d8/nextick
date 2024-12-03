@@ -13,6 +13,8 @@
         crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="/admin/products.css">
+    <link rel="stylesheet" href="/admin/dashboard.css">
+
     <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
     <style>
         /* General Styles */
@@ -29,7 +31,7 @@
 
         .filters form {
             display: flex;
-            gap: 66px;
+            gap: 60px;
             justify-content: center;
             height: 36px;
         }
@@ -65,6 +67,10 @@
 
         button:active {
             background-color: #00408b;
+        }
+
+        p {
+            color: white;
         }
 
         /* Responsive Design */
@@ -138,15 +144,16 @@
                     </form>
 
 
-                   <form method="POST" action="/admin/salesreport/pdf">
-    <input type="hidden" name="salesData" value='{{salesData}}' />
-    <button style="background-color: green;" type="submit">Download PDF</button>
-</form>
+                    <form method="POST" action="/admin/salesreport/pdf">
+                        <input type="hidden" name="salesData" value='{{salesData}}' />
+                        <button style="background-color: green;" type="submit">Download PDF</button>
+                    </form>
 
                     <form method="POST" action="/admin/salesreport/excel">
-                        <input type="hidden" name="salesData" value="{{salesData}}" />
+                        <input type="hidden" name="salesData" value='{{{salesData}}}' />
                         <button style="background-color: red;" type="submit">Download Excel</button>
                     </form>
+
                 </div>
 
             </div>
@@ -154,8 +161,26 @@
             {{#each salesReport}}
             <div class="sales-report-section">
                 <h2>{{month}}</h2>
-                <p><strong>Total Sales:</strong> ₹{{totalSales}}</p>
+                <section class="card-container">
 
+                    <div class="card">
+                        <h3>Overall sales count
+                        </h3>
+                        <p>{{orderCount}}<span style="font-size:19px;margin-left:10px">orders</span></p>
+                    </div>
+                    <div class="card">
+                        <h3>Overall Sales amount</h3>
+                        <p>₹ {{netSale}}</p>
+                    </div>
+                    <div class="card">
+                        <h3>Overall discount amount</h3>
+                        <p>₹ {{totalDiscount}}</p>
+                    </div>
+                    <div class="card">
+                        <h3>Sales expect(<span style="font-size: 13px;">without discound</span>)</h3>
+                        <p>₹ {{totalSales}}</p>
+                    </div>
+                </section>
                 <table border="1" class="sales-report-table">
                     <tr>
                         <input type="text"

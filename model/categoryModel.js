@@ -16,7 +16,12 @@ const categorySchema = new mongoose.Schema({
   islisted: {
     type: Boolean,
     default: true
-  }
+  },
+  offer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Offer",
+    default:null
+  },
 });
 
 const categories = mongoose.model("category", categorySchema);

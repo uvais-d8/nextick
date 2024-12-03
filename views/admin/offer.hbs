@@ -53,11 +53,10 @@
             <div class="controls">
                 <h1 style="font-size:43px;">OFFER MANAGEMENT</h1>
             </div>
-            <form method="get" action="/admin/addoffer"><button style="margin-bottom:30px" class="sort-button">ADD
-                    OFFER</button></form>
+       
    <div class="controls">
             
-                <form method="get"  action="/admin/addoffer"><button style="background-color: rgb(3, 139, 39);"  class="sort-button">ADD
+                <form method="get" action="/admin/addoffer"><button style="background-color: rgb(3, 139, 39);"  class="sort-button">ADD
                     OFFER (products)</button>
                 </form><form method="get" action="/admin/addoffers"><button style="background-color: rgb(3, 139, 39);" class="sort-button">ADD
                     OFFER (category)</button></form>
@@ -95,7 +94,7 @@
                         <!-- Display Categories -->
                         <td>
                             {{#each this.Categories}}
-                            <p>{{this.name}}</p> <!-- Assuming Categories have a 'name' property -->
+                            <p>{{this.category}}</p> <!-- Assuming Categories have a 'name' property -->
                             {{else}}
                             <p>No Categories</p>
                             {{/each}}
@@ -110,13 +109,26 @@
                         <!-- Edit and Delete Forms -->
                         <td>
                             <form action="/admin/editOffer/{{this._id}}" method="POST">
-                                <input type="submit" value="Edit"
-                                    style="border-width:0px;width: 80px;border-radius:4px;background-color:rgba(255, 183, 0, 0.858); height:35px; margin-bottom:5px">
+                                <input type="submit" value="EDIT"
+                                    style="color:white;border-width:0px;width: 100px;border-radius:4px;background-color:rgba(255, 183, 0, 0.858); height:40px; margin-bottom:5px">
                             </form>
-                            <form action="/admin/deleteoffer/{{this._id}}" method="POST">
-                                <input type="submit" value="Delete"
-                                    style="border-width:0px;width: 80px;border-radius:4px;background-color:rgba(255, 0, 0, 0.858); height:35px; margin-bottom:5px">
+                            
+                            {{#if this.Status}}
+                            <form action="/admin/offer/unlist/{{this._id}}" method="POST">
+                                <button
+                                    style="color:white;background-color: rgba(0, 174, 0, 0.671);height:40px;width:100px"
+                                    class="action-button unblock-button">
+                                    LISTED
+                                </button>
                             </form>
+                            {{else}}
+                            <form action="/admin/offer/list/{{this._id}}" method="POST">
+                                <button style="color:white;background-color: rgba(255, 0, 0, 0.622);height:40px;"
+                                    class="action-button block-button">
+                                    UNLISTED
+                                </button>
+                            </form>
+                            {{/if}}
                         </td>
                     </tr>
                     {{/each}}

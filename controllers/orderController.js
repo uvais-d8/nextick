@@ -12,7 +12,7 @@ const checkout = async (req, res) => {
     const carts = await Cart.find({ user: userId })
       .populate("user")
       .populate("productId");
-    const coupons = await Coupons.find({});
+    const coupons = await Coupons.find({Status:true});
 
     if (!userId) {
       return res.redirect("/login");
@@ -403,8 +403,97 @@ const loadViewDetails = async (req, res) => {
 //   }
 // };
 
+// const removeItem = async (req, res) => {
+//   const user=req.session.userId;
+//   const { orderId, itemId } = req.params;
+
+//   try {
+//     const order = await Orders.findOne({ _id: orderId });
+
+//     if (!order || !order.items) {
+//       return res.status(404).send("Order or items not found");
+//     }
+
+//     const item = order.items.find((item) => item._id.toString() === itemId);
+
+//     if (!item) {
+//       return res.status(404).json({ success: false, message: "Item not found in the order." });
+//     }
+
+//     if (item.status === "delivered") {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Item is already delivered and cannot be canceled."
+//       });
+//     }
+
+//     // Update item status to "canceled"
+//     await Orders.findOneAndUpdate(
+//       { _id: orderId, "items._id": itemId },
+//       { $set: { "items.$.status": "canceled" } }
+//     );
+
+//     const product = await Products.findById(item.productId);
+//     if (product) {
+//       product.stock += item.quantity;
+//       await product.save();
+//     } else {
+//       console.warn("Product not found for stock update");
+//     }
+
+//     if (order.paymentMethod === "razorpay") {
+//       // const refundAmount = (product.price) * item.quantity;
+
+// console.log("refundAmount",refundAmount)
+//       const refundAmount = (product?.discountedPrice || product?.price) * item.quantity;
+      
+//       // Retrieve or create wallet
+//       let wallet = await Wallet.findOne({ userId: order.userId });
+//       console.log("Order userId:", order.userId);
+//       console.log("Wallet before save:", wallet);
+      
+//       if (!wallet) {
+//         wallet = new Wallet({
+//           userId: order.userId,
+//           balance: refundAmount,
+//           transactions: [
+//             {
+//               type: "refund",
+//               amount: refundAmount,
+//               description: `Refund for canceled product (${product?.name}) in order ${orderId}`
+//             }
+//           ]
+//         });
+//       } else {
+//         // Update wallet balance and transactions
+//         wallet.balance += refundAmount;
+//         wallet.transactions.push({
+//           type: "refund",
+//           amount: refundAmount,
+//           description: `Refund for canceled product (${product?.name}) in order ${orderId}`
+//         });
+//       }
+//       await wallet.save();
+//     }
+    
+//     console.log("Refund amount:", refundAmount);
+
+//     // Check if all items are canceled
+//     const updatedOrder = await Orders.findById(orderId);
+//     if (updatedOrder.items.every((item) => item.status === "canceled")) {
+//       updatedOrder.status = "canceled";
+//       await updatedOrder.save();
+//     }
+
+//     res.json({ success: true, message: "Item successfully canceled" });
+//   } catch (error) {
+//     console.error("Error canceling order:", error);
+//     res.status(500).send("Error updating order status");
+//   }
+// };
+
 const removeItem = async (req, res) => {
-  const user=req.session.userId;
+  const user = req.session.userId;
   const { orderId, itemId } = req.params;
 
   try {
@@ -441,20 +530,19 @@ const removeItem = async (req, res) => {
       console.warn("Product not found for stock update");
     }
 
-    if (order.paymentMethod === "razorpay") {
-      const refundAmount = (product.price) * item.quantity;
+    let refundAmount = 0;
+    if (product) {
+      refundAmount = (product?.discountedPrice || product?.price) * item.quantity;
+    }
 
-console.log("refundAmount",refundAmount)
-//      const refundAmount = (product?.discountedPrice || product?.price) * item.quantity;
-      
-      // Retrieve or create wallet
-      let wallet = await Wallet.findOne({ userId: order.userId });
-      console.log("Order userId:", order.userId);
-      console.log("Wallet before save:", wallet);
-      
+    if (refundAmount > 0) {
+      console.log("Refund amount:", refundAmount);
+
+      let wallet = await Wallet.findOne({ user: order.userId });
+
       if (!wallet) {
         wallet = new Wallet({
-          userId: order.userId,
+          user: order.userId,
           balance: refundAmount,
           transactions: [
             {
@@ -475,8 +563,6 @@ console.log("refundAmount",refundAmount)
       }
       await wallet.save();
     }
-    
-    console.log("Refund amount:", refundAmount);
 
     // Check if all items are canceled
     const updatedOrder = await Orders.findById(orderId);

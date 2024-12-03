@@ -9,14 +9,12 @@
     <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
 
     <style>
-        /* Basic Reset */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        /* Body Styling */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
@@ -25,7 +23,6 @@
             padding: 20px;
         }
 
-        /* Container for the form */
         .container {
             max-width: 800px;
             margin: 0 auto;
@@ -35,32 +32,28 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* Heading */
         h1 {
             text-align: center;
+            font-size: 28px;
             color: #333;
             margin-bottom: 30px;
         }
 
-        /* Form Styling */
         form {
             display: flex;
             flex-direction: column;
         }
 
-        /* Form Group */
         .form-group {
             margin-bottom: 20px;
         }
 
-        /* Form Labels */
         label {
             font-weight: bold;
             margin-bottom: 5px;
             display: block;
         }
 
-        /* Form Inputs and Textarea */
         input[type="text"],
         input[type="number"],
         input[type="date"],
@@ -79,7 +72,6 @@
             min-height: 100px;
         }
 
-        /* Button Styling */
         button {
             background-color: #28a745;
             color: white;
@@ -97,7 +89,6 @@
             background-color: #218838;
         }
 
-        /* Success/Failure Message */
         #message {
             margin-top: 20px;
             padding: 10px;
@@ -117,31 +108,18 @@
             color: #721c24;
         }
 
-        /* Optional Fields */
         input[type="text"]::placeholder {
             font-style: italic;
             color: #888;
-        }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 600px) {
-            .container {
-                padding: 15px;
-            }
-
-            button {
-                font-size: 14px;
-                padding: 12px;
-            }
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1>Add New Offer</h1>
+        <h1>Add New Offer - ( Category )</h1>
         <input id="message-box" type="text" style="border-width: 0px; color: red;" value="{{message}}" readonly>
-        <form id="couponForm" method="post" action="/admin/addingOffer">
+        <form id="couponForm" method="post" action="/admin/addingOffers">
 
             <div class="form-group">
                 <label for="DiscountType">Discount Type:</label>
@@ -158,51 +136,51 @@
                 <label for="Description">Description:</label>
                 <textarea id="Description" name="Description" maxlength="500"></textarea>
             </div>
-          <div class="form-group">
+            <div class="form-group">
 
-  
-</div>
 
-<script>
-    // JavaScript to toggle the Products dropdown visibility
-    document.getElementById("dropdownToggle").addEventListener("click", function () {
-         const categoriesDropdown = document.getElementById("CategoryDropdown");
+            </div>
 
-        // If Categories  is visible, hide it and show Products dropdown
-        if (categoriesDropdown.style.display === "block") {
-            categoriesDropdown.style.display = "none";
-        }
+            <script>
+                // JavaScript to toggle the Products dropdown visibility
+                document.getElementById("dropdownToggle").addEventListener("click", function () {
+                    const categoriesDropdown = document.getElementById("CategoryDropdown");
 
-          });
-</script>
+                    // If Categories  is visible, hide it and show Products dropdown
+                    if (categoriesDropdown.style.display === "block") {
+                        categoriesDropdown.style.display = "none";
+                    }
 
-<div class="form-group">
-    <label for="Category">Applicable Categories:</label>
-    <!-- Dropdown Button -->
-    <button id="dropdownToggles" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">
-        Select Categories
-    </button>
+                });
+            </script>
 
-    <!-- Dropdown Content -->
-    <div id="CategoryDropdown" class="form-control"
-        style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
-        {{#each category}}
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
-            <label for="category-{{this.id}}" style="margin-right: 10px;">{{this.category}}</label>
-            <input type="checkbox" id="category-{{this._id}}" name="Categories[]" value="{{this._id}}">
-        </div>
-        {{/each}}
-    </div>
-</div>
+            <div class="form-group">
+                <label for="Category">Applicable Categories:</label>
+                <!-- Dropdown Button -->
+                <button id="dropdownToggles" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">
+                    Select Categories
+                </button>
 
-<script>
-    // JavaScript to toggle the Categories dropdown visibility
-    document.getElementById("dropdownToggles").addEventListener("click", function () {
-        const categoriesDropdown = document.getElementById("CategoryDropdown");
-        // Toggle visibility of the Categories dropdown
-        categoriesDropdown.style.display = categoriesDropdown.style.display === "none" ? "block" : "none";
-    });
-</script>
+                <!-- Dropdown Content -->
+                <div id="CategoryDropdown" class="form-control"
+                    style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
+                    {{#each category}}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
+                        <label for="category-{{this.id}}" style="margin-right: 10px;">{{this.category}}</label>
+                        <input type="checkbox" id="category-{{this._id}}" name="Categories[]" value="{{this._id}}">
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+
+            <script>
+                // JavaScript to toggle the Categories dropdown visibility
+                document.getElementById("dropdownToggles").addEventListener("click", function () {
+                    const categoriesDropdown = document.getElementById("CategoryDropdown");
+                    // Toggle visibility of the Categories dropdown
+                    categoriesDropdown.style.display = categoriesDropdown.style.display === "none" ? "block" : "none";
+                });
+            </script>
 
             <div class="form-group">
                 <label for="ExpiryDate">Expiry Date:</label>
@@ -226,7 +204,7 @@
         document.getElementById('couponForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
-         
+
             // Get all selected categories (checkboxes)
             const selectedCategories = [];
             document.querySelectorAll('input[name="Categories[]"]:checked').forEach((checkbox) => {

@@ -231,12 +231,16 @@
 									{{!-- <td class="product-price">{{this.productId.price}}</td> --}}
 									<td class="product-price">
 										{{#if this.priceWithDiscount}}
-										<del class="original-price">{{this.productId.price}}</del> <span
-											class="discounted-price">{{this.priceWithDiscount}}</span>
-
+										{{#if (neq this.priceWithDiscount this.productId.price)}}
+										 <del class="original-price">{{this.productId.price}}</del>
+										<span class="discounted-price">{{this.priceWithDiscount}}</span>
 										{{else}}
-										{{this.productId.price}}
+										 <span class="original-price">{{this.productId.price}}</span>
 										{{/if}}
+										{{else}}
+										 <span class="original-price">{{this.productId.price}}</span>
+										{{/if}}
+
 									</td>
 									<td class="product-quantity">
 										<button type="button"
@@ -282,8 +286,8 @@
 							<tbody>
 								<tr class="total-data">
 									<td><strong>Subtotal: </strong></td>
-								
-  <td> {{subtotal}}</td>
+
+									<td> {{subtotal}}</td>
 								</tr>
 
 								<tr class="total-data">

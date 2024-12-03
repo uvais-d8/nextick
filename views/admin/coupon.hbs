@@ -92,13 +92,22 @@
                         <td>{{formatDate this.ExpiryDate}}</td> <!-- Use the formatDate helper -->
                         <td>{{this.Description}}</td>
                         <td>
-                            <form action="/admin/deletecoupon/{{this.id}}" method="POST">
-                                <input type="submit" value="Delete"
-                                    style="border-width:0px;width: 80px;border-radius:4px;background-color:rgba(255, 0, 0, 0.858); height:35px; margin-bottom:5px;color:white">
+                              {{#if this.Status}}
+                            <form action="/admin/coupon/unlist/{{this._id}}" method="POST">
+                                <button
+                                    style="color:white;background-color: rgba(0, 174, 0, 0.671);height:40px;width:100px"
+                                    class="action-button unblock-button">
+                                    LISTED
+                                </button>
                             </form>
-
-
-
+                            {{else}}
+                            <form action="/admin/coupon/list/{{this._id}}" method="POST">
+                                <button style="color:white;background-color: rgba(255, 0, 0, 0.622);height:40px;"
+                                    class="action-button block-button">
+                                    UNLISTED
+                                </button>
+                            </form>
+                            {{/if}}
                         </td>
                     </tr>
                     {{/each}}

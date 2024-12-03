@@ -12,59 +12,158 @@ const { OAuth2Client } = require("google-auth-library");
 const { Console, profile, log, error } = require("console");
 const Category = require("../model/categoryModel");
 const Offer = require("../model/offermodel");
+const Wishlist = require("../model/wishlistModel");
 const client = new OAuth2Client(
   "458432719748-rs94fgenq571a8jfulbls7dk9i10mv2o.apps.googleusercontent.com"
 );
 
 require("dotenv").config();
 
+// const loadhome = async (req, res) => {
+//   const categories = await Category.find({});
+    
+//   console.log(req.session);
+//   try {
+//     if (req.session.passport && req.session.passport.user) {
+//       req.session.userId = req.session.passport.user;
+//     }
+
+      
+//       const categories = await Category.find({});
+//       const products = await Products.find({islisted:true})
+//       .populate("offer") 
+//       .populate({
+//         path: "category", 
+//         match: { islisted: true },  
+//         select: "category islisted"  
+//       })
+      
+  
+//        const activeOffers = await Offer.find({ Status: true });
+
+//        const filteredProducts = products.filter(product => product.category);
+
+//        const productsWithOfferPrice = filteredProducts.map((product) => {
+//         let discountValue = null;
+//         let discountType = null;
+//         let offerPrice = product.price;  
+//         let discountDisplay = null;
+  
+//           const matchedOffer = activeOffers.find(offer =>
+//           offer.filteredProducts.some(productId => productId.equals(product._id))
+//         );
+  
+//         if (matchedOffer) {
+//           discountType = matchedOffer.DiscountType;
+  
+//           if (discountType === "percentage") {
+//             offerPrice = product.price - (product.price * matchedOffer.DiscountValue) / 100;
+//             discountValue = `${matchedOffer.DiscountValue}%`;
+//           } else if (discountType === "fixed") {
+//             offerPrice = product.price - matchedOffer.DiscountValue;
+//             discountValue = `₹${matchedOffer.DiscountValue}`;
+//           }
+//         }
+  
+//          return {
+//           _id: product._id,
+//           name: product.name,
+//           images: product.images,
+//           category: product.category,
+//           price: product.price,  
+//           offerPrice: offerPrice, 
+//           discountValue: discountValue, 
+//           discountType: discountType,
+//           stock: product.stock,
+//         };
+//       });
+  
+
+//     res.render("home", { products: productsWithOfferPrice });
+//   } catch (err) {
+//     console.error("Error loading home page:", err);
+//     res.status(500).send("Failed to load home page");
+//   }
+// };
+
 const loadhome = async (req, res) => {
-  console.log(req.session);
   try {
+    const categories = await Category.find({});
     if (req.session.passport && req.session.passport.user) {
       req.session.userId = req.session.passport.user;
     }
 
-    // Fetch products and populate their category data
-    const products = await Products.find({ islisted: true }) // Fetch only listed products
+    const products = await Products.find({ islisted: true })
+      .populate("offer")
       .populate({
-        path: "category", // Reference the category field
-        match: { islisted: true }, // Only include listed categories
-        select: "category islisted" // Only include necessary fields from the category
+        path: "category",
+        match: { islisted: true },
+        select: "category islisted"
       });
 
-    // Filter out products where the category is not listed
+    const activeOffers = await Offer.find({ Status: true });
+
+    // Filter products to include only those with valid categories
     const filteredProducts = products.filter(product => product.category);
 
-    // Render the home page with filtered products
-    res.render("home", { products: filteredProducts });
+    const productsWithOfferPrice = filteredProducts.map((product) => {
+      let discountValue = null;
+      let discountType = null;
+      let offerPrice = product.price; // Default to original price
+
+      // Match the offer with the product
+      const matchedOffer = activeOffers.find(offer =>
+        offer.Products && offer.Products.some(productId => productId.equals(product._id))
+      );
+
+      if (matchedOffer) {
+        discountType = matchedOffer.DiscountType;
+
+        if (discountType === "percentage") {
+          offerPrice = product.price - (product.price * matchedOffer.DiscountValue) / 100;
+          discountValue = `${matchedOffer.DiscountValue}%`;
+        } else if (discountType === "fixed") {
+          offerPrice = product.price - matchedOffer.DiscountValue;
+          discountValue = `₹${matchedOffer.DiscountValue}`;
+        }
+      }
+
+      return {
+        _id: product._id,
+        name: product.name,
+        images: product.images,
+        category: product.category,
+        price: product.price, // Original price
+        offerPrice: offerPrice, // Discounted price
+        discountValue: discountValue, // Discount display
+        discountType: discountType,
+        stock: product.stock,
+      };
+    });
+
+    res.render("home", { products: productsWithOfferPrice });
   } catch (err) {
     console.error("Error loading home page:", err);
     res.status(500).send("Failed to load home page");
   }
 };
 
-
 const loadproducts = async (req, res) => {
   try {
-    // Fetch all categories and products
-    const categories = await Category.find({});
+     const categories = await Category.find({});
     const products = await Products.find({islisted:true})
-      .populate("offer") // Populate the offer field to get offer details
-      .populate("category"); // Populate the category field for product categorization
+      .populate("offer") 
+      .populate("category"); 
 
-    // Fetch active offers (Status: true)
-    const activeOffers = await Offer.find({ Status: true });
+     const activeOffers = await Offer.find({ Status: true });
 
-    // Process products to include calculated offer price and discount details
-    const productsWithOfferPrice = products.map((product) => {
+     const productsWithOfferPrice = products.map((product) => {
       let discountValue = null;
       let discountType = null;
-      let offerPrice = product.price; // Set the offer price to the base price by default
+      let offerPrice = product.price;  
       let discountDisplay = null;
 
-      // Find matching offer
-      const matchedOffer = activeOffers.find(offer =>
+        const matchedOffer = activeOffers.find(offer =>
         offer.Products.some(productId => productId.equals(product._id))
       );
 
@@ -80,22 +179,20 @@ const loadproducts = async (req, res) => {
         }
       }
 
-      // Include the offerPrice and discount information
-      return {
+       return {
         _id: product._id,
         name: product.name,
         images: product.images,
         category: product.category,
-        price: product.price, // Original price without discount
-        offerPrice: offerPrice, // Calculated price after discount
+        price: product.price,  
+        offerPrice: offerPrice, 
         discountValue: discountValue, 
         discountType: discountType,
         stock: product.stock,
       };
     });
 
-    // Render the page with updated products and categories
-    res.render("products", { products: productsWithOfferPrice, categories });
+     res.render("products", { products: productsWithOfferPrice, categories });
   } catch (error) {
     console.error("Error fetching and updating products:", error);
     res.status(500).send("Failed to fetch or update products.");
@@ -106,8 +203,7 @@ const singleproduct = async (req, res) => {
   const productId = req.params.id;
 
   try {
-    // Fetch the product by ID and all active offers
-    const product = await Products.findById(productId).populate("offer").populate("category");
+     const product = await Products.findById(productId).populate("offer").populate("category");
     const activeOffers = await Offer.find({ Status: true });
     const products = await Products.find({ islisted: true });
 
@@ -115,18 +211,15 @@ const singleproduct = async (req, res) => {
       return res.status(404).send("Product not found");
     }
 
-    // Initialize default values
-    let discountValue = null;
+     let discountValue = null;
     let discountType = null;
-    let priceWithDiscount = product.price; // Default to original price
+    let priceWithDiscount = product.price;  
 
-    // Match the product with an active offer
     const matchedOffer = activeOffers.find((offer) =>
       offer.Products.some((productId) => productId.equals(product._id))
     );
 
-    // If a matched offer is found, calculate the discounted price
-    if (matchedOffer) {
+     if (matchedOffer) {
       discountType = matchedOffer.DiscountType;
 
       if (discountType === "percentage") {
@@ -137,46 +230,45 @@ const singleproduct = async (req, res) => {
         discountValue = `₹${matchedOffer.DiscountValue}`;
       }
     }
-
-    // Add offer-related details to the product object
     const productWithOffer = {
-      ...product.toObject(), // Convert Mongoose document to plain object
+      ...product.toObject(),  
       priceWithDiscount,
       discountValue,
       discountType,
     };
 
-    // Render the single product page with updated details
-    res.render("singleproduct", { product: productWithOffer, products });
+      res.render("singleproduct", { product: productWithOffer, products });
   } catch (error) {
     console.error("Error fetching product details:", error);
     res.status(500).send("Failed to fetch product details.");
   }
 };
-const loadWishlist = async(req,res)=>{
+const loadWishlist = async (req, res) => {
+  const userId = req.session.userId; // Ensure userId is set in the session
   try {
-    // Fetch all categories and products
+    // Fetch wishlist for the logged-in user
+    const userWishlist = await Wishlist.find({ user: userId }) // Adjust the filter as needed
+      .populate({
+        path: "products",
+        populate: [{ path: "category" }, { path: "offer" }],
+      });
+
+    // Fetch all categories for display
     const categories = await Category.find({});
-    const products = await Products.find({wishlist:true})
-      .populate("offer") // Populate the offer field to get offer details
-      .populate("category"); // Populate the category field for product categorization
+    const activeOffers = await Offer.find({ Status: true });
 
-    // Fetch active offers (Status: true)
-    const activeOffers = await Offer.find({ Status: true});
-
-    // Process products to include calculated offer price and discount details
-    const productsWithOfferPrice = products.map((product) => {
-      // Initialize default values
+    // Map through the wishlist and calculate offer prices
+    const productsWithOfferPrice = userWishlist.map((item) => {
+      const product = item.products;
       let discountValue = null;
       let discountType = null;
-      let offerPrice = product.price; // Default to the original price
+      let offerPrice = product.price;
 
       // Find the active offer applicable to the product
-      const matchedOffer = activeOffers.find(offer =>
-        offer.Products.some(productId => productId.equals(product._id))
+      const matchedOffer = activeOffers.find((offer) =>
+        offer.Products?.some((productId) => productId.equals(product._id))
       );
 
-      // If an offer is matched, calculate offer price and discount details
       if (matchedOffer) {
         discountType = matchedOffer.DiscountType;
 
@@ -189,43 +281,91 @@ const loadWishlist = async(req,res)=>{
         }
       }
 
-      // Return the product object with all necessary fields
+      // Return a product object for rendering
       return {
         _id: product._id,
         name: product.name,
         images: product.images,
-        category: product.category,
+        category: product.category?.name || "Unknown", // Adjust if category schema differs
         price: product.price,
-        ...(matchedOffer && { // Only include offer-related fields if an offer exists
-          offerPrice: offerPrice,
-          discountValue: discountValue,
-          offerType: discountType,
-        }),
+        offerPrice: matchedOffer ? offerPrice : null,
+        discountValue: matchedOffer ? discountValue : null,
+        discountType: matchedOffer ? discountType : null,
         stock: product.stock,
       };
     });
 
-    // Render the page with updated products and categories
-    res.render("wishlist", { products: productsWithOfferPrice, categories });
+    // Render the wishlist page
+    res.render("wishlist", {
+      products: productsWithOfferPrice,
+      categories,
+    });
   } catch (error) {
-    
+    console.error("Error loading wishlist:", error);
+    res.status(500).send("Failed to load wishlist.");
   }
-}
-// Toggle Wishlist
+};
+
 const toggleWishlist = async (req, res) => {
   try {
     const { productId } = req.params;
     const userId = req.session.userId;
-    const product = await Products.findById(productId);
-    const isInWishlist = product.wishlist;
-    product.wishlist = !isInWishlist;
-    await product.save();
-    res.json({ success: true, wishlist: product.wishlist });
+
+    console.log()
+
+    console.log('user',userId);
+
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "User not logged in" });
+    }
+
+    // Check if the product is already in the user's wishlist
+    const existingWishlistItem = await Wishlist.findOne({ user: userId, products: productId });
+
+    if (existingWishlistItem) {
+      // If it exists, remove it (toggle off)
+      await Wishlist.deleteOne({ _id: existingWishlistItem._id });
+      return res.json({ success: true, wishlist: false });
+    } else {
+      // If it doesn't exist, add it (toggle on)
+      const product = await Products.findById(productId);
+      if (!product) {
+        return res.status(404).json({ success: false, message: "Product not found" });
+      }
+
+      // Create a new wishlist entry
+      const newWishlistItem = new Wishlist({
+        user: userId,
+        products: productId,
+        category: product.category,
+        offer: product.offer,
+      });
+      await newWishlistItem.save();
+      console.log(newWishlistItem)
+      return res.json({ success: true, wishlist: true });
+    }
   } catch (error) {
+    console.log(error)
     console.error("Error toggling wishlist:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
+
+// const toggleWishlist = async (req, res) => {
+//   try {
+//     const { productId } = req.params;
+//     const userId = req.session.userId;
+//     const product = await Products.findById(productId);
+//     const isInWishlist = product.wishlist;
+//     product.wishlist = !isInWishlist;
+//     await product.save();
+//     res.json({ success: true, wishlist: product.wishlist });
+//   } catch (error) {
+//     console.error("Error toggling wishlist:", error);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
 const loadshop = (req, res) => {
   try {
     res.redirect("/shop");

@@ -334,428 +334,427 @@
 
 				<div class="col-md-7">
 					<div class="single-product-content">
-  <h3>{{product.name}}</h3>
-  <p>{{product.description}}</p>
-  <p style="margin-top: -20px; color: orange;" class="rating">★★★★★</p>
-  <p class="single-product-pricing">
-    {{#if product.discountValue}}
-      <span class="price" style="text-decoration: line-through; color: red; font-size: 15px">
-        ₹{{product.price}} <!-- Original price -->
-      </span>
-      {{#if (gte product.priceWithDiscount 0)}}  <!-- Check if offer price is not negative -->
-        <span class="offer-price" style="color: green; font-weight: bold; font-size: 21px; margin-top: -5px">
-          ₹{{product.priceWithDiscount}} <!-- Discounted price -->
-        </span>
-      {{else}}
-        <span class="offer-price" style="color: green; font-weight: bold; font-size: 21px; margin-top: -5px">
-          ₹{{product.price}} <!-- Show original price if offer price is negative -->
-        </span>
-      {{/if}}
-      <span class="discount-tag" style="color: rgb(255, 140, 0); font-size: 13px; margin-top: -10px">
-        ({{product.discountValue}} OFF)
-      </span>
-    {{else}}
-      <span class="price" style="font-weight: bold; color: black;">
-        ₹{{product.price}} <!-- No discount price -->
-      </span>
-    {{/if}}
-  </p>
+						<h3>{{product.name}}</h3>
+						<p>{{product.description}}</p>
+						<p style="margin-top: -20px; color: orange;" class="rating">★★★★★</p>
+						<p class="single-product-pricing">
+							{{#if product.discountValue}}
+							<span class="price" style="text-decoration: line-through; color: red; font-size: 15px">
+								₹{{product.price}} <!-- Original price -->
+							</span>
+							{{#if (gte product.priceWithDiscount 0)}} <!-- Check if offer price is not negative -->
+							<span class="offer-price"
+								style="color: green; font-weight: bold; font-size: 21px; margin-top: -5px">
+								₹{{product.priceWithDiscount}} <!-- Discounted price -->
+							</span>
+							{{else}}
+							<span class="offer-price"
+								style="color: green; font-weight: bold; font-size: 21px; margin-top: -5px">
+								₹{{product.price}} <!-- Show original price if offer price is negative -->
+							</span>
+							{{/if}}
+							<span class="discount-tag"
+								style="color: rgb(255, 140, 0); font-size: 13px; margin-top: -10px">
+								({{product.discountValue}} OFF)
+							</span>
+							{{else}}
+							<span class="price" style="font-weight: bold; color: black;">
+								₹{{product.price}} <!-- No discount price -->
+							</span>
+							{{/if}}
+						</p>
 
-  <p><strong>Colors:</strong> red, black, white</p>
-  <p class="card-text stock">
-    Stock:
-    {{#if product.stock}}
-      <span style="font-weight: bold; color: green;" class="in-stock">{{product.stock}} Available</span>
-    {{else}}
-      <span style="font-weight: bold; color: red;" class="out-of-stock">Out of Stock</span>
-    {{/if}}
-  </p>
-</div>
-
-						<div class="single-product-form">
-							<form action="/addtocart" method="post">
-								<input type="hidden" name="productId" value="{{product._id}}">
-
-								<!-- Quantity Control -->
-								<div class="quantity-control">
-									<button type="button" class="decrease-btn" onclick="adjustQuantity(-1)">-</button>
-									<input style="height: 33px;" type="number" name="quantity" value="1" min="1"
-										max="10" onchange="checkCartLimit(this)" required id="quantity" readonly>
-									<button type="button" class="increase-btn" onclick="adjustQuantity(1)">+</button>
-								</div>
-
-								<button
-									style="width:150px; border-width:0px; height: 46px; border-radius:4px; color:white; background-color:rgba(208, 139, 11, 0.916); font-weight:bold;margin-top:20px"
-									type="submit" class="cart-btn">
-									<i class="fas fa-shopping-cart"> Add to Cart</i>
-								</button>
-							</form>
-						</div>
-
-						<script>
-							function adjustQuantity(change) {
-								const quantityInput = document.getElementById('quantity');
-								let currentQuantity = parseInt(quantityInput.value);
-
-								// Adjust quantity
-								currentQuantity += change;
-
-								// Ensure the quantity stays within the range of 1 to 10
-								if (currentQuantity >= 1 && currentQuantity <= 10) {
-									quantityInput.value = currentQuantity;
-								}
-							}
-
-							function checkCartLimit(input) {
-								// Ensure that the quantity stays within the allowed range
-								let value = parseInt(input.value);
-								if (value < 1) {
-									input.value = 1;
-								} else if (value > 10) {
-									input.value = 10;
-								}
-							}
-						</script>
-
-						<!-- Review Section -->
-						<h4 style="margin-left:-550px">Customer Reviews:</h4>
-
-						<div style="padding:20px;margin-left: -550px;margin-top:20px;border-radius:5px;background-color:rgb(245, 241, 241);width:1200px"
-							class="single-product-reviews">
-							<!-- Review 1 -->
-							<div style="background-color: rgb(255, 255, 255);padding:20px;border-radius:5px;margin-bottom:4px"
-								class="review-card">
-								<div class="review-header">
-									<div>
-										<p style="font-weight: bold;">Mubaris ibrahim</p>
-										<p style="margin-top: -20px;color:orange" class="rating">★★★★</p>
-									</div>
-								</div>
-								<p class="review-comment">
-									Absolutely love this product! The quality is amazing and it exceeded my
-									expectations.
-								</p>
-								<hr>
-								<div class="review-header">
-									<div>
-										<p style="font-weight: bold;">muhammed Mufeed</p>
-										<p style="margin-top: -20px;color:orange" class="rating">★★★★★</p>
-									</div>
-								</div>
-								<p class="review-comment">
-									The quality is nice and this product is good and worthy
-
-								</p>
-								<hr><br>
-
-								<!-- Dummy Reviews -->
-								{{#each product.reviews}}
-								<div class="review">
-									<p><strong>{{this.name}}</strong></p>
-									<p>"{{this.comment}}"</p>
-									<p>Rating:
-										<span class="rating">
-											{{#each this.rating}}★{{/each}}
-										</span>
-									</p>
-								</div>
-								{{/each}}
-
-								<div style="padding:20px;background-color: rgb(244, 244, 244);border-radius:5px">
-									<!-- Add Review Form -->
-									<h6 style="margin-top: -40px;">Leave a Review:</h6>
-									{{!-- <form action="/submit-review" method="post"> --}}
-										<div class="form-group">
-											<label style="margin-top: -40px;" for="review-name">Your Name:</label>
-											<input style="margin-top: -10px;" type="text" id="review-name" name="name"
-												class="form-control">
-										</div>
-										<div class="form-group">
-											<label for="review-comment">Your Review:</label>
-											<textarea style="margin-top: -10px;height: 60px;" id="review-comment"
-												name="comment" class="form-control" rows="4"></textarea>
-										</div>
-										<div class="form-group">
-											<label for="review-rating">Rating:</label>
-											<select style="margin-top: -10px;" id="review-rating" name="rating"
-												class="form-control">
-												<option value="1">★</option>
-												<option value="2">★★</option>
-												<option value="3">★★★</option>
-												<option value="4">★★★★</option>
-												<option value="5">★★★★★</option>
-											</select>
-										</div>
-										<button type="submit" class="btn btn-warning">Submit Review</button>
-									</form>
-								</div>
-							</div>
-
-							{{!-- <h4>Share:</h4>
-							<ul class="product-share">
-								<li><a href=""><i class="fab fa-facebook-f"></i></a></li>
-								<li><a href=""><i class="fab fa-twitter"></i></a></li>
-								<li><a href=""><i class="fab fa-google-plus-g"></i></a></li>
-								<li><a href=""><i class="fab fa-linkedin"></i></a></li>
-							</ul> --}}
-						</div>
-					</div>
-				</div>
-
-				<!-- more products -->
-				<div class="more-products mb-150">
-					<div class="container">
-						<div class="container mt-5">
-							<h3> Products</h3>
-
-							<div style="background-color: rgb(255, 255, 255); border-radius:11px" class="row">
-								{{#each products}}
-								<div style="background-color: rgb(255, 255, 255); border-radius:11px"
-									class="col-md-4 mb-4">
-									<a href="/product/{{this._id}}" style="text-decoration: none; color: inherit;">
-										<div style="background-color: rgb(251, 251, 251); border-radius:6px"
-											class="card">
-											<img src="/{{this.images.[0]}}" class="card-img-top" alt="{{this.name}}"
-												style="height: 200px; object-fit: cover;">
-											<div class="card-body">
-												<h5 class="card-title">{{this.name}}</h5>
-												<p class="card-text">Category: {{this.category}}</p>
-												<p class="card-text">
-													Price: ₹<span>{{this.price}}</span>
-													{{#if this.discount}}
-													<span class="discount">(Discount: ₹{{this.discount}})</span>
-													{{/if}}
-												</p>
-												<p class="card-text stock">
-													Stock:
-													{{#if this.stock}}
-													<span style="color: green;" class="in-stock">{{this.stock}}
-														Available</span>
-													{{else}}
-													<span style="color: red;" class="out-of-stock">Out of Stock</span>
-													{{/if}}
-												</p>
-												<p class="card-text">
-													Rating:
-													<span class="rating">
-														{{#each this.rating}}★{{/each}}
-													</span>
-													<span class="review-count">({{this.reviews.length}} Reviews)</span>
-												</p>
-											</div>
-										</div>
-									</a>
-								</div>
-								{{/each}}
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!-- end more products -->
-
-
-			<span id="error" hidden>
-				{{message}}
-			</span>
-			<script defer>
-				document.addEventListener("DOMContentLoaded", function () {
-					const errorElement = document.getElementById("error");
-					const message = errorElement ? errorElement.innerText : "";
-
-					// Check if message is not empty
-					if (message.trim()) {
-						Swal.fire({
-							icon: 'error',
-							title: 'Oops...',
-							text: message,
-							confirmButtonText: 'OK'
-						});
-					}
-				});
-			</script>
-		</div>
-		<!-- logo carousel -->
-		<div class="logo-carousel-section">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-12">
-						<div class="logo-carousel-inner">
-
-							<div class="single-logo-item">
-								<img style="margin-top: 50px;"
-									src="https://logos-world.net/wp-content/uploads/2020/04/Louis-Vuitton-Logo.png"
-									alt="">
-							</div>
-							<div class="single-logo-item">
-								<img style="margin-top: 10px"
-									src="https://parspng.com/wp-content/uploads/2022/10/pumapng.parspng.com_-300x300.png"
-									alt="">
-							</div>
-							<div class="single-logo-item">
-								<img style="height:120px;width:120px;margin-top:36px"
-									src="https://cdn2.iconfinder.com/data/icons/apple-tv-1/512/apple_logo-512.png"
-									alt="">
-							</div>
-							<div class="single-logo-item">
-								<img style="margin-top: 17px;height:175px"
-									src="https://images.samsung.com/is/image/samsung/assets/global/about-us/brand/logo/256_144_2.png?$512_N_PNG$"
-									alt="">
-							</div>
-							<div class="single-logo-item">
-								<img style="margin-top: 45px"
-									src="https://download.logo.wine/logo/Citizen_Watch/Citizen_Watch-Logo.wine.png"
-									alt="">
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- end logo carousel -->
-		<!-- footer -->
-		<div class="footer-area">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-3 col-md-6">
-						<div class="footer-box about-widget">
-							<h2 class="widget-title">About us</h2>
-							<p>Ut enim ad minim veniam perspiciatis unde omnis iste natus error sit voluptatem
-								accusantium
-								doloremque laudantium, totam rem aperiam, eaque ipsa quae.</p>
-						</div>
-					</div>
-					<div class="col-lg-3 col-md-6">
-						<div class="footer-box get-in-touch">
-							<h2 class="widget-title">Get in Touch</h2>
-							<ul>
-								<li>34/8, East Hukupara, Gifirtok, Sadan.</li>
-								<li>support@fruitkha.com</li>
-								<li>+00 111 222 3333</li>
-							</ul>
-						</div>
-					</div>
-					<div class="col-lg-3 col-md-6">
-						<div class="footer-box pages">
-							<h2 class="widget-title">Pages</h2>
-							<ul>
-								<li><a href="/index.hbs">Home</a></li>
-								<li><a href="/about.hbs">About</a></li>
-								<li><a href="/services.hbs">Shop</a></li>
-								<li><a href="/news.hbs">News</a></li>
-								<li><a href="/contact.hbs">Contact</a></li>
-							</ul>
-						</div>
-					</div>
-					<div class="col-lg-3 col-md-6">
-						<div class="footer-box subscribe">
-							<h2 class="widget-title">Subscribe</h2>
-							<p>Subscribe to our mailing list to get the latest updates.</p>
-							<form action="/index.hbs">
-								<input type="email" placeholder="Email">
-								<button type="submit"><i class="fas fa-paper-plane"></i></button>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- end footer -->
-
-		<!-- copyright -->
-		<div class="copyright">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-6 col-md-12">
-						<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights
-							Reserved.<br>
-							Distributed By - <a href="https://themewagon.com/">Themewagon</a>
+						<p><strong>Colors:</strong> red, black, white</p>
+						<p class="card-text stock">
+							Stock:
+							{{#if product.stock}}
+							<span style="font-weight: bold; color: green;" class="in-stock">{{product.stock}}
+								Available</span>
+							{{else}}
+							<span style="font-weight: bold; color: red;" class="out-of-stock">Out of Stock</span>
+							{{/if}}
 						</p>
 					</div>
-					<div class="col-lg-6 text-right col-md-12">
-						<div class="social-icons">
-							<ul>
-								<li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-								<li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
-								<li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
-								<li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
-								<li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
-							</ul>
+
+					<div class="single-product-form">
+						<form action="/addtocart" method="post">
+							<input type="hidden" name="productId" value="{{product._id}}">
+
+							<!-- Quantity Control -->
+							<div style="margin-left:30px;margin-top:10px" class="quantity-control">
+								<button type="button" class="decrease-btn" onclick="adjustQuantity(-1)">-</button>
+								<input style="height: 33px;" type="number" name="quantity" value="1" min="1" max="10"
+									onchange="checkCartLimit(this)" required id="quantity" readonly>
+								<button type="button" class="increase-btn" onclick="adjustQuantity(1)">+</button>
+							</div>
+
+							<button
+								style="margin-left:30px;width:150px; border-width:0px; height: 46px; border-radius:4px; color:white; background-color:rgba(208, 139, 11, 0.916); font-weight:bold;margin-top:20px"
+								type="submit" class="cart-btn">
+								<i style="margin-right: 10px;" class="fas fa-shopping-cart"> </i>Add to Cart
+							</button>
+						</form>
+					</div>
+
+					<script>
+						function adjustQuantity(change) {
+							const quantityInput = document.getElementById('quantity');
+							let currentQuantity = parseInt(quantityInput.value);
+
+							// Adjust quantity
+							currentQuantity += change;
+
+							// Ensure the quantity stays within the range of 1 to 10
+							if (currentQuantity >= 1 && currentQuantity <= 10) {
+								quantityInput.value = currentQuantity;
+							}
+						}
+
+						function checkCartLimit(input) {
+							// Ensure that the quantity stays within the allowed range
+							let value = parseInt(input.value);
+							if (value < 1) {
+								input.value = 1;
+							} else if (value > 10) {
+								input.value = 10;
+							}
+						}
+					</script>
+
+					<!-- Review Section -->
+					<h4 style="margin-left:-550px;margin-top:90px;">Customer Reviews:</h4>
+
+					<div style="padding:20px;margin-left: -550px;border-radius:5px;background-color:rgb(245, 241, 241);width:1200px"
+						class="single-product-reviews">
+						<!-- Review 1 -->
+						<div style="background-color: rgb(255, 255, 255);padding:20px;border-radius:5px;margin-bottom:4px;"
+							class="review-card">
+							<div class="review-header">
+								<div>
+									<p style="font-weight: bold;">Mubaris ibrahim</p>
+									<p style="margin-top: -20px;color:orange" class="rating">★★★★</p>
+								</div>
+							</div>
+							<p class="review-comment">
+								Absolutely love this product! The quality is amazing and it exceeded my
+								expectations.
+							</p>
+							<hr>
+							<div class="review-header">
+								<div>
+									<p style="font-weight: bold;">muhammed Mufeed</p>
+									<p style="margin-top: -20px;color:orange" class="rating">★★★★★</p>
+								</div>
+							</div>
+							<p class="review-comment">
+								The quality is nice and this product is good and worthy
+
+							</p>
+							<hr><br>
+
+							<!-- Dummy Reviews -->
+							{{#each product.reviews}}
+							<div class="review">
+								<p><strong>{{this.name}}</strong></p>
+								<p>"{{this.comment}}"</p>
+								<p>Rating:
+									<span class="rating">
+										{{#each this.rating}}★{{/each}}
+									</span>
+								</p>
+							</div>
+							{{/each}}
+
+							<div style="padding:20px;background-color: rgb(244, 244, 244);border-radius:5px">
+								<!-- Add Review Form -->
+								<h6 style="margin-top: -40px;">Leave a Review:</h6>
+								{{!-- <form action="/submit-review" method="post"> --}}
+									<div class="form-group">
+										<label style="margin-top: -40px;" for="review-name">Your Name:</label>
+										<input style="margin-top: -10px;" type="text" id="review-name" name="name"
+											class="form-control">
+									</div>
+									<div class="form-group">
+										<label for="review-comment">Your Review:</label>
+										<textarea style="margin-top: -10px;height: 60px;" id="review-comment"
+											name="comment" class="form-control" rows="4"></textarea>
+									</div>
+									<div class="form-group">
+										<label for="review-rating">Rating:</label>
+										<select style="margin-top: -10px;" id="review-rating" name="rating"
+											class="form-control">
+											<option value="1">★</option>
+											<option value="2">★★</option>
+											<option value="3">★★★</option>
+											<option value="4">★★★★</option>
+											<option value="5">★★★★★</option>
+										</select>
+									</div>
+									<button type="submit" class="btn btn-warning">Submit Review</button>
+								</form>
+							</div>
+						</div>
+
+						{{!-- <h4>Share:</h4>
+						<ul class="product-share">
+							<li><a href=""><i class="fab fa-facebook-f"></i></a></li>
+							<li><a href=""><i class="fab fa-twitter"></i></a></li>
+							<li><a href=""><i class="fab fa-google-plus-g"></i></a></li>
+							<li><a href=""><i class="fab fa-linkedin"></i></a></li>
+						</ul> --}}
+					</div>
+				</div>
+			</div>
+
+			<!-- more products -->
+			<div class="more-products mb-150">
+				<div class="container">
+					<div class="container mt-5">
+						<h3> Products</h3>
+
+						<div style="background-color: rgb(255, 255, 255); border-radius:11px" class="row">
+							{{#each products}}
+							<div style="background-color: rgb(255, 255, 255); border-radius:11px" class="col-md-4 mb-4">
+								<a href="/product/{{this._id}}" style="text-decoration: none; color: inherit;">
+									<div style="background-color: rgb(251, 251, 251); border-radius:6px" class="card">
+										<img src="/{{this.images.[0]}}" class="card-img-top" alt="{{this.name}}"
+											style="height: 200px; object-fit: cover;">
+										<div class="card-body">
+											<h5 class="card-title">{{this.name}}</h5>
+											<p class="card-text">Category: {{this.category}}</p>
+											<p class="card-text">
+												Price: ₹<span>{{this.price}}</span>
+												{{#if this.discount}}
+												<span class="discount">(Discount: ₹{{this.discount}})</span>
+												{{/if}}
+											</p>
+											<p class="card-text stock">
+												Stock:
+												{{#if this.stock}}
+												<span style="color: green;" class="in-stock">{{this.stock}}
+													Available</span>
+												{{else}}
+												<span style="color: red;" class="out-of-stock">Out of Stock</span>
+												{{/if}}
+											</p>
+											<p class="card-text">
+												Rating:
+												<span class="rating">
+													{{#each this.rating}}★{{/each}}
+												</span>
+												<span class="review-count">({{this.reviews.length}} Reviews)</span>
+											</p>
+										</div>
+									</div>
+								</a>
+							</div>
+							{{/each}}
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<!-- end copyright -->
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-		<!-- jquery -->
-		<script src="/assets/js/jquery-1.11.3.min.js"></script>
-		<!-- bootstrap -->
-		<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
-		<!-- count down -->
-		<script src="/assets/js/jquery.countdown.js"></script>
-		<!-- isotope -->
-		<script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
-		<!-- waypoints -->
-		<script src="/assets/js/waypoints.js"></script>
-		<!-- owl carousel -->
-		<script src="/assets/js/owl.carousel.min.js"></script>
-		<!-- magnific popup -->
-		<script src="/assets/js/jquery.magnific-popup.min.js"></script>
-		<!-- mean menu -->
-		<script src="/assets/js/jquery.meanmenu.min.js"></script>
-		<!-- sticker js -->
-		<script src="/assets/js/sticker.js"></script>
-		<!-- main js -->
-		<script src="/assets/js/main.js"></script>
-		<script>
-			fetch('/your-api-endpoint', {
-				method: 'POST',
-				body: JSON.stringify({ /* your data here */ }),
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			})
-				.then(response => response.json())
-				.then(data => {
-					if (data.error) {
-						swal.fire({
-							icon: 'error',
-							title: 'Oops...',
-							text: data.message
-						});
-					} else {
-						// Proceed with the rest of your logic if no error
-					}
-				})
-				.catch(error => console.error('Error:', error));
+		<!-- end more products -->
 
-		</script>
-		<script>
-			function checkCartLimit(input) {
-				const quantity = parseInt(input.value);
 
-				if (quantity > 9) {
+		<span id="error" hidden>
+			{{message}}
+		</span>
+		<script defer>
+			document.addEventListener("DOMContentLoaded", function () {
+				const errorElement = document.getElementById("error");
+				const message = errorElement ? errorElement.innerText : "";
+
+				// Check if message is not empty
+				if (message.trim()) {
 					Swal.fire({
-						title: 'Cart Limit Exceeded!',
-						text: 'Your cart limit has been reached. You cannot add more than 10 items of this product..',
-						icon: 'warning',
+						icon: 'error',
+						title: 'Oops...',
+						text: message,
 						confirmButtonText: 'OK'
-					}).then(() => {
-						// Redirect to orders page after clicking "OK"
-						window.location.href = '/product/:id';
+					});
+				}
+			});
+		</script>
+	</div>
+	<!-- logo carousel -->
+	<div class="logo-carousel-section">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="logo-carousel-inner">
+
+						<div class="single-logo-item">
+							<img style="margin-top: 50px;"
+								src="https://logos-world.net/wp-content/uploads/2020/04/Louis-Vuitton-Logo.png" alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="margin-top: 10px"
+								src="https://parspng.com/wp-content/uploads/2022/10/pumapng.parspng.com_-300x300.png"
+								alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="height:120px;width:120px;margin-top:36px"
+								src="https://cdn2.iconfinder.com/data/icons/apple-tv-1/512/apple_logo-512.png" alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="margin-top: 17px;height:175px"
+								src="https://images.samsung.com/is/image/samsung/assets/global/about-us/brand/logo/256_144_2.png?$512_N_PNG$"
+								alt="">
+						</div>
+						<div class="single-logo-item">
+							<img style="margin-top: 45px"
+								src="https://download.logo.wine/logo/Citizen_Watch/Citizen_Watch-Logo.wine.png" alt="">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end logo carousel -->
+	<!-- footer -->
+	<div class="footer-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box about-widget">
+						<h2 class="widget-title">About us</h2>
+						<p>Ut enim ad minim veniam perspiciatis unde omnis iste natus error sit voluptatem
+							accusantium
+							doloremque laudantium, totam rem aperiam, eaque ipsa quae.</p>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box get-in-touch">
+						<h2 class="widget-title">Get in Touch</h2>
+						<ul>
+							<li>34/8, East Hukupara, Gifirtok, Sadan.</li>
+							<li>support@fruitkha.com</li>
+							<li>+00 111 222 3333</li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box pages">
+						<h2 class="widget-title">Pages</h2>
+						<ul>
+							<li><a href="/index.hbs">Home</a></li>
+							<li><a href="/about.hbs">About</a></li>
+							<li><a href="/services.hbs">Shop</a></li>
+							<li><a href="/news.hbs">News</a></li>
+							<li><a href="/contact.hbs">Contact</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box subscribe">
+						<h2 class="widget-title">Subscribe</h2>
+						<p>Subscribe to our mailing list to get the latest updates.</p>
+						<form action="/index.hbs">
+							<input type="email" placeholder="Email">
+							<button type="submit"><i class="fas fa-paper-plane"></i></button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end footer -->
+
+	<!-- copyright -->
+	<div class="copyright">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6 col-md-12">
+					<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights
+						Reserved.<br>
+						Distributed By - <a href="https://themewagon.com/">Themewagon</a>
+					</p>
+				</div>
+				<div class="col-lg-6 text-right col-md-12">
+					<div class="social-icons">
+						<ul>
+							<li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end copyright -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<!-- jquery -->
+	<script src="/assets/js/jquery-1.11.3.min.js"></script>
+	<!-- bootstrap -->
+	<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+	<!-- count down -->
+	<script src="/assets/js/jquery.countdown.js"></script>
+	<!-- isotope -->
+	<script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
+	<!-- waypoints -->
+	<script src="/assets/js/waypoints.js"></script>
+	<!-- owl carousel -->
+	<script src="/assets/js/owl.carousel.min.js"></script>
+	<!-- magnific popup -->
+	<script src="/assets/js/jquery.magnific-popup.min.js"></script>
+	<!-- mean menu -->
+	<script src="/assets/js/jquery.meanmenu.min.js"></script>
+	<!-- sticker js -->
+	<script src="/assets/js/sticker.js"></script>
+	<!-- main js -->
+	<script src="/assets/js/main.js"></script>
+	<script>
+		fetch('/your-api-endpoint', {
+			method: 'POST',
+			body: JSON.stringify({ /* your data here */ }),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+			.then(response => response.json())
+			.then(data => {
+				if (data.error) {
+					swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: data.message
 					});
 				} else {
-					// Only submit the form if the quantity is within the valid range
-					{ { !--input.form.submit(); --} }
-					console.log("error")
+					// Proceed with the rest of your logic if no error
 				}
-			}
+			})
+			.catch(error => console.error('Error:', error));
 
-		</script>
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	</script>
+	<script>
+		function checkCartLimit(input) {
+			const quantity = parseInt(input.value);
+
+			if (quantity > 9) {
+				Swal.fire({
+					title: 'Cart Limit Exceeded!',
+					text: 'Your cart limit has been reached. You cannot add more than 10 items of this product..',
+					icon: 'warning',
+					confirmButtonText: 'OK'
+				}).then(() => {
+					// Redirect to orders page after clicking "OK"
+					window.location.href = '/product/:id';
+				});
+			} else {
+				// Only submit the form if the quantity is within the valid range
+				{ { !--input.form.submit(); --} }
+				console.log("error")
+			}
+		}
+
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 

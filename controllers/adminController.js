@@ -11,8 +11,8 @@ const Coupon = require("../model/couponModel");
 const multer = require("multer");
 const Offer = require("../model/offermodel");
 const Coupons = require("../model/couponModel");
-const PDFDocument = require('pdfkit');
-const ExcelJS = require('exceljs');
+const PDFDocument = require("pdfkit");
+const ExcelJS = require("exceljs");
 
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
@@ -767,12 +767,14 @@ const loadOrder = async (req, res) => {
 };
 
 // -------------------------------------------------Coupon Management------------------------------------------------------
+
 const loadaddcoupon = async (req, res) => {
   try {
     const products = await Products.find({});
+    const Categories = await Category.find({});
     console.log(Categories);
 
-    res.render("admin/addcoupon", { products });
+    res.render("admin/addcoupon", { products, Categories });
   } catch (error) {
     console.log("errorr");
     res.render("admin/addcoupon", { message: "errorr" });
@@ -880,7 +882,6 @@ const addcoupon = async (req, res) => {
       DiscountType,
       DiscountValue,
       Products, // Now it correctly stores an array of selected products
-      Categories, // Now it correctly stores an array of selected categories
       MinimumCartValue,
       UsageLimit,
       ExpiryDate: formattedExpiryDate,
@@ -893,7 +894,7 @@ const addcoupon = async (req, res) => {
     return res.redirect("/admin/coupon");
   } catch (error) {
     console.error("Error adding coupon:", error.message);
-    res.redirect("/admin/dashboard");
+    res.redirect("/admin/coupon");
   }
 };
 const addcoupons = async (req, res) => {
@@ -902,7 +903,6 @@ const addcoupons = async (req, res) => {
       CouponCode,
       DiscountType,
       DiscountValue,
-      Products,
       Categories,
       MinimumCartValue,
       UsageLimit,
@@ -912,38 +912,45 @@ const addcoupons = async (req, res) => {
 
     console.log("Request body:", req.body);
 
-    if (
-      !CouponCode ||
-      !DiscountType ||
-      !DiscountValue ||
-      !Products.length ||
-      !ExpiryDate
-    ) {
+    if (!CouponCode || !DiscountType || !ExpiryDate) {
       console.log("Missing required fields");
-      return res.render("admin/addcoupon", {
+      return res.render("admin/addcoupons", {
         message: "All fields are required"
+      });
+    }
+
+    // Normalize and validate Categories
+    const normalizedCategories = Categories
+      ? Array.isArray(Categories)
+        ? Categories
+        : [Categories]
+      : [];
+    if (!normalizedCategories.length) {
+      console.log("Invalid or missing Categories");
+      return res.render("admin/addcoupons", {
+        message: "At least one category must be selected"
       });
     }
 
     // Check for existing coupon code
     const existingcoupon = await Coupon.findOne({ CouponCode });
     if (existingcoupon) {
-      console.log("coupon already exists");
-      return res.render("admin/addcoupon", {
+      console.log("Coupon already exists");
+      return res.render("admin/addcoupons", {
         message: "Coupon already exists"
       });
     }
 
     if (isNaN(DiscountValue) || DiscountValue <= 0) {
       console.log("Invalid DiscountValue");
-      return res.render("admin/addcoupon", {
+      return res.render("admin/addcoupons", {
         message: "Discount value must be a positive number"
       });
     }
 
     if (MinimumCartValue && (isNaN(MinimumCartValue) || MinimumCartValue < 0)) {
       console.log("Invalid MinimumCartValue");
-      return res.render("admin/addcoupon", {
+      return res.render("admin/addcoupons", {
         message: "Minimum cart value must be a positive number"
       });
     }
@@ -955,7 +962,7 @@ const addcoupons = async (req, res) => {
         !Number.isInteger(Number(UsageLimit)))
     ) {
       console.log("Invalid UsageLimit");
-      return res.render("admin/addcoupon", {
+      return res.render("admin/addcoupons", {
         message: "Usage limit must be a positive integer"
       });
     }
@@ -963,32 +970,31 @@ const addcoupons = async (req, res) => {
     const formattedExpiryDate = new Date(ExpiryDate);
     if (isNaN(formattedExpiryDate)) {
       console.log("Invalid ExpiryDate");
-      return res.render("admin/addcoupon", {
+      return res.render("admin/addcoupons", {
         message: "Expiry date is invalid"
       });
     }
 
     if (formattedExpiryDate < new Date()) {
       console.log("Expiry date is in the past");
-      return res.render("admin/addcoupon", {
+      return res.render("admin/addcoupons", {
         message: "Expiry date cannot be in the past"
       });
     }
 
     if (Description && typeof Description !== "string") {
       console.log("Invalid Description");
-      return res.render("admin/addcoupon", {
+      return res.render("admin/addcoupons", {
         message: "Description must be a valid string"
       });
     }
 
-    // Create a new coupon object
+    // Save the coupon
     const newCoupon = new Coupon({
       CouponCode,
       DiscountType,
       DiscountValue,
-      Products, // Now it correctly stores an array of selected products
-      Categories, // Now it correctly stores an array of selected categories
+      Categories: normalizedCategories,
       MinimumCartValue,
       UsageLimit,
       ExpiryDate: formattedExpiryDate,
@@ -997,42 +1003,33 @@ const addcoupons = async (req, res) => {
 
     await newCoupon.save();
     console.log("New coupon saved:", newCoupon);
-
-    return res.redirect("/admin/coupon");
+    return res.redirect("/admin/coupons");
   } catch (error) {
     console.error("Error adding coupon:", error.message);
-    res.redirect("/admin/dashboard");
+    res.redirect("/admin/coupons");
   }
 };
+
 const loadcoupon = async (req, res) => {
   try {
-    // Get the current page from the query parameter, default to 1 if not provided
     const page = parseInt(req.query.page) || 1;
-
-    // Set the number of products per page, default to 4 if not provided
     const limit = parseInt(req.query.limit) || 4;
 
-    // Calculate how many items to skip based on the current page
     const skip = (page - 1) * limit;
 
-    // Fetch the total number of products
     const totalcoupons = await Coupon.countDocuments();
 
-    // Fetch products with pagination
     const coupons = await Coupon.find({})
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1 })  // Sort by creation date (or change if needed)
+      .sort({ createdAt: -1 })
       .exec();
 
-    // Calculate total pages
     const totalPages = Math.ceil(totalcoupons / limit);
 
-    // Get previous and next page numbers
     const previousPage = page > 1 ? page - 1 : null;
     const nextPage = page < totalPages ? page + 1 : null;
 
-    // Render the product page with pagination data
     res.render("admin/coupon", {
       coupons,
       currentPage: page,
@@ -1069,85 +1066,32 @@ const deleteCoupon = async (req, res) => {
     });
   }
 };
-
+const unlistCoupon = async (req, res) => {
+  try {
+    const couponId = req.params.id;
+    await Coupon.findByIdAndUpdate(couponId, { Status: false });
+    console.log(`Product ${couponId} successfully unlisted`);
+    res.redirect("/admin/coupon");
+  } catch (error) {
+    console.error("Failed to unlist the product:", error);
+    res.status(500).redirect("/admin/coupon");
+  }
+};
+const listCoupon = async (req, res) => {
+  try {
+    const couponId = req.params.id;
+    await Coupon.findByIdAndUpdate(couponId, { Status: true });
+    console.log(`Product ${couponId} successfully listed`);
+    res.redirect("/admin/coupon");
+  } catch (error) {
+    console.error("Failed to list the product:", error);
+    res.status(500).redirect("/admin/coupon");
+  }
+};
 // -------------------------------------------------Offers Management------------------------------------------------------
-// const addoffer = async (req, res) => {
-//   const products = await Products.find({});
-//   const category = await Category.find({});
-//   try {
-//     const {
-//       DiscountType,
-//       DiscountValue,
-//       Description,
-//       Products,
-//       Categories,
-//       ExpiryDate,
-//       Status
-//     } = req.body;
-
-//     if (
-//       !DiscountType ||
-//       !DiscountValue ||
-//       !Description ||
-//       !Products ||
-//       !Products.length ||
-//       !Categories ||
-//       !Categories.length ||
-//       !ExpiryDate ||
-//       !Status
-//     ) {
-//       console.log("All fields are required");
-//       return res.render("admin/addoffer", {
-//         message: "All fields are required",
-//         products,
-//         category
-//       });
-//     }
-
-//     const formattedExpiryDate = new Date(ExpiryDate);
-//     const newoffer = new Offer({
-//       DiscountType,
-//       DiscountValue,
-//       Description,
-//       Products,
-//       Categories,
-//       ExpiryDate: formattedExpiryDate,
-//       Status
-//     });
-
-//     // Save the offer
-//     await newoffer.save();
-//     console.log("New offer created: ", newoffer);
-//     await Products.findByIdAndUpdate(
-//       { _id: products._id },
-//       { priceWithDiscount: DiscountValue }
-//     );
-
-//     const newprice = new Products.findByIdAndUpdate({
-//       priceWithDiscount
-//     });
-
-//     await newprice.save();
-//     console.log("New offer created: ", newprice);
-//     await Products.updateMany(
-//       { _id: { $in: Products } },
-//       { $set: { offer: newoffer._id } }
-//     );
-
-//     res.redirect("/admin/offer");
-//   } catch (error) {
-//     console.log("Error while saving the offer:", error);
-//     res.status(500).render("admin/addoffer", {
-//       message: "Make sure you entered everything correctly.",
-//       products,
-//       category
-//     });
-//   }
-// };
 
 const addoffer = async (req, res) => {
   const products = await Products.find({});
-  const category = await Category.find({});
 
   try {
     const {
@@ -1155,7 +1099,6 @@ const addoffer = async (req, res) => {
       DiscountValue,
       Description,
       Products: productIds,
-      Categories: categoryIds,
       ExpiryDate,
       Status
     } = req.body;
@@ -1166,16 +1109,13 @@ const addoffer = async (req, res) => {
       !Description ||
       !Array.isArray(productIds) ||
       productIds.length === 0 ||
-      !Array.isArray(categoryIds) ||
-      categoryIds.length === 0 ||
       !ExpiryDate ||
       !Status
     ) {
       console.log("All fields are required");
       return res.render("admin/addoffer", {
         message: "All fields are required",
-        products,
-        category
+        products
       });
     }
 
@@ -1183,8 +1123,7 @@ const addoffer = async (req, res) => {
     if (isNaN(formattedExpiryDate.getTime())) {
       return res.render("admin/addoffer", {
         message: "Invalid Expiry Date",
-        products,
-        category
+        products
       });
     }
 
@@ -1193,7 +1132,6 @@ const addoffer = async (req, res) => {
       DiscountValue,
       Description,
       Products: productIds,
-      Categories: categoryIds,
       ExpiryDate: formattedExpiryDate,
       Status
     });
@@ -1216,6 +1154,74 @@ const addoffer = async (req, res) => {
     res.redirect("/admin/offer");
   } catch (error) {
     console.error("Error while saving the offer:", error);
+    res.status(500).render("admin/addoffer", {
+      message: "Make sure you entered everything correctly.",
+      products
+    });
+  }
+};
+const addoffers = async (req, res) => {
+  const category = await Category.find({});
+  try {
+    const {
+      DiscountType,
+      DiscountValue,
+      Description,
+      Categories,
+      ExpiryDate,
+      Status
+    } = req.body;
+
+    if (
+      !DiscountType ||
+      !DiscountValue ||
+      !Description ||
+      !Categories ||
+      !Categories.length ||
+      !ExpiryDate ||
+      !Status
+    ) {
+      console.log("All fields are required");
+      return res.render("admin/addoffer", {
+        message: "All fields are required",
+        category
+      });
+    }
+
+    const formattedExpiryDate = new Date(ExpiryDate);
+    const newoffer = new Offer({
+      DiscountType,
+      DiscountValue,
+      Description,
+      Categories,
+      ExpiryDate: formattedExpiryDate,
+      Status
+    });
+
+    // Save the offer
+    await newoffer.save();
+    console.log("New offer created: ", newoffer);
+    // await Products.findByIdAndUpdate(
+    //   { _id: products._id },
+    //   { priceWithDiscount: DiscountValue }
+    // );
+
+    // const newprice = new Products.findByIdAndUpdate({
+    //   priceWithDiscount
+    // });
+
+    // Save the offer
+    // await newprice.save();
+    // console.log("New offer created: ", newprice);
+    // Now associate the offer with the products
+    await Category.updateMany(
+      { _id: { $in: category } },
+      { $set: { offer: newoffer._id } }
+    );
+
+    res.redirect("/admin/offer");
+  } catch (error) {
+    console.log("Error while saving the offer:", error);
     res.status(500).render("admin/addoffer", {
       message: "Make sure you entered everything correctly.",
       products,
@@ -1241,88 +1247,6 @@ const loadeditOffer = async (req, res) => {
     console.log("error while loading edit offer page", error);
   }
 };
-// const editOffer = async (req, res) => {
-//   const { id: offerId } = req.params;
-//   const products = await Products.find({});
-//   const categories = await Category.find({});
-//   try {
-//     const {
-//       DiscountType,
-//       DiscountValue,
-//       Description,
-//       Products,
-//       Categories,
-//       ExpiryDate,
-//       Status
-//     } = req.body;
-//     console.log("request Body:", req.body);
-
-//     // Validate required fields
-//     if (
-//       !DiscountType ||
-//       !DiscountValue ||
-//       !Description ||
-//       !Products.length ||
-//       !ExpiryDate ||
-//       !Status
-//     ) {
-//       console.log("All fields are required");
-//       const formattedExpiryDate = new Date(ExpiryDate);
-
-//       return res.render("admin/addoffer", {
-//         message: "All fields are required",
-//         products,
-//         categories
-//       });
-//     }
-
-//     const formattedExpiryDate = new Date(ExpiryDate);
-
-//     // Map product IDs to product names
-//     const productNames = await Products.find({
-//       _id: { $in: Products }
-//     }).select("name");
-
-//     // Map category IDs to category names
-//     const categoryNames = await Category.find({
-//       _id: { $in: Categories }
-//     }).select("category");
-
-//     // Update the offer with product and category names
-//     const updatedOffer = await Offer.findByIdAndUpdate(
-//       offerId,
-//       {
-//         DiscountType,
-//         DiscountValue,
-//         Description,
-//         Products: productNames.map(product => product.name), // Store product names
-//         Categories: categoryNames.map(category => category.category), // Store category names
-//         ExpiryDate: formattedExpiryDate,
-//         Status
-//       },
-//       { new: true }
-//     );
-
-//     if (!updatedOffer) {
-//       console.log("Offer not found");
-//       return res.status(404).render("admin/editoffer", {
-//         message: "Offer not found",
-//         products,
-//         categories
-//       });
-//     }
-
-//     console.log("Updated offer:", updatedOffer);
-//     res.redirect("/admin/offer");
-//   } catch (error) {
-//     console.log("Error while saving the offer:", error);
-//     return res.status(500).render("admin/addoffer", {
-//       message: "Make sure you entered everything correctly",
-//       products,
-//       categories
-//     });
-//   }
-// };
 
 const editOffer = async (req, res) => {
   const { id: offerId } = req.params;
@@ -1401,20 +1325,19 @@ const editOffer = async (req, res) => {
   }
 };
 const loadaddoffers = async (req, res) => {
-  const products = await Products.find({});
   const category = await Category.find({});
 
   try {
-    res.render("admin/addoffers", { products, category });
+    res.render("admin/addoffers", { category });
   } catch (error) {
     console.log("error while loading", error);
   }
 };
-const loadaddoffer = async (req, res) => { 
-  const category = await Category.find({});
+const loadaddoffer = async (req, res) => {
+  const products = await Products.find({});
 
   try {
-    res.render("admin/addoffers", { products, category });
+    res.render("admin/addoffer", { products });
   } catch (error) {
     console.log("error while loading", error);
   }
@@ -1435,11 +1358,11 @@ const loadoffers = async (req, res) => {
 
     // Fetch products with pagination
     const offer = await Offer.find({})
-    .populate("Products")
-    .populate("Categories")
+      .populate("Products")
+      .populate("Categories")
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1 })  // Sort by creation date (or change if needed)
+      .sort({ createdAt: -1 }) // Sort by creation date (or change if needed)
       .exec();
 
     // Calculate total pages
@@ -1458,11 +1381,11 @@ const loadoffers = async (req, res) => {
       previousPage: previousPage,
       nextPage: nextPage
     });
-  }catch (error) {
+  } catch (error) {
     console.log(`Error fetching offers: ${error}`);
-    res.redirect("/admin/dashboard")
+    res.redirect("/admin/dashboard");
   }
-} 
+};
 const deleteOffer = async (req, res) => {
   const { id: offerId } = req.params; // Extract the ID from req.params
   console.log("oferId : ", offerId);
@@ -1484,6 +1407,28 @@ const deleteOffer = async (req, res) => {
   }
 };
 
+const unlistOffer = async (req, res) => {
+  try {
+    const offerId = req.params.id;
+    await Offer.findByIdAndUpdate(offerId, { Status: false });
+    console.log(`Product ${offerId} successfully unlisted`);
+    res.redirect("/admin/offer");
+  } catch (error) {
+    console.error("Failed to unlist the product:", error);
+    res.status(500).redirect("/admin/offer");
+  }
+};
+const listOffer = async (req, res) => {
+  try {
+    const offerId = req.params.id;
+    await Offer.findByIdAndUpdate(offerId, { Status: true });
+    console.log(`Product ${offerId} successfully listed`);
+    res.redirect("/admin/offer");
+  } catch (error) {
+    console.error("Failed to list the product:", error);
+    res.status(500).redirect("/admin/offer");
+  }
+};
 //-------------sales report-------------------------------------------------
 const getSalesReport = async (req, res) => {
   try {
@@ -1495,7 +1440,7 @@ const getSalesReport = async (req, res) => {
     if (startDate && endDate) {
       filterConditions.time = {
         $gte: new Date(startDate),
-        $lte: new Date(endDate),
+        $lte: new Date(endDate)
       };
     }
 
@@ -1503,14 +1448,16 @@ const getSalesReport = async (req, res) => {
     const orders = await Orders.find(filterConditions).populate("items.productId");
 
     // Reduce data into a grouped report by month or day based on the filter
-    const groupByKey = (filter === "daily") 
-      ? (order) => order.time.toISOString().split("T")[0]
-      : (filter === "monthly") 
-        ? (order) => `${order.time.getMonth() + 1}-${order.time.getFullYear()}`
-        : (filter === "weekly")
-          ? (order) => `Week-${Math.ceil(order.time.getDate() / 7)} ${order.time.getFullYear()}`
-          : (order) => `${order.time.getFullYear()}`; // Default yearly grouping
-    
+    const groupByKey =
+      filter === "daily"
+        ? order => order.time.toISOString().split("T")[0]
+        : filter === "monthly"
+          ? order => `${order.time.getMonth() + 1}-${order.time.getFullYear()}`
+          : filter === "weekly"
+            ? order =>
+                `Week-${Math.ceil(order.time.getDate() / 7)} ${order.time.getFullYear()}`
+            : order => `${order.time.getFullYear()}`; // Default yearly grouping
+
     const salesData = orders.reduce((acc, order) => {
       const key = groupByKey(order);
 
@@ -1519,14 +1466,29 @@ const getSalesReport = async (req, res) => {
           key,
           totalSales: 0,
           totalDiscount: 0,
-          orders: [],
+          orderCount: 0,  // Initialize order count
+          netSale: 0,     // Initialize netSale for this period
+          orders: []
         };
       }
 
-      const totalDiscount = order.items.reduce((sum, item) => sum + (item.price - (item.priceWithDiscount || item.price)) * item.quantity, 0);
+      // Calculate total discount for the order
+      const totalDiscount = order.items.reduce(
+        (sum, item) =>
+          sum + (item.price - (item.priceWithDiscount || item.price)) * item.quantity,
+        0
+      );
+
+      // Calculate net sale for the order
+      const netSale = order.orderTotal - totalDiscount;
+
+      // Increment order count for this group
+      acc[key].orderCount += 1;
 
       acc[key].totalSales += order.orderTotal;
       acc[key].totalDiscount += totalDiscount;
+      acc[key].netSale += netSale; // Sum up netSale for the overall period
+
       acc[key].orders.push({
         orderId: order._id,
         date: order.time,
@@ -1534,15 +1496,21 @@ const getSalesReport = async (req, res) => {
         paymentMethod: order.paymentMethod,
         totalAmount: order.orderTotal,
         discount: totalDiscount,
-        netSale: order.orderTotal - totalDiscount,
+        netSale, // Include netSale for each order
       });
 
       return acc;
     }, {});
 
     const salesReport = Object.values(salesData);
-console.log("salesReport",salesReport)
-console.log("salesData",salesData)
+    console.log("salesReport", salesReport);
+    console.log("salesData", salesData);
+
+    // Calculate the overall netSale from all salesData
+    const overallNetSale = salesReport.reduce((total, period) => total + period.netSale, 0);
+
+    console.log("Overall Net Sale:", overallNetSale); // Log overall net sale
+
     // Pagination
     const skip = (page - 1) * limit;
     const paginatedReports = salesReport.slice(skip, skip + limit);
@@ -1556,13 +1524,116 @@ console.log("salesData",salesData)
       startDate,
       endDate,
       salesData: JSON.stringify(paginatedReports), // Stringify salesData for hidden input
+      overallNetSale // Send overallNetSale to the view for display
     });
-    
   } catch (error) {
     console.error("Error fetching sales report:", error);
     res.status(500).send("Failed to load sales report.");
   }
 };
+
+
+
+// const getSalesReport = async (req, res) => {
+//   try {
+//     const { startDate, endDate, filter, page = 1, limit = 5 } = req.query;
+
+//     const filterConditions = { "items.status": "delivered" };
+
+//     // Handle date filtering
+//     if (startDate && endDate) {
+//       filterConditions.time = {
+//         $gte: new Date(startDate),
+//         $lte: new Date(endDate)
+//       };
+//     }
+
+//     // Fetch and process data
+//     const orders = await Orders.find(filterConditions).populate("items.productId");
+
+//     // Reduce data into a grouped report by month or day based on the filter
+//     const groupByKey =
+//       filter === "daily"
+//         ? order => order.time.toISOString().split("T")[0]
+//         : filter === "monthly"
+//           ? order => `${order.time.getMonth() + 1}-${order.time.getFullYear()}`
+//           : filter === "weekly"
+//             ? order =>
+//                 `Week-${Math.ceil(
+//                   order.time.getDate() / 7
+//                 )} ${order.time.getFullYear()}`
+//             : order => `${order.time.getFullYear()}`; // Default yearly grouping
+
+//     const salesData = orders.reduce((acc, order) => {
+//       const key = groupByKey(order);
+
+//       if (!acc[key]) {
+//         acc[key] = {
+//           key,
+//           totalSales: 0,
+//           totalDiscount: 0,
+//           orders: [],
+//           orderCount: 0,
+//           totalAmount: 0,
+//         };
+//       }
+
+//       const totalDiscount = order.items.reduce(
+//         (sum, item) =>
+//           sum +
+//           (item.price - (item.priceWithDiscount || item.price)) * item.quantity,
+//         0
+//       );
+
+//       acc[key].totalSales += order.orderTotal;
+//       acc[key].totalDiscount += totalDiscount;
+//       acc[key].orderCount += 1; // Increment order count
+//       acc[key].totalAmount += order.orderTotal; // Total order amount
+//       acc[key].orders.push({
+//         orderId: order._id,
+//         date: order.time,
+//         customer: `${order.shippingAddress.firstname} ${order.shippingAddress.lastname}`,
+//         paymentMethod: order.paymentMethod,
+//         totalAmount: order.orderTotal,
+//         discount: totalDiscount,
+//         netSale: order.orderTotal - totalDiscount
+//       });
+
+//       return acc;
+//     }, {});
+
+//     const salesReport = Object.values(salesData);
+//     console.log("salesReport", salesReport);
+//     console.log("salesData", salesData);
+
+//     // Pagination
+//     const skip = (page - 1) * limit;
+//     const paginatedReports = salesReport.slice(skip, skip + limit);
+//     const totalPages = Math.ceil(salesReport.length / limit);
+
+//     // Calculate overall sales count, amount, and discount
+//     const overallSalesCount = salesReport.reduce((sum, data) => sum + data.orderCount, 0);
+//     const overallTotalAmount = salesReport.reduce((sum, data) => sum + data.totalAmount, 0);
+//     const overallTotalDiscount = salesReport.reduce((sum, data) => sum + data.totalDiscount, 0);
+
+//     res.render("admin/salesreport", {
+//       salesReport: paginatedReports,
+//       totalPages,
+//       currentPage: page,
+//       filter,
+//       startDate,
+//       endDate,
+//       salesData: JSON.stringify(paginatedReports), // Stringify salesData for hidden input
+//       overallSalesCount,
+//       overallTotalAmount,
+//       overallTotalDiscount
+//     });
+//   } catch (error) {
+//     console.error("Error fetching sales report:", error);
+//     res.status(500).send("Failed to load sales report.");
+//   }
+// };
+
 const exportPDF = async (req, res) => {
   try {
     const salesData = JSON.parse(req.body.salesData); // Parse the stringified salesData
@@ -1576,7 +1647,10 @@ const exportPDF = async (req, res) => {
     doc.pipe(res);
 
     // Title
-    doc.fontSize(20).font("Helvetica-Bold").text("Sales Report", { align: "center" });
+    doc
+      .fontSize(20)
+      .font("Helvetica-Bold")
+      .text("Sales Report", { align: "center" });
     doc.moveDown(1);
 
     // Table header style
@@ -1587,73 +1661,77 @@ const exportPDF = async (req, res) => {
       "paying Type",
       "Amount",
       "Discount",
-      "Net Sale",
+      "Net Sale"
     ];
 
-  // Function to draw a horizontal line
-const drawLine = (y) => {
-  doc.moveTo(30, y + 10).lineTo(560, y + 10).stroke(); // Line moved slightly further down
-};
+    // Function to draw a horizontal line
+    const drawLine = y => {
+      doc.moveTo(30, y + 10).lineTo(560, y + 10).stroke(); // Line moved slightly further down
+    };
 
-let currentY = doc.y + 100; // Increased starting position to move everything down
+    let currentY = doc.y + 100; // Increased starting position to move everything down
 
+    salesData.forEach((report, index) => {
+      // Group Title
+      doc
+        .fontSize(14)
+        .font("Helvetica-Bold")
+        .text(`Group: ${report.key}`, 40, currentY);
+      currentY = doc.y + 20; // More space below the group title
 
-salesData.forEach((report, index) => {
-  // Group Title
-  doc.fontSize(14).font("Helvetica-Bold").text(`Group: ${report.key}`, 40, currentY);
-  currentY = doc.y + 20; // More space below the group title
- 
-drawLine(currentY);
-  // Table Headers
-  currentY += 25; // Add more space before table headers
-  doc.fontSize(12).font("Helvetica-Bold");
-  tableHeaders.forEach((header, i) => {
-    const x = 40 + i * 75;
-    doc.text(header, x, currentY, { width: 70, align: "left" });
-  });
-  currentY += 25; // Add more space after table headers
- 
-
-  // Table Rows
-  report.orders.forEach((order) => {
-    doc.fontSize(10).font("Helvetica");
-    const rowData = [
-      new Date(order.date).toLocaleDateString(),
-      order.orderId,
-      order.customer,
-      order.paymentMethod,
-      `₹${order.totalAmount.toLocaleString()}`,
-      `₹${order.discount.toLocaleString()}`,
-      `₹${order.netSale.toLocaleString()}`,
-    ];
-
-    rowData.forEach((data, i) => {
-      const x = 40 + i * 75;
-      doc.text(data, x, currentY, { width: 70, align: "left" });
-    });
-
-    currentY += 30; // Increased spacing between rows for better readability
-
-    // Check if the page is running out of space
-    if (currentY > 750) {
-      doc.addPage();
-      currentY = 70; // Reset position on new page with additional top margin
       drawLine(currentY);
-    }
-  });
+      // Table Headers
+      currentY += 25; // Add more space before table headers
+      doc.fontSize(12).font("Helvetica-Bold");
+      tableHeaders.forEach((header, i) => {
+        const x = 40 + i * 75;
+        doc.text(header, x, currentY, { width: 70, align: "left" });
+      });
+      currentY += 25; // Add more space after table headers
 
-  currentY += 30; // Add more space after each group
-});
-drawLine(currentY);
+      // Table Rows
+      report.orders.forEach(order => {
+        doc.fontSize(10).font("Helvetica");
+        const rowData = [
+          new Date(order.date).toLocaleDateString(),
+          order.orderId,
+          order.customer,
+          order.paymentMethod,
+          `₹${order.totalAmount.toLocaleString()}`,
+          `₹${order.discount.toLocaleString()}`,
+          `₹${order.netSale.toLocaleString()}`
+        ];
 
+        rowData.forEach((data, i) => {
+          const x = 40 + i * 75;
+          doc.text(data, x, currentY, { width: 70, align: "left" });
+        });
+
+        currentY += 30; // Increased spacing between rows for better readability
+
+        // Check if the page is running out of space
+        if (currentY > 750) {
+          doc.addPage();
+          currentY = 70; // Reset position on new page with additional top margin
+          drawLine(currentY);
+        }
+      });
+
+      currentY += 30; // Add more space after each group
+    });
+    drawLine(currentY);
 
     // Footer
     const footerY = doc.page.height - 30;
     doc
       .fontSize(10)
       .font("Helvetica")
-      .text("Sales Report Generated Automatically", 40, footerY, { align: "left" })
-      .text(`Date: ${new Date().toLocaleDateString()}`, 500, footerY, { align: "right" });
+      .text("Sales Report Generated Automatically", 40, footerY, {
+        align: "left"
+      })
+      .text(`Date: ${new Date().toLocaleDateString()}`, 500, footerY, {
+        align: "right"
+      });
 
     doc.end();
   } catch (error) {
@@ -1663,45 +1741,51 @@ drawLine(currentY);
 };
 
 
-
-
 const exportExcel = async (req, res) => {
-  const { salesData } = req.body;
-
   try {
-    const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet("Sales Report");
+      const salesData = JSON.parse(req.body.salesData); // Parse the string into an object
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Sales Report");
 
-  worksheet.columns = [
-    { header: "Order Date", key: "date" },
-    { header: "Order ID", key: "orderId" },
-    { header: "Customer Name", key: "customer" },
-    { header: "Payment Method", key: "paymentMethod" },
-    { header: "Total Amount", key: "totalAmount" },
-    { header: "Discount", key: "discount" },
-    { header: "Net Sale", key: "netSale" },
-  ];
+      worksheet.columns = [
+          { header: "Order Date", key: "date" },
+          { header: "Order ID", key: "orderId" },
+          { header: "Customer Name", key: "customer" },
+          { header: "Payment Method", key: "paymentMethod" },
+          { header: "Total Amount", key: "totalAmount" },
+          { header: "Discount", key: "discount" },
+          { header: "Net Sale", key: "netSale" }
+      ];
 
-  salesData.forEach((report) => {
-    report.orders.forEach((order) => worksheet.addRow(order));
-  });
+      // Process each report and order
+      salesData.forEach(report => {
+          report.orders.forEach(order => worksheet.addRow(order));
+      });
 
-  const filename = `Sales_Report_${Date.now()}.xlsx`;
+      const filename = `Sales_Report_${Date.now()}.xlsx`;
 
-  res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-  res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+      res.setHeader(
+          "Content-Disposition",
+          `attachment; filename="${filename}"`
+      );
+      res.setHeader(
+          "Content-Type",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
 
-  await workbook.xlsx.write(res);
-  res.end();
+      await workbook.xlsx.write(res);
+      res.end();
   } catch (error) {
-    console.log("error:",error)
+      console.error("Error exporting Excel:", error.message);
+      res.redirect("/admin/salesreport");
   }
 };
 
 
-
 module.exports = {
   exportPDF,
+  listOffer,
+  unlistOffer,
   getSalesReport,
   editOffer,
   loadeditOffer,
@@ -1743,5 +1827,8 @@ module.exports = {
   exportExcel,
   addcoupons,
   loadaddcoupons,
-  loadaddoffers
+  loadaddoffers,
+  addoffers,
+  unlistCoupon,
+  listCoupon
 };

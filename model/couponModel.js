@@ -14,23 +14,23 @@ const couponSchema = new mongoose.Schema({
     DiscountValue: {
         type: Number,
         required: true,
-        min: 0 // Minimum discount value of 0
+        min: 0 
     },
     Products: {
-        type: [String], // Array of product IDs or names
+        type: [String], 
         default: []
     },
     Categories: {
-        type: [String], // Array of applicable category names or IDs
+        type: [String], 
         default: []
     },
     MinimumCartValue: {
-        type: Number, // Changed to Number for cart value comparison
+        type: Number, 
         min: 0
     },
     UsageLimit: {
-        type: Number, // Changed to Number for limit counting
-        min: 1 // Minimum usage limit of 1
+        type: Number, 
+        min: 0 
     },
     ExpiryDate: {
         type: Date,
@@ -38,8 +38,12 @@ const couponSchema = new mongoose.Schema({
     },
     Description: {
         type: String,
-        maxlength: 500 // Limit description length
+        maxlength: 500 
     },
+    Status:{
+        type:Boolean,
+        default:true
+    }
 });
 
 const Coupons = mongoose.model("Coupon", couponSchema);

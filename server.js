@@ -83,6 +83,11 @@ app.engine(
     },
     
     helpers: {
+       // JSON stringify helper
+       JSONstringify: function (context) {
+        return JSON.stringify(context);
+      },
+
       // Helper to calculate subtotal
       calculateSubtotal: carts => {
         return carts.reduce((acc, item) => acc + item.total, 0);
@@ -165,7 +170,10 @@ app.engine(
 
       // Helper for logical OR
       or: (a, b) => a || b,
+      
+      not: (a,b)=>a != b,
 
+      neq: (a, b) =>a !== b,
       // Helper to return status icon based on status
       statusIcon: status => {
         switch (status) {

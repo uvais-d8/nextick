@@ -301,7 +301,7 @@
 																	style="width: 100%;"></p>
 															<span class="error-message" style="color: red;"></span>
 														</div>
-														
+
 														<div style="flex: 1;">
 															<label for="lastname"><b>Last Name</b></label>
 															<p><input id="lastname" name="lastname" type="text"
@@ -378,24 +378,27 @@
 										<td class="item-id" hidden>{{this.productId._id}}</td>
 										<td class="item-name">{{this.productId.name}}</td>
 										{{!-- <td class="item-price">₹{{this.productId.price}}</td> --}}
-											<td class="product-price">
-										{{#if this.priceWithDiscount}}
-										<del class="original-price">{{this.productId.price}}</del> <span
-											class="discounted-price">{{this.priceWithDiscount}}</span>
+										<td class="product-price">
+											{{#if this.priceWithDiscount}}
+											{{#if (neq this.priceWithDiscount this.productId.price)}}
+											<del class="original-price">{{this.productId.price}}</del>
+											<span class="discounted-price">{{this.priceWithDiscount}}</span>
+											{{else}}
+											<span class="original-price">{{this.productId.price}}</span>
+											{{/if}}
+											{{else}}
 
-										{{else}}
-										{{this.productId.price}}
-										{{/if}}
-									</td>
+											<span class="original-price">{{this.productId.price}}</span>
+											{{/if}}
+										</td>
 										<td class="item-quantity">{{this.quantity}}</td>
-										{{!-- <td class="item-total">₹{{multiply this.productId.price this.quantity}}</td> --}}
 										<td class="product-total">
-										{{#if this.priceWithDiscount}}
-										{{multiply this.priceWithDiscount this.quantity}}
-										{{else}}
-										{{multiply this.productId.price this.quantity}}
-										{{/if}}
-									</td>
+											{{#if this.priceWithDiscount}}
+											{{multiply this.priceWithDiscount this.quantity}}
+											{{else}}
+											{{multiply this.productId.price this.quantity}}
+											{{/if}}
+										</td>
 										<td class="item-image" hidden>{{this.productId.images}}</td>
 									</tr>
 									{{/each}}
@@ -449,10 +452,14 @@
 												<input type="radio" id="upi" name="paymentMethod" value="upi">
 												<label for="upi">UPI</label>
 											</div>
-										</div>	<div style="margin-left: 15px;color:rgb(18, 175, 18);font-weight:bold" class="discount-section">{{#if discount}}Discount Applied successfully: ₹{{discount}}{{/if}}
-								</div>
-							
-									</div><button style="margin-left: 15px;margin-bottom:15px" type="submit" class="btnnn">Place Order</button>
+										</div>
+										<div style="margin-left: 15px;color:rgb(18, 175, 18);font-weight:bold"
+											class="discount-section">{{#if discount}}Discount Applied successfully:
+											₹{{discount}}{{/if}}
+										</div>
+
+									</div><button style="margin-left: 15px;margin-bottom:15px" type="submit"
+										class="btnnn">Place Order</button>
 									</form>
 								</div>
 							</div>
@@ -463,10 +470,12 @@
 							<h3>Apply Coupon</h3>
 
 							<div class="coupon-form-wrap">
-								<form id="couponForm" method="post">
-									<p><input type="text" id="couponCode" placeholder="Coupon Code"></p>
+								<form id="couponForm">
+									<p><input type="text" name="couponCode" id="couponCode" placeholder="Coupon Code">
+									</p>
 									<p><input type="submit" value="Apply"></p>
 								</form>
+
 							</div>
 						</div>
 					</div>
@@ -486,7 +495,13 @@
 					<div class="coupon-card">
 						<h3 class="coupon-code">{{this.CouponCode}}</h3>
 						<p class="coupon-description">{{this.Description}}</p>
-						<p class="coupon-validity">Valid till: {{this.ExpiryDate}}</p>
+						<p class="coupon-validity">Valid till:<b>{{this.ExpiryDate}}</b></p>
+						{{#if (eq this.UsageLimit 0)}}
+						<p style="color: rgba(223, 9, 9, 0.895);">Usage limit end (currently not available)</p>
+						{{else}}
+						<p style="color: green;">coupon is available</p>
+						{{/if}}
+
 					</div>
 				</div>
 				{{/each}}
@@ -645,9 +660,9 @@
 			if (!formData.address) errorMessages.push("Address is required.");
 			if (!formData.pincode || !/^[0-9]{6}$/.test(formData.pincode))
 				errorMessages.push("Invalid pin code.");
-			{{!-- if (!formData.district) errorMessages.push("District is required."); --}}
+			{ { !-- if (!formData.district) errorMessages.push("District is required."); --} }
 			if (!formData.place) errorMessages.push("Place is required.");
-			{{!-- if (!formData.city) errorMessages.push("City is required."); --}}
+			{ { !-- if (!formData.city) errorMessages.push("City is required."); --} }
 
 			// Show validation errors
 			if (errorMessages.length > 0) {
@@ -671,10 +686,10 @@
 					const order = await response.json();
 
 					const options = {
-						key: "rzp_test_27cbwJ6wd0CuiQ", // Replace with your Razorpay API Key
-						amount: order.amount, // Amount in paisa
+						key: "rzp_test_27cbwJ6wd0CuiQ",
+						amount: order.amount,
 						currency: order.currency,
-						name: "Your Store Name",
+						name: "Watch Premium",
 						description: "Payment for your order",
 						order_id: order.id,
 						handler: async function (response) {
@@ -750,7 +765,7 @@
 					} else {
 						Swal.fire({
 							title: "Order Failed",
-							text:  "Select any Payment Methode",
+							text: "Select any Payment Methode",
 							icon: "error",
 							confirmButtonText: "Retry",
 						});
@@ -766,7 +781,7 @@
 				}
 			}
 		});
-	</script> 
+	</script>
 
 
 	<script>document.getElementById('couponForm').addEventListener('submit', async function (event) {
