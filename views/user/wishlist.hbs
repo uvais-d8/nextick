@@ -49,6 +49,28 @@
             box-shadow: 0 0 15px 9px #eaeaea69;
         }
 
+        .price {
+            font-size: 14px;
+            color: #ff0000;
+            text-decoration: line-through;
+            margin-right: 5px;
+        }
+
+        .offer-price {
+            font-size: 18px;
+            color: #008000;
+            font-weight: bold;
+        }
+
+        .discount-tag {
+            font-size: 12px;
+            color: #ff8800;
+            margin-left: 5px;
+        }
+
+        .a:hover {
+            color: white;
+        }
     </style>
 </head>
 
@@ -121,8 +143,8 @@
 
 
     <div class="breadcrumb-section breadcrumb-bg">
-        <div  class="container">
-            <div  class="row">
+        <div class="container">
+            <div class="row">
                 <div class="col-lg-8 offset-lg-2 text-center">
                     <div style="margin-top: -80px;" class="breadcrumb-text">
                         <p><a href="/">Home</a> > <a href="/products">Products</a> > <a href="/wishlist">Wishlist</a>
@@ -156,27 +178,21 @@
                                     <div style="background-color: rgb(255, 255, 255); border-radius:6px;"
                                         class="card-body">
                                         <h5 class="card-title">{{this.name}}</h5>
-                                       <p class="card-text">Category: {{this.category}}</p>
-<p class="card-text">
-  {{#if this.offerPrice}}
-  <span class="price" style="text-decoration: line-through; color: red;">₹{{this.price}}</span>
-  <span class="offer-price" style="color: green; font-weight: bold; font-size:19px">₹{{this.offerPrice}}</span>
-  <span class="discount-tag" style="FONT-SIZE:13PX;color: rgb(255, 136, 0);">
-    ({{this.discountValue}})
-  </span>
-  {{else}}
-  <span class="price" style="font-weight: bold; font-size:19px; color: black; text-decoration:none">₹{{this.price}}</span>
-  {{/if}}
-</p>
-<p class="card-text stock">
-  Stock:
-  {{#if this.stock}}
-  <span style="color:green;" class="in-stock">{{this.stock}} Available</span>
-  {{else}}
-  <span style="color: RED;" class="out-of-stock">Out of Stock</span>
-  {{/if}}
-</p>
-
+                                        <p class="card-text">Category: {{this.category}}</p>
+                                        <p class="card-text">
+                                            {{#if this.offerPrice}}
+                                            <span class="price"
+                                                style="text-decoration: line-through; color: red;">₹{{this.price}}</span>
+                                            <span class="offer-price"
+                                                style="color: green; font-weight: bold; font-size:19px">₹{{this.offerPrice}}</span>
+                                            <span class="discount-tag" style="FONT-SIZE:13PX;color: rgb(255, 136, 0);">
+                                                ({{this.discountValue}})
+                                            </span>
+                                            {{else}}
+                                            <span class="price"
+                                                style="font-weight: bold; font-size:19px; color: black; text-decoration:none">₹{{this.price}}</span>
+                                            {{/if}}
+                                        </p>
                                         <!-- Stock Information -->
                                         <p class="card-text stock">
                                             Stock:
@@ -240,31 +256,6 @@
                     });
                 });
             </script>
-
-            <style>
-                .price {
-                    font-size: 14px;
-                    color: #ff0000;
-                    text-decoration: line-through;
-                    margin-right: 5px;
-                }
-
-                .offer-price {
-                    font-size: 18px;
-                    color: #008000;
-                    font-weight: bold;
-                }
-
-                .discount-tag {
-                    font-size: 12px;
-                    color: #ff8800;
-                    margin-left: 5px;
-                }
-
-                .a:hover {
-                    color: white;
-                }
-            </style>
         </div>
 
         </div>

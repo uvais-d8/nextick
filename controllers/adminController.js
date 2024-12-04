@@ -26,6 +26,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }).any("images", 10);
 
 // -------------------------------------------------addmin Pages---------------------------------------------------------
+
 const loadlogin = async (req, res) => {
   res.render("admin/login");
 };
@@ -59,12 +60,83 @@ const login = async (req, res) => {
 };
 const loaddashboard = async (req, res) => {
   try {
+    const { startDate, endDate, filter, page = 1, limit = 5 } = req.query;
+
+    const filterConditions = { "items.status": "delivered" };
+
+    if (startDate && endDate) {
+      filterConditions.time = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate)
+      };
+    }
+
+    const orders = await Orders.find(filterConditions).populate(
+      "items.productId"
+    );
+
+    const groupByKey =
+      filter === "daily"
+        ? order => order.time.toISOString().split("T")[0]
+        : filter === "monthly"
+          ? order => `${order.time.getMonth() + 1}-${order.time.getFullYear()}`
+          : filter === "weekly"
+            ? order =>
+                `Week-${Math.ceil(
+                  order.time.getDate() / 7
+                )} ${order.time.getFullYear()}`
+            : order => `${order.time.getFullYear()}`; // Default yearly grouping
+
+    const salesData = orders.reduce((acc, order) => {
+      const key = groupByKey(order);
+
+      if (!acc[key]) {
+        acc[key] = {
+          key,
+          totalSales: 0,
+          totalDiscount: 0,
+          orderCount: 0,
+          netSale: 0,
+         };
+      }
+
+      const totalDiscount = order.items.reduce(
+        (sum, item) =>
+          sum +
+          (item.price - (item.priceWithDiscount || item.price)) * item.quantity,
+        0
+      );
+
+      const netSale = order.orderTotal - totalDiscount;
+      acc[key].orderCount += 1;
+      acc[key].totalSales += order.orderTotal;
+      acc[key].totalDiscount += totalDiscount;
+      acc[key].netSale += netSale;
+      return acc;
+    }, {});
+
+    const salesReport = Object.values(salesData);
+    const overallNetSale = salesReport.reduce(
+      (total, period) => total + period.netSale,
+      0
+    );
+    const skip = (page - 1) * limit;
+    const paginatedReports = salesReport.slice(skip, skip + limit);
+    const totalPages = Math.ceil(salesReport.length / limit);
+
+    res.render("admin/dashboard", {
+      salesReport: paginatedReports,
+      totalPages,
+      currentPage: page,
+      filter,
+      startDate,
+      endDate,
+      salesData: JSON.stringify(paginatedReports),
+      overallNetSale
+    });
+
     const admin = req.session.admin;
     if (!admin) return res.redirect("/admin/login");
-
-    const users = await User.find({});
-
-    res.render("admin/dashboard", { users });
   } catch (error) {
     console.error(error);
     res.render("admin/login", { message: "Failed to load dashboard" });
@@ -75,6 +147,7 @@ const logout = (req, res) => {
   res.render("admin/login");
 };
 // -------------------------------------------------User Management-------------------------------------------------------
+
 const blockUser = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -98,45 +171,23 @@ const unblockUser = async (req, res) => {
     res.redirect("/admin/dashboard");
   }
 };
-// const loadUserMangment = async (req, res) => {
-//   try {
-//     const users = await User.find({});
-//     res.render("admin/userManagement", { users });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).send("Server Error");
-//   }
-// };
 
 const loadUserMangment = async (req, res) => {
   try {
-    // Get the current page from the query parameter, default to 1 if not provided
     const page = parseInt(req.query.page) || 1;
-
-    // Set the number of users per page, default to 4 if not provided
     const limit = parseInt(req.query.limit) || 4;
-
-    // Calculate how many items to skip based on the current page
     const skip = (page - 1) * limit;
-
-    // Fetch the total number of users
     const totalUsers = await User.countDocuments();
-
-    // Fetch users with pagination
     const users = await User.find({})
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1 }) // Sort by creation date (or change if needed)
+      .sort({ createdAt: -1 })
       .exec();
-
-    // Calculate total pages
     const totalPages = Math.ceil(totalUsers / limit);
 
-    // Get previous and next page numbers
     const previousPage = page > 1 ? page - 1 : null;
     const nextPage = page < totalPages ? page + 1 : null;
 
-    // Render the user page with pagination data
     res.render("admin/userManagement", {
       users,
       currentPage: page,
@@ -152,6 +203,7 @@ const loadUserMangment = async (req, res) => {
 };
 
 // -------------------------------------------------Category Management---------------------------------------------------
+
 const addcategory = async (req, res) => {
   try {
     const { category, brand, bandcolor } = req.body;
@@ -242,17 +294,6 @@ const editcategory = async (req, res) => {
     res.status(500).send("Error updating category");
   }
 };
-// const loadcategory = async (req, res) => {
-//   try {
-//     const category = await Category.find({});
-//     res.render("admin/category", {
-//       category
-//     });
-//   } catch (error) {
-//     console.log(`No data found: ${error}`);
-//     res.status(500).send("Failed to load categories.");
-//   }
-// };
 const loadcategory = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -285,6 +326,7 @@ const loadcategory = async (req, res) => {
 };
 
 // -------------------------------------------------Products Management---------------------------------------------------
+
 const unlistproducts = async (req, res) => {
   try {
     const productId = req.params.id;
@@ -309,7 +351,6 @@ const listproducts = async (req, res) => {
 };
 const editproducts = async (req, res) => {
   try {
-    // Retrieve form data
     const { id, name, category, stock, price, deletedImages } = req.body;
     console.log("Received Data:");
     console.log("ID:", id);
@@ -357,7 +398,6 @@ const editproducts = async (req, res) => {
       });
     }
 
-    // Handle deleted images
     if (deletedImages) {
       const deletedImagesArray = deletedImages.split(",");
       for (const imagePath of deletedImagesArray) {
@@ -373,7 +413,6 @@ const editproducts = async (req, res) => {
       }
     }
 
-    // Handle newly uploaded files
     if (req.files && req.files.images) {
       const newImages = req.files.images.map(
         file => "uploads/" + file.filename
@@ -382,7 +421,6 @@ const editproducts = async (req, res) => {
       console.log("Added new images:", newImages);
     }
 
-    // Handle cropped image if provided
     if (req.body.croppedImageData) {
       const croppedImages = Array.isArray(req.body.croppedImageData)
         ? req.body.croppedImageData
@@ -398,7 +436,6 @@ const editproducts = async (req, res) => {
       }
     }
 
-    // Ensure at least one image
     if (product.images.length === 0) {
       console.error("No images provided for the product.");
       return res.render("admin/products", {
@@ -406,19 +443,16 @@ const editproducts = async (req, res) => {
       });
     }
 
-    // Update product fields
     Object.assign(product, {
       name: name.trim(),
-      category: categoryObj._id, // Assign the ObjectId of the category
+      category: categoryObj._id,
       stock: stockNumber,
       price: parseFloat(price).toFixed(2)
     });
 
-    // Save the updated product
     await product.save();
     console.log("Product updated successfully:", product);
 
-    // Redirect to the products page after successful update
     res.redirect("/admin/products");
   } catch (error) {
     console.error("Error updating product:", error);
@@ -445,21 +479,18 @@ const addproduct = async (req, res) => {
     console.log("Request body:", req.body);
     console.log("Uploaded files:", files);
 
-    // Check for required fields
     if (!name || !category || !stock || !price || !description) {
       return res.status(400).render("admin/addproduct", {
         message: "All fields are required."
       });
     }
 
-    // Check if at least 3 images are uploaded
     if (!files || files.length < 3) {
       return res.status(400).render("admin/addproduct", {
         message: "Please upload at least 3 images."
       });
     }
 
-    // Validate the file types (ensure they are images)
     const validImageTypes = [
       "image/jpeg",
       "image/png",
@@ -475,7 +506,6 @@ const addproduct = async (req, res) => {
       }
     }
 
-    // Check if the product already exists
     const existingProduct = await Products.findOne({ name });
     if (existingProduct) {
       const products = await Products.find({});
@@ -486,7 +516,6 @@ const addproduct = async (req, res) => {
       });
     }
 
-    // Check if the category exists
     const categoryObj = await Category.findOne({ category: category });
     if (!categoryObj) {
       return res.status(400).render("admin/addproduct", {
@@ -494,7 +523,6 @@ const addproduct = async (req, res) => {
       });
     }
 
-    // Create the new product
     const newProduct = new Products({
       name,
       category: categoryObj._id, // Set the category ObjectId
@@ -514,7 +542,6 @@ const addproduct = async (req, res) => {
     res.redirect("/admin/dashboard");
   }
 };
-
 const loadproducts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -547,7 +574,6 @@ const loadproducts = async (req, res) => {
     res.status(500).send("Failed to load products.");
   }
 };
-
 const loadeditproducts = async (req, res) => {
   const { id } = req.params;
   console.log("hello");
@@ -558,6 +584,7 @@ const loadeditproducts = async (req, res) => {
 };
 
 // -------------------------------------------------Inventory Management--------------------------------------------------
+
 const loadinventory = async (req, res) => {
   try {
     const products = await Products.find({});
@@ -610,6 +637,7 @@ const editinventory = async (req, res) => {
 };
 
 // -------------------------------------------------Orders Management------------------------------------------------------
+
 const cancelOrderItem = async (req, res) => {
   const { orderId, itemId } = req.body;
   console.log("Request Body for Cancel:", req.body);
@@ -881,7 +909,7 @@ const addcoupon = async (req, res) => {
       CouponCode,
       DiscountType,
       DiscountValue,
-      Products, // Now it correctly stores an array of selected products
+      Products,
       MinimumCartValue,
       UsageLimit,
       ExpiryDate: formattedExpiryDate,
@@ -912,30 +940,23 @@ const addcoupons = async (req, res) => {
 
     console.log("Request body:", req.body);
 
-    if (!CouponCode || !DiscountType || !ExpiryDate) {
+    if (
+      !CouponCode ||
+      !DiscountType ||
+      !DiscountValue ||
+      !Categories.length ||
+      !ExpiryDate
+    ) {
       console.log("Missing required fields");
       return res.render("admin/addcoupons", {
         message: "All fields are required"
       });
     }
 
-    // Normalize and validate Categories
-    const normalizedCategories = Categories
-      ? Array.isArray(Categories)
-        ? Categories
-        : [Categories]
-      : [];
-    if (!normalizedCategories.length) {
-      console.log("Invalid or missing Categories");
-      return res.render("admin/addcoupons", {
-        message: "At least one category must be selected"
-      });
-    }
-
     // Check for existing coupon code
     const existingcoupon = await Coupon.findOne({ CouponCode });
     if (existingcoupon) {
-      console.log("Coupon already exists");
+      console.log("coupon already exists");
       return res.render("admin/addcoupons", {
         message: "Coupon already exists"
       });
@@ -989,12 +1010,12 @@ const addcoupons = async (req, res) => {
       });
     }
 
-    // Save the coupon
+    // Create a new coupon object
     const newCoupon = new Coupon({
       CouponCode,
       DiscountType,
       DiscountValue,
-      Categories: normalizedCategories,
+      Categories,
       MinimumCartValue,
       UsageLimit,
       ExpiryDate: formattedExpiryDate,
@@ -1003,13 +1024,13 @@ const addcoupons = async (req, res) => {
 
     await newCoupon.save();
     console.log("New coupon saved:", newCoupon);
-    return res.redirect("/admin/coupons");
+
+    return res.redirect("/admin/coupon");
   } catch (error) {
     console.error("Error adding coupon:", error.message);
-    res.redirect("/admin/coupons");
+    res.redirect("/admin/coupon");
   }
 };
-
 const loadcoupon = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -1052,12 +1073,11 @@ const deleteCoupon = async (req, res) => {
 
     if (!deletedCoupon) {
       console.log("Coupon not found");
-      return res.redirect("/admin/coupon"); // Redirect if coupon not found
+      return res.redirect("/admin/coupon");
     }
 
     console.log("Deleted coupon:", deletedCoupon);
 
-    // Redirect to the coupon list page after deletion
     return res.redirect("/admin/coupon");
   } catch (error) {
     console.log("Error occurred while deleting coupon:", error);
@@ -1088,6 +1108,7 @@ const listCoupon = async (req, res) => {
     res.status(500).redirect("/admin/coupon");
   }
 };
+
 // -------------------------------------------------Offers Management------------------------------------------------------
 
 const addoffer = async (req, res) => {
@@ -1229,7 +1250,6 @@ const addoffers = async (req, res) => {
     });
   }
 };
-
 const loadeditOffer = async (req, res) => {
   const { id: offerId } = req.params;
   const products = await Products.find({});
@@ -1247,7 +1267,6 @@ const loadeditOffer = async (req, res) => {
     console.log("error while loading edit offer page", error);
   }
 };
-
 const editOffer = async (req, res) => {
   const { id: offerId } = req.params;
   const products = await Products.find({});
@@ -1344,35 +1363,27 @@ const loadaddoffer = async (req, res) => {
 };
 const loadoffers = async (req, res) => {
   try {
-    // Get the current page from the query parameter, default to 1 if not provided
     const page = parseInt(req.query.page) || 1;
 
-    // Set the number of products per page, default to 4 if not provided
     const limit = parseInt(req.query.limit) || 4;
 
-    // Calculate how many items to skip based on the current page
     const skip = (page - 1) * limit;
 
-    // Fetch the total number of products
     const totalcoupons = await Offer.countDocuments();
 
-    // Fetch products with pagination
     const offer = await Offer.find({})
       .populate("Products")
       .populate("Categories")
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1 }) // Sort by creation date (or change if needed)
+      .sort({ createdAt: -1 })
       .exec();
 
-    // Calculate total pages
     const totalPages = Math.ceil(totalcoupons / limit);
 
-    // Get previous and next page numbers
     const previousPage = page > 1 ? page - 1 : null;
     const nextPage = page < totalPages ? page + 1 : null;
 
-    // Render the product page with pagination data
     res.render("admin/offer", {
       offer,
       currentPage: page,
@@ -1387,10 +1398,9 @@ const loadoffers = async (req, res) => {
   }
 };
 const deleteOffer = async (req, res) => {
-  const { id: offerId } = req.params; // Extract the ID from req.params
+  const { id: offerId } = req.params;
   console.log("oferId : ", offerId);
   try {
-    // Validate if the ID is a valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(offerId)) {
       console.log("Invalid Offer ID");
       return res.redirect("/admin/offer");
@@ -1399,14 +1409,13 @@ const deleteOffer = async (req, res) => {
 
     if (!deleteoffer) {
       console.log("Offer not found");
-      return res.redirect("/admin/offer"); // Redirect if coupon not found
+      return res.redirect("/admin/offer");
     }
     console.log("deleted offer : ", deleteoffer);
   } catch (error) {
     console.log("error", error);
   }
 };
-
 const unlistOffer = async (req, res) => {
   try {
     const offerId = req.params.id;
@@ -1430,13 +1439,13 @@ const listOffer = async (req, res) => {
   }
 };
 //-------------sales report-------------------------------------------------
+
 const getSalesReport = async (req, res) => {
   try {
     const { startDate, endDate, filter, page = 1, limit = 5 } = req.query;
 
     const filterConditions = { "items.status": "delivered" };
 
-    // Handle date filtering
     if (startDate && endDate) {
       filterConditions.time = {
         $gte: new Date(startDate),
@@ -1444,10 +1453,10 @@ const getSalesReport = async (req, res) => {
       };
     }
 
-    // Fetch and process data
-    const orders = await Orders.find(filterConditions).populate("items.productId");
+    const orders = await Orders.find(filterConditions).populate(
+      "items.productId"
+    );
 
-    // Reduce data into a grouped report by month or day based on the filter
     const groupByKey =
       filter === "daily"
         ? order => order.time.toISOString().split("T")[0]
@@ -1455,7 +1464,9 @@ const getSalesReport = async (req, res) => {
           ? order => `${order.time.getMonth() + 1}-${order.time.getFullYear()}`
           : filter === "weekly"
             ? order =>
-                `Week-${Math.ceil(order.time.getDate() / 7)} ${order.time.getFullYear()}`
+                `Week-${Math.ceil(
+                  order.time.getDate() / 7
+                )} ${order.time.getFullYear()}`
             : order => `${order.time.getFullYear()}`; // Default yearly grouping
 
     const salesData = orders.reduce((acc, order) => {
@@ -1466,37 +1477,33 @@ const getSalesReport = async (req, res) => {
           key,
           totalSales: 0,
           totalDiscount: 0,
-          orderCount: 0,  // Initialize order count
-          netSale: 0,     // Initialize netSale for this period
+          orderCount: 0,
+          netSale: 0,
           orders: []
         };
       }
 
-      // Calculate total discount for the order
       const totalDiscount = order.items.reduce(
         (sum, item) =>
-          sum + (item.price - (item.priceWithDiscount || item.price)) * item.quantity,
+          sum +
+          (item.price - (item.priceWithDiscount || item.price)) * item.quantity,
         0
       );
 
-      // Calculate net sale for the order
       const netSale = order.orderTotal - totalDiscount;
-
-      // Increment order count for this group
       acc[key].orderCount += 1;
-
       acc[key].totalSales += order.orderTotal;
       acc[key].totalDiscount += totalDiscount;
-      acc[key].netSale += netSale; // Sum up netSale for the overall period
-
+      acc[key].netSale += netSale;
       acc[key].orders.push({
         orderId: order._id,
         date: order.time,
-        customer: `${order.shippingAddress.firstname} ${order.shippingAddress.lastname}`,
+        customer: `${order.shippingAddress.firstname} ${order.shippingAddress
+          .lastname}`,
         paymentMethod: order.paymentMethod,
         totalAmount: order.orderTotal,
         discount: totalDiscount,
-        netSale, // Include netSale for each order
+        netSale
       });
 
       return acc;
@@ -1506,12 +1513,13 @@ const getSalesReport = async (req, res) => {
     console.log("salesReport", salesReport);
     console.log("salesData", salesData);
 
-    // Calculate the overall netSale from all salesData
-    const overallNetSale = salesReport.reduce((total, period) => total + period.netSale, 0);
+    const overallNetSale = salesReport.reduce(
+      (total, period) => total + period.netSale,
+      0
+    );
 
-    console.log("Overall Net Sale:", overallNetSale); // Log overall net sale
+    console.log("Overall Net Sale:", overallNetSale);
 
-    // Pagination
     const skip = (page - 1) * limit;
     const paginatedReports = salesReport.slice(skip, skip + limit);
     const totalPages = Math.ceil(salesReport.length / limit);
@@ -1523,117 +1531,14 @@ const getSalesReport = async (req, res) => {
       filter,
       startDate,
       endDate,
-      salesData: JSON.stringify(paginatedReports), // Stringify salesData for hidden input
-      overallNetSale // Send overallNetSale to the view for display
+      salesData: JSON.stringify(paginatedReports),
+      overallNetSale
     });
   } catch (error) {
     console.error("Error fetching sales report:", error);
     res.status(500).send("Failed to load sales report.");
   }
 };
-
-
-
-// const getSalesReport = async (req, res) => {
-//   try {
-//     const { startDate, endDate, filter, page = 1, limit = 5 } = req.query;
-
-//     const filterConditions = { "items.status": "delivered" };
-
-//     // Handle date filtering
-//     if (startDate && endDate) {
-//       filterConditions.time = {
-//         $gte: new Date(startDate),
-//         $lte: new Date(endDate)
-//       };
-//     }
-
-//     // Fetch and process data
-//     const orders = await Orders.find(filterConditions).populate("items.productId");
-
-//     // Reduce data into a grouped report by month or day based on the filter
-//     const groupByKey =
-//       filter === "daily"
-//         ? order => order.time.toISOString().split("T")[0]
-//         : filter === "monthly"
-//           ? order => `${order.time.getMonth() + 1}-${order.time.getFullYear()}`
-//           : filter === "weekly"
-//             ? order =>
-//                 `Week-${Math.ceil(
-//                   order.time.getDate() / 7
-//                 )} ${order.time.getFullYear()}`
-//             : order => `${order.time.getFullYear()}`; // Default yearly grouping
-
-//     const salesData = orders.reduce((acc, order) => {
-//       const key = groupByKey(order);
-
-//       if (!acc[key]) {
-//         acc[key] = {
-//           key,
-//           totalSales: 0,
-//           totalDiscount: 0,
-//           orders: [],
-//           orderCount: 0,
-//           totalAmount: 0,
-//         };
-//       }
-
-//       const totalDiscount = order.items.reduce(
-//         (sum, item) =>
-//           sum +
-//           (item.price - (item.priceWithDiscount || item.price)) * item.quantity,
-//         0
-//       );
-
-//       acc[key].totalSales += order.orderTotal;
-//       acc[key].totalDiscount += totalDiscount;
-//       acc[key].orderCount += 1; // Increment order count
-//       acc[key].totalAmount += order.orderTotal; // Total order amount
-//       acc[key].orders.push({
-//         orderId: order._id,
-//         date: order.time,
-//         customer: `${order.shippingAddress.firstname} ${order.shippingAddress.lastname}`,
-//         paymentMethod: order.paymentMethod,
-//         totalAmount: order.orderTotal,
-//         discount: totalDiscount,
-//         netSale: order.orderTotal - totalDiscount
-//       });
-
-//       return acc;
-//     }, {});
-
-//     const salesReport = Object.values(salesData);
-//     console.log("salesReport", salesReport);
-//     console.log("salesData", salesData);
-
-//     // Pagination
-//     const skip = (page - 1) * limit;
-//     const paginatedReports = salesReport.slice(skip, skip + limit);
-//     const totalPages = Math.ceil(salesReport.length / limit);
-
-//     // Calculate overall sales count, amount, and discount
-//     const overallSalesCount = salesReport.reduce((sum, data) => sum + data.orderCount, 0);
-//     const overallTotalAmount = salesReport.reduce((sum, data) => sum + data.totalAmount, 0);
-//     const overallTotalDiscount = salesReport.reduce((sum, data) => sum + data.totalDiscount, 0);
-
-//     res.render("admin/salesreport", {
-//       salesReport: paginatedReports,
-//       totalPages,
-//       currentPage: page,
-//       filter,
-//       startDate,
-//       endDate,
-//       salesData: JSON.stringify(paginatedReports), // Stringify salesData for hidden input
-//       overallSalesCount,
-//       overallTotalAmount,
-//       overallTotalDiscount
-//     });
-//   } catch (error) {
-//     console.error("Error fetching sales report:", error);
-//     res.status(500).send("Failed to load sales report.");
-//   }
-// };
-
 const exportPDF = async (req, res) => {
   try {
     const salesData = JSON.parse(req.body.salesData); // Parse the stringified salesData
@@ -1739,48 +1644,42 @@ const exportPDF = async (req, res) => {
     res.status(500).send("Failed to generate PDF.");
   }
 };
-
-
 const exportExcel = async (req, res) => {
   try {
-      const salesData = JSON.parse(req.body.salesData); // Parse the string into an object
-      const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet("Sales Report");
+    const salesData = JSON.parse(req.body.salesData); // Parse the string into an object
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Sales Report");
 
-      worksheet.columns = [
-          { header: "Order Date", key: "date" },
-          { header: "Order ID", key: "orderId" },
-          { header: "Customer Name", key: "customer" },
-          { header: "Payment Method", key: "paymentMethod" },
-          { header: "Total Amount", key: "totalAmount" },
-          { header: "Discount", key: "discount" },
-          { header: "Net Sale", key: "netSale" }
-      ];
+    worksheet.columns = [
+      { header: "Order Date", key: "date" },
+      { header: "Order ID", key: "orderId" },
+      { header: "Customer Name", key: "customer" },
+      { header: "Payment Method", key: "paymentMethod" },
+      { header: "Total Amount", key: "totalAmount" },
+      { header: "Discount", key: "discount" },
+      { header: "Net Sale", key: "netSale" }
+    ];
 
-      // Process each report and order
-      salesData.forEach(report => {
-          report.orders.forEach(order => worksheet.addRow(order));
-      });
+    // Process each report and order
+    salesData.forEach(report => {
+      report.orders.forEach(order => worksheet.addRow(order));
+    });
 
-      const filename = `Sales_Report_${Date.now()}.xlsx`;
+    const filename = `Sales_Report_${Date.now()}.xlsx`;
 
-      res.setHeader(
-          "Content-Disposition",
-          `attachment; filename="${filename}"`
-      );
-      res.setHeader(
-          "Content-Type",
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-      );
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
 
-      await workbook.xlsx.write(res);
-      res.end();
+    await workbook.xlsx.write(res);
+    res.end();
   } catch (error) {
-      console.error("Error exporting Excel:", error.message);
-      res.redirect("/admin/salesreport");
+    console.error("Error exporting Excel:", error.message);
+    res.redirect("/admin/salesreport");
   }
 };
-
 
 module.exports = {
   exportPDF,

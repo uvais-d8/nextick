@@ -357,8 +357,7 @@ const editaddress = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
-// Function to send OTP to email
-const sendotptoemail = async (req, res) => {
+ const sendotptoemail = async (req, res) => {
   const { email } = req.body;
   req.session.userEmail = email;
   console.log(email);
@@ -431,8 +430,7 @@ const verifyotpemail = async (req, res) => {
     });
   }
 };
-// Load New Password Page// Load New Password Page
-const loadnewpassword = (req, res) => {
+ const loadnewpassword = (req, res) => {
   res.render("newpassword", { message: req.session.message || null });
   req.session.message = null; // Clear message after rendering
 };

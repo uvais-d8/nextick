@@ -164,26 +164,21 @@ const verifyOtp = async (req, res) => {
   try {
     const { otp } = req.body;
 
-    // Debug logs
-    console.log("Received OTP from user:", otp);
+     console.log("Received OTP from user:", otp);
     console.log("Stored OTP in session:", req.session.userOTP);
 
-    // Check if session data exists
-    if (!req.session.userOTP || !req.session.userData) {
+     if (!req.session.userOTP || !req.session.userData) {
       return res.render("verification", {
         message: "Session expired. Try again."
       });
     }
 
-    // Verify OTP
-    if (otp === req.session.userOTP) {
+     if (otp === req.session.userOTP) {
       const user = req.session.userData;
 
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(user.password, 10);
+       const hashedPassword = await bcrypt.hash(user.password, 10);
 
-      // Create a new user object
-      const newUser = new User({
+       const newUser = new User({
         name: user.username,
         email: user.email,
         password: hashedPassword,
@@ -191,21 +186,14 @@ const verifyOtp = async (req, res) => {
         ...(user.googleId ? { googleId: user.googleId } : {})
       });
 
-      // Save the user to the database
-      await newUser.save();
-
-      // Set the session user
-      req.session.user = newUser._id;
-
-      // Clear session data
+       await newUser.save();
+       req.session.user = newUser._id;
+ 
       delete req.session.userOTP;
       req.session.userData = null;
 
-      // Redirect to home
-      return res.redirect("/");
-    } else {
-      // OTP mismatch
-
+       return res.redirect("/");
+    } else { 
       console.log(req.session.userOTP.toString());
       console.error("OTP mismatch: Received OTP does not match session OTP.");
       return res.render("verification", {
@@ -249,8 +237,7 @@ const resendOtp = async (req, res) => {
     return res.render("verification", { success: "OTP resend Successfully" });
   }
 };
-// Load Forgot Password Page
-const loadforgotpassword = (req, res) => {
+ const loadforgotpassword = (req, res) => {
   res.render("forgotpassword");
   req.session.message = null; // Clear message after rendering
 };

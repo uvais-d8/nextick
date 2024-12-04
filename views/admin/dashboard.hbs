@@ -56,24 +56,33 @@
                 <h1 style="font-size:43px;">DASHBOARD OVERVIEW</h1>
                 <form method="post" action="/admin/logout"><input type="submit" value="log out" class="btnn"></form>
             </header>
-            <section class="card-container">
-                <div class="card">
-                    <h3>Total Users</h3>
-                    <p>15,687</p>
-                </div>
-                <div class="card">
-                    <h3>Total Orders</h3>
-                    <p>2,456</p>
-                </div>
-                <div class="card">
-                    <h3>Total Products</h3>
-                    <p>1,234</p>
-                </div>
-                <div class="card">
-                    <h3>Total Revenue</h3>
-                    <p>$89,456</p>
-                </div>
-            </section>
+            {{#each salesReport}}
+            <div class="sales-report-section">
+                <h2>{{month}}</h2>
+                <section class="card-container">
+
+                    <div class="card">
+                        <h3>Overall sales count
+                        </h3>
+                        <p>{{orderCount}}<span style="font-size:19px;margin-left:10px">orders</span></p>
+                    </div>
+                    <div class="card">
+                        <h3>Overall Sales amount</h3>
+                        <p>₹ {{netSale}}</p>
+                    </div>
+                    <div class="card">
+                        <h3>Overall discount amount</h3>
+                        <p>₹ {{totalDiscount}}</p>
+                    </div>
+                    <div class="card">
+                        <h3>Sales expect(<span style="font-size: 13px;">without discound</span>)</h3>
+                        <p>₹ {{totalSales}}</p>
+                    </div>
+                </section>
+            
+                {{/each}}
+               
+
             <section class="graph-container">
                 <div class="graph">
                     <h3>Sales Overview</h3>

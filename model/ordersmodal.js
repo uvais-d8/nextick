@@ -16,6 +16,7 @@ const ordersSchema = new mongoose.Schema({
         required: true,
         default: "scheduled"
     },
+
     items: [{
         productId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -24,9 +25,14 @@ const ordersSchema = new mongoose.Schema({
         },
         status: {
             type: String,
-            enum: ["scheduled", "pending", "delivered", "shipped", "canceled"],
+            enum: ["scheduled", "pending", "delivered", "shipped", "canceled","retrypayment"],
             required: true,
             default: "scheduled"
+        },
+        paymentStatus:{
+            type: String,
+            enum: ['retrypayment'],
+            default:"retrypayment"
         },
         stock: {
             type: Number
@@ -62,6 +68,7 @@ const ordersSchema = new mongoose.Schema({
         enum: ['upi', 'cod', 'razorpay'],
         required: true
     },
+    
     shippingAddress: { 
         firstname: { type: String, required: true },
         lastname: { type: String },

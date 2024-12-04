@@ -94,7 +94,7 @@ router.get("/viewDetails/:orderId/:itemId",userAuth.checksession,orderController
 router.get("/orderss", userAuth.checksession,orderController.loadOrders);
 router.patch("/orders/:orderId", userAuth.checksession,orderController.removeorder); 
 router.patch("/orders/:orderId/items/:itemId", userAuth.checksession,orderController.removeItem); 
-
+router.post('/update-payment-status',userAuth.checksession,orderController.failedpayment)
 
 //pages routes
 router.get("/advancedSearch", userController.advancedSearch);

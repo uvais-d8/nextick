@@ -19,73 +19,6 @@ const client = new OAuth2Client(
 
 require("dotenv").config();
 
-// const loadhome = async (req, res) => {
-//   const categories = await Category.find({});
-    
-//   console.log(req.session);
-//   try {
-//     if (req.session.passport && req.session.passport.user) {
-//       req.session.userId = req.session.passport.user;
-//     }
-
-      
-//       const categories = await Category.find({});
-//       const products = await Products.find({islisted:true})
-//       .populate("offer") 
-//       .populate({
-//         path: "category", 
-//         match: { islisted: true },  
-//         select: "category islisted"  
-//       })
-      
-  
-//        const activeOffers = await Offer.find({ Status: true });
-
-//        const filteredProducts = products.filter(product => product.category);
-
-//        const productsWithOfferPrice = filteredProducts.map((product) => {
-//         let discountValue = null;
-//         let discountType = null;
-//         let offerPrice = product.price;  
-//         let discountDisplay = null;
-  
-//           const matchedOffer = activeOffers.find(offer =>
-//           offer.filteredProducts.some(productId => productId.equals(product._id))
-//         );
-  
-//         if (matchedOffer) {
-//           discountType = matchedOffer.DiscountType;
-  
-//           if (discountType === "percentage") {
-//             offerPrice = product.price - (product.price * matchedOffer.DiscountValue) / 100;
-//             discountValue = `${matchedOffer.DiscountValue}%`;
-//           } else if (discountType === "fixed") {
-//             offerPrice = product.price - matchedOffer.DiscountValue;
-//             discountValue = `₹${matchedOffer.DiscountValue}`;
-//           }
-//         }
-  
-//          return {
-//           _id: product._id,
-//           name: product.name,
-//           images: product.images,
-//           category: product.category,
-//           price: product.price,  
-//           offerPrice: offerPrice, 
-//           discountValue: discountValue, 
-//           discountType: discountType,
-//           stock: product.stock,
-//         };
-//       });
-  
-
-//     res.render("home", { products: productsWithOfferPrice });
-//   } catch (err) {
-//     console.error("Error loading home page:", err);
-//     res.status(500).send("Failed to load home page");
-//   }
-// };
-
 const loadhome = async (req, res) => {
   try {
     const categories = await Category.find({});
@@ -103,15 +36,12 @@ const loadhome = async (req, res) => {
 
     const activeOffers = await Offer.find({ Status: true });
 
-    // Filter products to include only those with valid categories
-    const filteredProducts = products.filter(product => product.category);
+     const filteredProducts = products.filter(product => product.category);
 
     const productsWithOfferPrice = filteredProducts.map((product) => {
       let discountValue = null;
       let discountType = null;
-      let offerPrice = product.price; // Default to original price
-
-      // Match the offer with the product
+      let offerPrice = product.price;  
       const matchedOffer = activeOffers.find(offer =>
         offer.Products && offer.Products.some(productId => productId.equals(product._id))
       );
@@ -133,9 +63,9 @@ const loadhome = async (req, res) => {
         name: product.name,
         images: product.images,
         category: product.category,
-        price: product.price, // Original price
-        offerPrice: offerPrice, // Discounted price
-        discountValue: discountValue, // Discount display
+        price: product.price, 
+        offerPrice: offerPrice,  
+        discountValue: discountValue, 
         discountType: discountType,
         stock: product.stock,
       };
@@ -244,28 +174,24 @@ const singleproduct = async (req, res) => {
   }
 };
 const loadWishlist = async (req, res) => {
-  const userId = req.session.userId; // Ensure userId is set in the session
+  const userId = req.session.userId;  
   try {
-    // Fetch wishlist for the logged-in user
-    const userWishlist = await Wishlist.find({ user: userId }) // Adjust the filter as needed
+     const userWishlist = await Wishlist.find({ user: userId })  
       .populate({
         path: "products",
         populate: [{ path: "category" }, { path: "offer" }],
       });
 
-    // Fetch all categories for display
-    const categories = await Category.find({});
+     const categories = await Category.find({});
     const activeOffers = await Offer.find({ Status: true });
 
-    // Map through the wishlist and calculate offer prices
-    const productsWithOfferPrice = userWishlist.map((item) => {
+     const productsWithOfferPrice = userWishlist.map((item) => {
       const product = item.products;
       let discountValue = null;
       let discountType = null;
       let offerPrice = product.price;
 
-      // Find the active offer applicable to the product
-      const matchedOffer = activeOffers.find((offer) =>
+       const matchedOffer = activeOffers.find((offer) =>
         offer.Products?.some((productId) => productId.equals(product._id))
       );
 
@@ -281,12 +207,11 @@ const loadWishlist = async (req, res) => {
         }
       }
 
-      // Return a product object for rendering
-      return {
+       return {
         _id: product._id,
         name: product.name,
         images: product.images,
-        category: product.category?.name || "Unknown", // Adjust if category schema differs
+        category: product.category?.name || "Unknown",  
         price: product.price,
         offerPrice: matchedOffer ? offerPrice : null,
         discountValue: matchedOffer ? discountValue : null,
@@ -294,9 +219,7 @@ const loadWishlist = async (req, res) => {
         stock: product.stock,
       };
     });
-
-    // Render the wishlist page
-    res.render("wishlist", {
+     res.render("wishlist", {
       products: productsWithOfferPrice,
       categories,
     });
@@ -319,22 +242,18 @@ const toggleWishlist = async (req, res) => {
       return res.status(401).json({ success: false, message: "User not logged in" });
     }
 
-    // Check if the product is already in the user's wishlist
-    const existingWishlistItem = await Wishlist.findOne({ user: userId, products: productId });
+     const existingWishlistItem = await Wishlist.findOne({ user: userId, products: productId });
 
     if (existingWishlistItem) {
-      // If it exists, remove it (toggle off)
-      await Wishlist.deleteOne({ _id: existingWishlistItem._id });
+       await Wishlist.deleteOne({ _id: existingWishlistItem._id });
       return res.json({ success: true, wishlist: false });
     } else {
-      // If it doesn't exist, add it (toggle on)
-      const product = await Products.findById(productId);
+       const product = await Products.findById(productId);
       if (!product) {
         return res.status(404).json({ success: false, message: "Product not found" });
       }
 
-      // Create a new wishlist entry
-      const newWishlistItem = new Wishlist({
+       const newWishlistItem = new Wishlist({
         user: userId,
         products: productId,
         category: product.category,
@@ -351,21 +270,6 @@ const toggleWishlist = async (req, res) => {
   }
 };
 
-
-// const toggleWishlist = async (req, res) => {
-//   try {
-//     const { productId } = req.params;
-//     const userId = req.session.userId;
-//     const product = await Products.findById(productId);
-//     const isInWishlist = product.wishlist;
-//     product.wishlist = !isInWishlist;
-//     await product.save();
-//     res.json({ success: true, wishlist: product.wishlist });
-//   } catch (error) {
-//     console.error("Error toggling wishlist:", error);
-//     res.status(500).json({ success: false, message: "Internal Server Error" });
-//   }
-// };
 const loadshop = (req, res) => {
   try {
     res.redirect("/shop");
@@ -420,8 +324,7 @@ const advancedSearch = async (req, res) => {
       }
     }
 
-    // Sorting options
-    const sortOptions = {
+     const sortOptions = {
       popularity: { popularity: -1 },
       priceLowToHigh: { price: 1 },
       priceHighToLow: { price: -1 },
