@@ -95,6 +95,8 @@ router.get("/orderss", userAuth.checksession,orderController.loadOrders);
 router.patch("/orders/:orderId", userAuth.checksession,orderController.removeorder); 
 router.patch("/orders/:orderId/items/:itemId", userAuth.checksession,orderController.removeItem); 
 router.post('/update-payment-status',userAuth.checksession,orderController.failedpayment)
+router.post('/orders/return/:orderId',userAuth.checksession,orderController.returnOrder)
+router.get("/download-invoice/:orderId", userAuth.checksession,orderController.generateInvoicePDF);
 
 //pages routes
 router.get("/advancedSearch", userController.advancedSearch);

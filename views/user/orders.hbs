@@ -36,10 +36,6 @@
 
 
 	<style>
-		/* Custom Styles */
-		/* Same as your existing styles */
-
-		/* Modal styles (optional custom styles) */
 		.modal-header {
 			background-color: #f5a623;
 			color: white;
@@ -409,9 +405,11 @@
 								</li>
 								<li>
 									<div class="header-icons">
+										<a href="/wishlist" class="love-icon">
+											<i class="fas fa-heart"></i>
+										</a>
 										<a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
-										<a class="mobile-hide search-bar-icon" href="#"><i
-												class="fas fa-search"></i></a>
+
 										<a style="color: orange;" class="mobile-hide search-bar-icon" href="/profile"><i
 												class="fas fa-user"></i></a>
 									</div>
@@ -491,90 +489,115 @@
 	<!-- Orders History Section -->
 	<main style="background-color: rgba(240, 237, 237, 0.523);" class="section order-history">
 		<h1 style="margin-left: 10%;">Orders History</h1>
-	{{#each orders}}
-  {{#each items}}
-  <div>
-    <div style="width: 1200px;margin-left:10%;background-color:white" class="order">
-      <div class="order-details">
-        <div class="client-avatar">
-          <img src="/{{this.productId.images.[0]}}" alt="{{this.productId.name}}" />
-        </div>
-        <h4>{{this.productId.name}}</h4>
-        <p>Price:
-          {{#if this.priceWithDiscount}}
-            <del style="color: red;">₹{{this.productId.price}}</del> 
-            <b>₹{{this.priceWithDiscount}}</b>
-          {{else}}
-            ₹{{this.productId.price}}
-          {{/if}}
-        </p>
+		{{#each orders}}
+		{{#each items}}
+		<div>
+			<div style="width: 1200px;margin-left:10%;background-color:white;margin-top:-20px;border-color:rgba(222, 222, 220, 0.715);border-radius:3px"
+				class="order">
+				<div class="order-details">
+					<div class="client-avatar">
+						<img src="/{{this.productId.images.[0]}}" alt="{{this.productId.name}}" />
+					</div>
+					<h4>{{this.productId.name}}</h4>
+					<p>Price:
+						{{#if this.priceWithDiscount}}
+						<del style="color: red;">₹{{this.productId.price}}</del>
+						<b>₹{{this.priceWithDiscount}}</b>
+						{{else}}
+						₹{{this.productId.price}}
+						{{/if}}
+					</p>
 
-        <!-- Show Quantity -->
-        <p>Quantity: <b>{{this.quantity}}</b></p>
+					<!-- Show Quantity -->
+					<p>Quantity: <b>{{this.quantity}}</b></p>
 
-        <!-- Show Product Total -->
-        <p>Total: 
-          {{#if this.priceWithDiscount}}
-            ₹{{multiply this.priceWithDiscount this.quantity}}
-          {{else}}
-            ₹{{multiply this.productId.price this.quantity}}
-          {{/if}}
-        </p>
+					<!-- Show Product Total -->
+					<p>Total:
+						{{#if this.priceWithDiscount}}
+						₹{{multiply this.priceWithDiscount this.quantity}}
+						{{else}}
+						₹{{multiply this.productId.price this.quantity}}
+						{{/if}}
+					</p>
 
-        <p style="color: rgb(48, 47, 47);">Order Date: <b>{{formatDate ../time}}</b></p>
+					<p style="color: rgb(48, 47, 47);">Order Date: <b>{{formatDate ../time}}</b></p>
 
-        <!-- Order Actions -->
-        <div class="order-actions">
-          {{#if (or (eq this.status "canceled") (eq this.status "delivered"))}}
-          <!-- Do nothing -->
-          {{else}}
-          <button class="but"
-            style="color: rgba(0, 0, 0, 0.884);height:35px; background-color:rgb(209, 208, 208);margin-left:100%;"
-            data-toggle="modal" data-target="#cancelModal"
-            onclick="setItemToCancel('{{../_id}}', '{{this._id}}', 'item')">
-            Cancel Item
-          </button>
-          {{/if}}
-        </div>
-        <form method="get" action="/viewDetails/{{../_id}}/{{this._id}}">
-          <button class="but" type="submit"
-            style="color:rgba(26, 26, 26, 0.898);font-size:14px;background-color:rgba(255, 255, 255, 0.911);height: 30px;border-width:0px;margin-left:100%;font-weight:bold;margin-top:20px">view
-            more</button>
-        </form>
-      </div>
+					<!-- Order Actions -->
+					<div class="order-actions">
+						{{#if (eq this.status "delivered")}}
+						<!-- Return Button -->
+						<button class="btn btn-danger return-button" data-toggle="modal" data-target="#returnModal"
+							onclick="setReturnOrder('{{this._id}}', '{{this.itemId}}')"
+							style="margin-left: 100%; margin-right: auto; display: block; padding: 10px 20px; border-radius: 5px;">
+							Return
+						</button>
 
-      <!-- Show Order Status -->
-      <p style="margin-top: -20px;">Status: 
-        <span class="
+
+						{{else if (or (eq this.status "canceled") (eq this.status "returned"))}}
+						<!-- Do nothing -->
+						{{else}}
+						<button class="btn btn-danger"
+							style="color: rgba(0, 0, 0, 0.884);height:35px; margin-left:100%;margin-top:-150px"
+							data-toggle="modal" data-target="#cancelModal"
+							onclick="setItemToCancel('{{../_id}}', '{{this._id}}', 'item')">
+							Cancel Item
+						</button>
+						{{/if}}
+					</div>
+					<form method="get" action="/viewDetails/{{../_id}}/{{this._id}}">
+						<button class="but" type="submit"
+							style="color:rgba(26, 26, 26, 0.898);font-size:14px;background-color:rgba(255, 255, 255, 0.911);height: 30px;border-width:0px;margin-left:100.5%;font-weight:bold;margin-top:0px">view
+							more</button>
+					</form>
+				</div>
+
+				<!-- Show Order Status -->
+				<p style="margin-top: -20px;">Status:
+					<span class="
         {{#if (eq status 'scheduled')}}gradient-button-blue{{else}}
         {{#if (eq status 'pending')}}gradient-button-yellow{{else}}
         {{#if (eq status 'canceled')}}gradient-button-red{{else}}
         {{#if (eq status 'delivered')}}gradient-button-green{{else}}
         {{#if (eq status 'shipped')}}gradient-button-purple{{/if}}
         {{/if}}{{/if}}{{/if}}{{/if}}">
-          {{status}}
-        </span>
-      </p>
-    </div>
-  </div>
-  {{/each}}
+						{{status}}
+					</span>
+				</p>
+			</div>
 
-  <!-- Order Total -->
-  <div style="width: 1200px;margin-left:10%;margin-top: 10px;background-color:white">
-    <h4>Order Total: ₹{{total}}</h4>
-  </div>
+			{{/each}}
+		</div>
 
-  <form method="get" action="/ordertracking/{{_id}}">
-    <button class="but" type="submit"
-      style="margin-left:85%;font-size:13px;height:30px;border-color:black;border-width:1px">View
-      Order</button>
-  </form>
-  <hr>
-</div>
-{{/each}}
+		<!-- Order Total -->
+		<div style="width: 1200px; margin-left: 10%;display: flex;">
+			<div style="background-color: white; width: 100%; padding: 15px;">
+				<h4>Order Total: ₹{{total}}</h4>
+			</div>
+			<div style="background-color: white;  padding: 10px; text-align: right;display:flex">
+				<div>
+					<form method="get" style="margin-left: -350px;margin-right:5px" action="/ordertracking/{{_id}}">
+						<button class=" btn btn-warning" type="submit">View Order</button>
+					</form>
+				</div>
+				<div style="width:50%;">
+					<form> <button class="btn btn-success" style="width: 134px;" onclick="downloadInvoice('{{_id}}')">Download Invoice</button>
+
+					</form>
+				</div>
+			</div>
+		</div>
+
+
+		<hr>
+		</div>
+		{{/each}}
 
 	</main>
-
+<script>
+  function downloadInvoice(orderId) {
+    window.open(`/download-invoice/${orderId}`, "_blank");
+  }
+</script>
 
 	<div class="logo-carousel-section">
 		<div class="container">
@@ -658,6 +681,31 @@
 	</div>
 	<!-- end footer -->
 
+
+
+	<div id="returnModal" class="modal fade" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Return Confirmation</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p id="returnMessage">Are you sure you want to return this item/order?</p>
+					<p id="errorMessage" style="display: none; color: red;">Error processing return. Please try again.
+					</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+					<form method="get" action="/wall" id="confirmReturnBtn" type="button" class="btn btn-danger">Confirm
+						Return</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- copyright -->
 	<div class="copyright">
 		<div class="container">
@@ -721,7 +769,7 @@
 			itemToCancelId = itemId;
 			cancelType = type;
 			// Dynamically update the modal text
-			document.querySelector("#modalMessage").innerHTML ;
+			document.querySelector("#modalMessage").innerHTML;
 		}
 
 		// Confirm cancel action

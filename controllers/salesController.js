@@ -8,8 +8,6 @@ const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET
 });
-
- 
 const applycoupon = async (req, res) => {
   const { couponCode, cartTotal } = req.body;
 
@@ -78,7 +76,6 @@ const applycoupon = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 const placeOrder = async (req, res) => {
   console.log("hellooo");
   const userId = req.session.userId;
@@ -165,6 +162,14 @@ const placeOrder = async (req, res) => {
       (acc, item) => acc + item.total,
       0
     );
+
+    if (paymentMethod === "cod" && orderTotal > 1000) {
+      return res.status(400).json({
+        success: false,
+        message: "Cash on Delivery is not available for orders above ₹1000.",
+      });
+    }
+    
     const newOrder = new Orders({
       userId,
       items: updatedCartItems,
@@ -323,7 +328,6 @@ const updateQuantity = async (req, res) => {
       .json({ success: false, message: "Error updating quantity." });
   }
 };
-
 const loadcartpage = async (req, res) => {
   try {
     const userId = req.session.userId;
@@ -367,7 +371,6 @@ const loadcartpage = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
 const removecart = async (req, res) => {
   const { id } = req.params;
 
@@ -473,7 +476,6 @@ const addtocart = async (req, res) => {
     res.status(500).json({ error: "Failed to add product to cart" });
   }
 };
-
 module.exports = {
   addtocart,
   loadcartpage,

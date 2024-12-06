@@ -103,8 +103,9 @@
                             <ul>
                                 <li><a href="/">Home</a>
                                 </li>
+
                                 <li><a href="/about">About</a></li>
-                                <li class="current-list-item"><a href="/products">Products</a></li>
+                                <li ><a href="/products">Products</a></li>
 
                                 <ul class="sub-menu">
                                     <li><a href="/news.hbs">News</a></li>
@@ -122,9 +123,11 @@
                                 </li>
                                 <li>
                                     <div class="header-icons">
+                                        <a href="/wishlist" style="color: orange;" class="love-icon">
+                                            <i class="fas fa-heart"></i>
+                                        </a>
                                         <a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
-                                        <a class="mobile-hide search-bar-icon" href="#"><i
-                                                class="fas fa-search"></i></a>
+                                        
                                         <a class="mobile-hide search-bar-icon" href="/profile"><i
                                                 class="fas fa-user"></i></a>
                                     </div>
@@ -214,20 +217,61 @@
                                         </p>
 
                             </a><!-- Wishlist Button -->
-                            <button style="width:127px;;margin-left: 62%;font-size:13px;font-weight:bold"
-                                class="btn btn-outline-warning add-to-wishlist" data-product-id="{{this._id}}">
+
+                            <button
+                                style="margin-top:20px;width:127px;;margin-left: 62%;font-size:13px;font-weight:bold"
+                                class="btn btn-outline-warning remove-wishlist" data-product-id="{{this._id}}">
                                 {{#if this.wishlist}}Remove Wishlist{{else}}Remove Wishlist{{/if}}
                             </button>
+                            <form action="/addtocart" method="post">
+                                <input type="hidden" name="productId" value="{{this._id}}">
+                                <input type="hidden" name="quantity" value="1">
+                                <div style="margin-left:30%;margin-top:-32px">
+                                    <button class="btn btn-outline-warning remove-wishlist" style="margin-left:-20px"
+                                        value="add to cart">
+                                        <a style="border-width: 0px;font-size:13px"><i style="margin-right: 10px;"
+                                                class="fas fa-shopping-cart"> </i><b>Add to Cart</b></a>
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
 
                 </div>
                 {{/each}}
-            </div>
+            </div><!-- Pagination -->
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center pages custom-pagination">
+    <!-- Show the "Previous" button if there is a previous page -->
+    {{#if previousPage}}
+      <li class="page-item">
+        <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+    {{/if}}
+
+    <!-- Generate page numbers -->
+    {{#each (range 1 totalPages)}}
+      <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
+        <a class="page-link" href="?page={{this}}">{{this}}</a>
+      </li>
+    {{/each}}
+
+    <!-- Show the "Next" button if there is a next page -->
+    {{#if nextPage}}
+      <li class="page-item">
+        <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    {{/if}}
+  </ul>
+</nav>
             <script>
                 // Event listener for adding/removing from wishlist
                 document.addEventListener("DOMContentLoaded", function () {
-                    const wishlistButtons = document.querySelectorAll('.add-to-wishlist');
+                    const wishlistButtons = document.querySelectorAll('.remove-wishlist');
 
                     wishlistButtons.forEach(button => {
                         button.addEventListener('click', function () {
@@ -240,18 +284,7 @@
                                     'Content-Type': 'application/json',
                                 },
                                 body: JSON.stringify({ productId })
-                            })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        this.textContent = data.wishlist ? 'Remove Wishlist' : 'Remove Wishlist';
-                                    } else {
-                                        alert('Failed to update wishlist');
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error:', error);
-                                });
+                            })                               
                         });
                     });
                 });

@@ -4,11 +4,11 @@ const couponSchema = new mongoose.Schema({
     CouponCode: {
         type: String,
         required: true,
-        unique: true // Ensure each coupon code is unique
+        unique: true  
     },
     DiscountType: {
         type: String,
-        enum: ["percentage", "fixed"], // Limit discount type to specific options
+        enum: ["percentage", "fixed"],  
         required: true
     },
     DiscountValue: {

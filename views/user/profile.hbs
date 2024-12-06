@@ -97,12 +97,7 @@
             z-index: 1000;
         }
 
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-        }
+      
 
         .logo {
             font-size: 1.5rem;
@@ -375,9 +370,11 @@
                                 </li>
                                 <li>
                                     <div class="header-icons">
+                                          <a href="/wishlist" class="love-icon">
+                                            <i class="fas fa-heart"></i>
+                                        </a>
                                         <a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
-                                        <a class="mobile-hide search-bar-icon" href="#"><i
-                                                class="fas fa-search"></i></a>
+                                     
                                         <a style="color: orange;" class="mobile-hide search-bar-icon" href="/profile"><i
                                                 class="fas fa-user"></i></a>
                                     </div>
@@ -453,8 +450,7 @@
                             <label for="name">Pincode : {{address.pincode}}</label>
                             <label for="name">District : {{address.district}}</label>
                             <a href="/address"><button
-                                    style="font-size:13px;width: 90px; margin-left:87%;background-color:rgba(228, 154, 17, 0.908);height: 30px;font-size:13px;font-weight:bold;border-width:0px;border-radius: 4px">view
-                                    all</button> </a>
+                                    style="font-size:13px;width: 90px; margin-left:87%;background-color:rgba(228, 154, 17, 0.908);height: 30px;font-size:13px;font-weight:bold;border-width:0px;border-radius: 4px">view all</button> </a>
 
                         </div>
 
@@ -462,10 +458,10 @@
                     <div class="col-12 col-md-4">
                         <div class="card p-4">
                             <h4 class="mb-4">Change Password</h4>
-                            <input id="message" type="text" value="{{message}}"
-                                style="font-weight:600;border-width: 0px;color:red">
-                            <input id="success" type="text" value="{{success}}"
-                                style="font-weight:600;border-width: 0px;color:rgb(0, 255, 21)">
+                            <p id="message" type="text" value="{{message}}"
+                                style="border-width: 0px;color:red">{{message}}</p>
+                            <p id="success" type="text" value="{{success}}"
+                                style="border-width: 0px;color:rgb(0, 255, 21)">{{success}}</p>
 
                             <script>
                                 // Remove the messages after 3 seconds

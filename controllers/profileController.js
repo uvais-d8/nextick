@@ -627,7 +627,7 @@ const loadWallet = async (req, res) => {
     const userId = req.session.userId;
     console.log("User ID:", userId);
     // Fetch the wallet for the user
-    const wallet = await Wallet.findOne({ user: userId });
+    const wallet = await Wallet.findOne({ user: userId }).sort({ createdAt: -1 });
 
     if (!wallet) {
       return res.render("wallet", {
@@ -651,8 +651,6 @@ const loadWallet = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
-
-
 module.exports = {
   updateDefaultAddress,
   resendotpemail,

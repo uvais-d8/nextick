@@ -31,7 +31,6 @@
     <link rel="stylesheet" href="/assets/css/responsive.css">
     <!-- Custom CSS for product listing -->
     <style>
-      
         .mcontainer {
             max-width: 850px;
             margin: 200px auto;
@@ -247,9 +246,28 @@
                         <tr>
                             <p>Product name: <b>{{product.productId.name}}</b></p>
                             <p>{{product.productId.description}}</p>
-                            <td><b>Quantity:  {{product.quantity}}</b></td>
-                            <td><b>Price: ₹ {{product.price}}</b></td>
-                            <td><b>Total Price: ₹ {{multiply product.price product.quantity}}</b></td>
+                            <td><b>Quantity: {{product.quantity}}</b></td>
+                            <td>
+                                <p>Price:
+                                    {{#if product.priceWithDiscount}}
+                                    <del style="color: red;">₹{{product.productId.price}}</del>
+                                    <b>₹{{product.priceWithDiscount}}</b>
+                                    {{else}}
+                                    ₹{{product.productId.price}}
+                                    {{/if}}
+                                </p>
+                            </td>
+                            {{!-- <td><b>Total Price: ₹ {{multiply product.price product.quantity}}</b></td> --}}
+                            <td>
+                                <p>Price:
+                                    {{#if product.priceWithDiscount}}
+                                    <del style="color: red;">₹{{multiply product.quantity product.productId.price}}</del>
+                                    <b>₹{{multiply product.priceWithDiscount product.quantity}}</b>
+                                    {{else}}
+                                    ₹{{multiply product.quantity product.productId.price}}
+                                    {{/if}}
+                                </p>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
