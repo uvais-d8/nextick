@@ -304,7 +304,7 @@ const toggleWishlist = async (req, res) => {
 };
 const loadshop = (req, res) => {
   try {
-    res.redirect("/shop");
+    res.render("shop");
   } catch (error) {
     console.error(error);
   }

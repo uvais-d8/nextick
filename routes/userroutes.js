@@ -76,7 +76,7 @@ router.post("/changepassword",profileController.changepassword)
 router.get("/address",userAuth.checksession,profileController.loadaddress);
 router.post("/addaddress", userAuth.checksession,profileController.addaddress);
 router.get("/wallet",userAuth.checksession,profileController.loadWallet)
-
+router.get("/shop",userController.loadshop)
 
 //sales Controller
 router.post("/addtocart", userAuth.checksession,salesController.addtocart);
@@ -87,6 +87,7 @@ router.delete("/cart/:id", salesController.removecart);
 router.post('/cart/:id/updateQuantity',salesController.updateQuantity) 
 router.post("/applycoupon",userAuth.checksession,salesController.applycoupon)
 router.post('/create-razorpay-order',userAuth.checksession,salesController.razorpayy)
+router.post("/update-order-status", userAuth.checksession,salesController.paymentpending);
 
 //Orders Controller
 router.get("/checkout", userAuth.checksession,orderController.checkout);

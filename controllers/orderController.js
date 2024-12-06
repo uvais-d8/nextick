@@ -449,114 +449,241 @@ const generateInvoicePDF = async (req, res) => {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
 
-    const doc = new PDFDocument({ margin: 40 });
+    const doc = new PDFDocument({ margin: 20 });
 
     // Set response headers for PDF download
-    res.setHeader("Content-Disposition", `attachment; filename=invoice_${orderId}.pdf`);
+    const filename = `Invoice_${orderId}.pdf`;
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
     res.setHeader("Content-Type", "application/pdf");
 
     // Pipe the PDF stream to the response
     doc.pipe(res);
 
-    /** HEADER SECTION **/
-    // Branding Header
+    // ** Header Section **
     doc
-      .text("watch premium", 50, 30, { width: 50 }) // Add your logo here
       .font("Helvetica-Bold")
-      .fontSize(18)
-      .text("Watch Premium", 110, 40, { align: "center" })
+      .fontSize(20)
+      .text("Watch Premium", { align: "center" })
       .fontSize(10)
-      .text("The Premium Smartwatch Store", 110, 60, { align: "center" })
-      .text("Contact: support@watchpremium.com | +91 9876543210", 110, 75, { align: "center" })
-      .moveDown();
+      .text("The Premium Smartwatch Store", { align: "center" })
+      .text("Contact: support@watchpremium.com | +91 7594 06 0696", { align: "center" })
+      .moveDown(2);
 
-    // Invoice Title
+    // ** Invoice Title **
     doc
       .fontSize(16)
       .font("Helvetica-Bold")
       .text("INVOICE", { align: "center", underline: true })
       .moveDown();
 
-    /** ORDER DETAILS **/
+    // ** Order and Customer Details **
     const address = order.shippingAddress;
     doc
       .fontSize(12)
       .font("Helvetica-Bold")
-      .text("Order Details:", { underline: true })
+      .text("Order Details")
       .moveDown(0.5)
+      .fontSize(11)
       .font("Helvetica")
-      .text(`Order ID: ${orderId}`, { align: "left" })
-      .text(`Order Date: ${new Date(order.createdAt).toLocaleDateString()}`, { align: "left" })
-      .text(`Order Status: ${order.status}`, { align: "left" })
-      .moveDown(1)
+      .text(`Order ID: ${orderId}`)
+      .text(`Order Date: ${new Date(order.createdAt).toLocaleDateString()}`)
+      .text(`Order Status: ${order.status}`)
+      .moveDown(1);
+
+    doc
+      .fontSize(12)
       .font("Helvetica-Bold")
-      .text("Billing & Shipping Address:", { underline: true })
+      .text("Billing & Shipping Address")
       .moveDown(0.5)
+      .fillColor("black")
+
+      .fontSize(11)
       .font("Helvetica")
       .text(`${address.firstname} ${address.lastname}`)
       .text(`${address.address}`)
-      .text(`${address.place}, ${address.city}, ${address.district}, ${address.pincode}`)
       .text(`Phone: ${address.phone}`)
       .text(`Email: ${address.email}`)
+      .text(`${address.place}, ${address.city}, ${address.pincode}`)
+      .text(`district: ${address.district}`)
       .moveDown();
 
-    /** TABLE HEADER **/
+
+      
+  // ** Table Header with Underline **
+doc
+.font("Helvetica-Bold")
+.fontSize(9)
+.fillColor("black")
+.text("No", 55, doc.y, { width: 40, align: "center" })
+.text("Product", 100, doc.y, { width: 200, align: "left" })
+.text("Price", 300, doc.y, { width: 80, align: "right" })
+.text("Quantity", 380, doc.y, { width: 80, align: "right" })
+.text("Total", 450, doc.y, { width: 90, align: "right" })
+// .moveDown(0.5);
+
+// Add underline for the header
+doc
+.moveTo(50, doc.y)
+.lineTo(510, doc.y)
+.stroke();
+
+// ** Table Rows with Grid Lines **
+let totalPrice = 0;
+let rowStartY = doc.y; // Starting Y position for rows
+
+order.items.forEach((item, index) => {
+const product = item.productId;
+// const totalItemPrice = item.quantity * product.price;
+
+const rowY = rowStartY + index * 30; // Row height (30)
+
+// Draw row separators (grid lines)
+doc
+  .moveTo(50, rowY + 30)
+  .lineTo(560, rowY + 30)
+  .moveTo(50, rowY + 30)
+  .stroke();
+
+// Draw row content with conditional pricing
+doc
+  .font("Helvetica")
+  .fontSize(10)
+  .fillColor("black")
+
+  .text(index + 1, 55, rowY + 5, { width: 40, align: "center" }) // No column
+  .text(product.name, 100, rowY + 5, { width: 200, align: "left" }); // Product name
+// Calculate total price for the item
+const unitPrice = item.priceWithDiscount || product.price; // Use discounted price if it exists, otherwise the regular price
+const totalItemPrice = item.quantity * unitPrice;
+
+// Draw row content
+doc
+  .font("Helvetica")
+  .fontSize(10)
+  .fillColor("black")
+  .text(index + 1, 55, rowY + 5, { width: 40, align: "center" }) // No column
+  .text(product.name, 100, rowY + 5, { width: 200, align: "left" });
+
+// Conditional pricing display
+if (item.priceWithDiscount) {
+  // Strike-through for original price
+  doc
+    .font("Helvetica")
+    .fontSize(10)
+    .fillColor("red")
+    .text(`Rs ${product.price.toFixed(2)}`, 300, rowY + 5, { width: 80, align: "right" });
+
+  // Line over the original price
+  const priceWidth = doc.widthOfString(`Rs ${product.price.toFixed(2)}`);
+  const priceX = 300 + (80 - priceWidth);
+  doc
+    .moveTo(priceX, rowY + 10)
+    .lineTo(priceX + priceWidth, rowY + 10)
+    .strokeColor("black")
+    .stroke();
+
+  // Display discounted price
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(10)
+    .fillColor("black")
+    .text(`Rs ${item.priceWithDiscount.toFixed(2)}`, 300, rowY + 20, { width: 80, align: "right" });
+} else {
+  // Show regular price if no discount exists
+  doc
+    .font("Helvetica")
+    .fontSize(10)
+    .fillColor("black")
+    .text(`Rs ${product.price.toFixed(2)}`, 300, rowY + 5, { width: 80, align: "right" });
+}
+
+// Quantity
+doc
+  .font("Helvetica")
+  .fontSize(10)
+  .fillColor("black")
+  .text(item.quantity, 380, rowY + 5, { width: 80, align: "right" });
+
+// Total item price
+doc
+  .font("Helvetica")
+  .fontSize(10)
+  .fillColor("black")
+  .text(`Rs ${totalItemPrice.toFixed(2)}`, 455, rowY + 5, { width: 90, align: "right" });
+
+// Update total price
+totalPrice += totalItemPrice;
+});
+
+// Draw border for the entire table
+const totalTableHeight = order.items.length * 30;
+doc
+.rect(50, rowStartY, 510, totalTableHeight)
+.stroke();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Initialize totals and discount calculation
+let actualTotal = 0;
+let discountedTotal = 0;
+
+// Calculate totals and discount dynamically
+order.items.forEach((item) => {
+  const product = item.productId;
+  const unitPrice = item.priceWithDiscount || product.price; // Get discounted price or actual price
+
+  // Actual total is based on original prices (before discount)
+  actualTotal += product.price * item.quantity;
+
+  // Discounted total is based on discounted price
+  discountedTotal += unitPrice * item.quantity;
+});
+
+// Calculate total discount
+const totalDiscount = actualTotal - discountedTotal;
+
+// Final Grand Total
+const finalTotal = discountedTotal;
+
+// Draw Totals in the PDF
+doc
+  .font("Helvetica-Bold")
+  .fontSize(12)
+  .moveDown(3)
+  .text(`Subtotal : Rs ${actualTotal.toFixed(2)}`, 370, doc.y, { align: "right" })
+  .text(`Discount : Rs ${totalDiscount.toFixed(2)}`, 370, doc.y, { align: "right" })
+  .text(`Grand Total : Rs ${finalTotal.toFixed(2)}`, 370, doc.y, { align: "right", underline: true })
+  .moveDown();
+
+    // ** Footer Section **
     doc
-      // .fillColor("#ffffff")
-      .rect(50, doc.y, 500, 20)
-      // .fill("#2c3e50")
-      // .fillColor("#ffffff")
-      .font("Helvetica-Bold")
       .fontSize(10)
-      .text("No", 60, doc.y + 5, { width: 40, align: "center" })
-      .text("Product", 100, doc.y + 5, { width: 200, align: "left" })
-      .text("Price", 300, doc.y + 5, { width: 80, align: "right" })
-      .text("Quantity", 380, doc.y + 5, { width: 80, align: "right" })
-      .text("Total", 460, doc.y + 5, { width: 90, align: "right" })
-      .moveDown(1);
-
-    /** TABLE ROWS **/
-    let totalPrice = 0;
-    order.items.forEach((item, index) => {
-      const product = item.productId;
-      const totalItemPrice = item.quantity * product.price;
-
-      doc
-        .font("Helvetica")
-        .fontSize(10)
-        .fillColor("#000")
-        .text(index + 1, 60, doc.y, { width: 40, align: "center" })
-        .text(product.name, 100, doc.y, { width: 200, align: "left" })
-        .text(`₹${product.price.toFixed(2)}`, 300, doc.y, { width: 80, align: "right" })
-        .text(item.quantity, 380, doc.y, { width: 80, align: "right" })
-        .text(`₹${totalItemPrice.toFixed(2)}`, 460, doc.y, { width: 90, align: "right" })
-        .moveDown(0.5);
-
-      totalPrice += totalItemPrice;
-    });
-
-    /** TOTALS SECTION **/
-    const discount = order.discount || 0;
-    const finalTotal = totalPrice - discount;
-
-    doc
-      .font("Helvetica-Bold")
-      .fontSize(12)
-      .moveDown(1)
-      .text(`Subtotal: ₹${totalPrice.toFixed(2)}`, 400, doc.y, { align: "right" })
-      .text(`Discount: ₹${discount.toFixed(2)}`, 400, doc.y, { align: "right" })
-      .text(`Grand Total: ₹${finalTotal.toFixed(2)}`, 400, doc.y, { align: "right", underline: true })
-      .moveDown();
-
-    /** FOOTER **/
-    doc
-      .moveDown(2)
-      .fontSize(10)
+      .font("Helvetica")
       .fillColor("#555")
-      .text("Thank you for shopping with Watch Premium!", { align: "left" })
-      .text("We appreciate your business.", { align: "left" })
-      .moveDown()
-      .text("For support, contact us at support@watchpremium.com or call +91 9876543210.", {
+      .text("Thank you for shopping with Watch Premium!", { align: "center" })
+      .text("For support, contact us at support@watchpremium.com or call +91 7594060696.", {
         align: "center",
       })
       .moveDown()
@@ -573,6 +700,7 @@ const generateInvoicePDF = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to generate PDF" });
   }
 };
+
 
 
 module.exports = {

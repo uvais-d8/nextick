@@ -65,6 +65,10 @@ const productsShema = new mongoose.Schema({
     required:false,
     default:0,
   },
+  salesCount: {
+    type: Number,
+    default: 0
+  },
   // priceWithDiscount: {
   //   type: Number,
   //   require:false,

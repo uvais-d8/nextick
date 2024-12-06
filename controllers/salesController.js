@@ -14,7 +14,7 @@ const applycoupon = async (req, res) => {
   try {
     // Check if coupon code is provided
     if (!couponCode) {
-      console.log("Coupon code is required")
+      console.log("Coupon code is required");
       return res.status(400).json({ message: "Coupon code is required" });
     }
 
@@ -22,40 +22,44 @@ const applycoupon = async (req, res) => {
     const coupon = await Coupons.findOne({ CouponCode: couponCode });
 
     if (!coupon) {
-      console.log("Coupon code is invalid")
+      console.log("Coupon code is invalid");
       return res.status(404).json({ message: "Coupon code is invalid" });
     }
 
-     const currentDate = new Date();
+    const currentDate = new Date();
     if (coupon.ExpiryDate < currentDate) {
-      console.log("Coupon code has expired")
+      console.log("Coupon code has expired");
 
       return res.status(400).json({ message: "Coupon code has expired" });
     }
 
     // Check usage limit
     if (coupon.UsageLimit <= 0) {
-      console.log("Coupon code usage limit has been reached")
-      return res.status(400).json({ message: "Coupon code usage limit has been reached" });
+      console.log("Coupon code usage limit has been reached");
+      return res
+        .status(400)
+        .json({ message: "Coupon code usage limit has been reached" });
     }
 
     // Check minimum cart value
     if (coupon.MinimumCartValue && cartTotal < coupon.MinimumCartValue) {
-      console.log(`Minimum cart value for this coupon is ₹${coupon.MinimumCartValue}`)
+      console.log(
+        `Minimum cart value for this coupon is ₹${coupon.MinimumCartValue}`
+      );
       return res.status(400).json({
-        message: `Minimum cart value for this coupon is ₹${coupon.MinimumCartValue}`,
+        message: `Minimum cart value for this coupon is ₹${coupon.MinimumCartValue}`
       });
     }
 
     // Calculate the discount
     let discount = 0;
     if (coupon.DiscountType === "percentage") {
-      discount = (cartTotal * coupon.DiscountValue) / 100;
+      discount = cartTotal * coupon.DiscountValue / 100;
     } else if (coupon.DiscountType === "fixed") {
       discount = coupon.DiscountValue;
     }
 
-     discount = Math.min(discount, cartTotal);
+    discount = Math.min(discount, cartTotal);
 
     // Calculate the new total
     const newTotal = cartTotal - discount;
@@ -66,10 +70,10 @@ const applycoupon = async (req, res) => {
       await coupon.save();
     }
 
-     res.status(200).json({
+    res.status(200).json({
       message: "Coupon applied successfully",
       discount,
-      newTotal,
+      newTotal
     });
   } catch (error) {
     console.error("Error while applying coupon:", error);
@@ -111,24 +115,23 @@ const placeOrder = async (req, res) => {
   if (!city) errors.city = "City is required";
   if (!district) errors.district = "District is required";
 
-   const allowedPaymentMethods = ["cod", "upi", "razorpay"];
+  const allowedPaymentMethods = ["cod", "upi", "razorpay"];
   if (!paymentMethod || !allowedPaymentMethods.includes(paymentMethod)) {
     errors.paymentMethod = "Invalid or unsupported payment method selected";
   }
 
-   if (!items || !Array.isArray(items) || items.length === 0) {
+  if (!items || !Array.isArray(items) || items.length === 0) {
     errors.items = "No items in the cart";
   }
 
   try {
-    const cartItems = await Cart.find({ user: userId }) 
-      .populate("productId");
+    const cartItems = await Cart.find({ user: userId }).populate("productId");
 
     if (cartItems.length === 0) {
       throw new Error("No items in the cart.");
     }
 
-     const updatedCartItems = await Promise.all(
+    const updatedCartItems = await Promise.all(
       cartItems.map(async item => {
         const product = item.productId;
         if (!product) throw new Error(`Product not found.`);
@@ -138,7 +141,7 @@ const placeOrder = async (req, res) => {
         product.stock -= item.quantity;
         await product.save();
         return {
-          ...item.toObject(), 
+          ...item.toObject(),
           price: product.price,
           total: product.price * item.quantity
         };
@@ -166,17 +169,17 @@ const placeOrder = async (req, res) => {
     if (paymentMethod === "cod" && orderTotal > 1000) {
       return res.status(400).json({
         success: false,
-        message: "Cash on Delivery is not available for orders above ₹1000.",
+        message: "Cash on Delivery is not available for orders above ₹1000."
       });
     }
-    
+
     const newOrder = new Orders({
       userId,
       items: updatedCartItems,
       orderTotal,
       paymentMethod,
-      shippingAddress 
-       });
+      shippingAddress
+    });
 
     console.log("New order details:", newOrder);
     await newOrder.save();
@@ -231,10 +234,10 @@ const razorpayy = async (req, res) => {
       throw new Error("No items in the cart.");
     }
 
-     // Process cart items and stock checks
+    // Process cart items and stock checks
     const updatedCartItems = await Promise.all(
       cartItems.map(async item => {
-        const product = item.productId; // The product is populated already
+        const product = item.productId;
         if (!product) throw new Error(`Product not found.`);
         if (product.stock < item.quantity) {
           throw new Error(`Insufficient stock for ${product.name}.`);
@@ -278,7 +281,28 @@ const razorpayy = async (req, res) => {
       paymentMethod: "razorpay"
     });
 
+
     console.log("New order details:", newOrder);
+
+// Update the sales count for each product in the order
+for (let item of newOrder.items) {  // Assuming 'items' contains products in the order
+  const productId = item.productId;  // Replace with the correct field name for product ID
+  const quantity = item.quantity;    // Replace with the correct field name for quantity
+
+  // Find the product and increase its salesCount by the ordered quantity
+  const product = await Products.findById(productId);
+
+  if (product) {
+      // Increase salesCount by the ordered quantity
+      product.salesCount += quantity;
+      
+      // Save the updated product
+      await product.save();
+      console.log(`Product ${product.name} salesCount updated to ${product.salesCount}`);
+  } else {
+      console.log(`Product with ID ${productId} not found.`);
+  }
+}
     await newOrder.save();
     // Delete all items from the user's cart after placing the order
     await Cart.deleteMany({ user: userId });
@@ -289,6 +313,7 @@ const razorpayy = async (req, res) => {
       amount: order.amount,
       currency: order.currency
     });
+    
   } catch (error) {
     console.log("Error creating Razorpay order:", error.message);
     res.status(500).json({ success: false, message: error.message });
@@ -336,36 +361,33 @@ const loadcartpage = async (req, res) => {
     const carts = await Cart.find({ user: userId }).populate("productId");
     console.log("Cart Items:", carts);
 
-     if (!carts || carts.length === 0) {
+    if (!carts || carts.length === 0) {
       return res.render("cart", {
-        carts: [],  
+        carts: [],
         message: "There are no items in your cart at the moment"
       });
     }
 
-   
     carts.forEach(cart => {
       if (cart.productId.images && cart.productId.images.length > 0) {
         cart.firstImage = cart.productId.images[0];
       }
     });
     let subtotal = 0;
-    carts.forEach((item) => {
+    carts.forEach(item => {
       if (item.priceWithDiscount) {
         subtotal += item.priceWithDiscount * item.quantity;
       } else {
         subtotal += item.productId.price * item.quantity;
       }
     });
-    
+
     res.render("cart", {
       carts,
       subtotal,
-      shippingRate: 50,  
-      total: subtotal + 50, 
+      shippingRate: 50,
+      total: subtotal + 50
     });
-    
-
   } catch (error) {
     console.error("Error occurred during cart page:", error);
     res.status(500).send("Internal Server Error");
@@ -400,13 +422,13 @@ const addtocart = async (req, res) => {
   try {
     const { quantity, productId } = req.body;
 
-     const productQuantity = parseInt(quantity) || 1;
+    const productQuantity = parseInt(quantity) || 1;
 
     if (!productId) {
       return res.status(400).json({ error: "Product ID is required" });
     }
 
-     const product = await Products.findById(productId).populate("offer");
+    const product = await Products.findById(productId).populate("offer");
 
     if (!product) {
       return res.render("singleproduct", { message: "Product not found" });
@@ -426,13 +448,20 @@ const addtocart = async (req, res) => {
       });
     }
 
-     let discountedPrice = product.price;
-    if (product.offer && product.offer.Status && product.offer.ExpiryDate > Date.now()) {
+    let discountedPrice = product.price;
+    if (
+      product.offer &&
+      product.offer.Status &&
+      product.offer.ExpiryDate > Date.now()
+    ) {
       if (product.offer.DiscountType === "percentage") {
-        const discount = (product.price * product.offer.DiscountValue) / 100;
+        const discount = product.price * product.offer.DiscountValue / 100;
         discountedPrice = Math.max(0, product.price - discount); // Prevent negative price
       } else if (product.offer.DiscountType === "fixed") {
-        discountedPrice = Math.max(0, product.price - product.offer.DiscountValue);
+        discountedPrice = Math.max(
+          0,
+          product.price - product.offer.DiscountValue
+        );
       }
     }
 
@@ -441,7 +470,7 @@ const addtocart = async (req, res) => {
     if (existingItem) {
       const newQuantity = existingItem.quantity + productQuantity;
 
-       if (newQuantity > product.stock) {
+      if (newQuantity > product.stock) {
         return res.render("singleproduct", {
           message: "Cannot add more than the available stock to your cart",
           product
@@ -460,7 +489,7 @@ const addtocart = async (req, res) => {
       existingItem.totalPrice = newQuantity * discountedPrice;
       await existingItem.save();
     } else {
-       const cartItem = new Cart({
+      const cartItem = new Cart({
         user: userId,
         productId,
         quantity: productQuantity,
@@ -470,14 +499,42 @@ const addtocart = async (req, res) => {
       await cartItem.save();
     }
 
-     res.redirect("/cart");
+    res.redirect("/cart");
   } catch (error) {
     console.error("Error adding product to cart:", error);
     res.status(500).json({ error: "Failed to add product to cart" });
   }
 };
+const paymentpending = async (req, res) => {
+  const { orderId, status } = req.body;
+
+  try {
+    // Update the order status in the database (MongoDB example)
+    const result = await Order.updateOne(
+      { _id: orderId },
+      { $set: { status: status } }
+    );
+
+    if (result.nModified > 0) {
+      return res.json({ success: true });
+    } else {
+      return res.json({
+        success: false,
+        message: "Order not found or status not updated."
+      });
+    }
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    return res.json({
+      success: false,
+      message: "Error updating order status."
+    });
+  }
+};
+
 module.exports = {
   addtocart,
+  paymentpending,
   loadcartpage,
   removecart,
   placeOrder,

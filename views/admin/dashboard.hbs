@@ -5,14 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WATCHES PERMIUM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
-	<link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
 
     <link rel="stylesheet" href="/admin/dashboard.css">
 
@@ -24,31 +26,51 @@
             <div class="logo">WATCH PREMIUM</div>
             <nav>
                 <a class="a" href="/admin/dashboard">
-                    <div class="nav-item active">Dashboard</div>
+                    <div class="nav-item active">
+                        <i class="bi bi-house"></i> Dashboard
+                    </div>
                 </a>
                 <a class="a" href="/admin/userpage">
-                    <div class="nav-item">Users</div>
-                    <a class="a" href="/admin/products">
-                        <div class="nav-item">Products</div>
-                    </a>
-                    <a class="a" href="/admin/category">
-                        <div class="nav-item">Category</div>
-                    </a>
-                    <a class="a" href="/admin/orders">
-                        <div class="nav-item">Orders</div>
-                    </a>
-                     <a class="a" href="/admin/inventory">
-                        <div class="nav-item">Inventory</div>
-                    </a>
-                    <a class="a" href="/admin/coupon">
-                        <div class="nav-item">coupons</div>
-                    </a>
-                    <a class="a" href="/admin/offer">
-                        <div class="nav-item">Offers</div>
-                    </a>
-                    <a class="a" href="/admin/salesreport">
-                        <div class="nav-item">Sales Report</div>
-                    </a>
+                    <div class="nav-item">
+                        <i class="bi bi-people"></i> Users
+                    </div>
+                </a>
+                <a class="a" href="/admin/products">
+                    <div class="nav-item">
+                        <i class="bi bi-box-seam"></i> Products
+                    </div>
+                </a>
+                <a class="a" href="/admin/category">
+                    <div class="nav-item">
+                        <i class="bi bi-tag"></i> Category
+                    </div>
+                </a>
+                <a class="a" href="/admin/orders">
+                    <div class="nav-item">
+                        <i class="bi bi-cart-check"></i> Orders
+                    </div>
+                </a>
+                <a class="a" href="/admin/inventory">
+                    <div class="nav-item">
+                        <i class="bi bi-boxes"></i> Inventory
+                    </div>
+                </a>
+                <a class="a" href="/admin/coupon">
+                    <div class="nav-item">
+                        <i class="bi bi-ticket-detailed"></i> Coupons
+                    </div>
+                </a>
+                <a class="a" href="/admin/offer">
+                    <div class="nav-item">
+                        <i class="bi bi-gift"></i> Offers
+                    </div>
+                </a>
+                <a class="a" href="/admin/salesreport">
+                    <div class="nav-item">
+                        <i class="bi bi-bar-chart-line"></i> Sales Report
+                    </div>
+                </a>
+
             </nav>
         </aside>
         <main class="main-content">
@@ -62,39 +84,155 @@
                 <section class="card-container">
 
                     <div class="card">
-                        <h3>Overall sales count
+                        <h3 style="color: white;">Overall sales count
                         </h3>
-                        <p>{{orderCount}}<span style="font-size:19px;margin-left:10px">orders</span></p>
+                        <p style="font-size: 29px;color:rgb(103, 252, 131)">{{orderCount}}<span style="font-size:19px;margin-left:10px">orders</span></p>
                     </div>
                     <div class="card">
-                        <h3>Overall Sales amount</h3>
-                        <p>₹ {{netSale}}</p>
+                        <h3 style="color: white;">Overall Sales amount</h3>
+                        <p style="font-size: 29px;color:rgb(154, 255, 177)">₹ {{netSale}}</p>
                     </div>
                     <div class="card">
-                        <h3>Overall discount amount</h3>
-                        <p>₹ {{totalDiscount}}</p>
+                        <h3 style="color: white;">Overall discount amount</h3>
+                        <p style="font-size: 29px;color:rgb(156, 207, 252)">₹ {{totalDiscount}}</p>
                     </div>
                     <div class="card">
-                        <h3>Sales expect(<span style="font-size: 13px;">without discound</span>)</h3>
-                        <p>₹ {{totalSales}}</p>
+                        <h3 style="color: white;">Sales expect(<span style="font-size: 13px;">without discound</span>)</h3>
+                        <p style="font-size: 29px;color:rgb(255, 147, 147)">₹ {{totalSales}}</p>
                     </div>
                 </section>
-            
-                {{/each}}
-               
 
-            <section class="graph-container">
-                <div class="graph">
-                    <h3>Sales Overview</h3>
-                    <div class="graph-placeholder pulse"></div>
-                </div>
-                <div class="graph">
-                    <h3>Top Categories</h3>
-                    <div class="graph-placeholder pulse"></div>
-                </div>
-            </section>
+                {{/each}}
+
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var ctx = document.getElementById('salesChart').getContext('2d');
+
+                        var salesData = {
+                            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                            datasets: [
+                                {
+                                    label: 'Total Sales',
+                                    data: [65000, 56000, 20000, 81000, 56000, 55000, 40000],
+                                    borderColor: 'rgb(75, 192, 192)',
+                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                    tension: 0.4
+                                },
+                                {
+                                    label: 'Net Profit',
+                                    data: [28000, 48000, 40000, 19000, 86000, 27000, 90000],
+                                    borderColor: 'rgb(54, 162, 235)',
+                                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                    tension: 0.4
+                                }
+                            ]
+                        };
+
+                        var salesChart = new Chart(ctx, {
+                            type: 'line',
+                            data: salesData,
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'top'
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: function (value) {
+                                                return '$' + value;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
+                </script>
+
+
+                <section style="height: 500px;" class="graph-container">
+                    <div style="height: 500px;" class="graph">
+                        <h3>Sales Overview</h3>
+                        <canvas style="background-color: rgba(255, 255, 255, 0.915);border-radius:10px;color:white"
+                            id="salesChart"></canvas>
+                    </div>
+                    <div class="graph">
+                        <h3>Top Categories</h3>
+                        <div class="graph-placeholder pulse"></div>
+                    </div>
+                </section>
         </main>
     </div>
+    <style>
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 20px;
+        }
+
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px;
+            width: 250px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h3 {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .card p {
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+
+    <h1>Top Selling Data</h1>
+    <div id="products" class="container"></div>
+    <div id="categories" class="container"></div>
+    <div id="brands" class="container"></div>
+
+    <script>
+        async function fetchTopSelling() {
+            try {
+                const response = await fetch('/api/top-selling');
+                const data = await response.json();
+
+                displayData('products', data.topProducts, 'Products');
+                displayData('categories', data.topCategories, 'Categories');
+                displayData('brands', data.topBrands, 'Brands');
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+
+        function displayData(containerId, data, title) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `<h2>Top 10 ${title}</h2>`;
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <h3>${item._id || item.name}</h3>
+                    <p>Total Sales: ${item.totalSales}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        fetchTopSelling();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </body>
 
 </html>

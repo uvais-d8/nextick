@@ -26,6 +26,45 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }).any("images", 10);
 
 // -------------------------------------------------addmin Pages---------------------------------------------------------
+// Example for MongoDB Aggregation Queries
+
+const topSelling = async (req, res) => {
+  console.log("ethyyy")
+  try {
+      const topProducts = await Orders.aggregate([
+          { $unwind: "$items" }, // Unwind items array
+          {
+              $group: {
+                  _id: "$items.productId", // Group by productId
+                  totalQuantity: { $sum: "$items.quantity" } // Sum quantities
+              }
+          },
+          { $sort: { totalQuantity: -1 } }, // Sort by quantity
+          { $limit: 10 }, // Limit to top 10
+          {
+              $lookup: {
+                  from: "products", // Replace with your actual product collection name
+                  localField: "_id",
+                  foreignField: "_id",
+                  as: "productDetails"
+              }
+          },
+          { $unwind: "$productDetails" },
+          {
+              $project: {
+                  name: "$productDetails.name",
+                  images: "$productDetails.images",
+                  totalQuantity: 1
+              }
+          }
+      ]);
+      res.status(200).json(topProducts);
+  } catch (err) {
+      res.status(500).json({ error: err.message });
+  }
+};
+
+
 
 const loadlogin = async (req, res) => {
   res.render("admin/login");
@@ -1729,5 +1768,6 @@ module.exports = {
   loadaddoffers,
   addoffers,
   unlistCoupon,
-  listCoupon
+  listCoupon,
+  topSelling
 };
