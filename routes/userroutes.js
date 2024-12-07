@@ -87,7 +87,8 @@ router.delete("/cart/:id", salesController.removecart);
 router.post('/cart/:id/updateQuantity',salesController.updateQuantity) 
 router.post("/applycoupon",userAuth.checksession,salesController.applycoupon)
 router.post('/create-razorpay-order',userAuth.checksession,salesController.razorpayy)
-router.post("/update-order-status", userAuth.checksession,salesController.paymentpending);
+// router.post("/update-order-status", userAuth.checksession,salesController.paymentpending);
+router.post("/update-order-status",userAuth.checksession,salesController.updateOrderStatus)
 
 //Orders Controller
 router.get("/checkout", userAuth.checksession,orderController.checkout);

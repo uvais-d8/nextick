@@ -26,7 +26,7 @@ const productsShema = new mongoose.Schema({
     required: true
   },
   category: {
-    type: mongoose.Schema.Types.ObjectId, // Reference to the category model
+    type: mongoose.Schema.Types.ObjectId,
     ref: "category",
     required: true
   },
@@ -69,22 +69,6 @@ const productsShema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  // priceWithDiscount: {
-  //   type: Number,
-  //   require:false,
-  //   default: function () {
-  //     if (this.offer && this.price) {
-  //       if (this.offer.DiscountType === "percentage") {
-  //         const discount = (this.price * this.offer.DiscountValue) / 100;
-  //         return Math.max(0, this.price - discount); // Prevent negative price
-  //       } else if (this.offer.DiscountType === "fixed") {
-  //         return Math.max(0, this.price - this.offer.DiscountValue); // Prevent negative price
-  //       }
-  //     }
-  //     return this.price || 0; // Fallback to original price or 0 if price is missing
-  //   }
-  // },
-  
   images: [
     {
       type: String,

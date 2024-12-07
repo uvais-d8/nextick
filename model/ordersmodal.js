@@ -13,10 +13,11 @@ const ordersSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["scheduled", "pending", "delivered", "shipped", "canceled"],
+      enum: ["scheduled", "pending", "delivered", "shipped", "canceled",'payment-pending'],
       required: true,
       default: "scheduled"
     },
+    paymentStatus: { type: String, default: "Pending" }, // e.g., Pending, Failed, Success
 
     items: [
       {
@@ -33,16 +34,11 @@ const ordersSchema = new mongoose.Schema(
             "delivered",
             "shipped",
             "canceled",
-            "retrypayment",
+            "paymentpending",
             "returned"
           ],
           required: true,
-          default: "scheduled"
-        },
-        paymentStatus: {
-          type: String,
-          enum: ["retrypayment"],
-          default: "retrypayment"
+          default: "paymentpending"
         },
         stock: {
           type: Number
@@ -76,6 +72,11 @@ const ordersSchema = new mongoose.Schema(
         ]
       }
     ],
+    razorpayDetails: {
+      orderId: String,
+      amount: Number,
+      currency: String,
+    },
     paymentMethod: {
       type: String,
       enum: ["upi", "cod", "razorpay"],

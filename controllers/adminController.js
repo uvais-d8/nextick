@@ -26,45 +26,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }).any("images", 10);
 
 // -------------------------------------------------addmin Pages---------------------------------------------------------
-// Example for MongoDB Aggregation Queries
-
-const topSelling = async (req, res) => {
-  console.log("ethyyy")
-  try {
-      const topProducts = await Orders.aggregate([
-          { $unwind: "$items" }, // Unwind items array
-          {
-              $group: {
-                  _id: "$items.productId", // Group by productId
-                  totalQuantity: { $sum: "$items.quantity" } // Sum quantities
-              }
-          },
-          { $sort: { totalQuantity: -1 } }, // Sort by quantity
-          { $limit: 10 }, // Limit to top 10
-          {
-              $lookup: {
-                  from: "products", // Replace with your actual product collection name
-                  localField: "_id",
-                  foreignField: "_id",
-                  as: "productDetails"
-              }
-          },
-          { $unwind: "$productDetails" },
-          {
-              $project: {
-                  name: "$productDetails.name",
-                  images: "$productDetails.images",
-                  totalQuantity: 1
-              }
-          }
-      ]);
-      res.status(200).json(topProducts);
-  } catch (err) {
-      res.status(500).json({ error: err.message });
-  }
-};
-
-
 
 const loadlogin = async (req, res) => {
   res.render("admin/login");
@@ -102,7 +63,28 @@ const loaddashboard = async (req, res) => {
     const { startDate, endDate, filter, page = 1, limit = 5 } = req.query;
 
     const filterConditions = { "items.status": "delivered" };
-
+    const topSellingProducts = await Products.find()
+      .sort({ salesCount: -1 })
+      .limit(10);
+    const topSellingCategories = await Products.aggregate([
+      {
+        $group: {
+          _id: "$category",
+          totalSales: { $sum: "$salesCount" }
+        }
+      },
+      { $sort: { totalSales: -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "_id",
+          foreignField: "_id",
+          as: "categoryDetails"
+        }
+      },
+      { $unwind: "$categoryDetails" } // Unwind the category details to make it easier to access
+    ]);
     if (startDate && endDate) {
       filterConditions.time = {
         $gte: new Date(startDate),
@@ -119,7 +101,7 @@ const loaddashboard = async (req, res) => {
         ? order => order.time.toISOString().split("T")[0]
         : filter === "monthly"
           ? order => `${order.time.getMonth() + 1}-${order.time.getFullYear()}`
-          : filter === "weekly"
+          : filter === "yearly"
             ? order =>
                 `Week-${Math.ceil(
                   order.time.getDate() / 7
@@ -127,7 +109,8 @@ const loaddashboard = async (req, res) => {
             : order => `${order.time.getFullYear()}`; // Default yearly grouping
 
     const salesData = orders.reduce((acc, order) => {
-      const key = groupByKey(order);
+      
+    const key = groupByKey(order);
 
       if (!acc[key]) {
         acc[key] = {
@@ -135,8 +118,8 @@ const loaddashboard = async (req, res) => {
           totalSales: 0,
           totalDiscount: 0,
           orderCount: 0,
-          netSale: 0,
-         };
+          netSale: 0
+        };
       }
 
       const totalDiscount = order.items.reduce(
@@ -164,13 +147,15 @@ const loaddashboard = async (req, res) => {
     const totalPages = Math.ceil(salesReport.length / limit);
 
     res.render("admin/dashboard", {
+      topSellingProducts,
+      topSellingCategories,
       salesReport: paginatedReports,
       totalPages,
       currentPage: page,
       filter,
       startDate,
       endDate,
-      salesData: JSON.stringify(paginatedReports),
+      salesData,
       overallNetSale
     });
 
@@ -210,7 +195,6 @@ const unblockUser = async (req, res) => {
     res.redirect("/admin/dashboard");
   }
 };
-
 const loadUserMangment = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -626,8 +610,28 @@ const loadeditproducts = async (req, res) => {
 
 const loadinventory = async (req, res) => {
   try {
-    const products = await Products.find({});
-    res.render("admin/inventory", { products });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
+    const totalUsers = await User.countDocuments();
+    const products = await Products.find({})
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .exec();
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    const previousPage = page > 1 ? page - 1 : null;
+    const nextPage = page < totalPages ? page + 1 : null;
+
+    res.render("admin/inventory", {
+      products,
+      currentPage: page,
+      totalPages: totalPages,
+      totalUsers: totalUsers,
+      previousPage: previousPage,
+      nextPage: nextPage
+    });
   } catch (error) {
     console.log("failed to load inventory");
   }
@@ -1496,17 +1500,27 @@ const getSalesReport = async (req, res) => {
       "items.productId"
     );
 
+    // Helper function to get the week number of the year
+    const getWeekNumber = date => {
+      const startDate = new Date(date.getFullYear(), 0, 1);
+      const days = Math.floor((date - startDate) / (24 * 60 * 60 * 1000));
+      return Math.ceil((days + 1) / 7);
+    };
+
+    // Grouping logic based on the selected filter
     const groupByKey =
       filter === "daily"
         ? order => order.time.toISOString().split("T")[0]
         : filter === "monthly"
           ? order => `${order.time.getMonth() + 1}-${order.time.getFullYear()}`
-          : filter === "weekly"
-            ? order =>
-                `Week-${Math.ceil(
-                  order.time.getDate() / 7
-                )} ${order.time.getFullYear()}`
-            : order => `${order.time.getFullYear()}`; // Default yearly grouping
+          : filter === "yearly"
+            ? order => `${order.time.getFullYear()}`
+            : filter === "weekly" // New weekly filter
+              ? order =>
+                  `Week-${getWeekNumber(
+                    order.time
+                  )} ${order.time.getFullYear()}`
+              : order => `${order.time.getFullYear()}`; // Default yearly grouping
 
     const salesData = orders.reduce((acc, order) => {
       const key = groupByKey(order);
@@ -1720,7 +1734,360 @@ const exportExcel = async (req, res) => {
   }
 };
 
+// const getSalesData = (req, res) => {
+//   const filter = req.query.filter; // Get filter from query params
+//   if (!filter) {
+//       return res.status(400).json({ error: "Filter is required" });
+//   }
+
+//   let data;
+
+//   // Dummy data based on the filter
+//   switch (filter) {
+//       case "yearly":
+//           data = {
+//               labels: ["2018","2019","2020","2021", "2022", "2023", "2024"],
+//               totalPrices: [500000, 750000, 1000000, 1250000,750000, 1000000, 1250000], // Example yearly sales data
+//           };
+//           break;
+//       case "monthly":
+//           data = {
+//               labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+//               totalPrices: [90000, 6000, 7000, 8000, 55000, 6500, 72000, 84100, 5800, 94000, 7500, 8600], // Example monthly sales data
+//           };
+//           break;
+//       case "weekly":
+//           data = {
+//               labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+//               totalPrices: [12000, 15000, 18000, 17000], // Example weekly sales data
+//           };
+//           break;
+//       default:
+//           return res.status(400).json({ error: "Invalid filter value" });
+//   }
+
+//   // Respond with data
+//   res.json(data);
+// };
+
+// const getSalesData = async (req, res) => {
+//   const filter = req.query.filter; // Get filter from query params
+//   const itemStatus = req.query.itemStatus || "delivered"; // Get item status from query params, default to 'delivered'
+
+//   if (!filter) {
+//     return res.status(400).json({ error: "Filter is required" });
+//   }
+
+//   try {
+//     let groupStage = {};
+//     let sortStage = {};
+//     let labels = [];
+//     let totalPrices = [];
+
+//     // Match stage to filter by order status and item status
+//     let matchStage = {
+//       "items.status": itemStatus // Filter items where their status matches the itemStatus (delivered in this case)
+//     };
+
+//     // Adjust aggregation stages based on the filter
+//     switch (filter) {
+//       case "yearly":
+//         groupStage = {
+//           _id: { year: { $year: "$createdAt" } },
+//           totalSales: { $sum: "$orderTotal" }
+//         };
+//         sortStage = { "_id.year": 1 };
+//         break;
+
+//       case "monthly":
+//         groupStage = {
+//           _id: {
+//             year: { $year: "$createdAt" },
+//             month: { $month: "$createdAt" }
+//           },
+//           totalSales: { $sum: "$orderTotal" }
+//         };
+//         sortStage = { "_id.year": 1, "_id.month": 1 };
+//         break;
+
+//       case "weekly":
+//         groupStage = {
+//           _id: { year: { $year: "$createdAt" }, week: { $week: "$createdAt" } },
+//           totalSales: { $sum: "$orderTotal" }
+//         };
+//         sortStage = { "_id.year": 1, "_id.week": 1 };
+//         break;
+
+//       default:
+//         return res.status(400).json({ error: "Invalid filter value" });
+//     }
+
+//     // Aggregate data from MongoDB
+//     const salesData = await Orders.aggregate([
+//       { $match: matchStage }, // Match orders with status 'delivered' and item status 'delivered'
+//       { $group: groupStage },
+//       { $sort: sortStage }
+//     ]);
+//     // Prepare labels and totalPrices for the graph
+//     if (filter === "yearly") {
+//       labels = salesData.map(item => `${item._id.year}`);
+      
+//       console.log("labels::",labels)
+//     } else if (filter === "monthly") {
+//       labels = salesData.map(item => {
+//         const months = [
+//           "Jan",
+//           "Feb",
+//           "Mar",
+//           "Apr",
+//           "May",
+//           "Jun",
+//           "Jul",
+//           "Aug",
+//           "Sep",
+//           "Oct",
+//           "Nov",
+//           "Dec"
+//         ];
+//         console.log("labels::",labels)
+
+//         if (item._id.month && item._id.year) {
+//           return `${months[item._id.month - 1]} ${item._id.year}`;
+//         }
+//         return "Invalid Date"; // Handle invalid month or year
+//       });
+//     } else if (filter === "weekly") {
+//       labels = salesData.map(
+//         item => `Week ${item._id.week} - ${item._id.year}`
+//       );
+//     }
+
+//     totalPrices = salesData.map(item => item.totalSales);
+
+//     // Log the labels and totalPrices for debugging
+//     console.log("Labels:", labels);
+//     console.log("Total Prices:", totalPrices);
+//     console.log("Aggregated Sales Data:", salesData);
+
+//     res.json({ labels, totalPrices });
+
+//    } catch (error) {
+//     console.error("Error fetching sales data:", error);
+//     res.status(500).json({ error: "Failed to fetch sales data" });
+//   }
+// };
+
+const getSalesData = async (req, res) => {
+  const filter = req.query.filter; // Get filter from query params
+  const itemStatus = req.query.itemStatus || "delivered"; // Get item status from query params, default to 'delivered'
+
+  if (!filter) {
+    return res.status(400).json({ error: "Filter is required" });
+  }
+
+  try {
+    let groupStage = {};
+    let sortStage = {};
+    let labels = [];
+    let totalPrices = [];
+
+    // Match stage to filter by order status and item status
+    let matchStage = {
+      "items.status": itemStatus // Filter items where their status matches the itemStatus (delivered in this case)
+    };
+
+    // Adjust aggregation stages based on the filter
+    switch (filter) {
+      case "yearly":
+        groupStage = {
+          _id: { year: { $year: "$createdAt" } },
+          totalSales: { $sum: "$orderTotal" }
+        };
+        sortStage = { "_id.year": 1 };
+        break;
+
+      case "monthly":
+        groupStage = {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" }
+          },
+          totalSales: { $sum: "$orderTotal" }
+        };
+        sortStage = { "_id.year": 1, "_id.month": 1 };
+        break;
+
+      case "weekly":
+        groupStage = {
+          _id: { year: { $year: "$createdAt" }, week: { $week: "$createdAt" } },
+          totalSales: { $sum: "$orderTotal" }
+        };
+        sortStage = { "_id.year": 1, "_id.week": 1 };
+        break;
+
+      default:
+        return res.status(400).json({ error: "Invalid filter value" });
+    }
+
+    // Aggregate data from MongoDB
+    const salesData = await Orders.aggregate([
+      { $match: matchStage }, // Match orders with status 'delivered' and item status 'delivered'
+      { $group: groupStage },
+      { $sort: sortStage }
+    ]);
+
+    // Prepare labels and totalPrices for the graph
+    if (filter === "yearly") {
+      labels = salesData.map(item => `${item._id.year}`);
+      totalPrices = salesData.map(item => item.totalSales);
+    
+      // If no sales data exists for certain years, handle that here
+      const years = [...new Set(salesData.map(item => item._id.year))];
+      console.log("Years Found:", years);
+    }
+     else if (filter === "monthly") {
+      const months = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      ];
+
+      // Ensure we have data for all 12 months, even if no sales data exists for some months
+      let monthData = new Array(12).fill(0); // Array to hold data for all 12 months (initially set to 0)
+
+      salesData.forEach(item => {
+        const monthIndex = item._id.month - 1; // MongoDB returns months as 1-12, so adjust to 0-11 index
+        monthData[monthIndex] = item.totalSales; // Populate the month data with actual sales
+      });
+
+      labels = months; // The labels are the month names
+      totalPrices = monthData; // The totalPrices array holds the sales data for each month
+    } else if (filter === "weekly") {
+      // Initialize the labels and sales data
+      labels = [];
+      totalPrices = [];
+    
+      salesData.forEach(item => {
+        const week = item._id.week || "N/A"; // Handle missing week data
+        const year = item._id.year || "N/A"; // Handle missing year data
+    
+        if (week !== "N/A" && year !== "N/A") {
+          labels.push(`Week ${week} - ${year}`);
+          totalPrices.push(item.totalSales);
+        } else {
+          console.warn("Invalid Weekly Data:", item);
+        }
+      });
+    
+      console.log("Weekly Labels:", labels);
+      console.log("Weekly Total Sales:", totalPrices);
+    }
+    
+
+    // Log the labels and totalPrices for debugging
+    console.log("Labels:", labels);
+    console.log("Total Prices:", totalPrices);
+    console.log("Aggregated Sales Data:", salesData);
+
+    res.json({ labels, totalPrices });
+
+  } catch (error) {
+    console.error("Error fetching sales data:", error);
+    res.status(500).json({ error: "Failed to fetch sales data" });
+  }
+};
+
+
+// const getSalesData = async (req, res) => {
+//   const filter = req.query.filter; // Get filter from query params
+//   console.log("filter::", filter);
+//   if (!filter) {
+//     return res.status(400).json({ error: "Filter is required" });
+//   }
+
+//   try {
+//     let groupStage = {};
+//     let sortStage = {};
+//     let labels = [];
+//     let totalPrices = [];
+
+//     // Adjust aggregation stages based on the filter
+//     switch (filter) {
+//       case "yearly":
+//         groupStage = {
+//           _id: { year: { $year: "$createdAt" } },
+//           totalSales: { $sum: "$orderTotal" }
+//         };
+//         sortStage = { "_id.year": 1 };
+//         break;
+
+//       case "monthly":
+//         groupStage = {
+//           _id: {
+//             year: { $year: "$createdAt" },
+//             month: { $month: "$createdAt" }
+//           },
+//           totalSales: { $sum: "$orderTotal" }
+//         };
+//         sortStage = { "_id.year": 1, "_id.month": 1 };
+//         break;
+
+//       case "weekly":
+//         groupStage = {
+//           _id: { year: { $year: "$createdAt" }, week: { $week: "$createdAt" } },
+//           totalSales: { $sum: "$orderTotal" }
+//         };
+//         sortStage = { "_id.year": 1, "_id.week": 1 };
+//         break;
+
+//       default:
+//         return res.status(400).json({ error: "Invalid filter value" });
+//     }
+
+//     // Aggregate data from MongoDB
+//     const salesData = await Orders.aggregate([
+//       { $match: {} }, // Match all orders; add conditions if necessary
+//       { $group: groupStage },
+//       { $sort: sortStage }
+//     ]);
+
+//     console.log("Aggregated sales data:", salesData);
+
+//     // Prepare labels and totalPrices for the graph
+//     if (filter === "yearly") {
+//       labels = salesData.map(item => `${item._id.year}`);
+//     } else if (filter === "monthly") {
+//       labels = salesData.map(item => {
+//         const months = [
+//           "Jan",
+//           "Feb",
+//           "Mar",
+//           "Apr",
+//           "May",
+//           "Jun",
+//           "Jul",
+//           "Aug",
+//           "Sep",
+//           "Oct",
+//           "Nov",
+//           "Dec"
+//         ];
+//         return `${months[item._id.month - 1]} ${item._id.year}`;
+//       });
+//     } else if (filter === "weekly") {
+//       labels = salesData.map(
+//         item => `Week ${item._id.week} - ${item._id.year}`
+//       );
+//     }
+//     totalPrices = salesData.map(item => item.totalSales);
+
+//     res.json({ labels, totalPrices });
+//   } catch (error) {
+//     console.error("Error fetching sales data:", error);
+//     res.status(500).json({ error: "Failed to fetch sales data" });
+//   }
+// };
+
 module.exports = {
+  getSalesData,
   exportPDF,
   listOffer,
   unlistOffer,
@@ -1768,6 +2135,5 @@ module.exports = {
   loadaddoffers,
   addoffers,
   unlistCoupon,
-  listCoupon,
-  topSelling
+  listCoupon
 };

@@ -138,11 +138,4 @@ p{
     border-radius: 8px;
     opacity: 0.7;
 }
-/* @keyframes pulse {
-    0% { opacity: 0.5; }
-    50% { opacity: 1; }
-    100% { opacity: 0.5; }
-}
-.pulse {
-    animation: pulse 2s infinite ease-in-out;
-} */
+ 

@@ -80,31 +80,30 @@
             </header>
             {{#each salesReport}}
             <div class="sales-report-section">
-                <h2>{{month}}</h2>
                 <section class="card-container">
 
                     <div class="card">
                         <h3 style="color: white;">Overall sales count
                         </h3>
-                        <p style="font-size: 29px;color:rgb(103, 252, 131)">{{orderCount}}<span style="font-size:19px;margin-left:10px">orders</span></p>
+
+                        <p style="font-size: 29px;color:rgb(97, 131, 255)">{{orderCount}}<span
+                                style="font-size:19px;margin-left:10px">orders</span></p>
                     </div>
                     <div class="card">
                         <h3 style="color: white;">Overall Sales amount</h3>
-                        <p style="font-size: 29px;color:rgb(154, 255, 177)">₹ {{netSale}}</p>
+                        <p style="font-size: 29px;color:rgb(93, 255, 91)">₹ {{netSale}}</p>
                     </div>
                     <div class="card">
                         <h3 style="color: white;">Overall discount amount</h3>
-                        <p style="font-size: 29px;color:rgb(156, 207, 252)">₹ {{totalDiscount}}</p>
+                        <p style="font-size: 29px;color:rgb(255, 91, 91)">₹ {{totalDiscount}}</p>
                     </div>
-                    <div class="card">
-                        <h3 style="color: white;">Sales expect(<span style="font-size: 13px;">without discound</span>)</h3>
-                        <p style="font-size: 29px;color:rgb(255, 147, 147)">₹ {{totalSales}}</p>
-                    </div>
+                     
                 </section>
 
                 {{/each}}
 
 
+                {{!--
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
                         var ctx = document.getElementById('salesChart').getContext('2d');
@@ -152,85 +151,250 @@
                             }
                         });
                     });
+                </script> --}}
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const filterElement = document.getElementById("filter");
+
+                        // Set default value for filter and initialize chart
+                        if (filterElement) {
+                            filterElement.value = "yearly";
+                            updateSalesChart();
+                        }
+
+                        // Attach change event listener to the filter dropdown
+                        filterElement.addEventListener("change", updateSalesChart);
+                    });
+
+                    let salesChart;
+
+                    async function updateSalesChart() {
+                        const filter = document.getElementById("filter").value;
+
+                        try {
+                            // Fetch data from the backend
+                            const response = await fetch(`/admin/sales-data?filter=${filter}`);
+                            const result = await response.json();
+
+                            if (response.ok) {
+                                const labels = result.labels;
+                                const data = result.totalPrices;
+
+                                // Destroy existing chart if it exists
+                                if (salesChart) {
+                                    salesChart.destroy();
+                                }
+
+                                // Create new chart
+                                const ctx = document.getElementById("salesChart").getContext("2d");
+                                salesChart = new Chart(ctx, {
+                                    type: "line",
+                                    data: {
+                                        labels: labels,
+                                        datasets: [{
+                                            label: `Total Sales (₹ 9999${netSale})`,
+                                            data: data,
+                                            backgroundColor: "rgba(54, 162, 235, 0.2)",
+                                            borderColor: "rgba(54, 162, 235, 1)",
+                                            borderWidth: 1,
+                                            fill: true,
+                                        }],
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true,
+                                                title: {
+                                                    display: true,
+                                                    text: `Total Sales (₹ ${netSale})`,
+                                                },
+                                            },
+                                            x: {
+                                                title: {
+                                                    display: true,
+                                                    text: filter === "yearly" ? "Years" : filter === "monthly" ? "Months" : "Weeks",
+                                                },
+                                            },
+                                        },
+                                    },
+                                });
+                            } else {
+                                console.error("Error:", result.error);
+                            }
+                        } catch (error) {
+                            console.error("Error loading chart data:", error);
+                        }
+                    }
                 </script>
 
+ <script>async function updateSalesChart() {
+    const filter = document.getElementById("filter").value;
 
-                <section style="height: 500px;" class="graph-container">
-                    <div style="height: 500px;" class="graph">
-                        <h3>Sales Overview</h3>
-                        <canvas style="background-color: rgba(255, 255, 255, 0.915);border-radius:10px;color:white"
+    try {
+        // Fetch data from the backend
+        const response = await fetch(`/admin/sales-data?filter=${filter}`);
+        const result = await response.json();
+
+        console.log("Fetched data:", result);
+
+        if (response.ok) {
+            const labels = result.labels;
+            const data = result.totalPrices;
+
+            if (labels.length === 0 || data.length === 0) {
+                console.warn("No data available for the selected filter.");
+                return;
+            }
+
+            // Destroy existing chart if it exists
+            if (salesChart) {
+                salesChart.destroy();
+            }
+
+            // Create new chart
+            const ctx = document.getElementById("salesChart").getContext("2d");
+            salesChart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Total Sales (₹)",
+                        data: data,
+                        backgroundColor: "rgba(54, 162, 235, 0.2)",
+                        borderColor: "rgba(54, 162, 235, 1)",
+                        borderWidth: 1,
+                        fill: true,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: "Total Sales (₹)",
+                            },
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: filter === "yearly" ? "Years" : filter === "monthly" ? "Months" : "Weeks",
+                            },
+                        },
+                    },
+                },
+            });
+        } else {
+            console.error("Error:", result.error);
+        }
+    } catch (error) {
+        console.error("Error loading chart data:", error);
+    }
+}
+</script>  
+
+                <section style="height: 450px;" class="graph-container">
+                    <div style="height: 500px;background-color:rgb(240, 236, 236)" class="graph">
+                        <h3 style="color: black;font-weight:bold">Sales Overview</h3>
+                        <select id="filter" style="margin-bottom: 10px; margin-left: 87%;margin-top:-200px;width:90px;height:30px;border-radius:4px;font-size:14px">
+                            <option value="yearly">Yearly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="weekly">Weekly</option>
+                        </select>
+
+                        <canvas style="background-color: rgba(255, 255, 255, 0.968);border-radius:5px;color:white;margin-bottom:80px"
                             id="salesChart"></canvas>
                     </div>
-                    <div class="graph">
-                        <h3>Top Categories</h3>
-                        <div class="graph-placeholder pulse"></div>
+                    <div style="height: 500px;" class="graph">
+                        <h3>Best-Selling Products</h3>
+                        <div class="graph-placeholmder pulse">
+
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>Sales count</th>
+                                        <th>Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#each topSellingProducts}}
+                                    <tr>
+                                        <td>{{this.name}}</td>
+                                        <td style="padding-left: 20px;">{{this.salesCount}}</td>
+                                        <td>{{this.price}}</td>
+                                    </tr>
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </section>
+
+                <div style="display: flex;">
+                    <div style="height:200px;margin-top:70px;width:50%" class="graph">
+                        <h3>Best-Selling Categories</h3>
+                        <div class="graph-placeholmder pulse">
+
+                            <table>
+                                <colgroup>
+                                    <col style="width: 170px;">
+                                    <col style="width: 200px;">
+                                </colgroup>
+                                <thead>
+                                    <tr style="font-size:19px;font-weight:bold">
+                                        <th>Category</th>
+                                        <th>Total Sales</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#each topSellingCategories}}
+                                    <tr>
+                                        <td>{{this.categoryDetails.category}}</td>
+                                        <td style="padding-left: 40px;">{{this.totalSales}}</td>
+                                    </tr>
+                                    {{/each}}
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                    <div style="height: 200px;margin-top:70px;margin-left:20px;width:50%" class="graph">
+                        <h3>Best-Selling Brands</h3>
+                        <div class="graph-placeholmder pulse">
+
+                            <table>
+                                <colgroup>
+                                    <col style="width: 170px;">
+                                    <col style="width: 200px;">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>Brand</th>
+                                        <th>Total Sales</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#each topSellingCategories}}
+                                    <tr>
+                                        <td>{{this.categoryDetails.brand}}</td>
+                                        <td style="padding-left: 40px;">{{this.totalSales}}</td>
+                                    </tr>
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
         </main>
     </div>
-    <style>
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            margin: 20px;
-        }
 
-        .card {
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 10px;
-            width: 250px;
-            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .card h3 {
-            font-size: 18px;
-            color: #333;
-        }
-
-        .card p {
-            font-size: 14px;
-            color: #555;
-        }
-    </style>
-
-    <h1>Top Selling Data</h1>
-    <div id="products" class="container"></div>
-    <div id="categories" class="container"></div>
-    <div id="brands" class="container"></div>
-
-    <script>
-        async function fetchTopSelling() {
-            try {
-                const response = await fetch('/api/top-selling');
-                const data = await response.json();
-
-                displayData('products', data.topProducts, 'Products');
-                displayData('categories', data.topCategories, 'Categories');
-                displayData('brands', data.topBrands, 'Brands');
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        }
-
-        function displayData(containerId, data, title) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = `<h2>Top 10 ${title}</h2>`;
-            data.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <h3>${item._id || item.name}</h3>
-                    <p>Total Sales: ${item.totalSales}</p>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        fetchTopSelling();
-    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </body>

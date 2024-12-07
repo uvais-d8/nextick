@@ -14,7 +14,7 @@
         crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="/admin/products.css">
-    <link rel="stylesheet" href="/admin/dashboard.css">
+    {{!-- <link rel="stylesheet" href="/admin/dashboard.css"> --}}
 
     <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
     <style>
@@ -140,11 +140,13 @@
                         <input type="date" name="startDate" value="{{startDate}}" />
                         <label for="endDate">End Date:</label>
                         <input type="date" name="endDate" value="{{endDate}}" />
-                        <select name="filter">
-                            <option value="daily" {{#if (isEqual filter 'daily' )}}selected{{/if}}>Daily</option>
-                            <option value="weekly" {{#if (isEqual filter 'weekly' )}}selected{{/if}}>Weekly</option>
-                            <option value="monthly" {{#if (isEqual filter 'monthly' )}}selected{{/if}}>Monthly</option>
-                        </select>
+                       <select name="filter">
+  <option value="daily" {{#if (eq filter "daily")}}selected{{/if}}>Daily</option>
+  <option value="monthly" {{#if (eq filter "monthly")}}selected{{/if}}>Monthly</option>
+  <option value="yearly" {{#if (eq filter "yearly")}}selected{{/if}}>Yearly</option>
+  <option value="weekly" {{#if (eq filter "weekly")}}selected{{/if}}>Weekly</option>
+</select>
+
                         <button type="submit">Filter</button>
                     </form>
 
@@ -169,22 +171,21 @@
                 <section class="card-container">
 
                     <div class="card">
-                        <h3>Overall sales count
+                        <h3 style="color: white;">Overall sales count
                         </h3>
-                        <p>{{orderCount}}<span style="font-size:19px;margin-left:10px">orders</span></p>
+
+                        <p style="font-size: 29px;color:rgb(97, 131, 255)">{{orderCount}}<span
+                                style="font-size:19px;margin-left:10px">orders</span></p>
                     </div>
                     <div class="card">
-                        <h3>Overall Sales amount</h3>
-                        <p>₹ {{netSale}}</p>
+                        <h3 style="color: white;">Overall Sales amount</h3>
+                        <p style="font-size: 29px;color:rgb(93, 255, 91)">₹ {{netSale}}</p>
                     </div>
                     <div class="card">
-                        <h3>Overall discount amount</h3>
-                        <p>₹ {{totalDiscount}}</p>
+                        <h3 style="color: white;">Overall discount amount</h3>
+                        <p style="font-size: 29px;color:rgb(255, 91, 91)">₹ {{totalDiscount}}</p>
                     </div>
-                    <div class="card">
-                        <h3>Sales expect(<span style="font-size: 13px;">without discound</span>)</h3>
-                        <p>₹ {{totalSales}}</p>
-                    </div>
+                     
                 </section>
                 <table border="1" class="sales-report-table">
                     <tr>
