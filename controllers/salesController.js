@@ -279,7 +279,7 @@ const razorpayy = async (req, res) => {
       paymentMethod: "razorpay",
       items: updatedCartItems.map(item => ({
         ...item,
-        status: "scheduled", // Default status for each item
+        status: "payment-pending", // Default status for each item
       })),
       razorpayDetails: {
         orderId: order.id, // Save the Razorpay order ID
@@ -318,7 +318,8 @@ const razorpayy = async (req, res) => {
       success: true,
       id: order.id,
       amount: order.amount,
-      currency: order.currency
+      currency: order.currency,
+      orderId:newOrder._id
     });
         // Delete all items from the user's cart after placing the order
         await Cart.deleteMany({ user: userId });
@@ -538,10 +539,116 @@ const addtocart = async (req, res) => {
     res.status(500).json({ error: "Failed to add product to cart" });
   }
 };
+
+// const paymentSuccess =async (req,res)=>{
+//  console.log("ivedee ethiiii")
+//  const orderId=req.params.id
+
+//   try {
+//     console.log("id",orderId)
+//     await Orders.updateOne(
+//       { _id: orderId }, // Find the order by its ID
+//       {
+//         $set: { "items.$[].status": "scheduled" } // Update all items' status to "scheduled"
+//       }
+//     );   
+//     return res.redirect("/orderss")
+//   } catch (error) {
+//     console.log("error:",error)
+//   }
+// }
  
+const paymentSuccess = async (req, res) => {
+  console.log("Controller hit");
+  const orderId = req.params.id;
+
+  try {
+    console.log("Order ID:", orderId);
+    const result = await Orders.updateOne(
+      { _id: orderId },
+      { $set: { "items.$[].status": "scheduled" } }
+    );
+
+    console.log("Update Result:", result);
+
+    // Ensure that the order exists and was updated
+    if (result.matchedCount === 0) {
+      console.error("No matching order found");
+      return res.status(404).send("Order not found");
+    }
+
+    console.log("Redirecting to /orderss");
+    return res.json({success:true})
+
+  } catch (error) {
+    console.error("Error in paymentSuccess controller:", error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
+
+
+const retryPayment = async (req, res) => {
+  console.log("retry payment processing")
+  const { orderId } = req.params;
+  console.log("orderId",orderId)
+
+  try {
+      const order = await Orders.findById(orderId);
+      console.log("this is order",order)
+      console.log("this is order status",order.status)
+      if (!order || order.status !== "payment-pending") {
+        console.log("Invalid order or order status");
+          return res.status(400).json({ success: false, message: "Invalid order or order status." });
+      }
+
+      const razorpayOrder = await razorpay.orders.create({
+          amount: order.orderTotal * 100,
+          currency: "INR",
+          receipt: `retry_${orderId}_${Date.now()}`,
+      });
+
+      res.json({
+          success: true,
+          order: razorpayOrder,
+          user: {
+              name: `${order.shippingAddress.firstname} ${order.shippingAddress.lastname}`,
+              email: order.shippingAddress.email,
+              phone: order.shippingAddress.phone,
+          },
+      });
+  } catch (error) {
+      console.error("Error creating Razorpay order for retry:", error);
+      res.status(500).json({ success: false, message: "Failed to retry payment." });
+  }
+};
+const verifyPayment = async (req, res) => {
+    try {
+        const { paymentId, orderId, signature } = req.body;
+
+        // Verify signature
+        const body = `${orderId}|${paymentId}`;
+        const expectedSignature = crypto
+            .createHmac('sha256', 'SfFbZ3vFL1AMEEY0ZvS4d1yF')
+            .update(body.toString())
+            .digest('hex');
+
+        if (expectedSignature !== signature) {
+            return res.json({ success: false, message: 'Invalid signature' });
+        }
+
+        // Payment verified, proceed to save order details
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error verifying payment:', error);
+        res.status(500).json({ success: false, message: 'Could not verify payment' });
+    }
+};
 
 module.exports = {
+  verifyPayment,
+  retryPayment,
   addtocart,
+  paymentSuccess,
   updateOrderStatus, 
   loadcartpage,
   removecart,

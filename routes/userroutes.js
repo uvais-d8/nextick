@@ -24,30 +24,6 @@ router.get(
   }
 );
 
-router.post('/verify-razorpay-payment', async (req, res) => {
-    try {
-        const { paymentId, orderId, signature } = req.body;
-
-        // Verify signature
-        const body = `${orderId}|${paymentId}`;
-        const expectedSignature = crypto
-            .createHmac('sha256', 'SfFbZ3vFL1AMEEY0ZvS4d1yF')
-            .update(body.toString())
-            .digest('hex');
-
-        if (expectedSignature !== signature) {
-            return res.json({ success: false, message: 'Invalid signature' });
-        }
-
-        // Payment verified, proceed to save order details
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Error verifying payment:', error);
-        res.status(500).json({ success: false, message: 'Could not verify payment' });
-    }
-});
-
-
 
 //register user routes
 router.post("/login", userAuth.islogin, registerController.login);
@@ -88,7 +64,11 @@ router.post('/cart/:id/updateQuantity',salesController.updateQuantity)
 router.post("/applycoupon",userAuth.checksession,salesController.applycoupon)
 router.post('/create-razorpay-order',userAuth.checksession,salesController.razorpayy)
 // router.post("/update-order-status", userAuth.checksession,salesController.paymentpending);
+router.post("/payment-success/:id",userAuth.checksession,salesController.paymentSuccess)
+router.get("/retry-payment/:id", userAuth.checksession,salesController.retryPayment);
 router.post("/update-order-status",userAuth.checksession,salesController.updateOrderStatus)
+router.post('/verify-razorpay-payment',userAuth.checksession,salesController.verifyPayment)
+
 
 //Orders Controller
 router.get("/checkout", userAuth.checksession,orderController.checkout);

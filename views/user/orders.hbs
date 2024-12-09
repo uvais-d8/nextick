@@ -532,18 +532,27 @@
 							Return
 						</button>
 
+						{{else if (eq this.status "payment-pending")}}
+						<!-- Retry Payment Button -->
+						<button class="btn btn-warning retry-button" onclick="retryPayment('{{../_id}}', '{{this._id}}', 'item')"
+                style="margin-left: 100%;font-size:11px; margin-right: auto; display: block; padding: 10px 20px; border-radius: 5px;">
+                Retry Payment
+            </button>
 
-						{{else if (or (eq this.status "canceled") (eq this.status "returned"))}}
+						{{else if (eq this.status "canceled")}}
 						<!-- Do nothing -->
+
 						{{else}}
+						<!-- Cancel Button -->
 						<button class="btn btn-danger"
-							style="color: rgba(0, 0, 0, 0.884);height:35px; margin-left:100%;margin-top:-150px"
+							style="color: rgba(0, 0, 0, 0.884); height: 35px; margin-left: 100%; margin-top: -150px"
 							data-toggle="modal" data-target="#cancelModal"
 							onclick="setItemToCancel('{{../_id}}', '{{this._id}}', 'item')">
 							Cancel Item
 						</button>
 						{{/if}}
 					</div>
+
 					<form method="get" action="/viewDetails/{{../_id}}/{{this._id}}">
 						<button class="but" type="submit"
 							style="color:rgba(26, 26, 26, 0.898);font-size:14px;background-color:rgba(255, 255, 255, 0.911);height: 30px;border-width:0px;margin-left:100.5%;font-weight:bold;margin-top:0px">view
@@ -557,9 +566,10 @@
         {{#if (eq status 'scheduled')}}gradient-button-blue{{else}}
         {{#if (eq status 'pending')}}gradient-button-yellow{{else}}
         {{#if (eq status 'canceled')}}gradient-button-red{{else}}
+		{{#if (eq status 'payment-pending')}}gradient-button-red{{else}}
         {{#if (eq status 'delivered')}}gradient-button-green{{else}}
         {{#if (eq status 'shipped')}}gradient-button-purple{{/if}}
-        {{/if}}{{/if}}{{/if}}{{/if}}">
+        {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}">
 						{{status}}
 					</span>
 				</p>
@@ -580,7 +590,8 @@
 					</form>
 				</div>
 				<div style="width:50%;">
-					<form> <button class="btn btn-success" style="width: 134px;" onclick="downloadInvoice('{{_id}}')">Download Invoice</button>
+					<form> <button class="btn btn-success" style="width: 134px;"
+							onclick="downloadInvoice('{{_id}}')">Download Invoice</button>
 
 					</form>
 				</div>
@@ -593,11 +604,11 @@
 		{{/each}}
 
 	</main>
-<script>
-  function downloadInvoice(orderId) {
-    window.open(`/download-invoice/${orderId}`, "_blank");
-  }
-</script>
+	<script>
+		function downloadInvoice(orderId) {
+			window.open(`/download-invoice/${orderId}`, "_blank");
+		}
+	</script>
 
 	<div class="logo-carousel-section">
 		<div class="container">
@@ -679,8 +690,59 @@
 			</div>
 		</div>
 	</div>
-	<!-- end footer -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+	<!-- end footer -->
+<script>
+	function retryPayment(orderId) {
+    Swal.fire({
+        title: "Retry Payment",
+        text: "Do you want to retry the payment for this order?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Retry",
+        cancelButtonText: "Cancel",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Make a request to retry the payment
+            fetch(`/retry-payment/${orderId}`, {
+                method: "GET",
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: "Success",
+                            text: "Payment retry initiated. Please complete the payment.",
+                            icon: "success",
+                            confirmButtonText: "OK",
+                        }).then(() => {
+                            // Redirect to payment page if necessary
+                            window.location.href = `/payment/${orderId}`;
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Error",
+                            text: "Unable to retry payment. Please try again.",
+                            icon: "error",
+                            confirmButtonText: "Retry",
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    Swal.fire({
+                        title: "Error",
+                        text: "Something went wrong. Please try again later.",
+                        icon: "error",
+                        confirmButtonText: "OK",
+                    });
+                });
+        }
+    });
+}
+
+</script>
 
 
 	<div id="returnModal" class="modal fade" tabindex="-1" role="dialog">
