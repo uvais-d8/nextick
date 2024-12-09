@@ -262,8 +262,7 @@ const loadprofile = async (req, res) => {
     const address = await Address.findOne({ isDefault: true, user: userId });
 
     // Render profile page with user info, formatted date, and address if found
-    console.log(orders);
-    res.render("profile", { user, createdAt, address, orders });
+     res.render("profile", { user, createdAt, address, orders });
   } catch (error) {
     console.error("Error loading profile:", error);
     res.redirect("/login"); // Redirect on error

@@ -63,13 +63,11 @@ router.delete("/cart/:id", salesController.removecart);
 router.post('/cart/:id/updateQuantity',salesController.updateQuantity) 
 router.post("/applycoupon",userAuth.checksession,salesController.applycoupon)
 router.post('/create-razorpay-order',userAuth.checksession,salesController.razorpayy)
-// router.post("/update-order-status", userAuth.checksession,salesController.paymentpending);
-router.post("/payment-success/:id",userAuth.checksession,salesController.paymentSuccess)
-router.get("/retry-payment/:id", userAuth.checksession,salesController.retryPayment);
-router.post("/update-order-status",userAuth.checksession,salesController.updateOrderStatus)
-router.post('/verify-razorpay-payment',userAuth.checksession,salesController.verifyPayment)
-
-
+ router.post("/payment-success/:id",userAuth.checksession,salesController.paymentSuccess)
+// router.get("/retry-payment/:id", userAuth.checksession,salesController.retryPayment);
+router.post("/update-order-status",userAuth.checksession,salesController.updateOrderStatus);
+router.get("/retry-razorpay/:id",userAuth.checksession,salesController.retryRazorpay)
+router.post("/retry-payment-success/:id",userAuth.checksession,salesController.retrypaymentSuccess)
 //Orders Controller
 router.get("/checkout", userAuth.checksession,orderController.checkout);
 router.get("/viewDetails/:orderId/:itemId",userAuth.checksession,orderController.loadViewDetails)

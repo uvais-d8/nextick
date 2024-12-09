@@ -4,6 +4,7 @@ const Orders = require("../model/ordersmodal");
 const Razorpay = require("razorpay");
 const Coupons = require("../model/couponModel");
 const Offer = require("../model/offermodel");
+
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET
@@ -80,7 +81,6 @@ const applycoupon = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 const placeOrder = async (req, res) => {
   console.log("hellooo");
   const userId = req.session.userId;
@@ -190,8 +190,6 @@ const placeOrder = async (req, res) => {
     });
   }
 };
-
-
 const razorpayy = async (req, res) => {
   const userId = req.session.userId;
   console.log("razorpay processing");
@@ -539,115 +537,140 @@ const addtocart = async (req, res) => {
     res.status(500).json({ error: "Failed to add product to cart" });
   }
 };
-
-// const paymentSuccess =async (req,res)=>{
-//  console.log("ivedee ethiiii")
-//  const orderId=req.params.id
-
-//   try {
-//     console.log("id",orderId)
-//     await Orders.updateOne(
-//       { _id: orderId }, // Find the order by its ID
-//       {
-//         $set: { "items.$[].status": "scheduled" } // Update all items' status to "scheduled"
-//       }
-//     );   
-//     return res.redirect("/orderss")
-//   } catch (error) {
-//     console.log("error:",error)
-//   }
-// }
- 
 const paymentSuccess = async (req, res) => {
-  console.log("Controller hit");
   const orderId = req.params.id;
+  console.log("Order ID:", orderId);
 
   try {
-    console.log("Order ID:", orderId);
+    // Update the order's status and all items' statuses
     const result = await Orders.updateOne(
-      { _id: orderId },
-      { $set: { "items.$[].status": "scheduled" } }
+      { _id: orderId }, // Find the order by its ID
+      {
+        $set: {
+          status: "scheduled", // Update the order's status
+          "items.$[].status": "scheduled" // Update all items' statuses in the array
+        }
+      }
     );
 
     console.log("Update Result:", result);
 
-    // Ensure that the order exists and was updated
+    // Check if the order exists and was updated
     if (result.matchedCount === 0) {
       console.error("No matching order found");
       return res.status(404).send("Order not found");
     }
 
-    console.log("Redirecting to /orderss");
-    return res.json({success:true})
-
+    console.log("Order and items' statuses updated to scheduled.");
+    return res.json({ success: true });
   } catch (error) {
     console.error("Error in paymentSuccess controller:", error);
     return res.status(500).send("Internal Server Error");
   }
 };
+const retryRazorpay = async (req, res) => {
+  console.log("Retry payment processing 2");
 
+  // Get the order ID from request params
+  const orderId = req.params.id;
+  console.log("orderId:", orderId);
 
-const retryPayment = async (req, res) => {
-  console.log("retry payment processing")
-  const { orderId } = req.params;
-  console.log("orderId",orderId)
+  const userId = req.session.userId;
+  console.log("userId:", userId);
+
+  if (!userId) return res.redirect("/login");
 
   try {
-      const order = await Orders.findById(orderId);
-      console.log("this is order",order)
-      console.log("this is order status",order.status)
-      if (!order || order.status !== "payment-pending") {
-        console.log("Invalid order or order status");
-          return res.status(400).json({ success: false, message: "Invalid order or order status." });
-      }
+    // Fetch the order from the database
+    const order = await Orders.findOne({ 'items._id': orderId, userId });
 
-      const razorpayOrder = await razorpay.orders.create({
-          amount: order.orderTotal * 100,
-          currency: "INR",
-          receipt: `retry_${orderId}_${Date.now()}`,
-      });
+    if (!order) {
+      console.log('not order',order)
+      return res.status(404).json({ success: false, message: "Order not found." });
+    }
 
-      res.json({
-          success: true,
-          order: razorpayOrder,
-          user: {
-              name: `${order.shippingAddress.firstname} ${order.shippingAddress.lastname}`,
-              email: order.shippingAddress.email,
-              phone: order.shippingAddress.phone,
-          },
+    if (order.status !== "payment-pending") {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot retry payment for an order with status: ${order.status}.`,
       });
+    }
+
+    // If Razorpay details already exist, return them
+    if (order.razorpayDetails?.orderId) {
+      return res.json({
+        success: true,
+        razorpayOrder: order.razorpayDetails, // Razorpay order details
+        orderId: order._id, // Our order ID
+        items: order.items, // Items in the order
+        shippingAddress: order.shippingAddress, // Shipping details
+      });
+    }
+
+    // Otherwise, create a new Razorpay order
+    const amount = order.orderTotal * 100; // Convert to paise (Razorpay expects the amount in paise)
+    const razorpayOrder = await razorpay.orders.create({
+      amount,
+      currency: "INR",
+      receipt: `retry_${orderId}_${Date.now()}`,
+    });
+
+    // Update the Razorpay details in the order
+    order.razorpayDetails = {
+      orderId: razorpayOrder.id,
+      amount: razorpayOrder.amount,
+      currency: razorpayOrder.currency,
+    };
+    await order.save();
+
+    // Return the new Razorpay order details
+    res.json({
+      success: true,
+      razorpayOrder, // New Razorpay order details
+      orderId: order._id, // Our order ID
+      items: order.items, // Items in the order
+      shippingAddress: order.shippingAddress, // Shipping details
+    });
   } catch (error) {
-      console.error("Error creating Razorpay order for retry:", error);
-      res.status(500).json({ success: false, message: "Failed to retry payment." });
+    console.error("Error processing retry payment:", error);
+    res.status(500).json({ success: false, message: "Failed to retry payment." });
   }
 };
-const verifyPayment = async (req, res) => {
-    try {
-        const { paymentId, orderId, signature } = req.body;
+const retrypaymentSuccess = async (req, res) => {
+  console.log("Controller success");
 
-        // Verify signature
-        const body = `${orderId}|${paymentId}`;
-        const expectedSignature = crypto
-            .createHmac('sha256', 'SfFbZ3vFL1AMEEY0ZvS4d1yF')
-            .update(body.toString())
-            .digest('hex');
+  const itemId = req.params.id; // This is the item ID
+  console.log("Item ID received:", itemId);
 
-        if (expectedSignature !== signature) {
-            return res.json({ success: false, message: 'Invalid signature' });
-        }
+  try {
+      // Find the order containing the item and update the item's status
+      const updatedOrder = await Orders.findOneAndUpdate(
+          { "items._id": itemId }, // Find the order containing the specific item
+          { $set: { "items.$.status": "scheduled" } }, // Update the status of the matched item
+          { new: true } // Return the updated document
+      );
 
-        // Payment verified, proceed to save order details
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Error verifying payment:', error);
-        res.status(500).json({ success: false, message: 'Could not verify payment' });
-    }
+      // Check if the order and item were found and updated
+      if (!updatedOrder) {
+          return res.status(404).json({ message: "Item not found in any order" });
+      }
+
+      // Send a success response with the updated order
+      res.status(200).json({
+          message: "Item status updated to scheduled",
+          updatedOrder,
+      });
+  } catch (error) {
+      console.error("Error updating item status:", error);
+      res.status(500).json({
+          message: "Server error, unable to update item status",
+      });
+  }
 };
-
 module.exports = {
-  verifyPayment,
-  retryPayment,
-  addtocart,
+  retryRazorpay,
+  retrypaymentSuccess,
+   addtocart,
   paymentSuccess,
   updateOrderStatus, 
   loadcartpage,

@@ -204,12 +204,10 @@ const ordertracking = async (req, res) => {
 const loadViewDetails = async (req, res) => {
   try {
     const { orderId, itemId } = req.params;
-    console.log(orderId, itemId);
-    const order = await Orders.findById(orderId)
+     const order = await Orders.findById(orderId)
       .populate("userId") 
       .populate("items.productId");  
-    console.log(order.items);
-    if (!order) {
+     if (!order) {
       return res.status(404).send("Order not found");
     }
     const product = order.items.find(item => item._id.toString() === itemId);
@@ -485,9 +483,10 @@ const generateInvoicePDF = async (req, res) => {
       .moveDown(0.5)
       .fontSize(11)
       .font("Helvetica")
-      .text(`Order ID: ${orderId}`)
-      .text(`Order Date: ${new Date(order.createdAt).toLocaleDateString()}`)
-      .text(`Order Status: ${order.status}`)
+      .text(`Order ID     : ${orderId}`)
+      .text(`Order Date   : ${new Date(order.createdAt).toLocaleDateString()}`)
+      .text(`Order Status : scheduled`)
+      // .text(`Order Status: ${order.status}`)
       .moveDown(1);
 
     doc
@@ -512,14 +511,14 @@ const generateInvoicePDF = async (req, res) => {
   // ** Table Header with Underline **
 doc
 .font("Helvetica-Bold")
-.fontSize(9)
+.fontSize(11)
 .fillColor("black")
-.text("No", 55, doc.y, { width: 40, align: "center" })
-.text("Product", 100, doc.y, { width: 200, align: "left" })
-.text("Price", 300, doc.y, { width: 80, align: "right" })
-.text("Quantity", 380, doc.y, { width: 80, align: "right" })
-.text("Total", 450, doc.y, { width: 90, align: "right" })
-// .moveDown(0.5);
+.text("     No     Product                                                              Price                          quantity     total Price  ", 55, doc.y, { width: 4000})
+// .text("Product", 100, doc.y, { width: 200, align: "left" })
+// .text("Price", 300, doc.y, { width: 80, align: "right" })
+// .text("Quantity", 380, doc.y, { width: 80, align: "right" })
+// .text("Total", 450, doc.y, { width: 90, align: "right" })
+.moveDown(0.2);
 
 // Add underline for the header
 doc
@@ -622,29 +621,6 @@ doc
 .stroke();
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Initialize totals and discount calculation
 let actualTotal = 0;
 let discountedTotal = 0;
@@ -672,10 +648,12 @@ doc
   .font("Helvetica-Bold")
   .fontSize(12)
   .moveDown(3)
-  .text(`Subtotal : Rs ${actualTotal.toFixed(2)}`, 370, doc.y, { align: "right" })
-  .text(`Discount : Rs ${totalDiscount.toFixed(2)}`, 370, doc.y, { align: "right" })
+  .text(`Subtotal    : Rs ${actualTotal.toFixed(2)}`, 370, doc.y, { align: "right" })
+  .moveDown(0.2)
+  .text(`Discount   :      Rs ${totalDiscount.toFixed(2)}`, 370, doc.y, { align: "right" })
+  .moveDown(0.2)
   .text(`Grand Total : Rs ${finalTotal.toFixed(2)}`, 370, doc.y, { align: "right", underline: true })
-  .moveDown();
+  .moveDown(3)
 
     // ** Footer Section **
     doc
@@ -683,7 +661,10 @@ doc
       .font("Helvetica")
       .fillColor("#555")
       .text("Thank you for shopping with Watch Premium!", { align: "center" })
-      .text("For support, contact us at support@watchpremium.com or call +91 7594060696.", {
+      .text("For support, contact us at support@watchpremium.com ", {
+        align: "center",
+      })
+      .text("call on ph: +91 7594 0606 96", {
         align: "center",
       })
       .moveDown()

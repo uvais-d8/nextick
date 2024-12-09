@@ -507,7 +507,9 @@
 						₹{{this.productId.price}}
 						{{/if}}
 					</p>
-
+					<p>
+						delivery change : ₹ 50
+					</p>
 					<!-- Show Quantity -->
 					<p>Quantity: <b>{{this.quantity}}</b></p>
 
@@ -527,17 +529,16 @@
 						{{#if (eq this.status "delivered")}}
 						<!-- Return Button -->
 						<button class="btn btn-danger return-button" data-toggle="modal" data-target="#returnModal"
-							onclick="setReturnOrder('{{this._id}}', '{{this.itemId}}')"
 							style="margin-left: 100%; margin-right: auto; display: block; padding: 10px 20px; border-radius: 5px;">
 							Return
 						</button>
 
 						{{else if (eq this.status "payment-pending")}}
 						<!-- Retry Payment Button -->
-						<button class="btn btn-warning retry-button" onclick="retryPayment('{{../_id}}', '{{this._id}}', 'item')"
-                style="margin-left: 100%;font-size:11px; margin-right: auto; display: block; padding: 10px 20px; border-radius: 5px;">
-                Retry Payment
-            </button>
+						<button class="btn btn-warning retry-button" id="payButton" data-order-id="{{this._id}}"
+							style="margin-left: 100%;font-size:11px; margin-right: auto; display: block; padding: 10px 20px; border-radius: 5px;">
+							Retry Payment
+						</button>
 
 						{{else if (eq this.status "canceled")}}
 						<!-- Do nothing -->
@@ -583,6 +584,15 @@
 			<div style="background-color: white; width: 100%; padding: 15px;">
 				<h4>Order Total: ₹{{total}}</h4>
 			</div>
+			{{!-- <div>
+				{{#if (eq status "payment-pending")}}
+				<button class="btn btn-warning retry-button" id="payButton" data-order-id="{{../_id}}"
+					style="margin-left:-200px;font-size:13px;margin-top: 10px ; border-radius: 5px;height:33px">
+					Retry Payment
+				</button>
+				{{/if}}
+			</div> --}}
+
 			<div style="background-color: white;  padding: 10px; text-align: right;display:flex">
 				<div>
 					<form method="get" style="margin-left: -350px;margin-right:5px" action="/ordertracking/{{_id}}">
@@ -693,56 +703,65 @@
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 	<!-- end footer -->
-<script>
-	function retryPayment(orderId) {
-    Swal.fire({
-        title: "Retry Payment",
-        text: "Do you want to retry the payment for this order?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Retry",
-        cancelButtonText: "Cancel",
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Make a request to retry the payment
-            fetch(`/retry-payment/${orderId}`, {
-                method: "GET",
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        Swal.fire({
-                            title: "Success",
-                            text: "Payment retry initiated. Please complete the payment.",
-                            icon: "success",
-                            confirmButtonText: "OK",
-                        }).then(() => {
-                            // Redirect to payment page if necessary
-                            window.location.href = `/payment/${orderId}`;
-                        });
-                    } else {
-                        Swal.fire({
-                            title: "Error",
-                            text: "Unable to retry payment. Please try again.",
-                            icon: "error",
-                            confirmButtonText: "Retry",
-                        });
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                    Swal.fire({
-                        title: "Error",
-                        text: "Something went wrong. Please try again later.",
-                        icon: "error",
-                        confirmButtonText: "OK",
-                    });
-                });
-        }
-    });
-}
 
-</script>
+
+	<script>
+		document.getElementById("payButton").onclick = async function () {
+			const orderId = this.getAttribute("data-order-id"); // Get the order ID from the button's data attribute
+
+			try {
+				// Send a request to your backend to get the Razorpay order details
+				const response = await fetch(`/retry-razorpay/${orderId}`);
+				const data = await response.json();
+
+				if (data.success) {
+					const razorpayOrder = data.razorpayOrder; // Razorpay order details
+					const options = {
+						key: "rzp_test_27cbwJ6wd0CuiQ", // Replace with your Razorpay API key
+						amount: razorpayOrder.amount, // Amount in paise
+						currency: razorpayOrder.currency,
+						name: "Watch Premium",
+						description: "Order Payment",
+						order_id: razorpayOrder.orderId,
+						handler: function (response) {
+							// Handle the payment success and update the backend with the payment details
+							console.log("Payment successful", response);
+							// Send the payment details to your backend for verification
+							fetch(`/retry-payment-success/${orderId}`, {
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json",
+								},
+								body: JSON.stringify({
+									paymentDetails: response,
+									orderId: orderId,
+								}),
+							});
+						},
+						prefill: {
+							name: "Customer Name", // Use real customer data
+							email: "customer@example.com",
+							contact: "75 94 060696",
+						},
+						notes: {
+							address: "Customer address", // Use real customer address
+						},
+						theme: {
+							color: "#F37254", // Optional, change as per your design
+						},
+					};
+
+					// Open the Razorpay checkout window
+					const rzp1 = new Razorpay(options);
+					rzp1.open(); // Open the Razorpay payment window
+				} else {
+					alert("Failed to fetch Razorpay details.");
+				}
+			} catch (error) {
+				console.error("Error fetching Razorpay order details", error);
+			}
+		};
+	</script>
 
 
 	<div id="returnModal" class="modal fade" tabindex="-1" role="dialog">
@@ -813,6 +832,7 @@
 	<script src="/assets/js/sticker.js"></script>
 	<!-- main js -->
 	<script src="/assets/js/main.js"></script>
+	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 	<script>
 		document.getElementById('confirmCancelBtn').addEventListener('click', function () {
