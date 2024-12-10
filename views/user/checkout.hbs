@@ -836,13 +836,11 @@
 						document.querySelector('.total-data .total').textContent = `₹${newTotal.toFixed(2)}`;
 						document.querySelector('.discount-section').textContent = `Discount Applied: ₹${discount.toFixed(2)}`;
 						document.querySelector('.discount-section').style.display = 'block';
-
-						// Update hidden total input
+ 
 						document.querySelector('input[name="total"]').value = newTotal.toFixed(2);
-
-						// Update button to "Remove Coupon"
+ 
 						submitButton.value = 'Remove Coupon';
-						couponCodeInput.readOnly = true; // Disable editing of the coupon code
+						couponCodeInput.readOnly = true;  
 					} else {
 						Swal.fire({
 							title: "Oops..Error",
@@ -858,7 +856,8 @@
 			} else if (submitButton.value === 'Remove Coupon') {
 				// Remove the coupon
 				try {
-					const response = await fetch('/removecoupon', {
+
+					const response = await fetch(`/removeCoupon/${couponCode}`, {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify({ cartTotal }), // Send cart total if necessary

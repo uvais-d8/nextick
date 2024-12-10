@@ -64,9 +64,10 @@ router.post('/cart/:id/updateQuantity',salesController.updateQuantity)
 router.post("/applycoupon",userAuth.checksession,salesController.applycoupon)
 router.post('/create-razorpay-order',userAuth.checksession,salesController.razorpayy)
  router.post("/payment-success/:id",userAuth.checksession,salesController.paymentSuccess)
-//  router.post("/update-order-status/:id",userAuth.checksession,salesController.updateOrderStatus);
-router.get("/retry-razorpay/:id",userAuth.checksession,salesController.retryRazorpay)
+ router.get("/retry-razorpay/:id",userAuth.checksession,salesController.retryRazorpay)
 router.post("/retry-payment-success/:id",userAuth.checksession,salesController.retrypaymentSuccess)
+router.post("/removeCoupon/:couponCode",userAuth.checksession,salesController.removecoupon)
+
 //Orders Controller
 router.get("/checkout", userAuth.checksession,orderController.checkout);
 router.get("/viewDetails/:orderId/:itemId",userAuth.checksession,orderController.loadViewDetails)

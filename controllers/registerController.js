@@ -17,7 +17,7 @@ async function sendVerificationEmail(email, otp) {
       requireTLS: true,
       auth: {
         user: process.env.SERVEREMAIL,
-        pass: process.env.PASS // Make sure to store this securely in environment variables
+        pass: process.env.PASS 
       }
     });
 

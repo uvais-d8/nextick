@@ -222,91 +222,7 @@ const loadViewDetails = async (req, res) => {
     console.log("error: ", error);
   }
 };
-// const removeItem = async (req, res) => {
-//   const user = req.session.userId;
-//   const { orderId, itemId } = req.params;
-
-//   try {
-//     const order = await Orders.findOne({ _id: orderId });
-
-//     if (!order || !order.items) {
-//       return res.status(404).send("Order or items not found");
-//     }
-
-//     const item = order.items.find((item) => item._id.toString() === itemId);
-
-//     if (!item) {
-//       return res.status(404).json({ success: false, message: "Item not found in the order." });
-//     }
-
-//     if (item.status === "delivered") {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Item is already delivered and cannot be canceled."
-//       });
-//     }
-
-//      await Orders.findOneAndUpdate(
-//       { _id: orderId, "items._id": itemId },
-//       { $set: { "items.$.status": "canceled" } }
-//     );
-
-//     const product = await Products.findById(item.productId);
-//     if (product) {
-//       product.stock += item.quantity;
-//       await product.save();
-//     } else {
-//       console.warn("Product not found for stock update");
-//     }
-// if(order.paymentMethod==="razorpay"){
-
-
-//     let refundAmount = 0;
-//     if (product) {
-//       refundAmount = (product?.discountedPrice || product?.price) * item.quantity;
-//     }
-
-//     if (refundAmount > 0) {
-//       console.log("Refund amount:", refundAmount);
-
-//       let wallet = await Wallet.findOne({ user: order.userId });
-
-//       if (!wallet) {
-//         wallet = new Wallet({
-//           user: order.userId,
-//           balance: refundAmount,
-//           transactions: [
-//             {
-//               type: "refund",
-//               amount: refundAmount,
-//               description: `Refund for canceled product (${product?.name}) in order ${orderId}`
-//             }
-//           ]
-//         });
-//       } else {
-//          wallet.balance += refundAmount;
-//         wallet.transactions.push({
-//           type: "refund",
-//           amount: refundAmount,
-//           description: `Refund for canceled product (${product?.name}) in order ${orderId}`
-//         });
-//       }
-//       await wallet.save();
-//     }
-//   }
-//      const updatedOrder = await Orders.findById(orderId);
-//     if (updatedOrder.items.every((item) => item.status === "canceled")) {
-//       updatedOrder.status = "canceled";
-//       await updatedOrder.save();
-//     }
-
-//     res.json({ success: true, message: "Item successfully canceled" });
-//   } catch (error) {
-//     console.error("Error canceling order:", error);
-//     res.status(500).send("Error updating order status");
-//   }
-// };
-
+ 
 const removeItem = async (req, res) => {
   const user = req.session.userId;
   const { orderId, itemId } = req.params;
@@ -410,49 +326,43 @@ const removeItem = async (req, res) => {
 
 
 const returnOrder = async (req, res) => {
-  const  itemId  = req.params.id; // Get the itemId directly from req.params
+  const  itemId  = req.params.id; 
   console.log("itemId", itemId);
 
-  const userId = req.session.userId; // Assuming userId is stored in the session
+  const userId = req.session.userId; 
 
   try {
-    // Find and update the item status to "returned" within the order
-    const order = await Orders.findOneAndUpdate(
-      { 'items._id': itemId, userId },  // Find order containing the itemId for the specific user
-      { $set: { 'items.$.status': 'returned' } },  // Update the item status to "returned"
-      { new: true }  // Return the updated order document
+     const order = await Orders.findOneAndUpdate(
+      { 'items._id': itemId, userId },   
+      { $set: { 'items.$.status': 'returned' } },  
+      { new: true }  
     );
 
     if (!order) {
       return res.status(404).json({ success: false, message: "Order or item not found." });
     }
 
-    // Find the item that was updated to confirm
-    const item = order.items.find((item) => item._id.toString() === itemId);
+     const item = order.items.find((item) => item._id.toString() === itemId);
     if (!item) {
       return res.status(404).json({ success: false, message: "Item not found in the order." });
     }
 
-    // Ensure the item was delivered before returning
-    if (item.status !== "delivered") {
+     if (item.status !== "delivered") {
       return res.status(400).json({
         success: false,
         message: "Only delivered items are eligible for return.",
       });
     }
 
-    // Update the stock for the product associated with the returned item
-    const product = await Products.findById(item.productId);
+     const product = await Products.findById(item.productId);
     if (product) {
-      product.stock += item.quantity;  // Increase stock based on returned quantity
+      product.stock += item.quantity;   
       await product.save();
     }
 
-    // Calculate the refund amount
-    const refundAmount = (product?.discountedPrice || product?.price) * item.quantity;
+     const refundAmount = (product?.discountedPrice || product?.price) * item.quantity;
 
-    // Update wallet for the user
-    let wallet = await Wallet.findOne({ user: userId });
+     let wallet = await Wallet.findOne({ user: userId });
     if (!wallet) {
       wallet = new Wallet({
         user: userId,
@@ -559,51 +469,39 @@ const generateInvoicePDF = async (req, res) => {
 
 
       
-  // ** Table Header with Underline **
-doc
+ doc
 .font("Helvetica-Bold")
 .fontSize(11)
 .fillColor("black")
 .text("     No     Product                                                            Price                          quantity     total Price  ", 55, doc.y, { width: 4000})
-// .text("Product", 100, doc.y, { width: 200, align: "left" })
-// .text("Price", 300, doc.y, { width: 80, align: "right" })
-// .text("Quantity", 380, doc.y, { width: 80, align: "right" })
-// .text("Total", 450, doc.y, { width: 90, align: "right" })
-.moveDown(0.2);
+ 
 
-// Add underline for the header
-doc
+ doc
 .moveTo(50, doc.y)
 .lineTo(510, doc.y)
 .stroke();
 
-// ** Table Rows with Grid Lines **
-let totalPrice = 0;
-let rowStartY = doc.y; // Starting Y position for rows
-
+ let totalPrice = 0;
+let rowStartY = doc.y;  
 order.items.forEach((item, index) => {
 const product = item.productId;
-// const totalItemPrice = item.quantity * product.price;
-
+ 
 const rowY = rowStartY + index * 30; // Row height (30)
 
-// Draw row separators (grid lines)
-doc
+ doc
   .moveTo(50, rowY + 30)
   .lineTo(560, rowY + 30)
   .moveTo(50, rowY + 30)
   .stroke();
 
-// Draw row content with conditional pricing
-doc
+ doc
   .font("Helvetica")
   .fontSize(10)
   .fillColor("black")
 
   .text(index + 1, 55, rowY + 5, { width: 40, align: "center" }) // No column
   .text(product.name, 100, rowY + 5, { width: 200, align: "left" }); // Product name
-// Calculate total price for the item
-const unitPrice = item.priceWithDiscount || product.price; // Use discounted price if it exists, otherwise the regular price
+ const unitPrice = item.priceWithDiscount || product.price;
 const totalItemPrice = item.quantity * unitPrice;
 
 // Draw row content
@@ -614,10 +512,8 @@ doc
   .text(index + 1, 55, rowY + 5, { width: 40, align: "center" }) // No column
   .text(product.name, 100, rowY + 5, { width: 200, align: "left" });
 
-// Conditional pricing display
-if (item.priceWithDiscount && item.priceWithDiscount !== product.price) {
-  // Strike-through for original price
-  doc
+ if (item.priceWithDiscount && item.priceWithDiscount !== product.price) {
+   doc
     .font("Helvetica")
     .fontSize(10)
     .fillColor("red")
@@ -666,40 +562,31 @@ doc
 totalPrice += totalItemPrice;
 });
 
-// Draw border for the entire table
-const totalTableHeight = order.items.length * 30;
+ const totalTableHeight = order.items.length * 30;
 doc
 .rect(50, rowStartY, 510, totalTableHeight)
 .stroke();
 
 
-// Initialize totals and discount calculation
-let actualTotal = 0;
+ let actualTotal = 0;
 let discountedTotal = 0;
 
-// Calculate totals and discount dynamically
-order.items.forEach((item) => {
+ order.items.forEach((item) => {
   const product = item.productId;
-  const unitPrice = item.priceWithDiscount || product.price; // Get discounted price or actual price
-
+  const unitPrice = item.priceWithDiscount || product.price;  
   
-  // Actual total is based on original prices (before discount)
-  actualTotal += product.price * item.quantity;
+   actualTotal += product.price * item.quantity;
 
-  // Discounted total is based on discounted price
-  discountedTotal += unitPrice * item.quantity;
+   discountedTotal += unitPrice * item.quantity;
 });
 
-// Calculate total discount
-const totalDiscount = actualTotal - discountedTotal;
+ const totalDiscount = actualTotal - discountedTotal;
 
-// Final Grand Total
-const finalTotal = discountedTotal;
+ const finalTotal = discountedTotal;
 
 const orderTotal = order.orderTotal;
 console.log("orderTotal",orderTotal)
-// Draw Totals in the PDF
-doc
+ doc
   .font("Helvetica-Bold")
   .fontSize(12)
   .moveDown(3)

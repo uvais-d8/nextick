@@ -145,7 +145,7 @@ const placeOrder = async (req, res) => {
           ...item.toObject(),
           price: product.price,
           total: product.price * item.quantity,
-          status: "scheduled", // Set the item status to 'scheduled'
+          status: "scheduled",   
         };
       })
     );
@@ -198,121 +198,10 @@ const placeOrder = async (req, res) => {
     });
   }
 };
-
-
-// const placeOrder = async (req, res) => {
-//   console.log("hellooo");
-//   const userId = req.session.userId;
-//   const {
-//     email,
-//     phone,
-//     paymentMethod,
-//     items,
-//     pincode,
-//     district,
-//     firstname,
-//     place,
-//     city,
-//     lastname,
-//     address
-//   } = req.body;
-
-//   console.log(req.body);
-
-//   const errors = {};
-
-//   // Validation
-//   if (!firstname) errors.firstname = "First name is required.";
-//   if (!lastname) errors.lastname = "Last name is required.";
-//   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-//     errors.email = "Invalid email.";
-//   if (!phone || !/^[0-9]{10}$/.test(phone))
-//     errors.phone = "Invalid phone number.";
-//   if (!address) errors.address = "Address is required";
-//   if (!pincode || !/^[0-9]{6}$/.test(pincode))
-//     errors.pincode = "Invalid pin code";
-//   if (!place) errors.place = "Place is required";
-//   if (!city) errors.city = "City is required";
-//   if (!district) errors.district = "District is required";
-
-//    const allowedPaymentMethods = ["cod", "upi", "razorpay"];
-//   if (!paymentMethod || !allowedPaymentMethods.includes(paymentMethod)) {
-//     errors.paymentMethod = "Invalid or unsupported payment method selected";
-//   }
-
-//    if (!items || !Array.isArray(items) || items.length === 0) {
-//     errors.items = "No items in the cart";
-//   }
-
-//   try {
-//     const cartItems = await Cart.find({ user: userId })
-//       .populate("productId");
-
-//     if (cartItems.length === 0) {
-//       throw new Error("No items in the cart.");
-//     }
-
-//      const updatedCartItems = await Promise.all(
-//       cartItems.map(async item => {
-//         const product = item.productId;
-//         if (!product) throw new Error(`Product not found.`);
-//         if (product.stock < item.quantity) {
-//           throw new Error(`Insufficient stock for ${product.name}.`);
-//         }
-//         product.stock -= item.quantity;
-//         await product.save();
-//         return {
-//           ...item.toObject(),
-//           price: product.price,
-//           total: product.price * item.quantity
-//         };
-//       })
-//     );
-
-//     const shippingAddress = {
-//       firstname,
-//       lastname,
-//       address,
-//       phone,
-//       email,
-//       place,
-//       city,
-//       pincode,
-//       district
-//     };
-
-//     // Calculate total and save the order
-//     const orderTotal = updatedCartItems.reduce(
-//       (acc, item) => acc + item.total,
-//       0
-//     );
-//     const newOrder = new Orders({
-//       userId,
-//       items: updatedCartItems,
-//       orderTotal,
-//       paymentMethod,
-//       shippingAddress
-//        });
-
-//     console.log("New order details:", newOrder);
-//     await newOrder.save();
-//     console.log("Order saved successfully.");
-//     await Cart.deleteMany({ user: userId });
-//     console.log(`Cart items for user ${userId} have been deleted.`);
-
-//     res.json({ success: true });
-//   } catch (error) {
-//     console.log("Error placing order:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: error.message || "Failed to place order."
-//     });
-//   }
-// };
-
+ 
 const razorpayy = async (req, res) => {
   const userId = req.session.userId;
-  console.log('kkkkkkkkkkkkkkkkkkkkkkkkkk',req.body);
+  console.log("razorppayyy processing");
 
   if (!userId) {
     return res.redirect("/login");
@@ -384,14 +273,12 @@ const amount = orderTotal * 100; // Razorpay amount is in paisa
       lastname,
       address
     };
-    // Log the shipping address for debugging
-    // console.log("Received shippingAddress:", shippingAddress);
-    
+ 
  
     const newOrder = new Orders({
       userId,
       items: updatedCartItems,
-      orderTotal: orderTotal, // Store the exact value from req.body
+      orderTotal: orderTotal, 
       status: 'payment-pending',
       shippingAddress,
       paymentMethod: "razorpay",
@@ -400,30 +287,25 @@ const amount = orderTotal * 100; // Razorpay amount is in paisa
         status: "payment-pending",
       })),
       razorpayDetails: {
-        orderId: order.id, // Save Razorpay order ID
-        amount, // Store Razorpay amount in paise
+        orderId: order.id, 
+        amount,
         currency: order.currency,
       },
     });
     
-    console.log("Order Total before save:", newOrder.orderTotal); // Debugging
+    console.log("Order Total before save:", newOrder.orderTotal);  
     const Order = await newOrder.save();
-    console.log("Order Total after save:", Order.orderTotal); // Debugging
-    
-    // Update the sales count for each product in the order
+    console.log("Order Total after save:", Order.orderTotal);  
+     
     for (let item of newOrder.items) {
-      // Assuming 'items' contains products in the order
-      const productId = item.productId; // Replace with the correct field name for product ID
-      const quantity = item.quantity; // Replace with the correct field name for quantity
-
-      // Find the product and increase its salesCount by the ordered quantity
+       const productId = item.productId; 
+      const quantity = item.quantity; 
+ 
       const product = await Products.findById(productId);
 
-      if (product) {
-        // Increase salesCount by the ordered quantity
+      if (product) { 
         product.salesCount += quantity;
-
-        // Save the updated product
+ 
         await product.save();
         console.log(
           `Product ${product.name} salesCount updated to ${product.salesCount}`
@@ -450,38 +332,6 @@ const amount = orderTotal * 100; // Razorpay amount is in paisa
   }
 };
 
-// const updateOrderStatus = async (req, res) => {
-//   try {
-//     const { orderId, itemIds, status } = req.body;
-
-//     // Find the order
-//     const order = await Orders.findById(orderId);
-//     if (!order) {
-//       return res.status(404).json({ success: false, message: "Order not found" });
-//     }
-
-//     // Update the status of selected items
-//     order.items.forEach(item => {
-//       if (itemIds.includes(item._id.toString())) {
-//         item.status = status; // Update item status to 'returned'
-//       }
-//     });
-
-//     // Save the updated order
-//     await order.save();
-
-//     res.json({
-//       success: true,
-//       message: "Item status updated successfully",
-//       orderId: order.id,
-//       status: status,
-//       updatedItems: order.items.filter(item => itemIds.includes(item._id.toString()))
-//     });
-//   } catch (error) {
-//     console.error("Error updating item status:", error.message);
-//     res.status(500).json({ success: false, message: "Failed to update item status" });
-//   }
-// };
 const getProductStock = async (req, res) => {
   const { cartId } = req.params;
   try {
@@ -673,21 +523,19 @@ const paymentSuccess = async (req, res) => {
   console.log("Order ID:", orderId);
 
   try {
-    // Update the order's status and all items' statuses
-    const result = await Orders.updateOne(
-      { _id: orderId }, // Find the order by its ID
+     const result = await Orders.updateOne(
+      { _id: orderId },  
       {
         $set: {
-          status: "scheduled", // Update the order's status
-          "items.$[].status": "scheduled" // Update all items' statuses in the array
+          status: "scheduled", 
+          "items.$[].status": "scheduled" 
         }
       }
     );
 
     console.log("Update Result:", result);
 
-    // Check if the order exists and was updated
-    if (result.matchedCount === 0) {
+     if (result.matchedCount === 0) {
       console.error("No matching order found");
       return res.status(404).send("Order not found");
     }
@@ -702,8 +550,7 @@ const paymentSuccess = async (req, res) => {
 const retryRazorpay = async (req, res) => {
   console.log("Retry payment processing 2");
 
-  // Get the order ID from request params
-  const orderId = req.params.id;
+   const orderId = req.params.id;
   console.log("orderId:", orderId);
 
   const userId = req.session.userId;
@@ -712,8 +559,7 @@ const retryRazorpay = async (req, res) => {
   if (!userId) return res.redirect("/login");
 
   try {
-    // Fetch the order from the database
-    const order = await Orders.findOne({ 'items._id': orderId, userId });
+     const order = await Orders.findOne({ 'items._id': orderId, userId });
 
     if (!order) {
       console.log('not order',order)
@@ -727,40 +573,36 @@ const retryRazorpay = async (req, res) => {
       });
     }
 
-    // If Razorpay details already exist, return them
-    if (order.razorpayDetails?.orderId) {
+     if (order.razorpayDetails?.orderId) {
       return res.json({
         success: true,
-        razorpayOrder: order.razorpayDetails, // Razorpay order details
-        orderId: order._id, // Our order ID
-        items: order.items, // Items in the order
-        shippingAddress: order.shippingAddress, // Shipping details
+        razorpayOrder: order.razorpayDetails,  
+        orderId: order._id,  
+        items: order.items, 
+        shippingAddress: order.shippingAddress, 
       });
     }
 
-    // Otherwise, create a new Razorpay order
-    const amount = order.orderTotal * 100; // Convert to paise (Razorpay expects the amount in paise)
+     const amount = order.orderTotal * 100; 
     const razorpayOrder = await razorpay.orders.create({
       amount,
       currency: "INR",
       receipt: `retry_${orderId}_${Date.now()}`,
     });
 
-    // Update the Razorpay details in the order
-    order.razorpayDetails = {
+     order.razorpayDetails = {
       orderId: razorpayOrder.id,
       amount: razorpayOrder.amount,
       currency: razorpayOrder.currency,
     };
     await order.save();
 
-    // Return the new Razorpay order details
-    res.json({
+     res.json({
       success: true,
-      razorpayOrder, // New Razorpay order details
-      orderId: order._id, // Our order ID
-      items: order.items, // Items in the order
-      shippingAddress: order.shippingAddress, // Shipping details
+      razorpayOrder, 
+      orderId: order._id, 
+      items: order.items, 
+      shippingAddress: order.shippingAddress, 
     });
   } catch (error) {
     console.error("Error processing retry payment:", error);
@@ -774,20 +616,17 @@ const retrypaymentSuccess = async (req, res) => {
   console.log("Item ID received:", itemId);
 
   try {
-      // Find the order containing the item and update the item's status
-      const updatedOrder = await Orders.findOneAndUpdate(
-          { "items._id": itemId }, // Find the order containing the specific item
-          { $set: { "items.$.status": "scheduled" } }, // Update the status of the matched item
-          { new: true } // Return the updated document
+       const updatedOrder = await Orders.findOneAndUpdate(
+          { "items._id": itemId }, 
+          { $set: { "items.$.status": "scheduled" } }, 
+          { new: true }  
       );
 
-      // Check if the order and item were found and updated
-      if (!updatedOrder) {
+       if (!updatedOrder) {
           return res.status(404).json({ message: "Item not found in any order" });
       }
 
-      // Send a success response with the updated order
-      res.status(200).json({
+       res.status(200).json({
           message: "Item status updated to scheduled",
           updatedOrder,
       });
@@ -798,6 +637,35 @@ const retrypaymentSuccess = async (req, res) => {
       });
   }
 };
+
+const removecoupon = async (req, res) => {
+  try {
+     console.log("Raw coupon code from params:", req.params.couponCode);
+    
+     const couponCode = String(req.params.couponCode);  
+    console.log("Coupon code to remove (converted to string):", couponCode);
+    
+     const coupon = await Coupons.findOne({ CouponCode: couponCode });
+
+     console.log("Coupon found:", coupon);
+
+    if (!coupon) {
+       return res.status(400).json({ message: 'Coupon not found' });
+    }
+
+  const cartTotal = req.body.cartTotal || 0; 
+    res.status(200).json({
+      originalTotal: cartTotal,  
+            message: 'Coupon removed successfully',
+    });
+
+  } catch (error) {
+    console.error('Error removing coupon:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
 module.exports = {
   retryRazorpay,
   retrypaymentSuccess,
@@ -809,5 +677,6 @@ module.exports = {
   updateQuantity,
   getProductStock,
   razorpayy,
-  applycoupon
+  applycoupon,
+  removecoupon
 };

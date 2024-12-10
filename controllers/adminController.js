@@ -84,8 +84,8 @@ const loaddashboard = async (req, res) => {
           as: "categoryDetails"
         }
       },
-      { $unwind: "$categoryDetails" } // Unwind the category details to make it easier to access
-    ]);
+      { $unwind: "$categoryDetails" }
+        ]);
     if (startDate && endDate) {
       filterConditions.time = {
         $gte: new Date(startDate),
@@ -107,8 +107,7 @@ const loaddashboard = async (req, res) => {
                 `Week-${Math.ceil(
                   order.time.getDate() / 7
                 )} ${order.time.getFullYear()}`
-            : order => `${order.time.getFullYear()}`; // Default yearly grouping
-
+            : order => `${order.time.getFullYear()}`; 
     const salesData = orders.reduce((acc, order) => {
       
     const key = groupByKey(order);
@@ -549,14 +548,13 @@ const addproduct = async (req, res) => {
 
     const newProduct = new Products({
       name,
-      category: categoryObj._id, // Set the category ObjectId
+      category: categoryObj._id,  
       stock,
       price,
       description: description || "Default description",
-      images: files.map(file => file.path) // Save the file paths
+      images: files.map(file => file.path) 
     });
-
-    // Save the new product to the database
+ 
     await newProduct.save();
     console.log("New product saved:", newProduct);
 
@@ -858,73 +856,7 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-// const updateOrderStatus = async (req, res) => {
-//   const { orderId, itemId, status } = req.body;
-//   console.log("Request Body:", req.body); // Log the request body for debugging
-
-//   try {
-//     if (
-//       !mongoose.Types.ObjectId.isValid(orderId) ||
-//       !mongoose.Types.ObjectId.isValid(itemId)
-//     ) {
-//       console.log("Invalid order or item ID:", { orderId, itemId });
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "Invalid order or item ID." });
-//     }
-
-//     // Validate status
-//     const validStatuses = [
-//       "scheduled",
-//       "pending",
-//       "delivered",
-//       "shipped",
-//       "canceled"
-//     ];
-//     if (!validStatuses.includes(status)) {
-//       console.log("Invalid status:", status);
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "Invalid status." });
-//     }
-//     console.log(
-//       "Attempting to update item status for order ID:",
-//       orderId,
-//       "and item ID:",
-//       itemId
-//     );
-//     // Find the order by ID
-//     const order = await Orders.findById(orderId);
-//     if (!order) {
-//       console.log("Order not found for ID:", orderId);
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "Order not found." });
-//     }
-
-//     const item = order.items.id(itemId);
-//     if (!item) {
-//       console.log("Item not found for ID:", itemId);
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "Item not found in order." });
-//     }
-
-//     item.status = status;
-
-//     await order.save();
-
-//     console.log("Item status updated successfully for item ID:", itemId);
-
-//     res.redirect("/admin/orders");
-//   } catch (error) {
-//     console.error("Error updating item status:", error);
-//     res
-//       .status(500)
-//       .json({ success: false, message: "Failed to update item status." });
-//   }
-// };
-
+ 
 const loadOrder = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
