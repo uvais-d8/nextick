@@ -518,10 +518,19 @@
 						{{#if this.priceWithDiscount}}
 						<b>₹ {{multiply this.priceWithDiscount this.quantity}}</b>
 						{{else}}
-						<b>₹ {{multiply this.productId.price this.quantity}}</b>
+						<b>₹ {{multiply this.orderTotal this.quantity}}</b>
 						{{/if}}
 					</p>
-
+{{!-- <p style="margin-top: -10px;">
+  Total:
+  {{#if this.orderTotal}}
+    <b>₹ {{this.orderTotal}}</b>
+  {{else if this.priceWithDiscount}}
+    <b>₹ {{multiply this.priceWithDiscount this.quantity}}</b>
+  {{else}}
+    <b>₹ {{multiply this.price this.quantity}}</b>
+  {{/if}}
+</p> --}}
 					<p style="color: rgb(48, 47, 47);margin-top: -10px;">Order Date: <b>{{formatDate ../time}}</b></p>
 
  					<div class="order-actions">
@@ -581,7 +590,7 @@
 		<!-- Order Total -->
 		<div style="width: 1200px; margin-left: 10%;display: flex;margin-top:-28px">
 			<div style="background-color: white; width: 100%; padding: 15px;">
-				<h4>Order Total: ₹{{total}}</h4>
+				<h4>Order Total: ₹{{orderTotal}}</h4>
 				<p>
 					delivery change : ₹ 50
 				</p>

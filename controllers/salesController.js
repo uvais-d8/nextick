@@ -312,7 +312,7 @@ const placeOrder = async (req, res) => {
 
 const razorpayy = async (req, res) => {
   const userId = req.session.userId;
-  console.log("razorpay processing");
+  console.log('kkkkkkkkkkkkkkkkkkkkkkkkkk',req.body);
 
   if (!userId) {
     return res.redirect("/login");
@@ -320,7 +320,7 @@ const razorpayy = async (req, res) => {
 
   try {
     const {
-      total,
+      orderTotal,
       email,
       phone,
       paymentMethod,
@@ -334,10 +334,14 @@ const razorpayy = async (req, res) => {
       address,
       
     } = req.body;
+    
     // Fetch user's cart items
     const cartItems = await Cart.find({ user: userId }).populate("productId");
-    const amount = total * 100; // Razorpay amount is in paisa
 
+const amount = orderTotal * 100; // Razorpay amount is in paisa
+
+    
+    
     // Create Razorpay order
     const order = await razorpay.orders.create({
       amount,
@@ -381,33 +385,31 @@ const razorpayy = async (req, res) => {
       address
     };
     // Log the shipping address for debugging
-    console.log("Received shippingAddress:", shippingAddress);
-    const orderTotal = updatedCartItems.reduce(
-      (acc, item) => acc + item.total,
-      0
-    );
-
+    // console.log("Received shippingAddress:", shippingAddress);
+    
  
     const newOrder = new Orders({
       userId,
       items: updatedCartItems,
-      orderTotal,
-      status:'payment-pending',
+      orderTotal: orderTotal, // Store the exact value from req.body
+      status: 'payment-pending',
       shippingAddress,
       paymentMethod: "razorpay",
       items: updatedCartItems.map(item => ({
         ...item,
-        status: "payment-pending", // Default status for each item
+        status: "payment-pending",
       })),
       razorpayDetails: {
-        orderId: order.id, // Save the Razorpay order ID
-        amount: order.amount,
+        orderId: order.id, // Save Razorpay order ID
+        amount, // Store Razorpay amount in paise
         currency: order.currency,
       },
-     
     });
-    console.log("New order details:", newOrder);
-
+    
+    console.log("Order Total before save:", newOrder.orderTotal); // Debugging
+    const Order = await newOrder.save();
+    console.log("Order Total after save:", Order.orderTotal); // Debugging
+    
     // Update the sales count for each product in the order
     for (let item of newOrder.items) {
       // Assuming 'items' contains products in the order
@@ -430,7 +432,7 @@ const razorpayy = async (req, res) => {
         console.log(`Product with ID ${productId} not found.`);
       }
     }
-    await newOrder.save();
+
     console.log(`Cart items for user ${userId} have been deleted.`);
     res.json({
       success: true,

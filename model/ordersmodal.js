@@ -124,14 +124,6 @@ const ordersSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Middleware for recalculating item totals and orderTotal
-ordersSchema.pre("save", function(next) {
-  this.items.forEach(item => {
-    item.total = item.priceWithDiscount || item.price * item.quantity;
-  });
-  this.orderTotal = this.items.reduce((sum, item) => sum + item.total, 0);
-  next();
-});
 
 const orders = mongoose.model("orders", ordersSchema);
 module.exports = orders;

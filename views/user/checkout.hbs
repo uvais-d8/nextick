@@ -628,7 +628,7 @@
 	</div>
 	<!-- end copyright -->
 
-	{{!-- <script>
+	<script>
 		document.getElementById("orderForm").addEventListener("submit", async (e) => {
 			e.preventDefault(); // Prevent form submission
 
@@ -648,7 +648,7 @@
 				paymentMethod: form.elements["paymentMethod"].value,
 				subtotal: parseFloat(document.querySelector('input[name="subtotal"]').value),
 				shippingRate: parseFloat(document.querySelector('input[name="shippingRate"]').value),
-				total: parseFloat(document.querySelector('input[name="total"]').value),
+				orderTotal: parseFloat(document.querySelector('input[name="total"]').value),
 				addressId: document.getElementById("addressId").textContent,
 			};
 
@@ -717,7 +717,8 @@
 								}).then(() => {
 									window.location.href = "/orderss";
 									console.log("order", order)
- 									console.log("orderId", orderId)
+									//	    window.location.href = `/payment-success/${order.orderId}`;
+									console.log("orderId", orderId)
 
 								});
 							} else {
@@ -795,171 +796,7 @@
 				}
 			}
 		});
-	</script> --}}
-
-<script>
-  document.getElementById("orderForm").addEventListener("submit", async (e) => {
-    e.preventDefault(); // Prevent form submission
-
-    const form = e.target;
-
-    // Collect form data
-    const formData = {
-      firstname: form.elements["firstname"].value.trim(),
-      lastname: form.elements["lastname"].value.trim(),
-      email: form.elements["email"].value.trim(),
-      address: form.elements["address"].value.trim(),
-      phone: form.elements["phone"].value.trim(),
-      pincode: form.elements["pincode"].value.trim(),
-      district: form.elements["district"].value.trim(),
-      place: form.elements["place"].value.trim(),
-      city: form.elements["city"].value.trim(),
-      paymentMethod: form.elements["paymentMethod"].value,
-      subtotal: parseFloat(document.querySelector('input[name="subtotal"]').value),
-      shippingRate: parseFloat(document.querySelector('input[name="shippingRate"]').value),
-      total: parseFloat(document.querySelector('input[name="total"]').value),
-      addressId: document.getElementById("addressId").textContent,
-    };
-
-    const errorMessages = [];
-    // Validate inputs
-    if (!formData.firstname) errorMessages.push("First name is required.");
-    if (!formData.lastname) errorMessages.push("Last name is required.");
-    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
-      errorMessages.push("Invalid email.");
-    if (!formData.phone || !/^[0-9]{10}$/.test(formData.phone))
-      errorMessages.push("Invalid phone number.");
-    if (!formData.address) errorMessages.push("Address is required.");
-    if (!formData.pincode || !/^[0-9]{6}$/.test(formData.pincode))
-      errorMessages.push("Invalid pin code.");
-    if (!formData.district) errorMessages.push("District is required.");
-    if (!formData.place) errorMessages.push("Place is required.");
-
-    // Show validation errors
-    if (errorMessages.length > 0) {
-      Swal.fire({
-        title: "Validation Errors",
-        html: errorMessages.join("<br>"),
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-      return;
-    }
-
-    // Handle payment method
-    if (formData.paymentMethod === "razorpay") {
-      try {
-        const response = await fetch("/create-razorpay-order", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
-        const order = await response.json();
-
-        const options = {
-          key: "rzp_test_27cbwJ6wd0CuiQ",
-          amount: order.amount,
-          currency: order.currency,
-          name: "Watch Premium",
-          description: "Payment for your order",
-          order_id: order.id,
-          handler: async function (response) {
-            const verifyResponse = await fetch(`/payment-success/${order.id}`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                paymentId: response.razorpay_payment_id,
-                orderId: response.razorpay_order_id,
-                signature: response.razorpay_signature,
-              }),
-            });
-            const verifyResult = await verifyResponse.json();
-
-            if (verifyResult.success) {
-              Swal.fire({
-                title: "Success!",
-                text: "Payment successful! Order placed.",
-                icon: "success",
-                confirmButtonText: "OK",
-              }).then(() => {
-                window.location.href = "/orderss";
-              });
-            } else {
-              Swal.fire({
-                title: "Payment Failed",
-                text: "Your payment could not be verified.",
-                icon: "error",
-                confirmButtonText: "Retry",
-              }).then(() => {
-                window.location.href = "/orderss";
-              });
-            }
-          },
-          prefill: {
-            name: `${formData.firstname} ${formData.lastname}`,
-            email: formData.email,
-            contact: formData.phone,
-          },
-          theme: {
-            color: "#F37254",
-          },
-          modal: {
-            ondismiss: function () {
-              window.location.href = '/orderss';
-            },
-          },
-        };
-
-        const rzp = new Razorpay(options);
-        rzp.open();
-      } catch (error) {
-        console.error("Error during Razorpay payment:", error);
-        Swal.fire({
-          title: "Error",
-          text: error.message || "Payment could not be initiated.",
-          icon: "error",
-          confirmButtonText: "Retry",
-        });
-      }
-    } else {
-      // Handle COD and UPI payment
-      try {
-        const response = await fetch("/placeOrder", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
-        const result = await response.json();
-
-        if (result.success) {
-          Swal.fire({
-            title: "Order Placed!",
-            text: "Your order has been successfully placed.",
-            icon: "success",
-            confirmButtonText: "OK",
-          }).then(() => {
-            window.location.href = `/orderss`;
-          });
-        } else {
-          Swal.fire({
-            title: "Order Failed",
-            text: result.message || "An unknown error occurred while placing the order.",
-            icon: "error",
-            confirmButtonText: "Retry",
-          });
-        }
-      } catch (error) {
-        console.error("Error placing order:", error);
-        Swal.fire({
-          title: "Error",
-          text: error.message || "Order could not be placed.",
-          icon: "error",
-          confirmButtonText: "Retry",
-        });
-      }
-    }
-  });
-</script>
+	</script>
 
 	<script>
 		async function handleCoupon(event) {

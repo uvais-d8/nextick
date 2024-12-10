@@ -682,6 +682,7 @@ order.items.forEach((item) => {
   const product = item.productId;
   const unitPrice = item.priceWithDiscount || product.price; // Get discounted price or actual price
 
+  
   // Actual total is based on original prices (before discount)
   actualTotal += product.price * item.quantity;
 
@@ -695,16 +696,18 @@ const totalDiscount = actualTotal - discountedTotal;
 // Final Grand Total
 const finalTotal = discountedTotal;
 
+const orderTotal = order.orderTotal;
+console.log("orderTotal",orderTotal)
 // Draw Totals in the PDF
 doc
   .font("Helvetica-Bold")
   .fontSize(12)
   .moveDown(3)
-  .text(`Subtotal    : Rs ${actualTotal.toFixed(2)}`, 370, doc.y, { align: "right" })
+  .text(`Subtotal    : Rs ${finalTotal.toFixed(2)}`, 370, doc.y, { align: "right" })
   .moveDown(0.2)
   .text(`Discount    :   Rs ${totalDiscount.toFixed(2)}`, 370, doc.y, { align: "right" })
   .moveDown(0.2)
-  .text(`Grand Total : Rs ${finalTotal.toFixed(2)}`, 370, doc.y, { align: "right", underline: true })
+  .text(`Grand Total : Rs ${orderTotal.toFixed(2)}`, 370, doc.y, { align: "right", underline: true })
   .moveDown(3)
 
     // ** Footer Section **
