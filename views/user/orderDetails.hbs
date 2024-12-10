@@ -250,23 +250,35 @@
                             <td>
                                 <p>Price:
                                     {{#if product.priceWithDiscount}}
+                                    {{#if (eq product.priceWithDiscount product.productId.price)}}
+                                    <b>₹{{product.productId.price}}</b>
+                                    {{else}}
                                     <del style="color: red;">₹{{product.productId.price}}</del>
                                     <b>₹{{product.priceWithDiscount}}</b>
+                                    {{/if}}
                                     {{else}}
                                     ₹{{product.productId.price}}
                                     {{/if}}
                                 </p>
+
                             </td>
                             {{!-- <td><b>Total Price: ₹ {{multiply product.price product.quantity}}</b></td> --}}
                             <td>
                                 <p>Price:
                                     {{#if product.priceWithDiscount}}
-                                    <del style="color: red;">₹{{multiply product.quantity product.productId.price}}</del>
-                                    <b>₹{{multiply product.priceWithDiscount product.quantity}}</b>
+                                    {{#if (eq (multiply product.priceWithDiscount product.quantity) (multiply
+                                    product.productId.price product.quantity))}}
+                                    <b>₹{{multiply product.productId.price product.quantity}}</b>
                                     {{else}}
-                                    ₹{{multiply product.quantity product.productId.price}}
+                                    <del style="color: red;">₹{{multiply product.productId.price
+                                        product.quantity}}</del>
+                                    <b>₹{{multiply product.priceWithDiscount product.quantity}}</b>
+                                    {{/if}}
+                                    {{else}}
+                                    ₹{{multiply product.productId.price product.quantity}}
                                     {{/if}}
                                 </p>
+
                             </td>
                         </tr>
                     </tbody>

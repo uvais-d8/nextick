@@ -625,7 +625,8 @@ const loadWallet = async (req, res) => {
   try {
     const userId = req.session.userId;
     console.log("User ID:", userId);
-    // Fetch the wallet for the user
+
+    // Fetch the wallet for the user and populate the transactions sorted by createdAt in descending order
     const wallet = await Wallet.findOne({ user: userId }).sort({ createdAt: -1 });
 
     if (!wallet) {
@@ -640,16 +641,20 @@ const loadWallet = async (req, res) => {
     console.log("Balance:", wallet.balance);
     console.log("Transactions:", wallet.transactions);
 
-    // Render the wallet page with data
+    // Sort transactions by createdAt in descending order (newest first)
+    const sortedTransactions = wallet.transactions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    // Render the wallet page with sorted transactions
     res.render("wallet", {
       balance: wallet.balance,
-      transactions: wallet.transactions,
+      transactions: sortedTransactions,
     });
   } catch (error) {
     console.error("Error loading wallet:", error);
     res.status(500).send("Server Error");
   }
 };
+
 module.exports = {
   updateDefaultAddress,
   resendotpemail,

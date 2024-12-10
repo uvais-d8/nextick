@@ -3,6 +3,7 @@ const Cart = require("../model/cartModel");
 const Address = require("../model/addressModel");
 const Orders = require("../model/ordersmodal");
 const Coupons = require("../model/couponModel");
+const Offer = require("../model/offermodel")
 const Wallet = require("../model/walletModel");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
@@ -221,6 +222,91 @@ const loadViewDetails = async (req, res) => {
     console.log("error: ", error);
   }
 };
+// const removeItem = async (req, res) => {
+//   const user = req.session.userId;
+//   const { orderId, itemId } = req.params;
+
+//   try {
+//     const order = await Orders.findOne({ _id: orderId });
+
+//     if (!order || !order.items) {
+//       return res.status(404).send("Order or items not found");
+//     }
+
+//     const item = order.items.find((item) => item._id.toString() === itemId);
+
+//     if (!item) {
+//       return res.status(404).json({ success: false, message: "Item not found in the order." });
+//     }
+
+//     if (item.status === "delivered") {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Item is already delivered and cannot be canceled."
+//       });
+//     }
+
+//      await Orders.findOneAndUpdate(
+//       { _id: orderId, "items._id": itemId },
+//       { $set: { "items.$.status": "canceled" } }
+//     );
+
+//     const product = await Products.findById(item.productId);
+//     if (product) {
+//       product.stock += item.quantity;
+//       await product.save();
+//     } else {
+//       console.warn("Product not found for stock update");
+//     }
+// if(order.paymentMethod==="razorpay"){
+
+
+//     let refundAmount = 0;
+//     if (product) {
+//       refundAmount = (product?.discountedPrice || product?.price) * item.quantity;
+//     }
+
+//     if (refundAmount > 0) {
+//       console.log("Refund amount:", refundAmount);
+
+//       let wallet = await Wallet.findOne({ user: order.userId });
+
+//       if (!wallet) {
+//         wallet = new Wallet({
+//           user: order.userId,
+//           balance: refundAmount,
+//           transactions: [
+//             {
+//               type: "refund",
+//               amount: refundAmount,
+//               description: `Refund for canceled product (${product?.name}) in order ${orderId}`
+//             }
+//           ]
+//         });
+//       } else {
+//          wallet.balance += refundAmount;
+//         wallet.transactions.push({
+//           type: "refund",
+//           amount: refundAmount,
+//           description: `Refund for canceled product (${product?.name}) in order ${orderId}`
+//         });
+//       }
+//       await wallet.save();
+//     }
+//   }
+//      const updatedOrder = await Orders.findById(orderId);
+//     if (updatedOrder.items.every((item) => item.status === "canceled")) {
+//       updatedOrder.status = "canceled";
+//       await updatedOrder.save();
+//     }
+
+//     res.json({ success: true, message: "Item successfully canceled" });
+//   } catch (error) {
+//     console.error("Error canceling order:", error);
+//     res.status(500).send("Error updating order status");
+//   }
+// };
+
 const removeItem = async (req, res) => {
   const user = req.session.userId;
   const { orderId, itemId } = req.params;
@@ -245,55 +331,69 @@ const removeItem = async (req, res) => {
       });
     }
 
-     await Orders.findOneAndUpdate(
+    await Orders.findOneAndUpdate(
       { _id: orderId, "items._id": itemId },
       { $set: { "items.$.status": "canceled" } }
     );
 
     const product = await Products.findById(item.productId);
     if (product) {
+      // Calculate the discounted price if an offer exists
+      let finalPrice = product.price; // Default price
+
+      if (product.offer && product.offer.Status) {
+        // Find the discount type and apply it
+        const offer = await Offer.findById(product.offer);
+        
+        if (offer) {
+          if (offer.DiscountType === "percentage") {
+            finalPrice = product.price - (product.price * (offer.DiscountValue / 100));
+          } else if (offer.DiscountType === "fixed") {
+            finalPrice = product.price - offer.DiscountValue;
+          }
+        }
+      }
+
+      // Now, update the stock based on the quantity
       product.stock += item.quantity;
       await product.save();
+
+      // Calculate refund amount based on the discounted price
+      let refundAmount = finalPrice * item.quantity;
+
+      if (refundAmount > 0) {
+        console.log("Refund amount:", refundAmount);
+
+        let wallet = await Wallet.findOne({ user: order.userId });
+
+        if (!wallet) {
+          wallet = new Wallet({
+            user: order.userId,
+            balance: refundAmount,
+            transactions: [
+              {
+                type: "refund",
+                amount: refundAmount,
+                description: `Refund for canceled product (${product?.name}) in order ${orderId}`
+              }
+            ]
+          });
+        } else {
+          wallet.balance += refundAmount;
+          wallet.transactions.push({
+            type: "refund",
+            amount: refundAmount,
+            description: `Refund for canceled product (${product?.name}) in order ${orderId}`
+          });
+        }
+        await wallet.save();
+      }
     } else {
       console.warn("Product not found for stock update");
     }
-if(order.paymentMethod==="razorpay"){
 
-
-    let refundAmount = 0;
-    if (product) {
-      refundAmount = (product?.discountedPrice || product?.price) * item.quantity;
-    }
-
-    if (refundAmount > 0) {
-      console.log("Refund amount:", refundAmount);
-
-      let wallet = await Wallet.findOne({ user: order.userId });
-
-      if (!wallet) {
-        wallet = new Wallet({
-          user: order.userId,
-          balance: refundAmount,
-          transactions: [
-            {
-              type: "refund",
-              amount: refundAmount,
-              description: `Refund for canceled product (${product?.name}) in order ${orderId}`
-            }
-          ]
-        });
-      } else {
-         wallet.balance += refundAmount;
-        wallet.transactions.push({
-          type: "refund",
-          amount: refundAmount,
-          description: `Refund for canceled product (${product?.name}) in order ${orderId}`
-        });
-      }
-      await wallet.save();
-    }
-  }
-     const updatedOrder = await Orders.findById(orderId);
+    // If all items are canceled, update the order status
+    const updatedOrder = await Orders.findById(orderId);
     if (updatedOrder.items.every((item) => item.status === "canceled")) {
       updatedOrder.status = "canceled";
       await updatedOrder.save();
@@ -305,137 +405,88 @@ if(order.paymentMethod==="razorpay"){
     res.status(500).send("Error updating order status");
   }
 };
+
+
+
+
 const returnOrder = async (req, res) => {
-  const { orderId, itemId } = req.params; // Accept both orderId and itemId for flexibility
+  const  itemId  = req.params.id; // Get the itemId directly from req.params
+  console.log("itemId", itemId);
+
   const userId = req.session.userId; // Assuming userId is stored in the session
 
   try {
-    const order = await Orders.findOne({ _id: orderId });
+    // Find and update the item status to "returned" within the order
+    const order = await Orders.findOneAndUpdate(
+      { 'items._id': itemId, userId },  // Find order containing the itemId for the specific user
+      { $set: { 'items.$.status': 'returned' } },  // Update the item status to "returned"
+      { new: true }  // Return the updated order document
+    );
 
-    if (!order || !order.items) {
-      return res.status(404).json({ success: false, message: "Order or items not found." });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order or item not found." });
     }
 
-    // Handle item return if itemId is provided
-    if (itemId) {
-      const item = order.items.find((item) => item._id.toString() === itemId);
+    // Find the item that was updated to confirm
+    const item = order.items.find((item) => item._id.toString() === itemId);
+    if (!item) {
+      return res.status(404).json({ success: false, message: "Item not found in the order." });
+    }
 
-      if (!item) {
-        return res.status(404).json({ success: false, message: "Item not found in the order." });
-      }
+    // Ensure the item was delivered before returning
+    if (item.status !== "delivered") {
+      return res.status(400).json({
+        success: false,
+        message: "Only delivered items are eligible for return.",
+      });
+    }
 
-      if (item.status !== "delivered") {
-        return res.status(400).json({
-          success: false,
-          message: "Only delivered items are eligible for return.",
-        });
-      }
+    // Update the stock for the product associated with the returned item
+    const product = await Products.findById(item.productId);
+    if (product) {
+      product.stock += item.quantity;  // Increase stock based on returned quantity
+      await product.save();
+    }
 
-      // Update product stock
-      const product = await Product.findById(item.product);
-      if (product) {
-        product.stock += item.quantity;
-        await product.save();
-      }
+    // Calculate the refund amount
+    const refundAmount = (product?.discountedPrice || product?.price) * item.quantity;
 
-      // Calculate refund amount
-      const refundAmount =
-        (product?.discountedPrice || product?.price) * item.quantity;
-
-      // Update wallet
-      let wallet = await Wallet.findOne({ user: userId });
-      if (!wallet) {
-        wallet = new Wallet({
-          user: userId,
-          balance: refundAmount,
-          transactions: [
-            {
-              type: "refund",
-              amount: refundAmount,
-              description: `Refund for returned item (${product?.name}) in order ${orderId}`,
-            },
-          ],
-        });
-      } else {
-        wallet.balance += refundAmount;
-        wallet.transactions.push({
-          type: "refund",
-          amount: refundAmount,
-          description: `Refund for returned item (${product?.name}) in order ${orderId}`,
-        });
-      }
-      await wallet.save();
-
-      // Update item status to "returned"
-      item.status = "returned";
-      await order.save();
-
-      res.json({
-        success: true,
-        message: "Item successfully returned and refund processed.",
+    // Update wallet for the user
+    let wallet = await Wallet.findOne({ user: userId });
+    if (!wallet) {
+      wallet = new Wallet({
+        user: userId,
+        balance: refundAmount,
+        transactions: [
+          {
+            type: "refund",
+            amount: refundAmount,
+            description: `Refund for returned item (${product?.name})`,
+          },
+        ],
       });
     } else {
-      // Handle full order return if no itemId is provided
-      if (order.status !== "delivered") {
-        return res.status(400).json({
-          success: false,
-          message: "Only delivered orders are eligible for return.",
-        });
-      }
-
-      // Update stock for all items in the order
-      for (const item of order.items) {
-        const product = await Products.findById(item.product);
-        if (product) {
-          product.stock += item.quantity;
-          await product.save();
-        }
-      }
-
-      // Calculate refund amount
-      const refundAmount = order.totalAmount;
-
-      // Update wallet
-      let wallet = await Wallet.findOne({ user: userId });
-      if (!wallet) {
-        wallet = new Wallet({
-          user: userId,
-          balance: refundAmount,
-          transactions: [
-            {
-              type: "refund",
-              amount: refundAmount,
-              description: `Refund for returned order ${orderId}`,
-            },
-          ],
-        });
-      } else {
-        wallet.balance += refundAmount;
-        wallet.transactions.push({
-          type: "refund",
-          amount: refundAmount,
-          description: `Refund for returned order ${orderId}`,
-        });
-      }
-      await wallet.save();
-
-      // Update order status to "returned"
-      order.status = "returned";
-      order.items.forEach((item) => {
-        item.status = "returned";
-      });
-      await order.save();
-
-      res.json({
-        success: true,
-        message: "Order successfully returned and refund processed.",
+      wallet.balance += refundAmount;
+      wallet.transactions.push({
+        type: "refund",
+        amount: refundAmount,
+        description: `Refund for returned item (${product?.name})`,
       });
     }
+    await wallet.save();
+
+    res.json({
+      success: true,
+      message: "Item successfully returned and refund processed.",
+    });
   } catch (error) {
     console.error("Error processing return:", error);
     res.status(500).json({ success: false, message: "Internal server error." });
   }
 };
+
+
+
 
 const generateInvoicePDF = async (req, res) => {
   const { orderId } = req.params;
@@ -483,10 +534,10 @@ const generateInvoicePDF = async (req, res) => {
       .moveDown(0.5)
       .fontSize(11)
       .font("Helvetica")
-      .text(`Order ID     : ${orderId}`)
-      .text(`Order Date   : ${new Date(order.createdAt).toLocaleDateString()}`)
-      .text(`Order Status : scheduled`)
-      // .text(`Order Status: ${order.status}`)
+      .text(`Order ID       : ${orderId}`)
+      .text(`Order Date    : ${new Date(order.createdAt).toLocaleDateString()}`)
+      // .text(`Order Status : scheduled`)
+      .text(`Order Status : ${order.status}`)
       .moveDown(1);
 
     doc
@@ -498,11 +549,11 @@ const generateInvoicePDF = async (req, res) => {
 
       .fontSize(11)
       .font("Helvetica")
-      .text(`${address.firstname} ${address.lastname}`)
-      .text(`${address.address}`)
-      .text(`Phone: ${address.phone}`)
-      .text(`Email: ${address.email}`)
-      .text(`${address.place}, ${address.city}, ${address.pincode}`)
+      .text(`Name     :${address.firstname} ${address.lastname}`)
+      .text(`Address :${address.address}`)
+      .text(`Phone   : ${address.phone}`)
+      .text(`Email    : ${address.email}`)
+      .text(`Location:${address.place} , ${address.city} , ${address.pincode}`)
       .text(`district: ${address.district}`)
       .moveDown();
 
@@ -513,7 +564,7 @@ doc
 .font("Helvetica-Bold")
 .fontSize(11)
 .fillColor("black")
-.text("     No     Product                                                              Price                          quantity     total Price  ", 55, doc.y, { width: 4000})
+.text("     No     Product                                                            Price                          quantity     total Price  ", 55, doc.y, { width: 4000})
 // .text("Product", 100, doc.y, { width: 200, align: "left" })
 // .text("Price", 300, doc.y, { width: 80, align: "right" })
 // .text("Quantity", 380, doc.y, { width: 80, align: "right" })
@@ -564,7 +615,7 @@ doc
   .text(product.name, 100, rowY + 5, { width: 200, align: "left" });
 
 // Conditional pricing display
-if (item.priceWithDiscount) {
+if (item.priceWithDiscount && item.priceWithDiscount !== product.price) {
   // Strike-through for original price
   doc
     .font("Helvetica")
@@ -588,13 +639,14 @@ if (item.priceWithDiscount) {
     .fillColor("black")
     .text(`Rs ${item.priceWithDiscount.toFixed(2)}`, 300, rowY + 20, { width: 80, align: "right" });
 } else {
-  // Show regular price if no discount exists
+  // Show regular price if no discount exists or prices are the same
   doc
     .font("Helvetica")
     .fontSize(10)
     .fillColor("black")
     .text(`Rs ${product.price.toFixed(2)}`, 300, rowY + 5, { width: 80, align: "right" });
 }
+
 
 // Quantity
 doc
@@ -650,7 +702,7 @@ doc
   .moveDown(3)
   .text(`Subtotal    : Rs ${actualTotal.toFixed(2)}`, 370, doc.y, { align: "right" })
   .moveDown(0.2)
-  .text(`Discount   :      Rs ${totalDiscount.toFixed(2)}`, 370, doc.y, { align: "right" })
+  .text(`Discount    :   Rs ${totalDiscount.toFixed(2)}`, 370, doc.y, { align: "right" })
   .moveDown(0.2)
   .text(`Grand Total : Rs ${finalTotal.toFixed(2)}`, 370, doc.y, { align: "right", underline: true })
   .moveDown(3)

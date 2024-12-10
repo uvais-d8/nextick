@@ -116,25 +116,24 @@ const placeOrder = async (req, res) => {
   if (!city) errors.city = "City is required";
   if (!district) errors.district = "District is required";
 
-   const allowedPaymentMethods = ["cod", "upi", "razorpay"];
+  const allowedPaymentMethods = ["cod","razorpay"];
   if (!paymentMethod || !allowedPaymentMethods.includes(paymentMethod)) {
     errors.paymentMethod = "Invalid or unsupported payment method selected";
   }
 
-   if (!items || !Array.isArray(items) || items.length === 0) {
+  if (!items || !Array.isArray(items) || items.length === 0) {
     errors.items = "No items in the cart";
   }
 
   try {
-    const cartItems = await Cart.find({ user: userId })
-      .populate("productId");
+    const cartItems = await Cart.find({ user: userId }).populate("productId");
 
     if (cartItems.length === 0) {
       throw new Error("No items in the cart.");
     }
 
-     const updatedCartItems = await Promise.all(
-      cartItems.map(async item => {
+    const updatedCartItems = await Promise.all(
+      cartItems.map(async (item) => {
         const product = item.productId;
         if (!product) throw new Error(`Product not found.`);
         if (product.stock < item.quantity) {
@@ -145,7 +144,8 @@ const placeOrder = async (req, res) => {
         return {
           ...item.toObject(),
           price: product.price,
-          total: product.price * item.quantity
+          total: product.price * item.quantity,
+          status: "scheduled", // Set the item status to 'scheduled'
         };
       })
     );
@@ -159,7 +159,7 @@ const placeOrder = async (req, res) => {
       place,
       city,
       pincode,
-      district
+      district,
     };
 
     // Calculate total and save the order
@@ -167,13 +167,21 @@ const placeOrder = async (req, res) => {
       (acc, item) => acc + item.total,
       0
     );
+
+    if (paymentMethod === "cod" && orderTotal > 1000) {
+      return res.status(400).json({
+        success: false,
+        message: "Cash on Delivery (COD) is not available for orders above ₹1000.",
+      });
+    }
     const newOrder = new Orders({
       userId,
-      items: updatedCartItems,
+      items: updatedCartItems, // Items now include the status field
       orderTotal,
       paymentMethod,
-      shippingAddress
-       });
+      shippingAddress,
+      status: "scheduled", // Set the overall order status to 'scheduled'
+    });
 
     console.log("New order details:", newOrder);
     await newOrder.save();
@@ -186,10 +194,122 @@ const placeOrder = async (req, res) => {
     console.log("Error placing order:", error);
     res.status(500).json({
       success: false,
-      message: error.message || "Failed to place order."
+      message: error.message || "Failed to place order.",
     });
   }
 };
+
+
+// const placeOrder = async (req, res) => {
+//   console.log("hellooo");
+//   const userId = req.session.userId;
+//   const {
+//     email,
+//     phone,
+//     paymentMethod,
+//     items,
+//     pincode,
+//     district,
+//     firstname,
+//     place,
+//     city,
+//     lastname,
+//     address
+//   } = req.body;
+
+//   console.log(req.body);
+
+//   const errors = {};
+
+//   // Validation
+//   if (!firstname) errors.firstname = "First name is required.";
+//   if (!lastname) errors.lastname = "Last name is required.";
+//   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+//     errors.email = "Invalid email.";
+//   if (!phone || !/^[0-9]{10}$/.test(phone))
+//     errors.phone = "Invalid phone number.";
+//   if (!address) errors.address = "Address is required";
+//   if (!pincode || !/^[0-9]{6}$/.test(pincode))
+//     errors.pincode = "Invalid pin code";
+//   if (!place) errors.place = "Place is required";
+//   if (!city) errors.city = "City is required";
+//   if (!district) errors.district = "District is required";
+
+//    const allowedPaymentMethods = ["cod", "upi", "razorpay"];
+//   if (!paymentMethod || !allowedPaymentMethods.includes(paymentMethod)) {
+//     errors.paymentMethod = "Invalid or unsupported payment method selected";
+//   }
+
+//    if (!items || !Array.isArray(items) || items.length === 0) {
+//     errors.items = "No items in the cart";
+//   }
+
+//   try {
+//     const cartItems = await Cart.find({ user: userId })
+//       .populate("productId");
+
+//     if (cartItems.length === 0) {
+//       throw new Error("No items in the cart.");
+//     }
+
+//      const updatedCartItems = await Promise.all(
+//       cartItems.map(async item => {
+//         const product = item.productId;
+//         if (!product) throw new Error(`Product not found.`);
+//         if (product.stock < item.quantity) {
+//           throw new Error(`Insufficient stock for ${product.name}.`);
+//         }
+//         product.stock -= item.quantity;
+//         await product.save();
+//         return {
+//           ...item.toObject(),
+//           price: product.price,
+//           total: product.price * item.quantity
+//         };
+//       })
+//     );
+
+//     const shippingAddress = {
+//       firstname,
+//       lastname,
+//       address,
+//       phone,
+//       email,
+//       place,
+//       city,
+//       pincode,
+//       district
+//     };
+
+//     // Calculate total and save the order
+//     const orderTotal = updatedCartItems.reduce(
+//       (acc, item) => acc + item.total,
+//       0
+//     );
+//     const newOrder = new Orders({
+//       userId,
+//       items: updatedCartItems,
+//       orderTotal,
+//       paymentMethod,
+//       shippingAddress
+//        });
+
+//     console.log("New order details:", newOrder);
+//     await newOrder.save();
+//     console.log("Order saved successfully.");
+//     await Cart.deleteMany({ user: userId });
+//     console.log(`Cart items for user ${userId} have been deleted.`);
+
+//     res.json({ success: true });
+//   } catch (error) {
+//     console.log("Error placing order:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: error.message || "Failed to place order."
+//     });
+//   }
+// };
+
 const razorpayy = async (req, res) => {
   const userId = req.session.userId;
   console.log("razorpay processing");
@@ -327,30 +447,39 @@ const razorpayy = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-const updateOrderStatus = async (req, res) => {
-  try {
-    const { orderId, status } = req.body;
 
-    // Find the order and update its status
-    const order = await Orders.findOne({ "razorpayDetails.orderId": orderId });
-    if (!order) {
-      return res.status(404).json({ success: false, message: "Order not found" });
-    }
+// const updateOrderStatus = async (req, res) => {
+//   try {
+//     const { orderId, itemIds, status } = req.body;
 
-    order.paymentStatus = status; // Update the payment status
-    await order.save();
-    res.json({
-      success: true,
-      id: order.id,
-      amount: order.amount,
-      currency: order.currency
-    });
-    res.json({ success: true, message: "Order status updated successfully" });
-  } catch (error) {
-    console.error("Error updating order status:", error.message);
-    res.status(500).json({ success: false, message: "Failed to update order status" });
-  }
-};
+//     // Find the order
+//     const order = await Orders.findById(orderId);
+//     if (!order) {
+//       return res.status(404).json({ success: false, message: "Order not found" });
+//     }
+
+//     // Update the status of selected items
+//     order.items.forEach(item => {
+//       if (itemIds.includes(item._id.toString())) {
+//         item.status = status; // Update item status to 'returned'
+//       }
+//     });
+
+//     // Save the updated order
+//     await order.save();
+
+//     res.json({
+//       success: true,
+//       message: "Item status updated successfully",
+//       orderId: order.id,
+//       status: status,
+//       updatedItems: order.items.filter(item => itemIds.includes(item._id.toString()))
+//     });
+//   } catch (error) {
+//     console.error("Error updating item status:", error.message);
+//     res.status(500).json({ success: false, message: "Failed to update item status" });
+//   }
+// };
 const getProductStock = async (req, res) => {
   const { cartId } = req.params;
   try {
@@ -672,8 +801,7 @@ module.exports = {
   retrypaymentSuccess,
    addtocart,
   paymentSuccess,
-  updateOrderStatus, 
-  loadcartpage,
+   loadcartpage,
   removecart,
   placeOrder,
   updateQuantity,

@@ -327,7 +327,7 @@
 		}
 
 		.gradient-button-yellow {
-			color: rgb(236, 232, 14);
+			color: rgb(236, 199, 14);
 			font-weight: bold;
 			font-size: 15px;
 		}
@@ -475,8 +475,7 @@
 					<h4>Are you sure you want to cancel this order?</h4>
 					<p>Once canceled, the order cannot be restored. Please confirm if you want to proceed with the
 						cancellation.</p>
-					{{!-- <p><strong>Order ID:</strong>{{items.productId.name}}</p> --}}
-					<p id="errorMessage" style="color: red; display: none;">An error occurred. Please try again.</p>
+ 					<p id="errorMessage" style="color: red; display: none;">An error occurred. Please try again.</p>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
@@ -501,88 +500,91 @@
 					<h4>{{this.productId.name}}</h4>
 					<p>Price:
 						{{#if this.priceWithDiscount}}
+						{{#if (eq this.priceWithDiscount this.productId.price)}}
+						<b>₹{{this.productId.price}}</b>
+						{{else}}
 						<del style="color: red;">₹{{this.productId.price}}</del>
 						<b>₹{{this.priceWithDiscount}}</b>
+						{{/if}}
 						{{else}}
 						₹{{this.productId.price}}
 						{{/if}}
 					</p>
-					<p>
-						delivery change : ₹ 50
-					</p>
-					<!-- Show Quantity -->
-					<p>Quantity: <b>{{this.quantity}}</b></p>
 
-					<!-- Show Product Total -->
-					<p>Total:
+
+ 					<p style="margin-top: -10px;">Quantity: <b>{{this.quantity}}</b></p>
+
+ 					<p style="margin-top: -10px;">Total:
 						{{#if this.priceWithDiscount}}
-						₹{{multiply this.priceWithDiscount this.quantity}}
+						<b>₹ {{multiply this.priceWithDiscount this.quantity}}</b>
 						{{else}}
-						₹{{multiply this.productId.price this.quantity}}
+						<b>₹ {{multiply this.productId.price this.quantity}}</b>
 						{{/if}}
 					</p>
 
-					<p style="color: rgb(48, 47, 47);">Order Date: <b>{{formatDate ../time}}</b></p>
+					<p style="color: rgb(48, 47, 47);margin-top: -10px;">Order Date: <b>{{formatDate ../time}}</b></p>
 
-					<!-- Order Actions -->
-					<div class="order-actions">
+ 					<div class="order-actions">
 						{{#if (eq this.status "delivered")}}
-						<!-- Return Button -->
-						<button class="btn btn-danger return-button" data-toggle="modal" data-target="#returnModal"
-							style="margin-left: 100%; margin-right: auto; display: block; padding: 10px 20px; border-radius: 5px;">
-							Return
-						</button>
+						<div>
+							<button class="btn btn-danger return-button" data-toggle="modal" data-target="#returnModal"
+								style="margin-left: 100%; margin-right: auto; display: block; padding: 10px 20px; border-radius: 5px;">
+								Return
+							</button>
+						</div>
 
 						{{else if (eq this.status "payment-pending")}}
-						<!-- Retry Payment Button -->
-						<button class="btn btn-warning retry-button" id="payButton" data-order-id="{{this._id}}"
-							style="margin-left: 100%;font-size:11px; margin-right: auto; display: block; padding: 10px 20px; border-radius: 5px;">
-							Retry Payment
-						</button>
+						<div style="margin-left: 200px;"><button class="btn btn-warning retry-button" id="payButton" data-order-id="{{this._id}}"
+								style="margin-left: 100%; font-size: 11px; margin-right: auto; display: block; padding: 10px 20px; border-radius: 5px;">
+								Retry Payment
+							</button>
+						</div>
 
 						{{else if (eq this.status "canceled")}}
-						<!-- Do nothing -->
+
+						{{else if (eq this.status "returned")}}
 
 						{{else}}
-						<!-- Cancel Button -->
-						<button class="btn btn-danger"
-							style="color: rgba(0, 0, 0, 0.884); height: 35px; margin-left: 100%; margin-top: -150px"
-							data-toggle="modal" data-target="#cancelModal"
-							onclick="setItemToCancel('{{../_id}}', '{{this._id}}', 'item')">
-							Cancel Item
-						</button>
+						<div> <button class="btn btn-danger"
+								style="color: rgba(0, 0, 0, 0.884); height: 35px; margin-left: 100%; margin-top: -150px"
+								data-toggle="modal" data-target="#cancelModal"
+								onclick="setItemToCancel('{{../_id}}', '{{this._id}}', 'item')">
+								Cancel Item
+							</button></div>
 						{{/if}}
 					</div>
-
-					<form method="get" action="/viewDetails/{{../_id}}/{{this._id}}">
+					<form style="margin-top: -10px;" method="get" action="/viewDetails/{{../_id}}/{{this._id}}">
 						<button class="but" type="submit"
-							style="color:rgba(26, 26, 26, 0.898);font-size:14px;background-color:rgba(255, 255, 255, 0.911);height: 30px;border-width:0px;margin-left:100.5%;font-weight:bold;margin-top:0px">view
-							more</button>
+							style="color:rgba(26, 26, 26, 0.898);font-size:13px;height: 30px;border-width:0px;margin-left:100.5%;margin-top:0px;margin-left: 1px;width:130px">view
+							more Details</button>
 					</form>
 				</div>
 
-				<!-- Show Order Status -->
-				<p style="margin-top: -20px;">Status:
+ 			<div><p style="margin-top: -20px;">Status:
 					<span class="
         {{#if (eq status 'scheduled')}}gradient-button-blue{{else}}
         {{#if (eq status 'pending')}}gradient-button-yellow{{else}}
         {{#if (eq status 'canceled')}}gradient-button-red{{else}}
+        {{#if (eq status 'returned')}}gradient-button-yellow{{else}}
 		{{#if (eq status 'payment-pending')}}gradient-button-red{{else}}
         {{#if (eq status 'delivered')}}gradient-button-green{{else}}
-        {{#if (eq status 'shipped')}}gradient-button-purple{{/if}}
+        {{#if (eq status 'shipped')}}gradient-button-purple{{/if}}{{/if}}
         {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}">
 						{{status}}
 					</span>
-				</p>
+				</p></div>
 			</div>
 
 			{{/each}}
 		</div>
 
 		<!-- Order Total -->
-		<div style="width: 1200px; margin-left: 10%;display: flex;">
+		<div style="width: 1200px; margin-left: 10%;display: flex;margin-top:-28px">
 			<div style="background-color: white; width: 100%; padding: 15px;">
 				<h4>Order Total: ₹{{total}}</h4>
+				<p>
+					delivery change : ₹ 50
+				</p>
 			</div>
 			{{!-- <div>
 				{{#if (eq status "payment-pending")}}
@@ -780,12 +782,50 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-					<form method="get" action="/wall" id="confirmReturnBtn" type="button" class="btn btn-danger">Confirm
-						Return</form>
+					{{#each orders}}
+					{{#each items}}
+					<button type="button" class="btn btn-danger" id="confirmReturnBtn" data-order-id="{{this._id}}"
+						data-item-id="{{this._id}}" data-toggle="modal" data-target="#returnModal">
+						Confirm Return
+					</button>
+					{{/each}}
+					{{/each}}
 				</div>
 			</div>
 		</div>
 	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			// Get the button and itemId dynamically
+			const confirmReturnBtn = document.getElementById('confirmReturnBtn');
+			const itemId = confirmReturnBtn.getAttribute('data-order-id');
+
+			// Add the event listener to the Confirm Return button
+			confirmReturnBtn.addEventListener('click', function () {
+				console.log("Button clicked");
+				console.log("itemId", itemId);
+
+				// Make an API request to update the order status to 'returned'
+				fetch(`/return-order/${itemId}`, {
+					method: 'POST',  // Changed to POST as you're sending data
+					headers: {
+						'Content-Type': 'application/json'
+					},
+				})
+					.then(response => response.json())
+					.then(data => {
+						// Handle the response data (e.g., display a message)
+						console.log(data);
+					})
+					.catch(error => {
+						// Handle any error that occurred during the fetch
+						console.error('Error:', error);
+					});
+			});
+		});
+	</script>
+
 
 	<!-- copyright -->
 	<div class="copyright">

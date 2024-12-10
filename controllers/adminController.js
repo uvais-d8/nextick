@@ -8,6 +8,7 @@ const Orders = require("../model/ordersmodal");
 const path = require("path");
 const { default: mongoose } = require("mongoose");
 const Coupon = require("../model/couponModel");
+const Wallet = require("../model/walletModel")
 const multer = require("multer");
 const Offer = require("../model/offermodel");
 const Coupons = require("../model/couponModel");
@@ -736,11 +737,14 @@ const cancelOrderItem = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to cancel item." });
   }
 };
+
 const updateOrderStatus = async (req, res) => {
   const { orderId, itemId, status } = req.body;
-  console.log("Request Body:", req.body); // Log the request body for debugging
+
+  console.log("Request Body:", req.body);
 
   try {
+    // Validate IDs
     if (
       !mongoose.Types.ObjectId.isValid(orderId) ||
       !mongoose.Types.ObjectId.isValid(itemId)
@@ -752,26 +756,16 @@ const updateOrderStatus = async (req, res) => {
     }
 
     // Validate status
-    const validStatuses = [
-      "scheduled",
-      "pending",
-      "delivered",
-      "shipped",
-      "canceled"
-    ];
+    const validStatuses = ["canceled","scheduled", "pending", "delivered", "shipped","payment-pending",
+        "returned"];
     if (!validStatuses.includes(status)) {
       console.log("Invalid status:", status);
       return res
         .status(400)
         .json({ success: false, message: "Invalid status." });
     }
-    console.log(
-      "Attempting to update item status for order ID:",
-      orderId,
-      "and item ID:",
-      itemId
-    );
-    // Find the order by ID
+
+    // Find the order
     const order = await Orders.findById(orderId);
     if (!order) {
       console.log("Order not found for ID:", orderId);
@@ -780,6 +774,7 @@ const updateOrderStatus = async (req, res) => {
         .json({ success: false, message: "Order not found." });
     }
 
+    // Find the item in the order
     const item = order.items.id(itemId);
     if (!item) {
       console.log("Item not found for ID:", itemId);
@@ -788,12 +783,72 @@ const updateOrderStatus = async (req, res) => {
         .json({ success: false, message: "Item not found in order." });
     }
 
-    item.status = status;
+    // Check if the item is already delivered
+    if (item.status === "delivered") {
+      return res.status(400).json({
+        success: false,
+        message: "Item is already delivered and cannot be canceled.",
+      });
+    }
 
+    // Update item status
+    item.status = status;
+    if (status === "canceled") {
+      // Increment product stock
+      const product = await Products.findById(item.productId);
+      if (product) {
+        product.stock += item.quantity;
+        await product.save();
+      } else {
+        console.warn("Product not found for stock update");
+      }
+
+      // Handle refund for prepaid orders
+      if (order.paymentMethod === "razorpay") {
+        let refundAmount = (item.priceWithDiscount || item.price) * item.quantity;
+        if (refundAmount > 0) {
+          console.log("Refund amount:", refundAmount);
+
+          let wallet = await Wallet.findOne({ user: order.userId });
+
+          if (!wallet) {
+            // Create a new wallet if it doesn't exist
+            wallet = new Wallet({
+              user: order.userId,
+              balance: refundAmount,
+              transactions: [
+                {
+                  type: "refund",
+                  amount: refundAmount,
+                  description: `Refund for canceled product (${item.productId.name}) in order ${orderId}`,
+                },
+              ],
+            });
+          } else {
+            // Update existing wallet balance and transactions
+            wallet.balance += refundAmount;
+            wallet.transactions.push({
+              type: "refund",
+              amount: refundAmount,
+              description: `Refund for canceled product (${item.productId.name}) in order ${orderId}`,
+            });
+          }
+
+          await wallet.save();
+        }
+      }
+    }
+
+    // Save the order
     await order.save();
 
-    console.log("Item status updated successfully for item ID:", itemId);
+    // Check if all items are canceled, then update the order status
+    if (order.items.every((item) => item.status === "canceled")) {
+      order.status = "canceled";
+      await order.save();
+    }
 
+    console.log("Item status updated successfully for item ID:", itemId);
     res.redirect("/admin/orders");
   } catch (error) {
     console.error("Error updating item status:", error);
@@ -802,6 +857,74 @@ const updateOrderStatus = async (req, res) => {
       .json({ success: false, message: "Failed to update item status." });
   }
 };
+
+// const updateOrderStatus = async (req, res) => {
+//   const { orderId, itemId, status } = req.body;
+//   console.log("Request Body:", req.body); // Log the request body for debugging
+
+//   try {
+//     if (
+//       !mongoose.Types.ObjectId.isValid(orderId) ||
+//       !mongoose.Types.ObjectId.isValid(itemId)
+//     ) {
+//       console.log("Invalid order or item ID:", { orderId, itemId });
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Invalid order or item ID." });
+//     }
+
+//     // Validate status
+//     const validStatuses = [
+//       "scheduled",
+//       "pending",
+//       "delivered",
+//       "shipped",
+//       "canceled"
+//     ];
+//     if (!validStatuses.includes(status)) {
+//       console.log("Invalid status:", status);
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Invalid status." });
+//     }
+//     console.log(
+//       "Attempting to update item status for order ID:",
+//       orderId,
+//       "and item ID:",
+//       itemId
+//     );
+//     // Find the order by ID
+//     const order = await Orders.findById(orderId);
+//     if (!order) {
+//       console.log("Order not found for ID:", orderId);
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "Order not found." });
+//     }
+
+//     const item = order.items.id(itemId);
+//     if (!item) {
+//       console.log("Item not found for ID:", itemId);
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "Item not found in order." });
+//     }
+
+//     item.status = status;
+
+//     await order.save();
+
+//     console.log("Item status updated successfully for item ID:", itemId);
+
+//     res.redirect("/admin/orders");
+//   } catch (error) {
+//     console.error("Error updating item status:", error);
+//     res
+//       .status(500)
+//       .json({ success: false, message: "Failed to update item status." });
+//   }
+// };
+
 const loadOrder = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -1500,28 +1623,25 @@ const getSalesReport = async (req, res) => {
       "items.productId"
     );
 
-    // Helper function to get the week number of the year
-    const getWeekNumber = date => {
+     const getWeekNumber = date => {
       const startDate = new Date(date.getFullYear(), 0, 1);
       const days = Math.floor((date - startDate) / (24 * 60 * 60 * 1000));
       return Math.ceil((days + 1) / 7);
     };
 
-    // Grouping logic based on the selected filter
-    const groupByKey =
+     const groupByKey =
       filter === "daily"
         ? order => order.time.toISOString().split("T")[0]
         : filter === "monthly"
           ? order => `${order.time.getMonth() + 1}-${order.time.getFullYear()}`
           : filter === "yearly"
             ? order => `${order.time.getFullYear()}`
-            : filter === "weekly" // New weekly filter
+            : filter === "weekly"  
               ? order =>
                   `Week-${getWeekNumber(
                     order.time
                   )} ${order.time.getFullYear()}`
-              : order => `${order.time.getFullYear()}`; // Default yearly grouping
-
+              : order => `${order.time.getFullYear()}`;  
     const salesData = orders.reduce((acc, order) => {
       const key = groupByKey(order);
 
@@ -1622,33 +1742,27 @@ const exportPDF = async (req, res) => {
       "Net Sale"
     ];
 
-    // Function to draw a horizontal line
-    const drawLine = y => {
-      doc.moveTo(30, y + 10).lineTo(560, y + 10).stroke(); // Line moved slightly further down
+     const drawLine = y => {
+      doc.moveTo(30, y + 10).lineTo(560, y + 10).stroke();  
     };
 
-    let currentY = doc.y + 100; // Increased starting position to move everything down
+    let currentY = doc.y + 100; 
 
     salesData.forEach((report, index) => {
-      // Group Title
-      doc
+       doc
         .fontSize(14)
         .font("Helvetica-Bold")
         .text(`Group: ${report.key}`, 40, currentY);
-      currentY = doc.y + 20; // More space below the group title
-
+      currentY = doc.y + 20; 
       drawLine(currentY);
-      // Table Headers
-      currentY += 25; // Add more space before table headers
+       currentY += 25; 
       doc.fontSize(12).font("Helvetica-Bold");
       tableHeaders.forEach((header, i) => {
         const x = 40 + i * 75;
         doc.text(header, x, currentY, { width: 70, align: "left" });
       });
-      currentY += 25; // Add more space after table headers
-
-      // Table Rows
-      report.orders.forEach(order => {
+      currentY += 25;  
+       report.orders.forEach(order => {
         doc.fontSize(10).font("Helvetica");
         const rowData = [
           new Date(order.date).toLocaleDateString(),
@@ -1665,18 +1779,17 @@ const exportPDF = async (req, res) => {
           doc.text(data, x, currentY, { width: 70, align: "left" });
         });
 
-        currentY += 30; // Increased spacing between rows for better readability
-
-        // Check if the page is running out of space
+        currentY += 30; 
+        
         if (currentY > 750) {
           doc.addPage();
-          currentY = 70; // Reset position on new page with additional top margin
+          currentY = 70;  
           drawLine(currentY);
         }
       });
 
-      currentY += 30; // Add more space after each group
-    });
+      currentY += 30;  
+        });
     drawLine(currentY);
 
     // Footer
@@ -1699,8 +1812,8 @@ const exportPDF = async (req, res) => {
 };
 const exportExcel = async (req, res) => {
   try {
-    const salesData = JSON.parse(req.body.salesData); // Parse the string into an object
-    const workbook = new ExcelJS.Workbook();
+    const salesData = JSON.parse(req.body.salesData); 
+        const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Sales Report");
 
     worksheet.columns = [
@@ -1713,8 +1826,7 @@ const exportExcel = async (req, res) => {
       { header: "Net Sale", key: "netSale" }
     ];
 
-    // Process each report and order
-    salesData.forEach(report => {
+     salesData.forEach(report => {
       report.orders.forEach(order => worksheet.addRow(order));
     });
 
@@ -1733,150 +1845,6 @@ const exportExcel = async (req, res) => {
     res.redirect("/admin/salesreport");
   }
 };
-
-// const getSalesData = (req, res) => {
-//   const filter = req.query.filter; // Get filter from query params
-//   if (!filter) {
-//       return res.status(400).json({ error: "Filter is required" });
-//   }
-
-//   let data;
-
-//   // Dummy data based on the filter
-//   switch (filter) {
-//       case "yearly":
-//           data = {
-//               labels: ["2018","2019","2020","2021", "2022", "2023", "2024"],
-//               totalPrices: [500000, 750000, 1000000, 1250000,750000, 1000000, 1250000], // Example yearly sales data
-//           };
-//           break;
-//       case "monthly":
-//           data = {
-//               labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-//               totalPrices: [90000, 6000, 7000, 8000, 55000, 6500, 72000, 84100, 5800, 94000, 7500, 8600], // Example monthly sales data
-//           };
-//           break;
-//       case "weekly":
-//           data = {
-//               labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-//               totalPrices: [12000, 15000, 18000, 17000], // Example weekly sales data
-//           };
-//           break;
-//       default:
-//           return res.status(400).json({ error: "Invalid filter value" });
-//   }
-
-//   // Respond with data
-//   res.json(data);
-// };
-
-// const getSalesData = async (req, res) => {
-//   const filter = req.query.filter; // Get filter from query params
-//   const itemStatus = req.query.itemStatus || "delivered"; // Get item status from query params, default to 'delivered'
-
-//   if (!filter) {
-//     return res.status(400).json({ error: "Filter is required" });
-//   }
-
-//   try {
-//     let groupStage = {};
-//     let sortStage = {};
-//     let labels = [];
-//     let totalPrices = [];
-
-//     // Match stage to filter by order status and item status
-//     let matchStage = {
-//       "items.status": itemStatus // Filter items where their status matches the itemStatus (delivered in this case)
-//     };
-
-//     // Adjust aggregation stages based on the filter
-//     switch (filter) {
-//       case "yearly":
-//         groupStage = {
-//           _id: { year: { $year: "$createdAt" } },
-//           totalSales: { $sum: "$orderTotal" }
-//         };
-//         sortStage = { "_id.year": 1 };
-//         break;
-
-//       case "monthly":
-//         groupStage = {
-//           _id: {
-//             year: { $year: "$createdAt" },
-//             month: { $month: "$createdAt" }
-//           },
-//           totalSales: { $sum: "$orderTotal" }
-//         };
-//         sortStage = { "_id.year": 1, "_id.month": 1 };
-//         break;
-
-//       case "weekly":
-//         groupStage = {
-//           _id: { year: { $year: "$createdAt" }, week: { $week: "$createdAt" } },
-//           totalSales: { $sum: "$orderTotal" }
-//         };
-//         sortStage = { "_id.year": 1, "_id.week": 1 };
-//         break;
-
-//       default:
-//         return res.status(400).json({ error: "Invalid filter value" });
-//     }
-
-//     // Aggregate data from MongoDB
-//     const salesData = await Orders.aggregate([
-//       { $match: matchStage }, // Match orders with status 'delivered' and item status 'delivered'
-//       { $group: groupStage },
-//       { $sort: sortStage }
-//     ]);
-//     // Prepare labels and totalPrices for the graph
-//     if (filter === "yearly") {
-//       labels = salesData.map(item => `${item._id.year}`);
-      
-//       console.log("labels::",labels)
-//     } else if (filter === "monthly") {
-//       labels = salesData.map(item => {
-//         const months = [
-//           "Jan",
-//           "Feb",
-//           "Mar",
-//           "Apr",
-//           "May",
-//           "Jun",
-//           "Jul",
-//           "Aug",
-//           "Sep",
-//           "Oct",
-//           "Nov",
-//           "Dec"
-//         ];
-//         console.log("labels::",labels)
-
-//         if (item._id.month && item._id.year) {
-//           return `${months[item._id.month - 1]} ${item._id.year}`;
-//         }
-//         return "Invalid Date"; // Handle invalid month or year
-//       });
-//     } else if (filter === "weekly") {
-//       labels = salesData.map(
-//         item => `Week ${item._id.week} - ${item._id.year}`
-//       );
-//     }
-
-//     totalPrices = salesData.map(item => item.totalSales);
-
-//     // Log the labels and totalPrices for debugging
-//     console.log("Labels:", labels);
-//     console.log("Total Prices:", totalPrices);
-//     console.log("Aggregated Sales Data:", salesData);
-
-//     res.json({ labels, totalPrices });
-
-//    } catch (error) {
-//     console.error("Error fetching sales data:", error);
-//     res.status(500).json({ error: "Failed to fetch sales data" });
-//   }
-// };
-
 const getSalesData = async (req, res) => {
   const filter = req.query.filter; // Get filter from query params
   const itemStatus = req.query.itemStatus || "delivered"; // Get item status from query params, default to 'delivered'
@@ -1995,96 +1963,7 @@ const getSalesData = async (req, res) => {
   }
 };
 
-
-// const getSalesData = async (req, res) => {
-//   const filter = req.query.filter; // Get filter from query params
-//   console.log("filter::", filter);
-//   if (!filter) {
-//     return res.status(400).json({ error: "Filter is required" });
-//   }
-
-//   try {
-//     let groupStage = {};
-//     let sortStage = {};
-//     let labels = [];
-//     let totalPrices = [];
-
-//     // Adjust aggregation stages based on the filter
-//     switch (filter) {
-//       case "yearly":
-//         groupStage = {
-//           _id: { year: { $year: "$createdAt" } },
-//           totalSales: { $sum: "$orderTotal" }
-//         };
-//         sortStage = { "_id.year": 1 };
-//         break;
-
-//       case "monthly":
-//         groupStage = {
-//           _id: {
-//             year: { $year: "$createdAt" },
-//             month: { $month: "$createdAt" }
-//           },
-//           totalSales: { $sum: "$orderTotal" }
-//         };
-//         sortStage = { "_id.year": 1, "_id.month": 1 };
-//         break;
-
-//       case "weekly":
-//         groupStage = {
-//           _id: { year: { $year: "$createdAt" }, week: { $week: "$createdAt" } },
-//           totalSales: { $sum: "$orderTotal" }
-//         };
-//         sortStage = { "_id.year": 1, "_id.week": 1 };
-//         break;
-
-//       default:
-//         return res.status(400).json({ error: "Invalid filter value" });
-//     }
-
-//     // Aggregate data from MongoDB
-//     const salesData = await Orders.aggregate([
-//       { $match: {} }, // Match all orders; add conditions if necessary
-//       { $group: groupStage },
-//       { $sort: sortStage }
-//     ]);
-
-//     console.log("Aggregated sales data:", salesData);
-
-//     // Prepare labels and totalPrices for the graph
-//     if (filter === "yearly") {
-//       labels = salesData.map(item => `${item._id.year}`);
-//     } else if (filter === "monthly") {
-//       labels = salesData.map(item => {
-//         const months = [
-//           "Jan",
-//           "Feb",
-//           "Mar",
-//           "Apr",
-//           "May",
-//           "Jun",
-//           "Jul",
-//           "Aug",
-//           "Sep",
-//           "Oct",
-//           "Nov",
-//           "Dec"
-//         ];
-//         return `${months[item._id.month - 1]} ${item._id.year}`;
-//       });
-//     } else if (filter === "weekly") {
-//       labels = salesData.map(
-//         item => `Week ${item._id.week} - ${item._id.year}`
-//       );
-//     }
-//     totalPrices = salesData.map(item => item.totalSales);
-
-//     res.json({ labels, totalPrices });
-//   } catch (error) {
-//     console.error("Error fetching sales data:", error);
-//     res.status(500).json({ error: "Failed to fetch sales data" });
-//   }
-// };
+ 
 
 module.exports = {
   getSalesData,

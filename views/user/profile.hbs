@@ -262,7 +262,7 @@
         }
 
         .gradient-button-yellow {
-            background: linear-gradient(to right, #d3cb34, #b9a810);
+            background: linear-gradient(to right, #d3b834, #dfca0f);
             border: none;
             color: white;
             padding: 4px 12px;
@@ -529,9 +529,10 @@
         {{#if (eq status 'scheduled')}}gradient-button-blue{{else}}
         {{#if (eq status 'pending')}}gradient-button-yellow{{else}}
         {{#if (eq status 'canceled')}}gradient-button-red{{else}}
+        {{#if (eq status 'returned')}}gradient-button-yellow{{else}}
         {{#if (eq status 'delivered')}}gradient-button-green{{else}}
         {{#if (eq status 'payment-pending')}}gradient-button-red{{else}}
-        {{#if (eq status 'shipped')}}gradient-button-purple{{/if}}{{/if}}
+        {{#if (eq status 'shipped')}}gradient-button-purple{{/if}}{{/if}}{{/if}}
         {{/if}}{{/if}}{{/if}}{{/if}}">
                                     {{status}}
                                 </span>

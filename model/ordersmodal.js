@@ -19,7 +19,8 @@ const ordersSchema = new mongoose.Schema(
         "delivered",
         "shipped",
         "canceled",
-        "payment-pending"
+        "payment-pending",
+        "returned"
       ],
       required: false,
       default: "payment-pending"
