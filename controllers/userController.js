@@ -85,6 +85,7 @@ const loadproducts = async (req, res) => {
 
     const totalProducts = await Products.countDocuments();
     const categories = await Category.find({islisted:true});
+    console.log("categories",categories)
     const products = await Products.find({islisted:true})
       .populate("category")
       .skip(skip)
@@ -372,7 +373,7 @@ const advancedSearch = async (req, res) => {
       .skip(skip)
       .limit(parseInt(limit))
       .populate("category", "category brand")
-      .populate("offer"); // Ensure offers are populated
+      .populate("offer");
 
     const activeOffers = await Offer.find({ Status: true });
 

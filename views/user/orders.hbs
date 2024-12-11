@@ -475,7 +475,7 @@
 					<h4>Are you sure you want to cancel this order?</h4>
 					<p>Once canceled, the order cannot be restored. Please confirm if you want to proceed with the
 						cancellation.</p>
- 					<p id="errorMessage" style="color: red; display: none;">An error occurred. Please try again.</p>
+					<p id="errorMessage" style="color: red; display: none;">An error occurred. Please try again.</p>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
@@ -512,28 +512,28 @@
 					</p>
 
 
- 					<p style="margin-top: -10px;">Quantity: <b>{{this.quantity}}</b></p>
+					<p style="margin-top: -10px;">Quantity: <b>{{this.quantity}}</b></p>
 
- 					<p style="margin-top: -10px;">Total:
+					<p style="margin-top: -10px;">Total:
 						{{#if this.priceWithDiscount}}
 						<b>₹ {{multiply this.priceWithDiscount this.quantity}}</b>
 						{{else}}
 						<b>₹ {{multiply this.orderTotal this.quantity}}</b>
 						{{/if}}
 					</p>
-{{!-- <p style="margin-top: -10px;">
-  Total:
-  {{#if this.orderTotal}}
-    <b>₹ {{this.orderTotal}}</b>
-  {{else if this.priceWithDiscount}}
-    <b>₹ {{multiply this.priceWithDiscount this.quantity}}</b>
-  {{else}}
-    <b>₹ {{multiply this.price this.quantity}}</b>
-  {{/if}}
-</p> --}}
+					{{!-- <p style="margin-top: -10px;">
+						Total:
+						{{#if this.orderTotal}}
+						<b>₹ {{this.orderTotal}}</b>
+						{{else if this.priceWithDiscount}}
+						<b>₹ {{multiply this.priceWithDiscount this.quantity}}</b>
+						{{else}}
+						<b>₹ {{multiply this.price this.quantity}}</b>
+						{{/if}}
+					</p> --}}
 					<p style="color: rgb(48, 47, 47);margin-top: -10px;">Order Date: <b>{{formatDate ../time}}</b></p>
 
- 					<div class="order-actions">
+					<div class="order-actions">
 						{{#if (eq this.status "delivered")}}
 						<div>
 							<button class="btn btn-danger return-button" data-toggle="modal" data-target="#returnModal"
@@ -543,7 +543,8 @@
 						</div>
 
 						{{else if (eq this.status "payment-pending")}}
-						<div style="margin-left: 200px;"><button class="btn btn-warning retry-button" id="payButton" data-order-id="{{this._id}}"
+						<div style="margin-left: 200px;"><button class="btn btn-warning retry-button" id="payButton"
+								data-order-id="{{this._id}}"
 								style="margin-left: 100%; font-size: 11px; margin-right: auto; display: block; padding: 10px 20px; border-radius: 5px;">
 								Retry Payment
 							</button>
@@ -569,8 +570,9 @@
 					</form>
 				</div>
 
- 			<div><p style="margin-top: -20px;">Status:
-					<span class="
+				<div>
+					<p style="margin-top: -20px;">Status:
+						<span class="
         {{#if (eq status 'scheduled')}}gradient-button-blue{{else}}
         {{#if (eq status 'pending')}}gradient-button-yellow{{else}}
         {{#if (eq status 'canceled')}}gradient-button-red{{else}}
@@ -579,9 +581,10 @@
         {{#if (eq status 'delivered')}}gradient-button-green{{else}}
         {{#if (eq status 'shipped')}}gradient-button-purple{{/if}}{{/if}}
         {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}">
-						{{status}}
-					</span>
-				</p></div>
+							{{status}}
+						</span>
+					</p>
+				</div>
 			</div>
 
 			{{/each}}
@@ -726,19 +729,17 @@
 				const data = await response.json();
 
 				if (data.success) {
-					const razorpayOrder = data.razorpayOrder; // Razorpay order details
+					const razorpayOrder = data.razorpayOrder;  
 					const options = {
-						key: "rzp_test_27cbwJ6wd0CuiQ", // Replace with your Razorpay API key
-						amount: razorpayOrder.amount, // Amount in paise
+						key: "rzp_test_27cbwJ6wd0CuiQ",  
+						amount: razorpayOrder.amount,  
 						currency: razorpayOrder.currency,
 						name: "Watch Premium",
 						description: "Order Payment",
 						order_id: razorpayOrder.orderId,
 						handler: function (response) {
-							// Handle the payment success and update the backend with the payment details
-							console.log("Payment successful", response);
-							// Send the payment details to your backend for verification
-							fetch(`/retry-payment-success/${orderId}`, {
+ 							console.log("Payment successful", response);
+ 							fetch(`/retry-payment-success/${orderId}`, {
 								method: "POST",
 								headers: {
 									"Content-Type": "application/json",
@@ -785,7 +786,16 @@
 					</button>
 				</div>
 				<div class="modal-body">
-					<p id="returnMessage">Are you sure you want to return this item/order?</p>
+					<p id="returnMessage">
+						Are you sure you want to return this item/order? Please ensure that the item is in its original
+						condition,
+						with all packaging, labels, and accessories intact. If you have any doubts or questions, feel
+						free to reach out
+						to our customer support team. Returns are subject to our return policy and may require
+						verification of purchase.
+						Do you wish to proceed with the return request?
+					</p>
+
 					<p id="errorMessage" style="display: none; color: red;">Error processing return. Please try again.
 					</p>
 				</div>
@@ -806,30 +816,25 @@
 
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
-			// Get the button and itemId dynamically
-			const confirmReturnBtn = document.getElementById('confirmReturnBtn');
+ 			const confirmReturnBtn = document.getElementById('confirmReturnBtn');
 			const itemId = confirmReturnBtn.getAttribute('data-order-id');
 
-			// Add the event listener to the Confirm Return button
-			confirmReturnBtn.addEventListener('click', function () {
+ 			confirmReturnBtn.addEventListener('click', function () {
 				console.log("Button clicked");
 				console.log("itemId", itemId);
 
-				// Make an API request to update the order status to 'returned'
-				fetch(`/return-order/${itemId}`, {
-					method: 'POST',  // Changed to POST as you're sending data
+ 				fetch(`/return-order/${itemId}`, {
+					method: 'POST',   
 					headers: {
 						'Content-Type': 'application/json'
 					},
 				})
 					.then(response => response.json())
 					.then(data => {
-						// Handle the response data (e.g., display a message)
-						console.log(data);
+ 						console.log(data);
 					})
 					.catch(error => {
-						// Handle any error that occurred during the fetch
-						console.error('Error:', error);
+ 						console.error('Error:', error);
 					});
 			});
 		});
@@ -841,10 +846,11 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-6 col-md-12">
-					<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights
-						Reserved.<br>
-						Distributed By - <a href="https://themewagon.com/">Themewagon</a>
-					</p>
+					 <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
+                            Rights
+                            Reserved.<br>
+                            Distributed By - <a href="https://themewagon.com/">nextick.store</a>
+                        </p>
 				</div>
 				<div class="col-lg-6 text-right col-md-12">
 					<div class="social-icons">
