@@ -11,7 +11,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "mongodb+srv://muhammeduvais:Hello786%40gmail.com@cluster0.q6tgs.mongodb.net/watchpremium?retryWrites=true&w=majority&appName=Cluster0"
+      callbackURL: "/auth/google/callback"
     },
     async (accessToken, refreshToken, profile, done) => {
       try {

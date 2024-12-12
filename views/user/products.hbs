@@ -1,38 +1,41 @@
-<!-- products.hbs -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Products</title>
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
 
-	<!-- favicon -->
-	<link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
-	<!-- google font -->
-	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
-	<!-- fontawesome -->
-	<link rel="stylesheet" href="/assets/css/all.min.css">
-	<!-- bootstrap -->
-	<link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
-	<!-- owl carousel -->
-	<link rel="stylesheet" href="/assets/css/owl.carousel.css">
-	<!-- magnific popup -->
-	<link rel="stylesheet" href="/assets/css/magnific-popup.css">
-	<!-- animate css -->
-	<link rel="stylesheet" href="/assets/css/animate.css">
-	<!-- mean menu css -->
-	<link rel="stylesheet" href="/assets/css/meanmenu.min.css">
-	<!-- main style -->
-	<link rel="stylesheet" href="/assets/css/main.css">
-	<!-- responsive -->
-	<link rel="stylesheet" href="/assets/css/responsive.css">
-
-	<!-- Custom CSS for product listing -->.
-	<style>
-		/* General Body Styles */
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Add your other CSS files here -->
+    <style>
+        /* Custom styles */
+        .sidebar {
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            overflow-y: auto;
+        }
+        @media (max-width: 991.98px) {
+            .sidebar {
+                height: auto;
+                position: static;
+            }
+        }
+        .card {
+            height: 100%;
+        }
+        .card-img-top {
+			padding-left: 17%;
+			padding-right: 17%;
+            height: 200px;
+            object-fit: cover;
+        }
+ 		/* General Body Styles */
 		body {
 			margin: -25px;
 			font-family: Arial, sans-serif;
@@ -49,33 +52,7 @@
 			box-shadow: 0 0 15px 9px #eaeaea69;
 		}
 
-		/* Sidebar Styles */
-		.sidebar {
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 330px;
-			/* Adjust width as needed */
-			height: 100vh;
-			background-color: #ffffff;
-			/* Sidebar background */
-			color: #000;
-			/* Sidebar text color */
-			padding: 20px;
-			box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-			display: flex;
-			flex-direction: column;
-			gap: 10px;
-			margin-top: 90px;
-			/* Adjust for header if present */
-		}
-
-		/* Main Content Styles */
-		.main-content {
-			margin-left: 300px;
-			/* Matches the sidebar width */
-			padding: 20px;
-		}
+	 
 
 		/* Button Base Styles (Shared for Sort and Filter Buttons) */
 		.sidebar {
@@ -117,18 +94,42 @@
 
 		/* Ensure other content doesn't overlap the sidebar */
 	</style>
+	<!-- title -->
+	<title>Contact</title>
+
+	<!-- favicon -->
+	<link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+	<!-- google font -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+	<!-- fontawesome -->
+	<link rel="stylesheet" href="/assets/css/all.min.css">
+	<!-- bootstrap -->
+	<link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+	<!-- owl carousel -->
+	<link rel="stylesheet" href="/assets/css/owl.carousel.css">
+	<!-- magnific popup -->
+	<link rel="stylesheet" href="/assets/css/magnific-popup.css">
+	<!-- animate css -->
+	<link rel="stylesheet" href="/assets/css/animate.css">
+	<!-- mean menu css -->
+	<link rel="stylesheet" href="/assets/css/meanmenu.min.css">
+	<!-- main style -->
+	<link rel="stylesheet" href="/assets/css/main.css">
+	<!-- responsive -->
+	<link rel="stylesheet" href="/assets/css/responsive.css">
+
 </head>
-
 <body>
-
+	
 	<!--PreLoader-->
-	{{!-- <div class="loader">
-		<div class="loader-inner">
-			<div class="circle"></div>
-		</div>
-	</div> --}}
-	<!--PreLoader Ends-->
-
+    <div class="loader">
+        <div class="loader-inner">
+            <div class="circle"></div>
+        </div>
+    </div>
+    <!--PreLoader Ends-->
+	
 	<!-- header -->
 	<div class="top-header-area" id="sticker">
 		<div class="container">
@@ -149,19 +150,26 @@
 								<li><a href="/">Home</a>
 								</li>
 								<li><a href="/about">About</a></li>
-								<li class="current-list-item"><a href="/products">Products</a></li>
+								<li><a href="/products">Products</a></li>
+								
+									<ul class="sub-menu">
+										<li><a href="/news.hbs">News</a></li>
+										<li><a href="/single-news.hbs">Single News</a></li>
+									</ul>
+								</li>
+								<li class="current-list-item"><a href="/contact">Contact</a></li>
 
 								<ul class="sub-menu">
-									<li><a href="/news.hbs">News</a></li>
-									<li><a href="/single-news.hbs">Single News</a></li>
+									<li>
+										<form class="a" method="get" action="/shop">Shop</form>
+									</li>
+									<li><a href="/checkout.hbs">Check Out</a></li>
+									<li><a href="/single-product.hbs">Single Product</a></li>
+									<li><a href="/cart.hbs">Cart</a></li>
 								</ul>
 								</li>
-								<li><a href="/contact">Contact</a></li>
-								<li>
-									<form method="post" action="/logout">
-										<button class="a" type="submit"
-											style="color:white; background: none; border: none;cursor: pointer; font-weight:bold">Log
-											Out
+								<li><form method="post" action="/logout">
+										<button class="a" type="submit" style="color:white; background: none; border: none;cursor: pointer; font-weight:bold">Log Out											
 										</button>
 									</form>
 								</li>
@@ -170,7 +178,8 @@
 										  <a href="/wishlist" class="love-icon">
                                             <i class="fas fa-heart"></i>
                                         </a>
-										<a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
+										<a class="shopping-cart" href="/cart"><i
+												class="fas fa-shopping-cart"></i></a>
 									 
 										<a class="mobile-hide search-bar-icon" href="/profile"><i
 												class="fas fa-user"></i></a>
@@ -188,550 +197,358 @@
 	</div>
 	<!-- end header -->
 
-
-	<div class="breadcrumb-section breadcrumb-bg">
-		<div style="height: -111px;" class="container">
-			<div style="height: -111px;" class="row">
-				<div class="col-lg-8 offset-lg-2 text-center">
-					<div style="margin-top: -80px;" class="breadcrumb-text">
-						<p><a href="/">Home</a> > <a href="/products">Products</a>
-						</p>
-
-						<h2 style="color: white;">Products</h2>
+	<!-- search area -->
+	<div class="search-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<span class="close-btn"><i class="fas fa-window-close"></i></span>
+					<div class="search-bar">
+						<div class="search-bar-tablecell">
+							<h3>Search For:</h3>
+							<input type="text" placeholder="Keywords">
+							<button type="submit">Search <i class="fas fa-search"></i></button>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	</header>
-	</head>
-
-	<body style="background-color: rgb(255, 255, 255);">
-
-		<div class="sidebar">
-			<div>
-				<div class="site-logo">
-					<a style="border-color: white;margin-left:40px;margin-top:40px;width:210px" href="/">
-						<h4 style="font-weight: bold;color:rgb(0, 0, 0)">NEXTICK</h4>
-					</a>
-				</div>
-				<div>
-					<p style="color: white;">.</p>
-					<p style="color: white;">.</p>
-					<p style="color: white;">.</p>
-					<p style="color: white;">.</p>
-					<p style="color: white;">.</p>
-					<p style="color: white;">.</p>
+	<!-- end search arewa -->
+	
+	<!-- breadcrumb-section -->
+	<div class="breadcrumb-section breadcrumb-bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 offset-lg-2 text-center">
+					<div class="breadcrumb-text">
+						<p>Get 24/7 Support</p>
+						<h1>Contact us</h1>
+					</div>
 				</div>
 			</div>
-			<div class="sort-buttons">
-				<a href="/wishlist">Your Wishlist</a>
-			</div>
-			<!-- Sorting Options -->
-			<h5>Sort By:</h5>
-			<div class="sort-buttons">
-				<a
-					href="/products">Default</a>
-				<a
-					href="/advancedSearch?sort=popularity&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Popularity</a>
-				<a
-					href="/advancedSearch?sort=priceLowToHigh&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Price:
-					Low to High</a>
-				<a
-					href="/advancedSearch?sort=priceHighToLow&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Price:
-					High to Low</a>
-				<a
-					href="/advancedSearch?sort=averageRating&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Average
-					Rating</a>
-				<a
-					href="/advancedSearch?sort=featured&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Featured</a>
-				<a
-					href="/advancedSearch?sort=newArrivals&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">New
-					Arrivals</a>
-				<a
-					href="/advancedSearch?sort=aToZ&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">A-Z</a>
-				<a
-					href="/advancedSearch?sort=zToA&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}">Z-A</a>
-			</div>
-			<h5>Filter Stock:</h5>
-
-			<div class="filter-buttons">
-				<a href="/advancedSearch?showOutOfStock=include&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}"
-					class="{{#if (eq showOutOfStock 'include')}}active{{/if}}">Show All Products</a>
-				<a href="/advancedSearch?showOutOfStock=exclude&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}&rating={{rating}}"
-					class="{{#if (eq showOutOfStock 'exclude')}}active{{/if}}">Hide Out of Stock</a>
-			</div>
-
-			<h5>Filter by Price:</h5>
-			<div class="filter-price">
-				<label for="min-price">Min Price:</label>
-				<input type="number" id="min-price" name="minPrice" value="{{minPrice}}" placeholder="00000"
-					style="border-color: orange;margin-left:110px" /><br>
-				<label for="max-price">Max Price:</label>
-				<input type="number" id="max-price" name="maxPrice" value="{{maxPrice}}" placeholder="00000"
-					style="border-color: orange;margin-left:106px" />
-				<button id="filter-price-button"
-					style="border-width:0px;height:40px;border-radius:5px;margin-left:160px;background-color: orange;"
-					onclick="applyPriceFilter()">Apply Price Filter</button>
-
-				<script>
-					function applyPriceFilter() {
-						let minPrice = document.getElementById("min-price").value;
-						let maxPrice = document.getElementById("max-price").value;
-
-						// Convert minPrice and maxPrice to numbers
-						minPrice = parseFloat(minPrice);
-						maxPrice = parseFloat(maxPrice);
-
-						// Ensure minPrice is at least 0
-						if (minPrice < 0) {
-							minPrice = 0;
-							document.getElementById("min-price").value = minPrice;  // Update the input field
-						}
-
-						// Ensure maxPrice is not less than minPrice
-						if (maxPrice < minPrice) {
-							maxPrice = minPrice; // Set maxPrice to minPrice if it's less
-							document.getElementById("max-price").value = maxPrice;  // Update the input field
-						}
-
-						const url = new URL(window.location.href);
-						url.searchParams.set('minPrice', minPrice);
-						url.searchParams.set('maxPrice', maxPrice);
-
-						// Update the URL and reload the page
-						window.location.href = url;
-					}
-				</script>
-
-			</div>
-
-			<h5>Filter by Category:</h5>
-			<div class="filter-category">
-				<select id="category-filter" style="border-color: orange;width: 100%;height:40px;border-radius:5px"
-					onchange="applyCategoryFilter()">
-
-					<option value="all" {{#if (eq category 'all' ) }}selected{{/if}}>All Categories</option>
-					{{#each categories}}
-					<option value="{{this.name}}" {{#if (eq category this.name)}}selected{{/if}}>{{this.category}}
-					</option>
-					{{/each}}
-				</select>
-
-				<script>
-					function applyCategoryFilter() {
-						
-						const category = document.getElementById("category-filter").value;
-						const url = new URL(window.location.href);
-						url.searchParams.set('category', category);
-						window.location.href = url; // Reload the page with updated URL
-					}
-				</script>
-
-			</div>
-			<div>
-				<p style="color: white;">.</p>
-				<p style="color: white;">.</p>
-				<p style="color: white;">.</p>
-				<p style="color: white;">.</p>
-				<p style="color: white;">.</p>
-				<p style="color: white;">.</p>
-				<p style="color: white;">.</p>
-				<p style="color: white;">.</p>
-				<p style="color: white;">.</p>
-				<p style="color: white;">.</p>
-				<p style="color: white;">.</p>
-			</div>
-
-			<h5>Filter by Rating:</h5>
-			<div class="filter-rating">
-				<select id="rating-filter" style="border-color: orange;" onchange="applyRatingFilter()">
-					<option value="all" {{#if (eq rating 'all' ) }}selected{{/if}}>All Ratings</option>
-					<option value="4" {{#if (eq rating '4' ) }}selected{{/if}}>4 Stars & Above</option>
-					<option value="3" {{#if (eq rating '3' ) }}selected{{/if}}>3 Stars & Above</option>
-					<option value="2" {{#if (eq rating '2' ) }}selected{{/if}}>2 Stars & Above</option>
-					<option value="1" {{#if (eq rating '1' ) }}selected{{/if}}>1 Star & Above</option>
-				</select>
-
-				<script>
-					function applyRatingFilter() {
-						const rating = document.getElementById("rating-filter").value;
-						const url = new URL(window.location.href);
-						url.searchParams.set('rating', rating);
-						window.location.href = url; // Reload the page with updated URL
-					}
-				</script>
-			</div>
 		</div>
+	</div>
+	<!-- end breadcrumb section -->
 
-		</div>
-		</div>
+</head>
+<body> 
+   
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="sidebar-sticky pt-3">
+                    <h5>Sort By:</h5>
+                    <div class="nav flex-column">
+                        <a class="nav-link" href="/products">Default</a>
+                        <a class="nav-link" href="/advancedSearch?sort=popularity">Popularity</a>
+                        <a class="nav-link" href="/advancedSearch?sort=priceLowToHigh">Price: Low to High</a>
+                        <a class="nav-link" href="/advancedSearch?sort=priceHighToLow">Price: High to Low</a>
+                        <a class="nav-link" href="/advancedSearch?sort=averageRating">Average Rating</a>
+                        <a class="nav-link" href="/advancedSearch?sort=featured">Featured</a>
+                        <a class="nav-link" href="/advancedSearch?sort=newArrivals">New Arrivals</a>
+                    </div>
 
-		</div>
+                    <h5 class="mt-4">Filter Stock:</h5>
+                    <div class="nav flex-column">
+                        <a class="nav-link" href="/advancedSearch?showOutOfStock=include">Show All Products</a>
+                        <a class="nav-link" href="/advancedSearch?showOutOfStock=exclude">Hide Out of Stock</a>
+                    </div>
 
-		<div>
-			<div class="main-content">
-				<div class="container mt-5">
-					<!-- Search Heading -->
-					<h3>Our Products</h3>
-					<!-- Product Cards -->
-					<div class="container mt-5">
-						<h5>{{#if query}}Results for "{{query}}"{{else}}All Products{{/if}}</h5>
-						<form action="/advancedSearch" method="get" id="searchForm">
-							<div class="input-group mb-3" style="max-width: 1500px;">
-								<input id="searchInput"
-									style="border-color: rgb(230, 152, 8); height:40px; border-radius:5px" type="text"
-									name="query" class="form-control" placeholder="Search for products..."
-									aria-label="Search for products" aria-describedby="button-search" value="{{query}}">
-								<!-- Pre-fill with the current query -->
+                    <h5 class="mt-4">Filter by Price:</h5>
+                    <form id="price-filter-form" class="mb-3">
+                        <div class="form-group">
+                            <label for="min-price">Min Price:</label>
+                            <input type="number" id="min-price" name="minPrice" class="form-control" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="max-price">Max Price:</label>
+                            <input type="number" id="max-price" name="maxPrice" class="form-control" placeholder="10000">
+                        </div>
+                        <button type="submit" class="btn btn-warning btn-block">Apply Price Filter</button>
+                    </form>
 
-								<div class="input-group-append">
-									<button style="margin-left: 6px; border-radius:5px; width:100px"
-										class="btn btn-outline-warning" type="submit" id="button-search">
-										Search
-									</button>
-								</div>
+                    <h5>Filter by Category:</h5>
+                    <select id="category-filter" class="form-control mb-3">
+                        <option value="all">All Categories</option>
+                        {{#each categories}}
+                        <option value="{{this.name}}">{{this.category}}</option>
+                        {{/each}}
+                    </select>
 
-							</div>
-							<input type="text" id="message" name="message" style="width: 100%;border-width:0px;"
-								value="{{message}}" {{message}}>
+                    <h5>Filter by Rating:</h5>
+                    <select id="rating-filter" class="form-control mb-3">
+                        <option value="all">All Ratings</option>
+                        <option value="4">4 Stars & Above</option>
+                        <option value="3">3 Stars & Above</option>
+                        <option value="2">2 Stars & Above</option>
+                        <option value="1">1 Star & Above</option>
+                    </select>
+                </div>
+            </nav>
 
+            <!-- Main content -->
+            <main class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Our Products</h1>
+                </div>
+
+                <!-- Search form -->
+                <form action="/advancedSearch" method="get" id="searchForm" class="mb-4">
+                    <div class="input-group">
+                        <input type="text" id="searchInput" name="query" class="form-control" placeholder="Search for products..." value="{{query}}">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="submit">Search</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Product grid -->
+                <div class="row">
+                    {{#each products}}
+                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                        <div class="card h-100">
+                            <img src="/{{this.images.[0]}}" class="card-img-top" alt="{{this.name}}">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{this.name}}</h5>
+                                <p class="card-text">Category: {{this.category.category}}</p>
+                                <p class="card-text">
+                                    {{#if this.offerPrice}}
+                                        {{#if (neq this.offerPrice this.price)}}
+                                            <span class="text-muted"><s>₹{{this.price}}</s></span>
+                                            <span class="text-success font-weight-bold">₹{{this.offerPrice}}</span>
+                                            <span class="text-warning">({{this.discountValue}}{{#if (eq this.discountType "percentage")}}% OFF{{else}} ₹ OFF{{/if}})</span>
+                                        {{else}}
+                                            <span class="font-weight-bold">₹{{this.price}}</span>
+                                        {{/if}}
+                                    {{/if}}
+                                </p>
+                                <p class="card-text">
+                                    Stock: 
+                                    {{#if this.stock}}
+                                        <span class="text-success">{{this.stock}} Available</span>
+                                    {{else}}
+                                        <span class="text-danger">Out of Stock</span>
+                                    {{/if}}
+                                </p>
+                                <p class="card-text">
+                                    Rating: 
+                                    <span class="text-warning">
+                                        {{#each this.rating}}★{{/each}}
+                                    </span>
+                                    <small>({{this.reviews.length}} reviews)</small>
+                                </p>
+                                <div class="mt-auto">
+                                    <button style="width: 100%;" class="btn btn-sm btn-outline-danger add-to-wishlist" data-product-id="{{this._id}}">
+                                        {{#if this.wishlist}}Remove from{{else}}Add to{{/if}} Wishlist
+                                    </button>
+                                    <form action="/addtocart" method="post" class="d-inline">
+                                        <input type="hidden" name="productId" value="{{this._id}}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button style="width: 100%;margin-top:5px" type="submit" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {{#if previousPage}}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {{/if}}
+
+                        {{#each (range 1 totalPages)}}
+                        <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
+                            <a class="page-link" href="?page={{this}}">{{this}}</a>
+                        </li>
+                        {{/each}}
+
+                        {{#if nextPage}}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {{/if}}
+                    </ul>
+                </nav>
+            </main>
+        </div>
+    </div>
+ 
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Add your custom JavaScript here
+        document.addEventListener("DOMContentLoaded", function() {
+            // Wishlist functionality
+            const wishlistButtons = document.querySelectorAll(".add-to-wishlist");
+            wishlistButtons.forEach((button) => {
+                button.addEventListener("click", async (event) => {
+                    const productId = button.dataset.productId;
+                    try {
+                        const response = await fetch(`/toggle/${productId}`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            button.textContent = data.wishlist ? "Remove from Wishlist" : "Add to Wishlist";
+                            button.classList.toggle("btn-outline-danger");
+                            button.classList.toggle("btn-outline-danger");
+                        } else {
+                            console.error("Failed to toggle wishlist:", data.message);
+                        }
+                    } catch (error) {
+                        console.error("Error toggling wishlist:", error);
+                    }
+                });
+            });
+
+            // Price filter functionality
+            const priceFilterForm = document.getElementById("price-filter-form");
+            priceFilterForm.addEventListener("submit", function(e) {
+                e.preventDefault();
+                const minPrice = document.getElementById("min-price").value;
+                const maxPrice = document.getElementById("max-price").value;
+                const url = new URL(window.location.href);
+                url.searchParams.set('minPrice', minPrice);
+                url.searchParams.set('maxPrice', maxPrice);
+                window.location.href = url;
+            });
+
+            // Category filter functionality
+            const categoryFilter = document.getElementById("category-filter");
+            categoryFilter.addEventListener("change", function() {
+                const category = this.value;
+                const url = new URL(window.location.href);
+                url.searchParams.set('category', category);
+                window.location.href = url;
+            });
+
+            // Rating filter functionality
+            const ratingFilter = document.getElementById("rating-filter");
+            ratingFilter.addEventListener("change", function() {
+                const rating = this.value;
+                const url = new URL(window.location.href);
+                url.searchParams.set('rating', rating);
+                window.location.href = url;
+            });
+        });
+    </script>
+
+	
+	<!-- footer -->
+	<div class="footer-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box about-widget">
+						<h2 class="widget-title">About us</h2>
+						<p>Ut enim ad minim veniam perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae.</p>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box get-in-touch">
+						<h2 class="widget-title">Get in Touch</h2>
+						<ul>
+							<li>34/8, East Hukupara, Gifirtok, Sadan.</li>
+							<li>support@fruitkha.com</li>
+							<li>+00 111 222 3333</li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box pages">
+						<h2 class="widget-title">Pages</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="about.html">About</a></li>
+							<li><a href="services.html">Shop</a></li>
+							<li><a href="news.html">News</a></li>
+							<li><a href="contact.html">Contact</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box subscribe">
+						<h2 class="widget-title">Subscribe</h2>
+						<p>Subscribe to our mailing list to get the latest updates.</p>
+						<form action="index.html">
+							<input type="email" placeholder="Email">
+							<button type="submit"><i class="fas fa-paper-plane"></i></button>
 						</form>
 					</div>
-
-
-					<div class="row mt-4" style="background-color: rgb(255, 255, 255); border-radius:11px;">
-						{{#each products}}
-						<div class="col-md-4 mb-4">
-							<a href="/product/{{this._id}}" style="text-decoration: none; color: inherit;">
-								<div class="card" style="background-color: rgb(224, 224, 224); border-radius:11px;">
-									<img src="/{{this.images.[0]}}" class="card-img-top" alt="{{this.name}}"
-										style="height: 200px; object-fit: cover;">
-									<div style="background-color: rgb(255, 255, 255); border-radius:6px;"
-										class="card-body">
-										<h5 class="card-title">{{this.name}}</h5>
-										<p class="card-text">Category: {{this.category.category}}</p>
-
-										{{#if this.offerPrice}}
-										<!-- If offer price exists -->
-										{{#if (neq this.offerPrice this.price)}}
-										<span class="price" style="text-decoration: line-through; color: red;">
-											₹{{this.price}}
-										</span>
-										<span class="offer-price"
-											style="color: green; font-weight: bold; font-size:19px">
-											₹{{this.offerPrice}}
-										</span>
-										<span class="discount-tag" style="font-size:13px; color: rgb(255, 136, 0);">
-											({{this.discountValue}}{{#if (eq this.discountType "percentage")}}%
-											OFF{{else}} ₹ OFF{{/if}})
-										</span>
-										{{else}}
-										<span class="price"
-											style="text-decoration:none;font-weight: bold; font-size:19px; color: black;">
-											₹{{this.price}}
-										</span>
-										{{/if}}
-										{{/if}}
-
-
-										<p class="card-text stock">Stock:
-											{{#if this.stock}}
-											<span style="color:green;" class="in-stock">{{this.stock}} Available</span>
-											{{else}}
-											<span style="color: RED;" class="out-of-stock">Out of Stock</span>
-											{{/if}}
-										</p>
-
-										<p class="card-text">
-											Rating:
-											<span class="rating">
-												{{#each this.rating}}★{{/each}}
-											</span>
-											<span style="color: orange;font-size:14px"
-												class="review-count">{{this.reviews.length}}★★★★★</span>
-										</p>
-							</a>
-							<div style="margin-top: 10px;">
-							<button class="add-to-wishlist" data-product-id="{{this._id}}"
-								style="width:110px;height:30px;border-radius:4px;background-color: rgba(211, 101, 11, 0.94); border: none; cursor: pointer; color: rgb(255, 255, 255);font-size:13px">
-								{{#if this.wishlist}}
-								Remove Wishlist
-								{{else}}
-								Add to Wishlist
-								{{/if}}
-							</button>
-							<form action="/addtocart" method="post">
-							<input type="hidden" name="productId" value="{{this._id}}">
-							<input type="hidden" name="quantity" value="1">
-							<div style="margin-left:30%;margin-top:-30px">
-								<button
-								style="background-color:rgba(211, 101, 11, 0.94);color:white;border-width: 0px;margin-left:20px;width:110px;height:30px;border-radius:4px" value="add to cart">
-									<a style="border-width: 0px;font-weight:100;font-family;font-size:13px"><i style="margin-right: 10px;" class="fas fa-shopping-cart"> </i>Add to Cart</a>
-								</button>
-							</div>
-</div>
-						</form>
-						</div>
-					</div>
-
-				</div>
-				{{/each}}
-			</div>
-<!-- Pagination -->
-<nav aria-label="Page navigation">
-  <ul class="pagination justify-content-center pages custom-pagination">
-    <!-- Show the "Previous" button if there is a previous page -->
-    {{#if previousPage}}
-      <li class="page-item">
-        <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
-          <span aria-hidden="true">&laquo;</span>
-        </a>
-      </li>
-    {{/if}}
-
-    <!-- Generate page numbers -->
-    {{#each (range 1 totalPages)}}
-      <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
-        <a class="page-link" href="?page={{this}}">{{this}}</a>
-      </li>
-    {{/each}}
-
-    <!-- Show the "Next" button if there is a next page -->
-    {{#if nextPage}}
-      <li class="page-item">
-        <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
-          <span aria-hidden="true">&raquo;</span>
-        </a>
-      </li>
-    {{/if}}
-  </ul>
-</nav>
-			<script>document.addEventListener("DOMContentLoaded", () => {
-					const wishlistButtons = document.querySelectorAll(".add-to-wishlist");
-
-					wishlistButtons.forEach((button) => {
-						button.addEventListener("click", async (event) => {
-							const productId = button.dataset.productId;
-
-							try {
-								const response = await fetch(`/toggle/${productId}`, {
-									method: "POST",
-									headers: {
-										"Content-Type": "application/json",
-									},
-								});
-
-								const data = await response.json();
-
-								if (data.success) {
-									// Update the button text and appearance based on the new wishlist status
-									button.textContent = data.wishlist ? "Remove Wishlist" : "Add to Wishlist";
-									button.style.backgroundColor = data.wishlist
-										? "rgba(211, 101, 11, 0.94)" // Color for "Remove Wishlist"
-										: "rgba(0, 128, 0, 0.8)"; // Color for "Add to Wishlist"
-								} else {
-									console.error("Failed to toggle wishlist:", data.message);
-								}
-							} catch (error) {
-								console.error("Error toggling wishlist:", error);
-							}
-						});
-					});
-				});
-			</script>
-
-			<style>
-				button:hover {
-					background-color: rgb(236, 153, 29);
-
-				}
-
-				.btn:hover {
-					background-color: rgb(236, 153, 29);
-				}
-
-				.price {
-					font-size: 14px;
-					color: #ff0000;
-					text-decoration: line-through;
-					margin-right: 5px;
-				}
-
-				.offer-price {
-					font-size: 18px;
-					color: #008000;
-					font-weight: bold;
-				}
-
-				.discount-tag {
-					font-size: 12px;
-					color: #ff8800;
-					margin-left: 5px;
-				}
-
-				.a:hover {
-					color: white;
-				}
-			</style>
-		</div>
-
-		</div>
-		</div>
-
-		<script>document.getElementById("filterForm").addEventListener("submit", async function (e) {
-				e.preventDefault();
-				const formData = new FormData(this);
-				const queryString = new URLSearchParams(formData).toString();
-
-				try {
-					const response = await fetch(`/products?${queryString}`, { method: "GET" });
-					const { products, totalProducts } = await response.json();
-
-					// Update product listing dynamically (implement renderProducts)
-					renderProducts(products, totalProducts);
-				} catch (error) {
-					console.error("Error fetching filtered products:", error);
-				}
-			});
-		</script>
-		<!-- logo carousel -->
-		<div style="position: relative;" class="logo-carousel-section">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-12">
-						<div class="logo-carousel-inner">
-
-							<div class="single-logo-item">
-								<img style="margin-top: 50px;"
-									src="https://logos-world.net/wp-content/uploads/2020/04/Louis-Vuitton-Logo.png"
-									alt="">
-							</div>
-							<div class="single-logo-item">
-								<img style="margin-top: 10px"
-									src="https://parspng.com/wp-content/uploads/2022/10/pumapng.parspng.com_-300x300.png"
-									alt="">
-							</div>
-							<div class="single-logo-item">
-								<img style="height:120px;width:120px;margin-top:36px"
-									src="https://cdn2.iconfinder.com/data/icons/apple-tv-1/512/apple_logo-512.png"
-									alt="">
-							</div>
-							<div class="single-logo-item">
-								<img style="margin-top: 17px;height:175px"
-									src="https://images.samsung.com/is/image/samsung/assets/global/about-us/brand/logo/256_144_2.png?$512_N_PNG$"
-									alt="">
-							</div>
-							<div class="single-logo-item">
-								<img style="margin-top: 45px"
-									src="https://download.logo.wine/logo/Citizen_Watch/Citizen_Watch-Logo.wine.png"
-									alt="">
-							</div>
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>
-		<!-- end logo carousel -->
-		<!-- footer -->
-		<div style="position: relative;" class="footer-area">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-3 col-md-6">
-						<div class="footer-box about-widget">
-							<h2 class="widget-title">About us</h2>
-							<p>Ut enim ad minim veniam perspiciatis unde omnis iste natus error sit voluptatem
-								accusantium
-								doloremque laudantium, totam rem aperiam, eaque ipsa quae.</p>
-						</div>
-					</div>
-					<div class="col-lg-3 col-md-6">
-						<div class="footer-box get-in-touch">
-							<h2 class="widget-title">Get in Touch</h2>
-							<ul>
-								<li>34/8, East Hukupara, Gifirtok, Sadan.</li>
-								<li>support@fruitkha.com</li>
-								<li>+00 111 222 3333</li>
-							</ul>
-						</div>
-					</div>
-					<div class="col-lg-3 col-md-6">
-						<div class="footer-box pages">
-							<h2 class="widget-title">Pages</h2>
-							<ul>
-								<li><a href="/index.hbs">Home</a></li>
-								<li><a href="/about.hbs">About</a></li>
-								<li><a href="/services.hbs">Shop</a></li>
-								<li><a href="/news.hbs">News</a></li>
-								<li><a href="/contact.hbs">Contact</a></li>
-							</ul>
-						</div>
-					</div>
-					<div class="col-lg-3 col-md-6">
-						<div class="footer-box subscribe">
-							<h2 class="widget-title">Subscribe</h2>
-							<p>Subscribe to our mailing list to get the latest updates.</p>
-							<form action="/index.hbs">
-								<input type="email" placeholder="Email">
-								<button type="submit"><i class="fas fa-paper-plane"></i></button>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- end footer -->
-
-		<!-- copyright -->
-		<div style="position: relative;" class="copyright">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-6 col-md-12">
-						 <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
+	</div>
+	<!-- end footer -->
+	
+	<!-- copyright -->
+	<div class="copyright">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6 col-md-12">
+					 <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
                             Rights
                             Reserved.<br>
                             Distributed By - <a href="https://themewagon.com/">nextick.store</a>
                         </p>
-					</div>
-					<div class="col-lg-6 text-right col-md-12">
-						<div class="social-icons">
-							<ul>
-								<li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-								<li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
-								<li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
-								<li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
-								<li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
-							</ul>
-						</div>
+				</div>
+				<div class="col-lg-6 text-right col-md-12">
+					<div class="social-icons">
+						<ul>
+							<li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
+						</ul>
 					</div>
 				</div>
 			</div>
 		</div>
-
-		<!-- end copyright -->
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-		<!-- jquery -->
-		<script src="/assets/js/jquery-1.11.3.min.js"></script>
-		<!-- bootstrap -->
-		<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
-		<!-- count down -->
-		<script src="/assets/js/jquery.countdown.js"></script>
-		<!-- isotope -->
-		<script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
-		<!-- waypoints -->
-		<script src="/assets/js/waypoints.js"></script>
-		<!-- owl carousel -->
-		<script src="/assets/js/owl.carousel.min.js"></script>
-		<!-- magnific popup -->
-		<script src="/assets/js/jquery.magnific-popup.min.js"></script>
-		<!-- mean menu -->
-		<script src="/assets/js/jquery.meanmenu.min.js"></script>
-		<!-- sticker js -->
-		<script src="/assets/js/sticker.js"></script>
-		<!-- main js -->
-		<script src="/assets/js/main.js"></script>
-
-	</body>
-
+	</div>
+	<!-- end copyright -->
+	
+	<!-- jquery -->
+	<script src="/assets/js/jquery-1.11.3.min.js"></script>
+	<!-- bootstrap -->
+	<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+	<!-- count down -->
+	<script src="/assets/js/jquery.countdown.js"></script>
+	<!-- isotope -->
+	<script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
+	<!-- waypoints -->
+	<script src="/assets/js/waypoints.js"></script>
+	<!-- owl carousel -->
+	<script src="/assets/js/owl.carousel.min.js"></script>
+	<!-- magnific popup -->
+	<script src="/assets/js/jquery.magnific-popup.min.js"></script>
+	<!-- mean menu -->
+	<script src="/assets/js/jquery.meanmenu.min.js"></script>
+	<!-- sticker js -->
+	<script src="/assets/js/sticker.js"></script>
+	<!-- form validation js -->
+	<script src="/assets/js/form-validate.js"></script>
+	<!-- main js -->
+	<script src="/assets/js/main.js"></script>
+	
+</body>
 </html>
