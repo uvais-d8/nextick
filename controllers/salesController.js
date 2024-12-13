@@ -559,7 +559,7 @@ const retryRazorpay = async (req, res) => {
   if (!userId) return res.redirect("/login");
 
   try {
-     const order = await Orders.findOne({ 'items._id': orderId, userId });
+    const order = await Orders.findOne({ _id: orderId, userId });
 
     if (!order) {
       console.log('not order',order)
@@ -612,31 +612,38 @@ const retryRazorpay = async (req, res) => {
 const retrypaymentSuccess = async (req, res) => {
   console.log("Controller success");
 
-  const itemId = req.params.id; // This is the item ID
-  console.log("Item ID received:", itemId);
+  const orderId = req.params.id; // This is the order ID
+  console.log("Order ID received:", orderId);
 
   try {
-       const updatedOrder = await Orders.findOneAndUpdate(
-          { "items._id": itemId }, 
-          { $set: { "items.$.status": "scheduled" } }, 
-          { new: true }  
-      );
+    // Update the entire order's status to "scheduled" and each item's status to "scheduled"
+    const updatedOrder = await Orders.findOneAndUpdate(
+      { _id: orderId }, // Match the order by ID
+      {
+        $set: {
+          status: "scheduled", // Update order status
+          "items.$[].status": "scheduled", // Update all items' status
+        },
+      },
+      { new: true } // Return the updated document
+    );
 
-       if (!updatedOrder) {
-          return res.status(404).json({ message: "Item not found in any order" });
-      }
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
 
-       res.status(200).json({
-          message: "Item status updated to scheduled",
-          updatedOrder,
-      });
+    res.status(200).json({
+      message: "Order and all item statuses updated to scheduled",
+      updatedOrder,
+    });
   } catch (error) {
-      console.error("Error updating item status:", error);
-      res.status(500).json({
-          message: "Server error, unable to update item status",
-      });
+    console.error("Error updating order and item statuses:", error);
+    res.status(500).json({
+      message: "Server error, unable to update order and item statuses",
+    });
   }
 };
+
 
 const removecoupon = async (req, res) => {
   try {

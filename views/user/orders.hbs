@@ -521,16 +521,7 @@
 						<b>₹ {{multiply this.orderTotal this.quantity}}</b>
 						{{/if}}
 					</p>
-					{{!-- <p style="margin-top: -10px;">
-						Total:
-						{{#if this.orderTotal}}
-						<b>₹ {{this.orderTotal}}</b>
-						{{else if this.priceWithDiscount}}
-						<b>₹ {{multiply this.priceWithDiscount this.quantity}}</b>
-						{{else}}
-						<b>₹ {{multiply this.price this.quantity}}</b>
-						{{/if}}
-					</p> --}}
+
 					<p style="color: rgb(48, 47, 47);margin-top: -10px;">Order Date: <b>{{formatDate ../time}}</b></p>
 
 					<div class="order-actions">
@@ -542,13 +533,13 @@
 							</button>
 						</div>
 
-						{{else if (eq this.status "payment-pending")}}
+						{{!-- {{else if (eq this.status "payment-pending")}}
 						<div style="margin-left: 200px;"><button class="btn btn-warning retry-button" id="payButton"
 								data-order-id="{{this._id}}"
 								style="margin-left: 100%; font-size: 11px; margin-right: auto; display: block; padding: 10px 20px; border-radius: 5px;">
 								Retry Payment
 							</button>
-						</div>
+						</div> --}}
 
 						{{else if (eq this.status "canceled")}}
 
@@ -598,20 +589,27 @@
 					delivery change : ₹ 50
 				</p>
 			</div>
-			{{!-- <div>
-				{{#if (eq status "payment-pending")}}
-				<button class="btn btn-warning retry-button" id="payButton" data-order-id="{{../_id}}"
-					style="margin-left:-200px;font-size:13px;margin-top: 10px ; border-radius: 5px;height:33px">
-					Retry Payment
-				</button>
-				{{/if}}
-			</div> --}}
+
+
 
 			<div style="background-color: white;  padding: 10px; text-align: right;display:flex">
+
+				{{!-- <div>
+					<form method="get" style="margin-right:100px;width:108px;font-size:13px"
+						action="/ordertracking/{{_id}}">
+						<button class=" btn btn-warning" type="submit">Retry Payment</button>
+					</form>
+				</div> --}}
 				<div>
 					<form method="get" style="margin-left: -350px;margin-right:5px" action="/ordertracking/{{_id}}">
 						<button class=" btn btn-warning" type="submit">View Order</button>
 					</form>
+				</div>
+				<div>
+					<button style="margin-right:5px;width:108px;font-size:13px;height: 33px;"
+						class="btn btn-warning retry-button" id="payButton" data-order-id="{{this._id}}">
+						Retry Payment
+					</button>
 				</div>
 				<div style="width:50%;">
 					<form> <button class="btn btn-success" style="width: 134px;"
@@ -722,24 +720,26 @@
 	<script>
 		document.getElementById("payButton").onclick = async function () {
 			const orderId = this.getAttribute("data-order-id"); // Get the order ID from the button's data attribute
-
+			console.log("orderId", orderId)
 			try {
 				// Send a request to your backend to get the Razorpay order details
 				const response = await fetch(`/retry-razorpay/${orderId}`);
+
 				const data = await response.json();
 
 				if (data.success) {
-					const razorpayOrder = data.razorpayOrder;  
+					const razorpayOrder = data.razorpayOrder;
+					console.log("razorpayOrder",razorpayOrder)
 					const options = {
-						key: "rzp_test_27cbwJ6wd0CuiQ",  
-						amount: razorpayOrder.amount,  
+						key: "rzp_test_27cbwJ6wd0CuiQ",
+						amount: razorpayOrder.amount,
 						currency: razorpayOrder.currency,
 						name: "Watch Premium",
 						description: "Order Payment",
 						order_id: razorpayOrder.orderId,
 						handler: function (response) {
- 							console.log("Payment successful", response);
- 							fetch(`/retry-payment-success/${orderId}`, {
+							console.log("Payment successful", response);
+							fetch(`/retry-payment-success/${orderId}`, {
 								method: "POST",
 								headers: {
 									"Content-Type": "application/json",
@@ -816,25 +816,25 @@
 
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
- 			const confirmReturnBtn = document.getElementById('confirmReturnBtn');
+			const confirmReturnBtn = document.getElementById('confirmReturnBtn');
 			const itemId = confirmReturnBtn.getAttribute('data-order-id');
 
- 			confirmReturnBtn.addEventListener('click', function () {
+			confirmReturnBtn.addEventListener('click', function () {
 				console.log("Button clicked");
 				console.log("itemId", itemId);
 
- 				fetch(`/return-order/${itemId}`, {
-					method: 'POST',   
+				fetch(`/return-order/${itemId}`, {
+					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json'
 					},
 				})
 					.then(response => response.json())
 					.then(data => {
- 						console.log(data);
+						console.log(data);
 					})
 					.catch(error => {
- 						console.error('Error:', error);
+						console.error('Error:', error);
 					});
 			});
 		});
@@ -846,11 +846,11 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-6 col-md-12">
-					 <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
-                            Rights
-                            Reserved.<br>
-                            Distributed By - <a href="https://themewagon.com/">nextick.store</a>
-                        </p>
+					<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
+						Rights
+						Reserved.<br>
+						Distributed By - <a href="https://themewagon.com/">nextick.store</a>
+					</p>
 				</div>
 				<div class="col-lg-6 text-right col-md-12">
 					<div class="social-icons">
