@@ -393,8 +393,8 @@
     </div>
     <!-- end header -->
     <div class="head">
-        <div class="breadcrumb-section breadcrumb-bg">
-            <div class="container">
+        <div style="height: 200px;" class="breadcrumb-section breadcrumb-bg">
+            <div style="margin-top: -50px;" class="container">
                 <div class="row">
                     <div class="col-lg-8 offset-lg-2 text-center">
                         <div class="breadcrumb-text">
@@ -444,35 +444,35 @@
                     <div class="col-12 col-md-8">
                         <div class="card p-4">
                             <h4 class="mb-4">My address</h4>
-{{#if address}}
-    <label for="name">First Name : {{address.firstname}}</label>
-    <label for="name">Last Name : {{address.lastname}}</label>
-    <label for="name">Address : {{address.address}}</label>
-    <label for="name">Phone No : {{address.phone}}</label>
-    <label for="name">Email : {{address.email}}</label>
-    <label for="name">Place : {{address.place}}</label>
-    <label for="name">City : {{address.city}}</label>
-    <label for="name">Pincode : {{address.pincode}}</label>
-    <label for="name">District : {{address.district}}</label>
+                            {{#if address}}
+                            <label for="name">First Name : {{address.firstname}}</label>
+                            <label for="name">Last Name : {{address.lastname}}</label>
+                            <label for="name">Address : {{address.address}}</label>
+                            <label for="name">Phone No : {{address.phone}}</label>
+                            <label for="name">Email : {{address.email}}</label>
+                            <label for="name">Place : {{address.place}}</label>
+                            <label for="name">City : {{address.city}}</label>
+                            <label for="name">Pincode : {{address.pincode}}</label>
+                            <label for="name">District : {{address.district}}</label>
 
-    <!-- Show both buttons if address exists -->
-    <div style="display: flex;">
-        <a href="/address"><button
-                style="font-size:13px;width: 110px;color:white; margin-right:5px;margin-left:520px;background-color:rgba(255, 166, 0, 0.785);height: 30px;font-size:13px;border-width:0px;border-radius: 4px">view
-                all address</button> </a>
-        <a href="/address"><button
-                style="font-size:13px;width: 90px;color:white;background-color:rgba(255, 166, 0, 0.785);height: 30px;font-size:13px;border-width:0px;border-radius: 4px">add
-                address</button> </a>
-    </div>
-{{else}}
-    <p style="color: red;">There is no address for you.</p>
-    <!-- Show only "add address" button if no address exists -->
-    <div style="display: flex;">
-        <a href="/address"><button
-                style="font-size:13px;width: 90px;color:white;background-color:rgba(255, 166, 0, 0.785);height: 30px;font-size:13px;border-width:0px;border-radius: 4px">add
-                address</button> </a>
-    </div>
-{{/if}}
+                            <!-- Show both buttons if address exists -->
+                            <div style="display: flex;">
+                                <a href="/address"><button
+                                        style="font-size:13px;width: 110px;color:white; margin-right:5px;background-color:rgba(255, 166, 0, 0.785);height: 30px;font-size:13px;border-width:0px;border-radius: 4px">view
+                                        all address</button> </a>
+                                <a href="/address"><button
+                                        style="font-size:13px;width: 90px;color:white;background-color:rgba(255, 166, 0, 0.785);height: 30px;font-size:13px;border-width:0px;border-radius: 4px">add
+                                        address</button> </a>
+                            </div>
+                            {{else}}
+                            <p style="color: red;">There is no address for you.</p>
+                            <!-- Show only "add address" button if no address exists -->
+                            <div style="display: flex;">
+                                <a href="/address"><button
+                                        style="font-size:13px;width: 90px;color:white;background-color:rgba(255, 166, 0, 0.785);height: 30px;font-size:13px;border-width:0px;border-radius: 4px">add
+                                        address</button> </a>
+                            </div>
+                            {{/if}}
 
 
                         </div>
@@ -539,17 +539,17 @@
                                 <h4 class="mb-0">Order history</h4>
                                 <button class="btn btn-light btn-sm">Filter by</button>
                             </div>
-                 {{#if orders.length}}
-    {{#each orders}}
-        {{#each items}}
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                    <span class="status-dot active"></span>
-                    {{productId.name}}
-                    <p style="margin-left: 20px;">{{formatDate ../time}}</p>
-                    <hr style="width: 650px; color: orange">
-                </div>
-                <span class="
+                            {{#if orders.length}}
+                            {{#each orders}}
+                            {{#each items}}
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <span class="status-dot active"></span>
+                                    {{productId.name}}
+                                    <p style="margin-left: 20px;">{{formatDate ../time}}</p>
+
+                                </div>
+                                <span class="
                     {{#if (eq status 'scheduled')}}gradient-button-blue{{else}}
                     {{#if (eq status 'pending')}}gradient-button-yellow{{else}}
                     {{#if (eq status 'canceled')}}gradient-button-red{{else}}
@@ -558,22 +558,23 @@
                     {{#if (eq status 'payment-pending')}}gradient-button-red{{else}}
                     {{#if (eq status 'shipped')}}gradient-button-purple{{/if}}{{/if}}{{/if}}
                     {{/if}}{{/if}}{{/if}}{{/if}}">
-                    {{status}}
-                </span>
-            </div>
-        {{/each}}
-    {{/each}}
+                                    {{status}}
+                                </span>
+                            </div>
+                            <hr style="color: rgb(224, 190, 89)">
+                            {{/each}}
+                            {{/each}}
 
-    <!-- "View More" Button -->
-    <form action="orderss" method="get">
-        <button
-            style="font-size: 13px; width: 90px; color: white; background-color: rgba(255, 166, 0, 0.785); height: 30px; font-size: 13px; border-width: 0px; border-radius: 4px; margin-left: 87%;">
-            View More
-        </button>
-    </form>
-{{else}}
-    <p style="color: red;">There are no recent orders for you.</p>
-{{/if}}
+                            <!-- "View More" Button -->
+                            <form action="orderss" method="get">
+                                <button
+                                    style="font-size: 13px; width: 90px; color: white; background-color: rgba(255, 166, 0, 0.785); height: 30px; font-size: 13px; border-width: 0px; border-radius: 4px;  ">
+                                    View More
+                                </button>
+                            </form>
+                            {{else}}
+                            <p style="color: red;">There are no recent orders for you.</p>
+                            {{/if}}
 
 
                         </div>

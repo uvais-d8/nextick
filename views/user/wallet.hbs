@@ -235,8 +235,8 @@
                             {{#each transactions}}
                             <tr>
                                 <td> {{this.type}} </td>
-                                <td> ₹{{this.amount}} </td>
-                                <td style="font-weight:500">{{this.description}}</td>
+                                <td style="color: green;font-weight:bold"> ₹{{this.amount}} </td>
+                                <td>{{this.description}}</td>
                                 <td> {{formatDate this.date}} </td>
                             </tr>
                             {{/each}}

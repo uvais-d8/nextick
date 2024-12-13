@@ -527,7 +527,8 @@
 					<div class="order-actions">
 						{{#if (eq this.status "delivered")}}
 						<div>
-							<button class="btn btn-danger return-button" data-toggle="modal" data-target="#returnModal"
+							<button class="btn btn-danger return-button" data-toggle="modal" data-order-id="{{../_id}}"
+								data-item-id="{{this._id}}" data-target="#returnModal"
 								style="margin-left: 100%; margin-right: auto; display: block; padding: 10px 20px; border-radius: 5px;">
 								Return
 							</button>
@@ -542,6 +543,8 @@
 						</div> --}}
 
 						{{else if (eq this.status "canceled")}}
+
+						{{else if (eq this.status "payment-pending")}}
 
 						{{else if (eq this.status "returned")}}
 
@@ -729,7 +732,7 @@
 
 				if (data.success) {
 					const razorpayOrder = data.razorpayOrder;
-					console.log("razorpayOrder",razorpayOrder)
+					console.log("razorpayOrder", razorpayOrder)
 					const options = {
 						key: "rzp_test_27cbwJ6wd0CuiQ",
 						amount: razorpayOrder.amount,
@@ -776,70 +779,82 @@
 	</script>
 
 
-	<div id="returnModal" class="modal fade" tabindex="-1" role="dialog">
-		<div class="modal-dialog modal-dialog-centered" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Return Confirmation</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<p id="returnMessage">
-						Are you sure you want to return this item/order? Please ensure that the item is in its original
-						condition,
-						with all packaging, labels, and accessories intact. If you have any doubts or questions, feel
-						free to reach out
-						to our customer support team. Returns are subject to our return policy and may require
-						verification of purchase.
-						Do you wish to proceed with the return request?
-					</p>
+<div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="returnModalLabel">Confirm Return</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to return this item?</p>
+        <p><strong>Order ID:</strong> <span id="modalOrderId"></span></p>
+        <p><strong>Item ID:</strong> <span id="modalItemId"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmReturn">Confirm Return</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-					<p id="errorMessage" style="display: none; color: red;">Error processing return. Please try again.
-					</p>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-					{{#each orders}}
-					{{#each items}}
-					<button type="button" class="btn btn-danger" id="confirmReturnBtn" data-order-id="{{this._id}}"
-						data-item-id="{{this._id}}" data-toggle="modal" data-target="#returnModal">
-						Confirm Return
-					</button>
-					{{/each}}
-					{{/each}}
-				</div>
-			</div>
-		</div>
-	</div>
 
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			const confirmReturnBtn = document.getElementById('confirmReturnBtn');
-			const itemId = confirmReturnBtn.getAttribute('data-order-id');
+<script>document.addEventListener('DOMContentLoaded', function () {
+  // Listen for the modal being shown
+  const returnModal = document.getElementById('returnModal');
 
-			confirmReturnBtn.addEventListener('click', function () {
-				console.log("Button clicked");
-				console.log("itemId", itemId);
+  returnModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget; // Button that triggered the modal
+    const orderId = button.getAttribute('data-order-id');
+    const itemId = button.getAttribute('data-item-id');
 
-				fetch(`/return-order/${itemId}`, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-				})
-					.then(response => response.json())
-					.then(data => {
-						console.log(data);
-					})
-					.catch(error => {
-						console.error('Error:', error);
-					});
-			});
-		});
-	</script>
+    // Set the Order ID and Item ID in the modal
+    document.getElementById('modalOrderId').textContent = orderId;
+    document.getElementById('modalItemId').textContent = itemId;
 
+    // Attach the Item ID to the confirm button for API call
+    const confirmReturnBtn = document.getElementById('confirmReturn');
+    confirmReturnBtn.setAttribute('data-item-id', itemId);
+  });
+
+  // Handle Confirm Return button click
+  const confirmReturnBtn = document.getElementById('confirmReturn');
+  confirmReturnBtn.addEventListener('click', function () {
+    const itemId = confirmReturnBtn.getAttribute('data-item-id');
+
+    if (!itemId) {
+      console.error('Item ID is missing!');
+      return;
+    }
+
+    // Make the API call to return the item
+    fetch(`/return-order/${itemId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to return the item');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Success:', data);
+
+        // Optionally close the modal and refresh the page or update the UI
+        const modalInstance = bootstrap.Modal.getInstance(returnModal);
+        modalInstance.hide();
+        location.reload(); // Refresh the page or update the UI dynamically
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  });
+});
+</script>
 
 	<!-- copyright -->
 	<div class="copyright">

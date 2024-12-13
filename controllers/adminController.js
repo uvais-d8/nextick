@@ -211,7 +211,7 @@ const loadUserMangment = async (req, res) => {
     const previousPage = page > 1 ? page - 1 : null;
     const nextPage = page < totalPages ? page + 1 : null;
 
-    res.render("admin/userManagement", {
+    res.render("admin/usermanagement", {
       users,
       currentPage: page,
       totalPages: totalPages,
