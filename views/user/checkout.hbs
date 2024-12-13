@@ -780,7 +780,7 @@
 					} else {
 						Swal.fire({
 							title: "Order Failed",
-							text: error.response.data.message,
+							text: result.message,
 							icon: "error",
 							confirmButtonText: "Retry",
 						});

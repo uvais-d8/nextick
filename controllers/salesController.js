@@ -81,8 +81,7 @@ const applycoupon = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-const placeOrder = async (req, res) => {
-  console.log("hellooo");
+const placeOrder = async (req, res) => { 
   const userId = req.session.userId;
   const {
     email,

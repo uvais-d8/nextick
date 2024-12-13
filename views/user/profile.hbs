@@ -97,7 +97,7 @@
             z-index: 1000;
         }
 
-      
+
 
         .logo {
             font-size: 1.5rem;
@@ -341,7 +341,9 @@
                         <!-- logo -->
                         <div class="site-logo">
                             <a href="/">
-								<p style="font-size:28px; color:white;margin-top:-5px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">NEXTIC<span style="font-weight: bold;color:rgb(238, 149, 15)">K</span></p>
+                                <p
+                                    style="font-size:28px; color:white;margin-top:-5px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
+                                    NEXTIC<span style="font-weight: bold;color:rgb(238, 149, 15)">K</span></p>
                             </a>
                         </div>
                         <!-- logo -->
@@ -370,11 +372,11 @@
                                 </li>
                                 <li>
                                     <div class="header-icons">
-                                          <a href="/wishlist" class="love-icon">
+                                        <a href="/wishlist" class="love-icon">
                                             <i class="fas fa-heart"></i>
                                         </a>
                                         <a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
-                                     
+
                                         <a style="color: orange;" class="mobile-hide search-bar-icon" href="/profile"><i
                                                 class="fas fa-user"></i></a>
                                     </div>
@@ -426,9 +428,12 @@
                             <p style="color: rgb(29, 29, 29);font-size :13px;">Phone No :{{user.phone}}</p>
                             <p style="color: rgb(29, 29, 29); font-size :13px;">Email: {{user.email}}</p>
                             <p style="color: white;">.</p>
-                            <form method="get" action="/wallet" style="font-size:15px;margin-bottom:-25px;font-weight:bold;color:black"><button type="submit" style="background-color: white;border-width:0px;font-weight:bold" value="See My Wallet">See My Wallet</button></form>
+                            <form method="get" action="/wallet"
+                                style="font-size:15px;margin-bottom:-25px;font-weight:bold;color:black"><button
+                                    type="submit" style="background-color: white;border-width:0px;font-weight:bold"
+                                    value="See My Wallet">See My Wallet</button></form>
                             <button
-                                style="font-size:13px;width: 90px; margin-left:75%;background-color:rgba(228, 154, 17, 0.908)"
+                                style="margin-left:75%;font-size:13px;width: 90px;color:white;background-color:rgba(255, 166, 0, 0.785);height: 30px;font-size:13px;border-width:0px;border-radius: 4px"
                                 class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editUsernameModal">
                                 <b>Edit</b>
                             </button>
@@ -439,18 +444,36 @@
                     <div class="col-12 col-md-8">
                         <div class="card p-4">
                             <h4 class="mb-4">My address</h4>
+{{#if address}}
+    <label for="name">First Name : {{address.firstname}}</label>
+    <label for="name">Last Name : {{address.lastname}}</label>
+    <label for="name">Address : {{address.address}}</label>
+    <label for="name">Phone No : {{address.phone}}</label>
+    <label for="name">Email : {{address.email}}</label>
+    <label for="name">Place : {{address.place}}</label>
+    <label for="name">City : {{address.city}}</label>
+    <label for="name">Pincode : {{address.pincode}}</label>
+    <label for="name">District : {{address.district}}</label>
 
-                            <label for="name">First Name : {{address.firstname}}</label>
-                            <label for="name">Last Name : {{address.lastname}}</label>
-                            <label for="name">Address : {{address.address}}</label>
-                            <label for="name">Phone No : {{address.phone}}</label>
-                            <label for="name">Email : {{address.email}}</label>
-                            <label for="name">Place : {{address.place}}</label>
-                            <label for="name">City : {{address.city}}</label>
-                            <label for="name">Pincode : {{address.pincode}}</label>
-                            <label for="name">District : {{address.district}}</label>
-                            <a href="/address"><button
-                                    style="font-size:13px;width: 90px; margin-left:87%;background-color:rgba(228, 154, 17, 0.908);height: 30px;font-size:13px;font-weight:bold;border-width:0px;border-radius: 4px">view all</button> </a>
+    <!-- Show both buttons if address exists -->
+    <div style="display: flex;">
+        <a href="/address"><button
+                style="font-size:13px;width: 110px;color:white; margin-right:5px;margin-left:520px;background-color:rgba(255, 166, 0, 0.785);height: 30px;font-size:13px;border-width:0px;border-radius: 4px">view
+                all address</button> </a>
+        <a href="/address"><button
+                style="font-size:13px;width: 90px;color:white;background-color:rgba(255, 166, 0, 0.785);height: 30px;font-size:13px;border-width:0px;border-radius: 4px">add
+                address</button> </a>
+    </div>
+{{else}}
+    <p style="color: red;">There is no address for you.</p>
+    <!-- Show only "add address" button if no address exists -->
+    <div style="display: flex;">
+        <a href="/address"><button
+                style="font-size:13px;width: 90px;color:white;background-color:rgba(255, 166, 0, 0.785);height: 30px;font-size:13px;border-width:0px;border-radius: 4px">add
+                address</button> </a>
+    </div>
+{{/if}}
+
 
                         </div>
 
@@ -458,8 +481,8 @@
                     <div class="col-12 col-md-4">
                         <div class="card p-4">
                             <h4 class="mb-4">Change Password</h4>
-                            <p id="message" type="text" value="{{message}}"
-                                style="border-width: 0px;color:red">{{message}}</p>
+                            <p id="message" type="text" value="{{message}}" style="border-width: 0px;color:red">
+                                {{message}}</p>
                             <p id="success" type="text" value="{{success}}"
                                 style="border-width: 0px;color:rgb(0, 255, 21)">{{success}}</p>
 
@@ -495,7 +518,7 @@
                                         </div>
                                         <div class="form-group">
                                             <button class="btn-warning"
-                                                style="font-size:13px;width: 90px; margin-left:75%;background-color:rgba(228, 154, 17, 0.908);height: 30px;font-size:13px;font-weight:bold;border-width:0px;border-radius: 4px;"
+                                                style="font-size:13px;width: 90px;color:white;background-color:rgba(255, 166, 0, 0.785);height: 30px;font-size:13px;border-width:0px;border-radius: 4px;"
                                                 type="submit">
                                                 Change
                                             </button>
@@ -516,36 +539,42 @@
                                 <h4 class="mb-0">Order history</h4>
                                 <button class="btn btn-light btn-sm">Filter by</button>
                             </div>
-                            {{#each orders}}
-                            {{#each items}}
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
-                                    <span class="status-dot active"></span>
-                                    {{productId.name}}
-                                    <p style="margin-left: 20px;">{{formatDate ../time}}</p>
-                                    <hr style="width: 650px;color:orange">
-                                </div>
-                                <span class="
-        {{#if (eq status 'scheduled')}}gradient-button-blue{{else}}
-        {{#if (eq status 'pending')}}gradient-button-yellow{{else}}
-        {{#if (eq status 'canceled')}}gradient-button-red{{else}}
-        {{#if (eq status 'returned')}}gradient-button-yellow{{else}}
-        {{#if (eq status 'delivered')}}gradient-button-green{{else}}
-        {{#if (eq status 'payment-pending')}}gradient-button-red{{else}}
-        {{#if (eq status 'shipped')}}gradient-button-purple{{/if}}{{/if}}{{/if}}
-        {{/if}}{{/if}}{{/if}}{{/if}}">
-                                    {{status}}
-                                </span>
-                            </div>
-                            {{/each}}
-                            {{/each}}
+                 {{#if orders.length}}
+    {{#each orders}}
+        {{#each items}}
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <span class="status-dot active"></span>
+                    {{productId.name}}
+                    <p style="margin-left: 20px;">{{formatDate ../time}}</p>
+                    <hr style="width: 650px; color: orange">
+                </div>
+                <span class="
+                    {{#if (eq status 'scheduled')}}gradient-button-blue{{else}}
+                    {{#if (eq status 'pending')}}gradient-button-yellow{{else}}
+                    {{#if (eq status 'canceled')}}gradient-button-red{{else}}
+                    {{#if (eq status 'returned')}}gradient-button-yellow{{else}}
+                    {{#if (eq status 'delivered')}}gradient-button-green{{else}}
+                    {{#if (eq status 'payment-pending')}}gradient-button-red{{else}}
+                    {{#if (eq status 'shipped')}}gradient-button-purple{{/if}}{{/if}}{{/if}}
+                    {{/if}}{{/if}}{{/if}}{{/if}}">
+                    {{status}}
+                </span>
+            </div>
+        {{/each}}
+    {{/each}}
 
+    <!-- "View More" Button -->
+    <form action="orderss" method="get">
+        <button
+            style="font-size: 13px; width: 90px; color: white; background-color: rgba(255, 166, 0, 0.785); height: 30px; font-size: 13px; border-width: 0px; border-radius: 4px; margin-left: 87%;">
+            View More
+        </button>
+    </form>
+{{else}}
+    <p style="color: red;">There are no recent orders for you.</p>
+{{/if}}
 
-                            <form action="orderss" method="get">
-                                <button
-                                    style="font-size:13px;width: 90px; margin-left:87%;background-color:rgba(228, 154, 17, 0.908);height: 30px;font-size:13px;font-weight:bold;border-width:0px;border-radius: 4px">view
-                                    more</button>
-                            </form>
 
                         </div>
                     </div>
@@ -687,10 +716,10 @@
         <div class="row">
             <div class="col-lg-6 col-md-12">
                 <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
-                            Rights
-                            Reserved.<br>
-                            Distributed By - <a href="https://themewagon.com/">nextick.store</a>
-                        </p>
+                    Rights
+                    Reserved.<br>
+                    Distributed By - <a href="https://themewagon.com/">nextick.store</a>
+                </p>
             </div>
             <div class="col-lg-6 text-right col-md-12">
                 <div class="social-icons">

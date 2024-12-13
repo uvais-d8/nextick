@@ -15,7 +15,7 @@ async function sendVerificationEmail(email, otp) {
       requireTLS: true,
       auth: {
         user: process.env.SERVEREMAIL,
-        pass: process.env.PASS 
+        pass: process.env.PASS
       }
     });
 
@@ -52,12 +52,16 @@ const changepassword = async (req, res) => {
   console.log("hellooo");
   const user = await User.findOne({ _id: userId });
 
-  //  const createdAt = user.registered.toLocaleDateString("en-GB");
-  const address = await Address.findOne({ isDefault: true });
-  const orders = await Orders.find({ userId: user }).populate({
-    path: "items.productId",
-    select: "name price images"
-  });
+  
+  const orders = await Orders.find({ userId: user })
+    .sort({ createdAt: -1 }) // Sort by creation date in descending order
+    .limit(2) // Limit to the latest 5 orders
+    .populate({
+      path: "items.productId",
+      select: "name price images" // Select specific fields from the populated data
+    });
+  const address = await Address.findOne({ isDefault: true, user: userId });
+
   if (!req.session.userId) {
     req.session.message =
       "Session expired. Please start the reset process again.";
@@ -202,7 +206,7 @@ const updateDefaultAddress = async (req, res) => {
   try {
     const { addressId } = req.body;
     console.log(addressId);
-    const userId = req.session.userId;  
+    const userId = req.session.userId;
 
     if (!addressId || !userId) {
       return res.status(400).json({
@@ -211,7 +215,7 @@ const updateDefaultAddress = async (req, res) => {
       });
     }
 
-     const address = await Address.findOne({ _id: addressId, user: userId });
+    const address = await Address.findOne({ _id: addressId, user: userId });
     console.log("found address is: ", address);
     if (!address) {
       return res.status(404).json({
@@ -220,9 +224,9 @@ const updateDefaultAddress = async (req, res) => {
       });
     }
 
-     await Address.updateMany({ user: userId }, { $set: { isDefault: false } });
+    await Address.updateMany({ user: userId }, { $set: { isDefault: false } });
     console.log("found address is: ", address);
-     await Address.findByIdAndUpdate(addressId, { $set: { isDefault: true } });
+    await Address.findByIdAndUpdate(addressId, { $set: { isDefault: true } });
 
     return res.json({
       success: true,
@@ -240,26 +244,27 @@ const loadprofile = async (req, res) => {
   try {
     const userId = req.session.userId;
     console.log("Session User ID:", userId);
- 
-    const user = await User.findOne({ _id: userId }); 
+
+    const user = await User.findOne({ _id: userId });
     if (!user) {
       console.log("User not found");
       return res.redirect("/login");
     }
- 
+
     const createdAt = user.registered.toLocaleDateString("en-GB");
     const orders = await Orders.find({ userId: user })
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: -1 }) // Sort by creation date in descending order
+      .limit(2) // Limit to the latest 5 orders
       .populate({
         path: "items.productId",
-        select: "name price images"
+        select: "name price images" // Select specific fields from the populated data
       });
     const address = await Address.findOne({ isDefault: true, user: userId });
- 
-     res.render("profile", { user, createdAt, address, orders });
+
+    res.render("profile", { user, createdAt, address, orders });
   } catch (error) {
     console.error("Error loading profile:", error);
-    res.redirect("/login");  
+    res.redirect("/login");
   }
 };
 function generateOtp() {
@@ -270,30 +275,30 @@ const updateUsername = async (req, res) => {
     const { userId, newName, newPhone } = req.body;
     console.log(req.body);
 
-     if (!newName) {
+    if (!newName) {
       return res.status(400).json({ error: "New name is required" });
     }
 
-     const updatedUser = await User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       userId,
       { name: newName, phone: newPhone },
-      { new: true }  
+      { new: true }
     );
 
     console.log(updatedUser);
 
-     if (!updatedUser) {
+    if (!updatedUser) {
       return res.status(404).json({ error: "User not found" });
     }
 
-     return res.status(200).json({
+    return res.status(200).json({
       message: "Username and phone number updated successfully",
       user: updatedUser
     });
   } catch (error) {
-     console.error("Error:", error);
+    console.error("Error:", error);
 
-     return res
+    return res
       .status(500)
       .json({ error: "Server error. Please try again later." });
   }
@@ -337,13 +342,13 @@ const editaddress = async (req, res) => {
       return res.status(404).send("Address not found");
     }
 
-     res.redirect("/address");
+    res.redirect("/address");
   } catch (error) {
     console.error("Error updating address:", error);
     res.status(500).send("Server Error");
   }
 };
- const sendotptoemail = async (req, res) => {
+const sendotptoemail = async (req, res) => {
   const { email } = req.body;
   req.session.userEmail = email;
   console.log(email);
@@ -356,7 +361,7 @@ const editaddress = async (req, res) => {
         message: "You didn't enter any email"
       });
     }
- 
+
     const existingUser = await User.findOne({ email: email });
     console.log(existingUser);
 
@@ -366,7 +371,7 @@ const editaddress = async (req, res) => {
       return res.render("forgotpassword", {
         message: "This email doesn't exist."
       });
-    } 
+    }
     const otp = generateOtp();
     console.log("Generated OTP:", otp);
 
@@ -376,10 +381,10 @@ const editaddress = async (req, res) => {
         "Error sending verification email. Please try again.";
       return res.redirect("/forgotpassword");
     }
- 
+
     req.session.userOTP = otp;
-    req.session.userEmail = email; 
-    res.render("passwordverification");  
+    req.session.userEmail = email;
+    res.render("passwordverification");
   } catch (error) {
     console.log("Error:", error);
     req.session.message = "An unexpected error occurred. Please try again.";
@@ -387,15 +392,15 @@ const editaddress = async (req, res) => {
   }
 };
 const verifyotpemail = async (req, res) => {
-  const { otp } = req.body; 
+  const { otp } = req.body;
   console.log("Received OTP:", otp);
   console.log("Stored OTP in session:", req.session.userOTP);
 
   try {
-     if (otp == req.session.userOTP) {
-       req.session.userOTP = null;
+    if (otp == req.session.userOTP) {
+      req.session.userOTP = null;
       console.log("OTP verified successfully. Session OTP cleared.");
-      return res.render("newpassword");  
+      return res.render("newpassword");
     } else {
       console.log("Invalid OTP entered");
       return res.render("passwordverification", {
@@ -410,31 +415,31 @@ const verifyotpemail = async (req, res) => {
     });
   }
 };
- const loadnewpassword = (req, res) => {
+const loadnewpassword = (req, res) => {
   res.render("newpassword", { message: req.session.message || null });
   req.session.message = null;
 };
 const setnewpassword = async (req, res) => {
-  const newPassword = req.body.newPassword;  
-  const confirmPassword = req.body.confirmPassword; 
- 
+  const newPassword = req.body.newPassword;
+  const confirmPassword = req.body.confirmPassword;
+
   if (!newPassword || newPassword.length < 6) {
     req.session.message = "Password must be at least 6 characters long.";
     return res.redirect("/newpassword");
   }
- 
+
   const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/;
   if (!passwordPattern.test(newPassword)) {
     req.session.message =
       "Password must include a uppercase letter, lowercase letter,and a number.";
     return res.redirect("/newpassword");
   }
- 
+
   if (newPassword !== confirmPassword) {
     req.session.message = "Passwords do not match.";
     return res.redirect("/newpassword");
   }
- 
+
   if (!req.session.userEmail) {
     req.session.message =
       "Session expired. Please start the reset process again.";
@@ -603,7 +608,9 @@ const loadWallet = async (req, res) => {
     const userId = req.session.userId;
     console.log("User ID:", userId);
 
-     const wallet = await Wallet.findOne({ user: userId }).sort({ createdAt: -1 });
+    const wallet = await Wallet.findOne({ user: userId }).sort({
+      createdAt: -1
+    });
 
     if (!wallet) {
       return res.render("wallet", {
@@ -613,14 +620,16 @@ const loadWallet = async (req, res) => {
       });
     }
 
-     console.log("Balance:", wallet.balance);
+    console.log("Balance:", wallet.balance);
     console.log("Transactions:", wallet.transactions);
 
-     const sortedTransactions = wallet.transactions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const sortedTransactions = wallet.transactions.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
 
-     res.render("wallet", {
+    res.render("wallet", {
       balance: wallet.balance,
-      transactions: sortedTransactions,
+      transactions: sortedTransactions
     });
   } catch (error) {
     console.error("Error loading wallet:", error);
