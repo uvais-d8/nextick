@@ -91,49 +91,14 @@ const loadlogin = (req, res) => {
   res.render("login", { layout: false });
 };
 const registerUser = async (req, res) => {
-  const { username, email, password, confirmPassword } = req.body;
+  const { username, email, phone, password } = req.body;
 
   try {
-    if (!username || !email || !password || !confirmPassword) {
-      req.session.message = "All fields are required.";
-      return res.render("signup", { message: "All fields are required" });
-    }
-    const usernameRegex = /^(?!\d+$)[a-zA-Z0-9]+(?: [a-zA-Z0-9]+)*$/;
-    if (!usernameRegex.test(username)) {
+    // Only check for email existence here
+    const alreadyUser = await User.findOne({ email });
+    if (alreadyUser) {
       return res.render("signup", {
-        message: "Must contain letters and numbers, No special characters or spaces",
-      });
-    }
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.render("signup", { message: "Invalid email format" });
-    }
-
-    if (password.length < 6) {
-      return res.render("signup", {
-        message: "Password must be at least 6 characters long"
-      });
-    }
-
-    if (password !== confirmPassword) {
-      return res.render("signup", { message: "Passwords do not match" });
-    }
-
-    // Password validation 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/;
-    if (!passwordRegex.test(password)) {
-      return res.render("signup", {
-        message:
-          "Password must include a uppercase letter, lowercase letter,and a number"
-      });
-    }
-
-    // Check for existing user
-    const alreadyuser = await User.findOne({ email });
-    if (alreadyuser) {
-      return res.render("signup", {
-        message: "Email is already registered"
+        message: "Email is already registered",
       });
     }
 
@@ -142,12 +107,12 @@ const registerUser = async (req, res) => {
     if (!emailSent) {
       console.log("Error sending verification email. Please try again.");
       return res.redirect("/signup", {
-        message: "Error sending verification email. Please try again"
+        message: "Error sending verification email. Please try again",
       });
     }
 
     req.session.userOTP = otp;
-    req.session.userData = { username, email, password };
+    req.session.userData = { username, email, password, phone };
     console.log(otp);
 
     res.redirect("/verify-otp");
@@ -157,6 +122,7 @@ const registerUser = async (req, res) => {
     res.redirect("/signup");
   }
 };
+
 const loadVerifyOtp = async (req, res) => {
   res.render("verification");
 };
@@ -186,6 +152,7 @@ const verifyOtp = async (req, res) => {
       const newUser = new User({
         name: user.username,
         email: user.email,
+        phone: user.phone,
         password: hashedPassword,
         verified: true,
         ...(user.googleId ? { googleId: user.googleId } : {})

@@ -643,20 +643,22 @@ const retrypaymentSuccess = async (req, res) => {
   }
 };
 
-
 const removecoupon = async (req, res) => {
   try {
+
+    console.log("remove coupon processing")
      console.log("Raw coupon code from params:", req.params.couponCode);
     
-     const couponCode = String(req.params.couponCode);  
+     const couponCode = String(req.params.couponCode);    
     console.log("Coupon code to remove (converted to string):", couponCode);
     
      const coupon = await Coupons.findOne({ CouponCode: couponCode });
+     console.log("old usage limit",coupon.UsageLimit)
 
-     console.log("Coupon found:", coupon);
-
-    if (!coupon) {
+    if (!coupon) { 
+        console.log("Coupon found:", coupon);
        return res.status(400).json({ message: 'Coupon not found' });
+    
     }
 
   const cartTotal = req.body.cartTotal || 0; 
@@ -664,7 +666,11 @@ const removecoupon = async (req, res) => {
       originalTotal: cartTotal,  
             message: 'Coupon removed successfully',
     });
-
+  // Increment the usage limit
+    coupon.UsageLimit += 1;
+    await coupon.save();
+    console.log("new usage limit",coupon.UsageLimit)
+     
   } catch (error) {
     console.error('Error removing coupon:', error);
     res.status(500).json({ message: 'Internal server error' });

@@ -100,7 +100,9 @@
 						<!-- logo -->
 						<div class="site-logo">
 							<a href="/">
-								<p style="font-size:28px; color:white;margin-top:-5px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">NEXTIC<span style="font-weight: bold;color:rgb(238, 149, 15)">K</span></p>
+								<p
+									style="font-size:28px; color:white;margin-top:-5px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
+									NEXTIC<span style="font-weight: bold;color:rgb(238, 149, 15)">K</span></p>
 							</a>
 						</div>
 						<!-- logo -->
@@ -139,12 +141,12 @@
 								</li>
 								<li>
 									<div class="header-icons">
-										  <a href="/wishlist" class="love-icon">
-                                            <i class="fas fa-heart"></i>
-                                        </a>
+										<a href="/wishlist" class="love-icon">
+											<i class="fas fa-heart"></i>
+										</a>
 										<a style="color: orange;" class="shopping-cart" href="/cart"><i
 												class="fas fa-shopping-cart"></i></a>
-									 
+
 										<a class="mobile-hide search-bar-icon" href="/profile"><i
 												class="fas fa-user"></i></a>
 									</div>
@@ -194,12 +196,11 @@
 		</div>
 	</div>
 	<!-- end breadcrumb section -->
-
-	<!-- cart -->
 	<div class="cart-section mt-150 mb-150">
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-8 col-md-12">
+					{{#if carts.length}}
 					<div class="cart-table-wrap">
 						<table class="cart-table">
 							<thead class="cart-table-head">
@@ -213,7 +214,6 @@
 								</tr>
 							</thead>
 							<tbody>
-
 								{{#each carts}}
 								<tr class="table-body-row">
 									<td>
@@ -223,26 +223,21 @@
 												data-id={{this.productId._id}}>X</button>
 										</form>
 									</td>
-
 									<td class="product-image">
 										<img src="/{{this.firstImage}}" alt="{{this.productId.name}}">
 									</td>
-
-
 									<td class="product-name">{{this.productId.name}}</td>
-									{{!-- <td class="product-price">{{this.productId.price}}</td> --}}
 									<td class="product-price">
 										{{#if this.priceWithDiscount}}
 										{{#if (neq this.priceWithDiscount this.productId.price)}}
-										 <del class="original-price">{{this.productId.price}}</del>
+										<del class="original-price">{{this.productId.price}}</del>
 										<span class="discounted-price">{{this.priceWithDiscount}}</span>
 										{{else}}
-										 <span class="original-price">{{this.productId.price}}</span>
+										<span class="original-price">{{this.productId.price}}</span>
 										{{/if}}
 										{{else}}
-										 <span class="original-price">{{this.productId.price}}</span>
+										<span class="original-price">{{this.productId.price}}</span>
 										{{/if}}
-
 									</td>
 									<td class="product-quantity">
 										<button type="button"
@@ -254,9 +249,6 @@
 											style="border-width: 0px;border-radius:3px;background-color:rgb(71, 255, 111);width:20px"
 											onclick="updateQuantity('{{this._id}}', 1)">+</button>
 									</td>
-									<input type="hidden" name="quantity" value="{{subtract this.quantity 1}}">
-									<input type="hidden" name="quantity" value="{{add this.quantity 1}}">
-
 									<td class="product-total">
 										{{#if this.priceWithDiscount}}
 										{{multiply this.priceWithDiscount this.quantity}}
@@ -264,20 +256,83 @@
 										{{multiply this.productId.price this.quantity}}
 										{{/if}}
 									</td>
-
 								</tr>
 								{{/each}}
 							</tbody>
-
 						</table>
-						<input type="text"
-							style="width:700px;margin-left:25%;margin-top:30px; font-weight:bold; border-width:0px; color:rgb(72, 71, 71); font-size:16px;"
-							id="message" value="{{{message}}}" readonly>
+
+<script>function updateQuantity(cartId, change) {
+    const quantityInput = document.getElementById(`quantity-${cartId}`);
+    const currentQuantity = parseInt(quantityInput.value);
+    const newQuantity = currentQuantity + change;
+
+    // Prevent invalid quantity
+    if (newQuantity < 1 || newQuantity > 11) {
+        alert('Quantity must be between 1 and 11');
+        return;
+    }
+
+    // AJAX request to update quantity
+    fetch('/cart/update-quantity', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ cartId, quantity: newQuantity }),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                // Update quantity in input field
+                quantityInput.value = data.quantity;
+
+                // Update total for the item
+                const totalCell = document.querySelector(`#total-${cartId}`);
+                totalCell.textContent = data.total;
+
+                // Optionally update the cart subtotal if needed
+                updateCartSubtotal();
+            } else {
+                alert(data.message || 'Failed to update quantity');
+            }
+        })
+        .catch((error) => {
+            console.error('Error updating quantity:', error);
+        });
+}
+
+function updateCartSubtotal() {
+    let subtotal = 0;
+    document.querySelectorAll('.product-total').forEach((totalCell) => {
+        subtotal += parseFloat(totalCell.textContent);
+    });
+
+    // Update the subtotal element
+    document.getElementById('cart-subtotal').textContent = subtotal.toFixed(2);
+}
+</script>
+
+
+
 					</div>
+					{{else}}
+					<div style="margin-left:54%" class="empty-cart-message">
+						<p style="text-align:center; font-size:16px;  color:rgb(255, 0, 0);">
+							There are no items in your cart at the moment!
+						</p>
+						<div style="text-align:center; margin-top:20px;">
+							<a href="/products" class="boxed-btn black"
+								style="text-decoration:none; padding:10px 20px; font-size:16px;">
+								Go to Shop
+							</a>
+						</div>
+					</div>
+					{{/if}}
 				</div>
 
 				<div class="col-lg-4">
 					<div class="total-section">
+						{{#if carts.length}}
 						<table class="total-table">
 							<thead class="total-table-head">
 								<tr class="table-total-row">
@@ -288,305 +343,271 @@
 							<tbody>
 								<tr class="total-data">
 									<td><strong>Subtotal: </strong></td>
-
-									<td> {{subtotal}}</td>
+									<td>{{subtotal}}</td>
 								</tr>
-
 								<tr class="total-data">
 									<td><strong>Shipping: </strong></td>
-									<td colspan="3">{{shippingRate}}</td>
+									<td>{{shippingRate}}</td>
 								</tr>
 								<tr class="total-data">
 									<td><strong>Total: </strong></td>
-									<td colspan="3">{{total}}</td>
+									<td>{{total}}</td>
 								</tr>
 							</tbody>
-
 						</table>
-
 						<div class="cart-buttons">
-
-
 							<a onclick="location.reload();" class="boxed-btn black">Update Cart</a>
-							{{#if carts.length}}
 							<a href="/checkout" class="boxed-btn black">Check Out</a>
-							{{else}}
-							<p></p>
-							{{/if}}
-
-
-							{{!-- <div style="background-color: white" class="coupon-section">
-								<h3>Apply Coupon</h3>
-
-								<div class="coupon-form-wrap">
-									<form id="couponForm" method="post">
-										<p><input type="text" id="couponCode" placeholder="Coupon Code"></p>
-										<p><input type="submit" value="Apply"></p>
-									</form>
-								</div>
-							</div> --}}
-
 						</div>
+						{{/if}}
 					</div>
-
 				</div>
 			</div>
 		</div>
 	</div>
 
-	{{!--
-	<div style="margin-top: -150px;" class="coupon-section mb-50">
+	</div>
+	</div>
+
+	</div>
+	</div>
+	</div>
+	</div>
+
+
+	<!-- end cart -->
+	<!-- footer -->
+	<div class="footer-area">
 		<div class="container">
-			<h4 class="coupon-title">Available Coupons</h4>
 			<div class="row">
-				{{#if coupons.length}}
-				{{#each coupons}}
-				<div class="col-lg-4 col-md-6">
-					<div class="coupon-card">
-						<h3 class="coupon-code">{{this.CouponCode}}</h3>
-						<p class="coupon-description">{{this.Description}}</p>
-						<p class="coupon-validity">Valid till: {{this.ExpiryDate}}</p>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box about-widget">
+						<h2 class="widget-title">About us</h2>
+						<p>Ut enim ad minim veniam perspiciatis unde omnis iste natus error sit voluptatem
+							accusantium
+							doloremque laudantium, totam rem aperiam, eaque ipsa quae.</p>
 					</div>
 				</div>
-				{{/each}}
-				{{else}}
-				<p style="margin-bottom: 50px;color:red	">No coupons available for your cart items.</p>
-				{{/if}}
-			</div>
-		</div> --}}
-		<!-- end cart -->
-		<!-- footer -->
-		<div class="footer-area">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-3 col-md-6">
-						<div class="footer-box about-widget">
-							<h2 class="widget-title">About us</h2>
-							<p>Ut enim ad minim veniam perspiciatis unde omnis iste natus error sit voluptatem
-								accusantium
-								doloremque laudantium, totam rem aperiam, eaque ipsa quae.</p>
-						</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box get-in-touch">
+						<h2 class="widget-title">Get in Touch</h2>
+						<ul>
+							<li>34/8, East Hukupara, Gifirtok, Sadan.</li>
+							<li>support@fruitkha.com</li>
+							<li>+00 111 222 3333</li>
+						</ul>
 					</div>
-					<div class="col-lg-3 col-md-6">
-						<div class="footer-box get-in-touch">
-							<h2 class="widget-title">Get in Touch</h2>
-							<ul>
-								<li>34/8, East Hukupara, Gifirtok, Sadan.</li>
-								<li>support@fruitkha.com</li>
-								<li>+00 111 222 3333</li>
-							</ul>
-						</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box pages">
+						<h2 class="widget-title">Pages</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="about.html">About</a></li>
+							<li><a href="services.html">Shop</a></li>
+							<li><a href="news.html">News</a></li>
+							<li><a href="contact.html">Contact</a></li>
+						</ul>
 					</div>
-					<div class="col-lg-3 col-md-6">
-						<div class="footer-box pages">
-							<h2 class="widget-title">Pages</h2>
-							<ul>
-								<li><a href="index.html">Home</a></li>
-								<li><a href="about.html">About</a></li>
-								<li><a href="services.html">Shop</a></li>
-								<li><a href="news.html">News</a></li>
-								<li><a href="contact.html">Contact</a></li>
-							</ul>
-						</div>
-					</div>
-					<div class="col-lg-3 col-md-6">
-						<div class="footer-box subscribe">
-							<h2 class="widget-title">Subscribe</h2>
-							<p>Subscribe to our mailing list to get the latest updates.</p>
-							<form action="index.html">
-								<input type="email" placeholder="Email">
-								<button type="submit"><i class="fas fa-paper-plane"></i></button>
-							</form>
-						</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-box subscribe">
+						<h2 class="widget-title">Subscribe</h2>
+						<p>Subscribe to our mailing list to get the latest updates.</p>
+						<form action="index.html">
+							<input type="email" placeholder="Email">
+							<button type="submit"><i class="fas fa-paper-plane"></i></button>
+						</form>
 					</div>
 				</div>
 			</div>
 		</div>
-		<!-- end footer -->
+	</div>
+	<!-- end footer -->
 
-		<!-- copyright -->
-		<div class="copyright">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-6 col-md-12">
-					 <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
-                            Rights
-                            Reserved.<br>
-                            Distributed By - <a href="https://themewagon.com/">nextick.store</a>
-                        </p>
-					</div>
-					<div class="col-lg-6 text-right col-md-12">
-						<div class="social-icons">
-							<ul>
-								<li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-								<li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
-								<li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
-								<li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
-								<li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
-							</ul>
-						</div>
+	<!-- copyright -->
+	<div class="copyright">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6 col-md-12">
+					<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
+						Rights
+						Reserved.<br>
+						Distributed By - <a href="https://themewagon.com/">nextick.store</a>
+					</p>
+				</div>
+				<div class="col-lg-6 text-right col-md-12">
+					<div class="social-icons">
+						<ul>
+							<li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+							<li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
+						</ul>
 					</div>
 				</div>
 			</div>
 		</div>
-		<!-- end copyright -->
-		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	</div>
+	<!-- end copyright -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-		<script>
-			function updateQuantity(cartId, change) {
-				const quantityInput = document.getElementById(`quantity-${cartId}`);
-				let currentQuantity = parseInt(quantityInput.value);
+	<script>
+		function updateQuantity(cartId, change) {
+			const quantityInput = document.getElementById(`quantity-${cartId}`);
+			let currentQuantity = parseInt(quantityInput.value);
 
-				let newQuantity = currentQuantity + change;
+			let newQuantity = currentQuantity + change;
 
-				if (newQuantity > 10) {
-					Swal.fire({
-						icon: "error",
-						title: "Limit Exceeded",
-						text: "You cannot add more than 10 items of this product.",
-						confirmButtonColor: "#d33",
-						confirmButtonText: "Okay",
-					});
-					return;
-				} else if (newQuantity < 1) {
-					Swal.fire({
-						icon: "warning",
-						title: "Minimum Quantity Reached",
-						text: "You must have at least 1 item in your cart.",
-						confirmButtonColor: "#d33",
-						confirmButtonText: "Okay",
-					});
-					return;
-				}
+			if (newQuantity > 10) {
+				Swal.fire({
+					icon: "error",
+					title: "Limit Exceeded",
+					text: "You cannot add more than 10 items of this product.",
+					confirmButtonColor: "#d33",
+					confirmButtonText: "Okay",
+				});
+				return;
+			} else if (newQuantity < 1) {
+				Swal.fire({
+					icon: "warning",
+					title: "Minimum Quantity Reached",
+					text: "You must have at least 1 item in your cart.",
+					confirmButtonColor: "#d33",
+					confirmButtonText: "Okay",
+				});
+				return;
+			}
 
-				fetch(`/cart/${cartId}/getProductStock`)
-					.then((response) => response.json())
-					.then((data) => {
-						const availableStock = data.stock;
-						if (newQuantity > availableStock) {
-							Swal.fire({
-								icon: "error",
-								title: "Stock Limit Exceeded",
-								text: `Only ${availableStock} items are available in stock.`,
-								confirmButtonColor: "#d33",
-								confirmButtonText: "Okay",
-							});
-							return;
-						}
-						quantityInput.value = newQuantity;
-
-						fetch(`/cart/${cartId}/updateQuantity`, {
-							method: 'POST',
-							headers: {
-								'Content-Type': 'application/json',
-							},
-							body: JSON.stringify({ quantity: newQuantity }),
-						})
-							.then((response) => {
-								if (response.ok) {
-									console.log("Cart updated successfully.");
-								} else {
-									throw new Error("Failed to update cart.");
-								}
-							})
-							.catch((error) => {
-								console.error("Error:", error);
-								Swal.fire({
-									icon: "error",
-									title: "Update Failed",
-									text: "Unable to update the cart. Please try again.",
-									confirmButtonColor: "#d33",
-									confirmButtonText: "Okay",
-								});
-							});
-					})
-					.catch((error) => {
-						console.error("Error fetching product stock:", error);
+			fetch(`/cart/${cartId}/getProductStock`)
+				.then((response) => response.json())
+				.then((data) => {
+					const availableStock = data.stock;
+					if (newQuantity > availableStock) {
 						Swal.fire({
 							icon: "error",
-							title: "Error",
-							text: "Unable to fetch product stock. Please try again.",
+							title: "Stock Limit Exceeded",
+							text: `Only ${availableStock} items are available in stock.`,
 							confirmButtonColor: "#d33",
 							confirmButtonText: "Okay",
 						});
-					});
-			}
+						return;
+					}
+					quantityInput.value = newQuantity;
 
-			document.querySelectorAll('input[name="quantity"]').forEach((input) => {
-				input.addEventListener('change', (event) => {
-					const row = event.target.closest('tr');
-					const price = parseFloat(row.querySelector('.product-price').innerText);
-					const quantity = parseInt(event.target.value);
-					const totalCell = row.querySelector('.product-total');
-
-					totalCell.innerText = (price * quantity).toFixed(2);
-					updateCartTotals();
-				});
-			});
-			function updateCartTotals() {
-				let subtotal = 0;
-				document.querySelectorAll('.product-total').forEach((cell) => {
-					subtotal += parseFloat(cell.innerText);
-				});
-				const shippingRate = 50;
-				const total = subtotal + shippingRate;
-				document.querySelector('#subtotal').innerText = subtotal.toFixed(2);
-				document.querySelector('#shippingRate').innerText = shippingRate.toFixed(2);
-				document.querySelector('#total').innerText = total.toFixed(2);
-			}
-			$(document).ready(function () {
-				const errorMessage = document.getElementById('error-message').value;
-				if (errorMessage) {
+					fetch(`/cart/${cartId}/updateQuantity`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({ quantity: newQuantity }),
+					})
+						.then((response) => {
+							if (response.ok) {
+								console.log("Cart updated successfully.");
+							} else {
+								throw new Error("Failed to update cart.");
+							}
+						})
+						.catch((error) => {
+							console.error("Error:", error);
+							Swal.fire({
+								icon: "error",
+								title: "Update Failed",
+								text: "Unable to update the cart. Please try again.",
+								confirmButtonColor: "#d33",
+								confirmButtonText: "Okay",
+							});
+						});
+				})
+				.catch((error) => {
+					console.error("Error fetching product stock:", error);
 					Swal.fire({
-						title: 'Error!',
-						text: errorMessage,
-						icon: 'error',
-						confirmButtonText: 'OK'
+						icon: "error",
+						title: "Error",
+						text: "Unable to fetch product stock. Please try again.",
+						confirmButtonColor: "#d33",
+						confirmButtonText: "Okay",
 					});
-				}
+				});
+		}
+
+		document.querySelectorAll('input[name="quantity"]').forEach((input) => {
+			input.addEventListener('change', (event) => {
+				const row = event.target.closest('tr');
+				const price = parseFloat(row.querySelector('.product-price').innerText);
+				const quantity = parseInt(event.target.value);
+				const totalCell = row.querySelector('.product-total');
+
+				totalCell.innerText = (price * quantity).toFixed(2);
+				updateCartTotals();
 			});
-			function checkCartLimit(input) {
-				const quantity = parseInt(input.value);
-
-				if (quantity > 10) {
-					Swal.fire({
-						title: 'Cart Limit Exceeded!',
-						text: 'Your cart limit has been reached. You cannot add more than 10 items of this product..',
-						icon: 'warning',
-						confirmButtonText: 'OK'
-					}).then(() => {
-						// Redirect to orders page after clicking "OK"
-						window.location.href = '/cart';
-					});
-				} else {
-					// Only submit the form if the quantity is within the valid range
-					input.form.submit();
-				}
+		});
+		function updateCartTotals() {
+			let subtotal = 0;
+			document.querySelectorAll('.product-total').forEach((cell) => {
+				subtotal += parseFloat(cell.innerText);
+			});
+			const shippingRate = 50;
+			const total = subtotal + shippingRate;
+			document.querySelector('#subtotal').innerText = subtotal.toFixed(2);
+			document.querySelector('#shippingRate').innerText = shippingRate.toFixed(2);
+			document.querySelector('#total').innerText = total.toFixed(2);
+		}
+		$(document).ready(function () {
+			const errorMessage = document.getElementById('error-message').value;
+			if (errorMessage) {
+				Swal.fire({
+					title: 'Error!',
+					text: errorMessage,
+					icon: 'error',
+					confirmButtonText: 'OK'
+				});
 			}
-		</script>
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		});
+		function checkCartLimit(input) {
+			const quantity = parseInt(input.value);
+
+			if (quantity > 10) {
+				Swal.fire({
+					title: 'Cart Limit Exceeded!',
+					text: 'Your cart limit has been reached. You cannot add more than 10 items of this product..',
+					icon: 'warning',
+					confirmButtonText: 'OK'
+				}).then(() => {
+					// Redirect to orders page after clicking "OK"
+					window.location.href = '/cart';
+				});
+			} else {
+				// Only submit the form if the quantity is within the valid range
+				input.form.submit();
+			}
+		}
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
-		<!-- jquery -->
-		<script src="/assets/js/jquery-1.11.3.min.js"></script>
-		<!-- bootstrap -->
-		<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
-		<!-- count down -->
-		<script src="/assets/js/jquery.countdown.js"></script>
-		<!-- isotope -->
-		<script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
-		<!-- waypoints -->
-		<script src="/assets/js/waypoints.js"></script>
-		<!-- owl carousel -->
-		<script src="/assets/js/owl.carousel.min.js"></script>
-		<!-- magnific popup -->
-		<script src="/assets/js/jquery.magnific-popup.min.js"></script>
-		<!-- mean menu -->
-		<script src="/assets/js/jquery.meanmenu.min.js"></script>
-		<!-- sticker js -->
-		<script src="/assets/js/sticker.js"></script>
-		<!-- main js -->
-		<script src="/assets/js/main.js"></script>
+	<!-- jquery -->
+	<script src="/assets/js/jquery-1.11.3.min.js"></script>
+	<!-- bootstrap -->
+	<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+	<!-- count down -->
+	<script src="/assets/js/jquery.countdown.js"></script>
+	<!-- isotope -->
+	<script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
+	<!-- waypoints -->
+	<script src="/assets/js/waypoints.js"></script>
+	<!-- owl carousel -->
+	<script src="/assets/js/owl.carousel.min.js"></script>
+	<!-- magnific popup -->
+	<script src="/assets/js/jquery.magnific-popup.min.js"></script>
+	<!-- mean menu -->
+	<script src="/assets/js/jquery.meanmenu.min.js"></script>
+	<!-- sticker js -->
+	<script src="/assets/js/sticker.js"></script>
+	<!-- main js -->
+	<script src="/assets/js/main.js"></script>
 </body>
 
 </html>
