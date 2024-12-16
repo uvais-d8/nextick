@@ -182,8 +182,8 @@ const loadOrders = async (req, res) => {
 const ordertracking = async (req, res) => {
   const { id } = req.params;
   try {
-    const order = await Orders.findById(id);
-    const product = await Products.findById(id);
+    const order = await Orders.findById(id).populate("items.productId", "name");
+        const product = await Products.findById(id);
     console.log("order",order);
     console.log("product",product);
 

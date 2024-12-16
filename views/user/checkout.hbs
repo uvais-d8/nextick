@@ -495,35 +495,33 @@
 		<div class="container">
 			<h4 class="coupon-title">Available Coupons</h4>
 			<div class="row">
-				{{#if coupons.length}}
-				{{#each coupons}}
-				<div class="col-lg-4 col-md-6">
-					<div class="coupon-card">
-						<div class="coupon-header">
-							<h2>Get {{this.DiscountValue}}% Off</h2>
-							<p>Use code: <strong>{{this.couponCode}}</strong></p>
-						</div>
-						<div class="coupon-body">
-							<p>Valid on all orders above Rs {{this.minPurchase}}</p>
-							<p class="coupon-description">{{this.Description}}</p>
+    {{#if coupons.length}}
+        {{#each coupons}}
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4"> <!-- Added margin-bottom for spacing -->
+                <div class="coupon-card">
+                    <div class="coupon-header">
+                        <h2>Get {{this.DiscountValue}}% Off</h2>
+                        <p>Use code: <strong>{{this.couponCode}}</strong></p>
+                    </div>
+                    <div class="coupon-body">
+                        <p>Valid on all orders above Rs {{this.minPurchase}}</p>
+                        <p class="coupon-description">{{this.Description}}</p>
+                        <p>Expires: <strong>{{this.ExpiryDate}}</strong></p>
+                    </div>
 
-							<p>Expires: <strong>{{this.ExpiryDate}}</strong></p>
-						</div>
+                    {{#if (eq this.UsageLimit 0)}}
+                        <p style="color: rgba(223, 9, 9, 0.895);">Usage limit end (currently not available)</p>
+                    {{else}}
+                        <p style="color: green;">coupon is available</p>
+                    {{/if}}
+                </div>
+            </div>
+        {{/each}}
+    {{else}}
+        <p>No coupons available for these cart items.</p>
+    {{/if}}
+</div>
 
-						{{#if (eq this.UsageLimit 0)}}
-						<p style="color: rgba(223, 9, 9, 0.895);">Usage limit end (currently not available)</p>
-						{{else}}
-						<p style="color: green;">coupon is available</p>
-						{{/if}}
-					</div>
-
-				</div>
-			</div>
-			{{/each}}
-			{{else}}
-			<p style="margin-bottom: 50px;color:red">No coupons available for your cart items.</p>
-			{{/if}}
-		</div>
 
 
 	</div>

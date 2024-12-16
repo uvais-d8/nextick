@@ -450,8 +450,9 @@
                             <span><b>Status :</b></span>
                             <span class="status-text">{{this.status}}</span>
                             <div class="status-message" id="statusMessage"></div>
-                            <div style="font-size: large;" class="status-header">Item : {{this.name}}</div>
-                            <div class="step-price"><b>Price: ${{this.price}}</b></div>
+                            <div style="font-size: large;" class="status-header">Item : {{this.productId.name}}</div>
+
+                            <div class="step-price"><b>Price: ${{multiply this.quantity this.priceWithDiscount}}</b></div>
                             <div class="step-quantity"><b>Quantity: {{this.quantity}}</b></div>
                         </div>
                         <hr>
