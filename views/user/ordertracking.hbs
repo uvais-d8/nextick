@@ -350,6 +350,22 @@
                 height: 32px;
             }
         }
+        .button-red{
+            font-weight: bold;
+            color: rgb(202, 16, 16);
+        } .button-green{
+            font-weight: bold;
+            color: rgb(75, 195, 6);
+        } .button-yellow{
+            font-weight: bold;
+            color: rgb(225, 210, 0);
+        } .button-blue{
+            font-weight: bold;
+            color: rgb(38, 13, 182);
+        } .button-purple{
+            font-weight: bold;
+            color: rgb(211, 2, 124);
+        }  
     </style>
 </head>
 
@@ -447,8 +463,18 @@
                             #{{_id}}</div>
                         <div class="status-header">
                             <span><b>Status :</b></span>
-                            <span><b>Status :</b></span>
-                            <span class="status-text">{{this.status}}</span>
+                           
+                           <span class="
+        {{#if (eq status 'scheduled')}}button-blue{{else}}
+        {{#if (eq status 'pending')}}button-yellow{{else}}
+        {{#if (eq status 'canceled')}}button-red{{else}}
+        {{#if (eq status 'returned')}}button-yellow{{else}}
+		{{#if (eq status 'payment-pending')}}button-red{{else}}
+        {{#if (eq status 'delivered')}}button-green{{else}}
+        {{#if (eq status 'shipped')}}button-purple{{/if}}{{/if}}
+        {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}">
+							{{status}}
+						</span>
                             <div class="status-message" id="statusMessage"></div>
                             <div style="font-size: large;" class="status-header">Item : {{this.productId.name}}</div>
 

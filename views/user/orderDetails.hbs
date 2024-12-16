@@ -136,6 +136,22 @@
         .mstatus.Cancelled {
             color: #e74c3c;
         }
+          .button-red{
+            font-weight: bold;
+            color: rgb(202, 16, 16);
+        } .button-green{
+            font-weight: bold;
+            color: rgb(75, 195, 6);
+        } .button-yellow{
+            font-weight: bold;
+            color: rgb(225, 210, 0);
+        } .button-blue{
+            font-weight: bold;
+            color: rgb(38, 13, 182);
+        } .button-purple{
+            font-weight: bold;
+            color: rgb(211, 2, 124);
+        }  
     </style>
 </head>
 
@@ -297,7 +313,17 @@
             <!-- Order Status -->
             <div class="msection order-status">
                 <div class="msection-title">Order Status</div>
-                <p><span>Current Status:</span> <span class="mstatus {{product.status}}">{{product.status}}</span></p>
+                <p><span>Current Status:</span> <span class="mstatus {{product.status}}"> <span class="
+        {{#if (eq product.status 'scheduled')}}button-blue{{else}}
+        {{#if (eq product.status 'pending')}}button-yellow{{else}}
+        {{#if (eq product.status 'canceled')}}button-red{{else}}
+        {{#if (eq product.status 'returned')}}button-yellow{{else}}
+		{{#if (eq product.status 'payment-pending')}}button-red{{else}}
+        {{#if (eq product.status 'delivered')}}button-green{{else}}
+        {{#if (eq product.status 'shipped')}}button-purple{{/if}}{{/if}}
+        {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}">
+							{{product.status}}
+						</span></span></p>
             </div>
         </div>
         <!-- footer -->
