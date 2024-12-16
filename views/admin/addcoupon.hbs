@@ -177,9 +177,7 @@
                                 <label for="minPurchase" class="form-label">Minimum Purchase</label>
                                 <input type="number" class="form-control" name="minPurchase" id="minPurchase">
                             </div>
-
-
-
+ 
                             <div class="form-group">
                                 <label for="Products">Applicable Products:</label>
                                 <!-- Dropdown Button -->
@@ -191,6 +189,8 @@
                                 <!-- Dropdown Content -->
                                 <div id="ProductsDropdown" class="form-control"
                                     style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
+                                    <button id="selectToggleButton" type="button" onclick="toggleSelectAll()"
+                                        style="margin-left:85%;font-size:12px;width:100px;background-color:rgb(0, 119, 255);padding-top:10px;height:30px">Select All</button>
                                     {{#each products}}
                                     <div
                                         style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
@@ -201,8 +201,27 @@
                                     </div>
                                     {{/each}}
                                 </div>
+
+                                <script>
+                                    function toggleSelectAll() {
+                                        var checkboxes = document.querySelectorAll('input[name="Products[]"]');
+                                        var button = document.getElementById('selectToggleButton');
+                                        var allSelected = Array.from(checkboxes).every(checkbox => checkbox.checked);
+
+                                        checkboxes.forEach(checkbox => {
+                                            checkbox.checked = !allSelected;
+                                        });
+
+                                        if (allSelected) {
+                                            button.textContent = 'Select All'; // Change button to 'Select All' if all are deselected
+                                        } else {
+                                            button.textContent = 'Deselect All'; // Change button to 'Deselect All' if any are selected
+                                        }
+                                    }
+                                </script>
+
                             </div>
-                           
+
 
                             <div class="mb-3">
                                 <label for="UsageLimit" class="form-label">Usage Limit</label>
@@ -261,7 +280,7 @@
                         isValid = false;
                     }
 
-                    if (UsageLimit < 1 ) {
+                    if (UsageLimit < 1) {
                         showError('#UsageLimit', 'enter a positive usage limit.');
                         isValid = false;
                     }
@@ -288,13 +307,13 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-NI16xFJyr0z2mzz/j9A5n3dvvzRr+cXv7kZHYtU4hIW44C5SRsCXumtp92MOaF3Y"
             crossorigin="anonymous"></script>
-   <script>
-        // JavaScript to toggle the dropdown visibility
-        document.getElementById("dropdownToggle").addEventListener("click", function () {
-            const dropdown = document.getElementById("ProductsDropdown");
-            dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
-        });
-    </script>
+        <script>
+            // JavaScript to toggle the dropdown visibility
+            document.getElementById("dropdownToggle").addEventListener("click", function () {
+                const dropdown = document.getElementById("ProductsDropdown");
+                dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+            });
+        </script>
 
 </body>
 
@@ -305,7 +324,7 @@
 
 
 
-{{!-- 
+{{!--
 
 <form method="post" action="/admin/addingcoupon">
     <div class="form-group">
@@ -342,7 +361,7 @@
         </div>
     </div>
 
- 
+
 
     <div class="form-group">
         <label for="MinimumCartValue">Minimum Cart Value:</label>
