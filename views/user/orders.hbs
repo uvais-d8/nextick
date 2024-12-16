@@ -609,10 +609,12 @@
 					</form>
 				</div>
 				<div>
+					{{#if (eq this.status 'payment-pending')}}
 					<button style="margin-right:5px;width:108px;font-size:13px;height: 33px;"
 						class="btn btn-warning retry-button" id="payButton" data-order-id="{{this._id}}">
 						Retry Payment
 					</button>
+					{{/if}}
 				</div>
 				<div style="width:50%;">
 					<form> <button class="btn btn-success" style="width: 134px;"
@@ -779,82 +781,82 @@
 	</script>
 
 
-<div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="returnModalLabel">Confirm Return</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to return this item?</p>
-        <p><strong>Order ID:</strong> <span id="modalOrderId"></span></p>
-        <p><strong>Item ID:</strong> <span id="modalItemId"></span></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" id="confirmReturn">Confirm Return</button>
-      </div>
-    </div>
-  </div>
-</div>
+	<div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="returnModalLabel">Confirm Return</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p>Are you sure you want to return this item?</p>
+					<p><strong>Order ID:</strong> <span id="modalOrderId"></span></p>
+					<p><strong>Item ID:</strong> <span id="modalItemId"></span></p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-danger" id="confirmReturn">Confirm Return</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 
-<script>document.addEventListener('DOMContentLoaded', function () {
-  // Listen for the modal being shown
-  const returnModal = document.getElementById('returnModal');
+	<script>document.addEventListener('DOMContentLoaded', function () {
+			// Listen for the modal being shown
+			const returnModal = document.getElementById('returnModal');
 
-  returnModal.addEventListener('show.bs.modal', function (event) {
-    const button = event.relatedTarget; // Button that triggered the modal
-    const orderId = button.getAttribute('data-order-id');
-    const itemId = button.getAttribute('data-item-id');
+			returnModal.addEventListener('show.bs.modal', function (event) {
+				const button = event.relatedTarget; // Button that triggered the modal
+				const orderId = button.getAttribute('data-order-id');
+				const itemId = button.getAttribute('data-item-id');
 
-    // Set the Order ID and Item ID in the modal
-    document.getElementById('modalOrderId').textContent = orderId;
-    document.getElementById('modalItemId').textContent = itemId;
+				// Set the Order ID and Item ID in the modal
+				document.getElementById('modalOrderId').textContent = orderId;
+				document.getElementById('modalItemId').textContent = itemId;
 
-    // Attach the Item ID to the confirm button for API call
-    const confirmReturnBtn = document.getElementById('confirmReturn');
-    confirmReturnBtn.setAttribute('data-item-id', itemId);
-  });
+				// Attach the Item ID to the confirm button for API call
+				const confirmReturnBtn = document.getElementById('confirmReturn');
+				confirmReturnBtn.setAttribute('data-item-id', itemId);
+			});
 
-  // Handle Confirm Return button click
-  const confirmReturnBtn = document.getElementById('confirmReturn');
-  confirmReturnBtn.addEventListener('click', function () {
-    const itemId = confirmReturnBtn.getAttribute('data-item-id');
+			// Handle Confirm Return button click
+			const confirmReturnBtn = document.getElementById('confirmReturn');
+			confirmReturnBtn.addEventListener('click', function () {
+				const itemId = confirmReturnBtn.getAttribute('data-item-id');
 
-    if (!itemId) {
-      console.error('Item ID is missing!');
-      return;
-    }
+				if (!itemId) {
+					console.error('Item ID is missing!');
+					return;
+				}
 
-    // Make the API call to return the item
-    fetch(`/return-order/${itemId}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to return the item');
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Success:', data);
+				// Make the API call to return the item
+				fetch(`/return-order/${itemId}`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				})
+					.then(response => {
+						if (!response.ok) {
+							throw new Error('Failed to return the item');
+						}
+						return response.json();
+					})
+					.then(data => {
+						console.log('Success:', data);
 
-        // Optionally close the modal and refresh the page or update the UI
-        const modalInstance = bootstrap.Modal.getInstance(returnModal);
-        modalInstance.hide();
-        location.reload(); // Refresh the page or update the UI dynamically
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-  });
-});
-</script>
+						// Optionally close the modal and refresh the page or update the UI
+						const modalInstance = bootstrap.Modal.getInstance(returnModal);
+						modalInstance.hide();
+						location.reload(); // Refresh the page or update the UI dynamically
+					})
+					.catch(error => {
+						console.error('Error:', error);
+					});
+			});
+		});
+	</script>
 
 	<!-- copyright -->
 	<div class="copyright">
