@@ -21,7 +21,7 @@
     <div class="dashboard">
         <aside class="sidebar">
             <div class="logo">WATCH PREMIUM</div>
-          <nav>
+            <nav>
                 <a class="a" href="/admin/dashboard">
                     <div class="nav-item">
                         <i class="bi bi-house"></i> Dashboard
@@ -74,16 +74,17 @@
             <div class="controls">
                 <h1 style="font-size:43px;">COUPON MANAGEMENT</h1>
             </div>
-            <div><form >
-            </form>
+            <div>
+                <form>
+                </form>
             </div>
-                   <div class="controls">
-            
-                <form method="get"  action="/admin/addcoupon"><button style="background-color: rgb(3, 139, 39);"  class="sort-button">ADD
-                    COUPON (products)</button>
-                </form><form method="get" action="/admin/addcoupons"><button style="background-color: rgb(3, 139, 39);" class="sort-button">ADD
-                    COUPON (category)</button></form>
-            </div>  
+            <div class="controls">
+
+                <form style="margin-left: 82%;" method="get" action="/admin/addcoupon"><button style="background-color: rgb(3, 139, 39);"
+                        class="sort-button">ADD
+                        COUPON (products)</button>
+                </form>
+            </div>
 
             <table>
                 <thead>
@@ -92,8 +93,7 @@
                         <th>Discount Type</th>
                         <th>Discount Value</th>
                         <th>Products</th>
-                        <th>Categories</th>
-                        <th>MinCart Value</th>
+                        <th>min Purchase</th>
                         <th>Usage Limit</th>
                         <th>Expiry Date</th>
                         <th>Description</th>
@@ -103,17 +103,16 @@
                 <tbody>
                     {{#each coupons}}
                     <tr>
-                        <td>#{{this.CouponCode}}</td>
+                        <td># {{this.couponCode}}</td>
                         <td>{{this.DiscountType}}</td>
                         <td>{{this.DiscountValue}}</td>
-                        <td>{{this.Products}}</td>  
-                        <td>{{this.Categories}}</td>
-                        <td>{{this.MinimumCartValue}}</td>
+                        <td>{{this.Products}}</td>
+                        <td>{{this.minPurchase}}</td>
                         <td>{{this.UsageLimit}}</td>
-                        <td>{{formatDate this.ExpiryDate}}</td> <!-- Use the formatDate helper -->
+                        <td>{{formatDate this.expiryDate}}</td> <!-- Use the formatDate helper -->
                         <td>{{this.Description}}</td>
                         <td>
-                              {{#if this.Status}}
+                            {{#if this.Status}}
                             <form action="/admin/coupon/unlist/{{this._id}}" method="POST">
                                 <button
                                     style="color:white;background-color: rgba(0, 174, 0, 0.671);height:40px;width:100px"
@@ -137,36 +136,36 @@
             </table>
 
 
-           
-<!-- Pagination -->
-<nav aria-label="Page navigation">
-  <ul class="pagination justify-content-center pages custom-pagination">
-    <!-- Show the "Previous" button if there is a previous page -->
-    {{#if previousPage}}
-      <li class="page-item">
-        <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
-          <span aria-hidden="true">&laquo;</span>
-        </a>
-      </li>
-    {{/if}}
 
-    <!-- Generate page numbers -->
-    {{#each (range 1 totalPages)}}
-      <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
-        <a class="page-link" href="?page={{this}}">{{this}}</a>
-      </li>
-    {{/each}}
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center pages custom-pagination">
+                    <!-- Show the "Previous" button if there is a previous page -->
+                    {{#if previousPage}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {{/if}}
 
-    <!-- Show the "Next" button if there is a next page -->
-    {{#if nextPage}}
-      <li class="page-item">
-        <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
-          <span aria-hidden="true">&raquo;</span>
-        </a>
-      </li>
-    {{/if}}
-  </ul>
-</nav>
+                    <!-- Generate page numbers -->
+                    {{#each (range 1 totalPages)}}
+                    <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
+                        <a class="page-link" href="?page={{this}}">{{this}}</a>
+                    </li>
+                    {{/each}}
+
+                    <!-- Show the "Next" button if there is a next page -->
+                    {{#if nextPage}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {{/if}}
+                </ul>
+            </nav>
         </main>
     </div>
 </body>

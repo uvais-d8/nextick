@@ -124,7 +124,9 @@
 						<!-- logo -->
 						<div class="site-logo">
 							<a href="/">
-								<p style="font-size:28px; color:white;margin-top:-5px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">NEXTIC<span style="font-weight: bold;color:rgb(238, 149, 15)">K</span></p>
+								<p
+									style="font-size:28px; color:white;margin-top:-5px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
+									NEXTIC<span style="font-weight: bold;color:rgb(238, 149, 15)">K</span></p>
 							</a>
 						</div>
 						<!-- logo -->
@@ -452,7 +454,7 @@
 												<hr>
 												<input type="radio" id="cod" name="paymentMethod" value="cod">
 												<label for="cod">COD</label><br>
-												 
+
 											</div>
 										</div>
 										<div style="margin-left: 15px;color:rgb(18, 175, 18);font-weight:bold"
@@ -497,24 +499,70 @@
 				{{#each coupons}}
 				<div class="col-lg-4 col-md-6">
 					<div class="coupon-card">
-						<h3 class="coupon-code">{{this.CouponCode}}</h3>
-						<p class="coupon-description">{{this.Description}}</p>
-						<p class="coupon-validity">Valid till:<b>{{this.ExpiryDate}}</b></p>
+						<div class="coupon-header">
+							<h2>Get {{this.DiscountValue}}% Off</h2>
+							<p>Use code: <strong>{{this.couponCode}}</strong></p>
+						</div>
+						<div class="coupon-body">
+							<p>Valid on all orders above Rs {{this.minPurchase}}</p>
+							<p class="coupon-description">{{this.Description}}</p>
+
+							<p>Expires: <strong>{{this.ExpiryDate}}</strong></p>
+						</div>
+
 						{{#if (eq this.UsageLimit 0)}}
 						<p style="color: rgba(223, 9, 9, 0.895);">Usage limit end (currently not available)</p>
 						{{else}}
 						<p style="color: green;">coupon is available</p>
 						{{/if}}
-
 					</div>
+
 				</div>
-				{{/each}}
-				{{else}}
-				<p style="margin-bottom: 50px;color:red">No coupons available for your cart items.</p>
-				{{/if}}
 			</div>
+			{{/each}}
+			{{else}}
+			<p style="margin-bottom: 50px;color:red">No coupons available for your cart items.</p>
+			{{/if}}
 		</div>
+
+
 	</div>
+	</div>
+	<style>
+		.coupon-card {
+			background-color: #fff;
+			border-radius: 8px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			width: 300px;
+			padding: 20px;
+			text-align: center;
+		}
+
+		.coupon-header h2 {
+			margin: 0;
+			font-size: 24px;
+			color: #ccb42e;
+		}
+
+		.coupon-header p {
+			font-size: 16px;
+			color: #333;
+		}
+
+		.coupon-body {
+			margin-top: 15px;
+			font-size: 14px;
+			color: #555;
+		}
+
+		.coupon-footer {
+			margin-top: 20px;
+		}
+
+		.apply-btn:hover {
+			background-color: #27ae60;
+		}
+	</style>
 	<!-- logo carousel -->
 	<div class="logo-carousel-section">
 		<div class="container">
@@ -606,11 +654,11 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-6 col-md-12">
-					 <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
-                            Rights
-                            Reserved.<br>
-                            Distributed By - <a href="https://themewagon.com/">nextick.store</a>
-                        </p>
+					<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
+						Rights
+						Reserved.<br>
+						Distributed By - <a href="https://themewagon.com/">nextick.store</a>
+					</p>
 				</div>
 				<div class="col-lg-6 text-right col-md-12">
 					<div class="social-icons">
@@ -836,11 +884,11 @@
 						document.querySelector('.total-data .total').textContent = `₹${newTotal.toFixed(2)}`;
 						document.querySelector('.discount-section').textContent = `Discount Applied: ₹${discount.toFixed(2)}`;
 						document.querySelector('.discount-section').style.display = 'block';
- 
+
 						document.querySelector('input[name="total"]').value = newTotal.toFixed(2);
- 
+
 						submitButton.value = 'Remove Coupon';
-						couponCodeInput.readOnly = true;  
+						couponCodeInput.readOnly = true;
 					} else {
 						Swal.fire({
 							title: "Oops..Error",

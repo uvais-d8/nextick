@@ -55,15 +55,11 @@ const checkout = async (req, res) => {
         cartProductNames.includes(productName)
       );
 
-      const isCategoryMatch = coupon.Categories.some(category =>
-        cartCategories.includes(category)
-      );
-
-      return isProductMatch || isCategoryMatch;  
+      return isProductMatch ;  
     });
      const formattedCoupons = filteredCoupons.map(coupon => ({
       ...coupon.toObject(),
-      ExpiryDate: coupon.ExpiryDate.toLocaleString("en-GB") 
+      ExpiryDate: coupon.expiryDate.toLocaleString("en-GB") 
     }));
 
      if (!carts || carts.length === 0) {

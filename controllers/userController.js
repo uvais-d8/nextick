@@ -349,6 +349,7 @@ const advancedSearch = async (req, res) => {
       const categoryDoc = await Category.findOne({ category: category.trim() });
       if (categoryDoc) {
         filter.category = categoryDoc._id;
+        console.log("categoryDoc",categoryDoc)
       } else {
         console.warn(`Category not found: ${category}`);
       }

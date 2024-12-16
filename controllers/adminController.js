@@ -8,7 +8,7 @@ const Orders = require("../model/ordersmodal");
 const path = require("path");
 const { default: mongoose } = require("mongoose");
 const Coupon = require("../model/couponModel");
-const Wallet = require("../model/walletModel")
+const Wallet = require("../model/walletModel");
 const multer = require("multer");
 const Offer = require("../model/offermodel");
 const Coupons = require("../model/couponModel");
@@ -85,7 +85,7 @@ const loaddashboard = async (req, res) => {
         }
       },
       { $unwind: "$categoryDetails" }
-        ]);
+    ]);
     if (startDate && endDate) {
       filterConditions.time = {
         $gte: new Date(startDate),
@@ -107,10 +107,9 @@ const loaddashboard = async (req, res) => {
                 `Week-${Math.ceil(
                   order.time.getDate() / 7
                 )} ${order.time.getFullYear()}`
-            : order => `${order.time.getFullYear()}`; 
+            : order => `${order.time.getFullYear()}`;
     const salesData = orders.reduce((acc, order) => {
-      
-    const key = groupByKey(order);
+      const key = groupByKey(order);
 
       if (!acc[key]) {
         acc[key] = {
@@ -548,13 +547,13 @@ const addproduct = async (req, res) => {
 
     const newProduct = new Products({
       name,
-      category: categoryObj._id,  
+      category: categoryObj._id,
       stock,
       price,
       description: description || "Default description",
-      images: files.map(file => file.path) 
+      images: files.map(file => file.path)
     });
- 
+
     await newProduct.save();
     console.log("New product saved:", newProduct);
 
@@ -754,8 +753,15 @@ const updateOrderStatus = async (req, res) => {
     }
 
     // Validate status
-    const validStatuses = ["canceled","scheduled", "pending", "delivered", "shipped","payment-pending",
-        "returned"];
+    const validStatuses = [
+      "canceled",
+      "scheduled",
+      "pending",
+      "delivered",
+      "shipped",
+      "payment-pending",
+      "returned"
+    ];
     if (!validStatuses.includes(status)) {
       console.log("Invalid status:", status);
       return res
@@ -785,7 +791,7 @@ const updateOrderStatus = async (req, res) => {
     if (item.status === "delivered") {
       return res.status(400).json({
         success: false,
-        message: "Item is already delivered and cannot be canceled.",
+        message: "Item is already delivered and cannot be canceled."
       });
     }
 
@@ -803,7 +809,8 @@ const updateOrderStatus = async (req, res) => {
 
       // Handle refund for prepaid orders
       if (order.paymentMethod === "razorpay") {
-        let refundAmount = (item.priceWithDiscount || item.price) * item.quantity;
+        let refundAmount =
+          (item.priceWithDiscount || item.price) * item.quantity;
         if (refundAmount > 0) {
           console.log("Refund amount:", refundAmount);
 
@@ -818,9 +825,10 @@ const updateOrderStatus = async (req, res) => {
                 {
                   type: "refund",
                   amount: refundAmount,
-                  description: `Refund for canceled product (${item.productId.name}) in order ${orderId}`,
-                },
-              ],
+                  description: `Refund for canceled product (${item.productId
+                    .name}) in order ${orderId}`
+                }
+              ]
             });
           } else {
             // Update existing wallet balance and transactions
@@ -828,7 +836,8 @@ const updateOrderStatus = async (req, res) => {
             wallet.transactions.push({
               type: "refund",
               amount: refundAmount,
-              description: `Refund for canceled product (${item.productId.name}) in order ${orderId}`,
+              description: `Refund for canceled product (${item.productId
+                .name}) in order ${orderId}`
             });
           }
 
@@ -841,7 +850,7 @@ const updateOrderStatus = async (req, res) => {
     await order.save();
 
     // Check if all items are canceled, then update the order status
-    if (order.items.every((item) => item.status === "canceled")) {
+    if (order.items.every(item => item.status === "canceled")) {
       order.status = "canceled";
       await order.save();
     }
@@ -856,7 +865,6 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
- 
 const loadOrder = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -920,213 +928,57 @@ const loadaddcoupons = async (req, res) => {
 const addcoupon = async (req, res) => {
   try {
     const {
-      CouponCode,
+      couponCode,
       DiscountType,
       DiscountValue,
+      minPurchase,
       Products,
-      MinimumCartValue,
       UsageLimit,
-      ExpiryDate,
-      Description
+      expiryDate
     } = req.body;
-
-    console.log("Request body:", req.body);
-
+    console.log("req.bosyy..,", req.body);
     if (
-      !CouponCode ||
+      !couponCode ||
       !DiscountType ||
       !DiscountValue ||
-      !Products.length ||
-      !ExpiryDate
+      !minPurchase ||
+      !Products ||
+      !UsageLimit ||
+      !expiryDate
     ) {
-      console.log("Missing required fields");
-      return res.render("admin/addcoupon", {
-        message: "All fields are required"
-      });
+      return res.status(400).send("All fields are required");
     }
 
-    // Check for existing coupon code
-    const existingcoupon = await Coupon.findOne({ CouponCode });
-    if (existingcoupon) {
-      console.log("coupon already exists");
-      return res.render("admin/addcoupon", {
-        message: "Coupon already exists"
-      });
+    const existingCoupon = await Coupon.findOne({ couponCode });
+    if (existingCoupon) {
+      return res.status(400).send("Coupon Code already exists");
     }
 
-    if (isNaN(DiscountValue) || DiscountValue <= 0) {
-      console.log("Invalid DiscountValue");
-      return res.render("admin/addcoupon", {
-        message: "Discount value must be a positive number"
-      });
+    if (DiscountType === "percentage" && DiscountValue > 50) {
+      return res.status(400).send("Discount values must be below 100");
     }
 
-    if (MinimumCartValue && (isNaN(MinimumCartValue) || MinimumCartValue < 0)) {
-      console.log("Invalid MinimumCartValue");
-      return res.render("admin/addcoupon", {
-        message: "Minimum cart value must be a positive number"
-      });
+    const currentDate = new Date();
+    const parsedExpiryDate = new Date(expiryDate);
+    if (parsedExpiryDate <= currentDate) {
+      return res.status(400).send("Expiry date must be in the future");
     }
 
-    if (
-      UsageLimit &&
-      (isNaN(UsageLimit) ||
-        UsageLimit <= 0 ||
-        !Number.isInteger(Number(UsageLimit)))
-    ) {
-      console.log("Invalid UsageLimit");
-      return res.render("admin/addcoupon", {
-        message: "Usage limit must be a positive integer"
-      });
-    }
-
-    const formattedExpiryDate = new Date(ExpiryDate);
-    if (isNaN(formattedExpiryDate)) {
-      console.log("Invalid ExpiryDate");
-      return res.render("admin/addcoupon", {
-        message: "Expiry date is invalid"
-      });
-    }
-
-    if (formattedExpiryDate < new Date()) {
-      console.log("Expiry date is in the past");
-      return res.render("admin/addcoupon", {
-        message: "Expiry date cannot be in the past"
-      });
-    }
-
-    if (Description && typeof Description !== "string") {
-      console.log("Invalid Description");
-      return res.render("admin/addcoupon", {
-        message: "Description must be a valid string"
-      });
-    }
-
-    // Create a new coupon object
     const newCoupon = new Coupon({
-      CouponCode,
+      couponCode,
+      Products,
       DiscountType,
       DiscountValue,
-      Products,
-      MinimumCartValue,
+      minPurchase,
       UsageLimit,
-      ExpiryDate: formattedExpiryDate,
-      Description
+      expiryDate
     });
 
     await newCoupon.save();
-    console.log("New coupon saved:", newCoupon);
-
-    return res.redirect("/admin/coupon");
-  } catch (error) {
-    console.error("Error adding coupon:", error.message);
     res.redirect("/admin/coupon");
-  }
-};
-const addcoupons = async (req, res) => {
-  try {
-    const {
-      CouponCode,
-      DiscountType,
-      DiscountValue,
-      Categories,
-      MinimumCartValue,
-      UsageLimit,
-      ExpiryDate,
-      Description
-    } = req.body;
-
-    console.log("Request body:", req.body);
-
-    if (
-      !CouponCode ||
-      !DiscountType ||
-      !DiscountValue ||
-      !Categories.length ||
-      !ExpiryDate
-    ) {
-      console.log("Missing required fields");
-      return res.render("admin/addcoupons", {
-        message: "All fields are required"
-      });
-    }
-
-    // Check for existing coupon code
-    const existingcoupon = await Coupon.findOne({ CouponCode });
-    if (existingcoupon) {
-      console.log("coupon already exists");
-      return res.render("admin/addcoupons", {
-        message: "Coupon already exists"
-      });
-    }
-
-    if (isNaN(DiscountValue) || DiscountValue <= 0) {
-      console.log("Invalid DiscountValue");
-      return res.render("admin/addcoupons", {
-        message: "Discount value must be a positive number"
-      });
-    }
-
-    if (MinimumCartValue && (isNaN(MinimumCartValue) || MinimumCartValue < 0)) {
-      console.log("Invalid MinimumCartValue");
-      return res.render("admin/addcoupons", {
-        message: "Minimum cart value must be a positive number"
-      });
-    }
-
-    if (
-      UsageLimit &&
-      (isNaN(UsageLimit) ||
-        UsageLimit <= 0 ||
-        !Number.isInteger(Number(UsageLimit)))
-    ) {
-      console.log("Invalid UsageLimit");
-      return res.render("admin/addcoupons", {
-        message: "Usage limit must be a positive integer"
-      });
-    }
-
-    const formattedExpiryDate = new Date(ExpiryDate);
-    if (isNaN(formattedExpiryDate)) {
-      console.log("Invalid ExpiryDate");
-      return res.render("admin/addcoupons", {
-        message: "Expiry date is invalid"
-      });
-    }
-
-    if (formattedExpiryDate < new Date()) {
-      console.log("Expiry date is in the past");
-      return res.render("admin/addcoupons", {
-        message: "Expiry date cannot be in the past"
-      });
-    }
-
-    if (Description && typeof Description !== "string") {
-      console.log("Invalid Description");
-      return res.render("admin/addcoupons", {
-        message: "Description must be a valid string"
-      });
-    }
-
-    // Create a new coupon object
-    const newCoupon = new Coupon({
-      CouponCode,
-      DiscountType,
-      DiscountValue,
-      Categories,
-      MinimumCartValue,
-      UsageLimit,
-      ExpiryDate: formattedExpiryDate,
-      Description
-    });
-
-    await newCoupon.save();
-    console.log("New coupon saved:", newCoupon);
-
-    return res.redirect("/admin/coupon");
   } catch (error) {
-    console.error("Error adding coupon:", error.message);
-    res.redirect("/admin/coupon");
+    console.error(error);
+    res.status(500).send("Error adding coupon");
   }
 };
 const loadcoupon = async (req, res) => {
@@ -1555,25 +1407,25 @@ const getSalesReport = async (req, res) => {
       "items.productId"
     );
 
-     const getWeekNumber = date => {
+    const getWeekNumber = date => {
       const startDate = new Date(date.getFullYear(), 0, 1);
       const days = Math.floor((date - startDate) / (24 * 60 * 60 * 1000));
       return Math.ceil((days + 1) / 7);
     };
 
-     const groupByKey =
+    const groupByKey =
       filter === "daily"
         ? order => order.time.toISOString().split("T")[0]
         : filter === "monthly"
           ? order => `${order.time.getMonth() + 1}-${order.time.getFullYear()}`
           : filter === "yearly"
             ? order => `${order.time.getFullYear()}`
-            : filter === "weekly"  
+            : filter === "weekly"
               ? order =>
                   `Week-${getWeekNumber(
                     order.time
                   )} ${order.time.getFullYear()}`
-              : order => `${order.time.getFullYear()}`;  
+              : order => `${order.time.getFullYear()}`;
     const salesData = orders.reduce((acc, order) => {
       const key = groupByKey(order);
 
@@ -1674,27 +1526,27 @@ const exportPDF = async (req, res) => {
       "Net Sale"
     ];
 
-     const drawLine = y => {
-      doc.moveTo(30, y + 10).lineTo(560, y + 10).stroke();  
+    const drawLine = y => {
+      doc.moveTo(30, y + 10).lineTo(560, y + 10).stroke();
     };
 
-    let currentY = doc.y + 100; 
+    let currentY = doc.y + 100;
 
     salesData.forEach((report, index) => {
-       doc
+      doc
         .fontSize(14)
         .font("Helvetica-Bold")
         .text(`Group: ${report.key}`, 40, currentY);
-      currentY = doc.y + 20; 
+      currentY = doc.y + 20;
       drawLine(currentY);
-       currentY += 25; 
+      currentY += 25;
       doc.fontSize(12).font("Helvetica-Bold");
       tableHeaders.forEach((header, i) => {
         const x = 40 + i * 75;
         doc.text(header, x, currentY, { width: 70, align: "left" });
       });
-      currentY += 25;  
-       report.orders.forEach(order => {
+      currentY += 25;
+      report.orders.forEach(order => {
         doc.fontSize(10).font("Helvetica");
         const rowData = [
           new Date(order.date).toLocaleDateString(),
@@ -1711,17 +1563,17 @@ const exportPDF = async (req, res) => {
           doc.text(data, x, currentY, { width: 70, align: "left" });
         });
 
-        currentY += 30; 
-        
+        currentY += 30;
+
         if (currentY > 750) {
           doc.addPage();
-          currentY = 70;  
+          currentY = 70;
           drawLine(currentY);
         }
       });
 
-      currentY += 30;  
-        });
+      currentY += 30;
+    });
     drawLine(currentY);
 
     // Footer
@@ -1744,8 +1596,8 @@ const exportPDF = async (req, res) => {
 };
 const exportExcel = async (req, res) => {
   try {
-    const salesData = JSON.parse(req.body.salesData); 
-        const workbook = new ExcelJS.Workbook();
+    const salesData = JSON.parse(req.body.salesData);
+    const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Sales Report");
 
     worksheet.columns = [
@@ -1758,7 +1610,7 @@ const exportExcel = async (req, res) => {
       { header: "Net Sale", key: "netSale" }
     ];
 
-     salesData.forEach(report => {
+    salesData.forEach(report => {
       report.orders.forEach(order => worksheet.addRow(order));
     });
 
@@ -1840,14 +1692,24 @@ const getSalesData = async (req, res) => {
     if (filter === "yearly") {
       labels = salesData.map(item => `${item._id.year}`);
       totalPrices = salesData.map(item => item.totalSales);
-    
+
       // If no sales data exists for certain years, handle that here
       const years = [...new Set(salesData.map(item => item._id.year))];
       console.log("Years Found:", years);
-    }
-     else if (filter === "monthly") {
+    } else if (filter === "monthly") {
       const months = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
       ];
 
       // Ensure we have data for all 12 months, even if no sales data exists for some months
@@ -1864,11 +1726,11 @@ const getSalesData = async (req, res) => {
       // Initialize the labels and sales data
       labels = [];
       totalPrices = [];
-    
+
       salesData.forEach(item => {
         const week = item._id.week || "N/A"; // Handle missing week data
         const year = item._id.year || "N/A"; // Handle missing year data
-    
+
         if (week !== "N/A" && year !== "N/A") {
           labels.push(`Week ${week} - ${year}`);
           totalPrices.push(item.totalSales);
@@ -1876,11 +1738,10 @@ const getSalesData = async (req, res) => {
           console.warn("Invalid Weekly Data:", item);
         }
       });
-    
+
       console.log("Weekly Labels:", labels);
       console.log("Weekly Total Sales:", totalPrices);
     }
-    
 
     // Log the labels and totalPrices for debugging
     console.log("Labels:", labels);
@@ -1888,14 +1749,11 @@ const getSalesData = async (req, res) => {
     console.log("Aggregated Sales Data:", salesData);
 
     res.json({ labels, totalPrices });
-
   } catch (error) {
     console.error("Error fetching sales data:", error);
     res.status(500).json({ error: "Failed to fetch sales data" });
   }
 };
-
- 
 
 module.exports = {
   getSalesData,
@@ -1941,7 +1799,6 @@ module.exports = {
   addoffer,
   loadaddoffer,
   exportExcel,
-  addcoupons,
   loadaddcoupons,
   loadaddoffers,
   addoffers,

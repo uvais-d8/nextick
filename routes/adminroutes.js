@@ -47,8 +47,7 @@ router.get("/coupon",adminAuth.checksession,adminController.loadcoupon)
 router.get("/addcoupon",adminAuth.checksession,adminController.loadaddcoupon)
 router.get("/addcoupons",adminAuth.checksession,adminController.loadaddcoupons)
 router.post("/addingcoupon",adminAuth.checksession,adminController.addcoupon)
-router.post("/addingcoupons",adminAuth.checksession,adminController.addcoupons)
-router.post("/deletecoupon/:couponId", adminAuth.checksession,  adminController.deleteCoupon);
+ router.post("/deletecoupon/:couponId", adminAuth.checksession,  adminController.deleteCoupon);
 router.post("/coupon/unlist/:id", adminAuth.checksession, adminController.unlistCoupon);
 router.post("/coupon/list/:id", adminAuth.checksession, adminController.listCoupon);
 
