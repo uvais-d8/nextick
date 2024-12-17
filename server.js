@@ -152,6 +152,10 @@ app.engine(
       multiply: (price, quantity) => {
         return price * quantity;
       },
+        // Helper to check if a number is in a given range
+        isBetween: function (value, min, max) {
+          return value >= min && value <= max
+      },
       gte: (a,b)=>a>=b,
       // Helper to add two values
       add: (a, b) => a + b,

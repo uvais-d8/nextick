@@ -219,6 +219,113 @@ const loadViewDetails = async (req, res) => {
   }
 };
  
+// const removeItem = async (req, res) => {
+//   const user = req.session.userId;
+//   const { orderId, itemId } = req.params;
+
+//   try {
+//     const order = await Orders.findOne({ _id: orderId });
+
+//     if (!order || !order.items) {
+//       return res.status(404).send("Order or items not found");
+//     }
+
+//     const item = order.items.find((item) => item._id.toString() === itemId);
+
+//     if (!item) {
+//       return res.status(404).json({ success: false, message: "Item not found in the order." });
+//     }
+
+//     if (item.status === "delivered") {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Item is already delivered and cannot be canceled."
+//       });
+//     }
+
+//     await Orders.findOneAndUpdate(
+//       { _id: orderId, "items._id": itemId },
+//       { $set: { "items.$.status": "canceled" } }
+//     );
+
+//     const product = await Products.findById(item.productId);
+//     if (product) {
+//       // Calculate the discounted price if an offer exists
+//       let finalPrice = product.price; // Default price
+
+//       if (product.offer && product.offer.Status) {
+//         // Find the discount type and apply it
+//         const offer = await Offer.findById(product.offer);
+        
+//         if (offer) {
+//           if (offer.DiscountType === "percentage") {
+//             finalPrice = product.price - (product.price * (offer.DiscountValue / 100));
+//           } else if (offer.DiscountType === "fixed") {
+//             finalPrice = product.price - offer.DiscountValue;
+//           }
+//         }
+//       }
+
+//       // Now, update the stock based on the quantity
+//       product.stock += item.quantity;
+//       await product.save();
+
+//       // Calculate refund amount based on the discounted price
+//       let refundAmount = finalPrice * item.quantity;
+
+//       if (refundAmount > 0 && order.paymentMethod === "razorpay") {
+//         console.log("Refund amount:", refundAmount);
+
+//         let wallet = await Wallet.findOne({ user: order.userId });
+
+//         if (!wallet) {
+//           wallet = new Wallet({
+//             user: order.userId,
+//             balance: refundAmount,
+//             transactions: [
+//               {
+//                 type: "refund",
+//                 amount: refundAmount,
+//                 description: `Refund for canceled product (${product?.name}) in order ${orderId}`
+//               }
+//             ]
+//           });
+//         } else {
+//           wallet.balance += refundAmount;
+//           wallet.transactions.push({
+//             type: "refund",
+//             amount: refundAmount,
+//             description: `Refund for canceled product (${product?.name}) in order ${orderId}`
+//           });
+//         }
+//         await wallet.save();
+//       } else {
+//         console.log("Refund not processed, payment method is not Razorpay.");
+//       }
+//     } else {
+//       console.warn("Product not found for stock update");
+//     }
+
+//      // Update the order total by deducting the price of the canceled item
+//      let updatedOrderTotal = order.orderTotal - item.total;
+//      await Orders.findByIdAndUpdate(
+//        orderId,
+//        { orderTotal: updatedOrderTotal }
+//      );
+//     // If all items are canceled, update the order status
+//     const updatedOrder = await Orders.findById(orderId);
+//     if (updatedOrder.items.every((item) => item.status === "canceled")) {
+//       updatedOrder.status = "canceled";
+//       await updatedOrder.save();
+//     }
+
+//     res.json({ success: true, message: "Item successfully canceled" });
+//   } catch (error) {
+//     console.error("Error canceling order:", error);
+//     res.status(500).send("Error updating order status");
+//   }
+// };
+
 const removeItem = async (req, res) => {
   const user = req.session.userId;
   const { orderId, itemId } = req.params;
@@ -243,6 +350,16 @@ const removeItem = async (req, res) => {
       });
     }
 
+    // Calculate the price to subtract (based on priceWithDiscount if available)
+    const priceToSubtract = item.priceWithDiscount ? item.priceWithDiscount : item.price;
+    let updatedOrderTotal = order.orderTotal - (priceToSubtract * item.quantity);
+
+    // Update the order total
+    order.orderTotal = updatedOrderTotal;
+
+    await order.save();
+
+    // Update item status to 'canceled'
     await Orders.findOneAndUpdate(
       { _id: orderId, "items._id": itemId },
       { $set: { "items.$.status": "canceled" } }
@@ -250,34 +367,15 @@ const removeItem = async (req, res) => {
 
     const product = await Products.findById(item.productId);
     if (product) {
-      // Calculate the discounted price if an offer exists
-      let finalPrice = product.price; // Default price
-
-      if (product.offer && product.offer.Status) {
-        // Find the discount type and apply it
-        const offer = await Offer.findById(product.offer);
-        
-        if (offer) {
-          if (offer.DiscountType === "percentage") {
-            finalPrice = product.price - (product.price * (offer.DiscountValue / 100));
-          } else if (offer.DiscountType === "fixed") {
-            finalPrice = product.price - offer.DiscountValue;
-          }
-        }
-      }
-
       // Now, update the stock based on the quantity
       product.stock += item.quantity;
       await product.save();
 
-      // Calculate refund amount based on the discounted price
-      let refundAmount = finalPrice * item.quantity;
-
-      if (refundAmount > 0 && order.paymentMethod === "razorpay") {
-        console.log("Refund amount:", refundAmount);
+      // Refund handling (for Razorpay)
+      if (order.paymentMethod === "razorpay") {
+        let refundAmount = priceToSubtract * item.quantity;
 
         let wallet = await Wallet.findOne({ user: order.userId });
-
         if (!wallet) {
           wallet = new Wallet({
             user: order.userId,
@@ -299,8 +397,6 @@ const removeItem = async (req, res) => {
           });
         }
         await wallet.save();
-      } else {
-        console.log("Refund not processed, payment method is not Razorpay.");
       }
     } else {
       console.warn("Product not found for stock update");
@@ -319,7 +415,6 @@ const removeItem = async (req, res) => {
     res.status(500).send("Error updating order status");
   }
 };
-
 
 
 

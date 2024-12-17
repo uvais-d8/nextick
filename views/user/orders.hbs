@@ -587,11 +587,15 @@
 		<!-- Order Total -->
 		<div style="width: 1200px; margin-left: 10%;display: flex;margin-top:-28px">
 			<div style="background-color: white; width: 100%; padding: 15px;">
+				{{#if (isBetween orderTotal 48 55)}}
+				<h5 style="color: red;">Order whole order canceled</h5>
+				{{else}}
 				<h4>Order Total: ₹{{orderTotal}}</h4>
 				<p>
-					delivery change : ₹ 50
-				</p>
+					(Delivery charge: ₹50)
+				</p>{{/if}}
 			</div>
+
 
 
 
