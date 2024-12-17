@@ -11,7 +11,7 @@ const razorpay = new Razorpay({
 });
 const applycoupon = async (req, res) => {
   const { couponCode, cartTotal } = req.body;
-
+console.log("req.body",req.body)
   try {
     // Check if coupon code is provided
     if (!couponCode) {
@@ -20,8 +20,8 @@ const applycoupon = async (req, res) => {
     }
 
     // Find the coupon in the database
-    const coupon = await Coupons.findOne({ CouponCode: couponCode });
-
+    const coupon = await Coupons.findOne({ couponCode: couponCode });
+console.log("coupon",coupon)
     if (!coupon) {
       console.log("Coupon code is invalid");
       return res.status(404).json({ message: "Coupon code is invalid" });

@@ -707,6 +707,7 @@ nav.main-menu ul li.current-list-item > a {
 
 nav.main-menu li:hover > a {
   color: #F28123;
+  text-decoration: none;
 }
 
 nav.main-menu li a {

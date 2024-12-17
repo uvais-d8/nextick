@@ -608,9 +608,9 @@ const loadWallet = async (req, res) => {
     const userId = req.session.userId;
     console.log("User ID:", userId);
 
-    const wallet = await Wallet.findOne({ user: userId }).sort({
-      createdAt: -1
-    });
+    const wallet = await Wallet.findOne({ user: userId })
+    .sort({ createdAt: 1 }) 
+    .lean();
 
     if (!wallet) {
       return res.render("wallet", {

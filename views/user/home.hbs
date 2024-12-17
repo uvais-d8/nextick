@@ -248,20 +248,20 @@
 									<li><a href="/cart.hbs">Cart</a></li>
 								</ul>
 								</li>
-							<li>
-  {{#if userId}} 
-    <!-- Show Log Out button if user is logged in -->
-    <form method="post" action="/logout">
-      <button class="a" type="submit"
-        style="color:white; background: none; border: none; cursor: pointer; font-weight: bold">
-        Log Out
-      </button>
-    </form>
-  {{else}}
-    <!-- Show Log In button if no user is logged in -->
-    <a href="/login" style="color:white; font-weight: bold;">Log In</a>
-  {{/if}}
-</li>
+								<li>
+									{{#if userId}}
+									<!-- Show Log Out button if user is logged in -->
+									<form method="post" action="/logout">
+										<button class="a" type="submit"
+											style="color:white; background: none; border: none; cursor: pointer; font-weight: bold">
+											Log Out
+										</button>
+									</form>
+									{{else}}
+									<!-- Show Log In button if no user is logged in -->
+									<a href="/login" style="color:white; font-weight: bold;">Log In</a>
+									{{/if}}
+								</li>
 
 								<li>
 									<div class="header-icons">
@@ -368,9 +368,8 @@
 		</div>
 	</div>
 	<!-- end home page slider -->
-	<div  class="header-icons">
-		<a style="color:rgb(255, 200, 0)" class="search-bar-icon" href="/profile"><i
-				class="fas fa-user"></i></a>
+	<div class="header-icons">
+		<a style="color:rgb(255, 200, 0)" class="search-bar-icon" href="/profile"><i class="fas fa-user"></i></a>
 		<a style="color:rgb(255, 200, 0)" href="/wishlist" class="love-icon">
 			<i class="fas fa-heart"></i>
 		</a>
@@ -745,7 +744,7 @@
 					<div class="abt-text">
 						<p class="top-sub">Since Year 2005</p>
 						<h2>We are <span class="orange-text">NEXTICK</span></h2>
-						<p>Welcome to our  watch e-commerce store! Explore our curated collection of stylish and
+						<p>Welcome to our watch e-commerce store! Explore our curated collection of stylish and
 							innovative watches designed to enhance your connectivity and lifestyle. Enjoy seamless
 							shopping, great deals, and exceptional customer service. Your perfect companion
 							awaits!</p>

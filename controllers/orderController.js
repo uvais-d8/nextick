@@ -219,113 +219,6 @@ const loadViewDetails = async (req, res) => {
   }
 };
  
-// const removeItem = async (req, res) => {
-//   const user = req.session.userId;
-//   const { orderId, itemId } = req.params;
-
-//   try {
-//     const order = await Orders.findOne({ _id: orderId });
-
-//     if (!order || !order.items) {
-//       return res.status(404).send("Order or items not found");
-//     }
-
-//     const item = order.items.find((item) => item._id.toString() === itemId);
-
-//     if (!item) {
-//       return res.status(404).json({ success: false, message: "Item not found in the order." });
-//     }
-
-//     if (item.status === "delivered") {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Item is already delivered and cannot be canceled."
-//       });
-//     }
-
-//     await Orders.findOneAndUpdate(
-//       { _id: orderId, "items._id": itemId },
-//       { $set: { "items.$.status": "canceled" } }
-//     );
-
-//     const product = await Products.findById(item.productId);
-//     if (product) {
-//       // Calculate the discounted price if an offer exists
-//       let finalPrice = product.price; // Default price
-
-//       if (product.offer && product.offer.Status) {
-//         // Find the discount type and apply it
-//         const offer = await Offer.findById(product.offer);
-        
-//         if (offer) {
-//           if (offer.DiscountType === "percentage") {
-//             finalPrice = product.price - (product.price * (offer.DiscountValue / 100));
-//           } else if (offer.DiscountType === "fixed") {
-//             finalPrice = product.price - offer.DiscountValue;
-//           }
-//         }
-//       }
-
-//       // Now, update the stock based on the quantity
-//       product.stock += item.quantity;
-//       await product.save();
-
-//       // Calculate refund amount based on the discounted price
-//       let refundAmount = finalPrice * item.quantity;
-
-//       if (refundAmount > 0 && order.paymentMethod === "razorpay") {
-//         console.log("Refund amount:", refundAmount);
-
-//         let wallet = await Wallet.findOne({ user: order.userId });
-
-//         if (!wallet) {
-//           wallet = new Wallet({
-//             user: order.userId,
-//             balance: refundAmount,
-//             transactions: [
-//               {
-//                 type: "refund",
-//                 amount: refundAmount,
-//                 description: `Refund for canceled product (${product?.name}) in order ${orderId}`
-//               }
-//             ]
-//           });
-//         } else {
-//           wallet.balance += refundAmount;
-//           wallet.transactions.push({
-//             type: "refund",
-//             amount: refundAmount,
-//             description: `Refund for canceled product (${product?.name}) in order ${orderId}`
-//           });
-//         }
-//         await wallet.save();
-//       } else {
-//         console.log("Refund not processed, payment method is not Razorpay.");
-//       }
-//     } else {
-//       console.warn("Product not found for stock update");
-//     }
-
-//      // Update the order total by deducting the price of the canceled item
-//      let updatedOrderTotal = order.orderTotal - item.total;
-//      await Orders.findByIdAndUpdate(
-//        orderId,
-//        { orderTotal: updatedOrderTotal }
-//      );
-//     // If all items are canceled, update the order status
-//     const updatedOrder = await Orders.findById(orderId);
-//     if (updatedOrder.items.every((item) => item.status === "canceled")) {
-//       updatedOrder.status = "canceled";
-//       await updatedOrder.save();
-//     }
-
-//     res.json({ success: true, message: "Item successfully canceled" });
-//   } catch (error) {
-//     console.error("Error canceling order:", error);
-//     res.status(500).send("Error updating order status");
-//   }
-// };
-
 const removeItem = async (req, res) => {
   const user = req.session.userId;
   const { orderId, itemId } = req.params;
@@ -417,77 +310,86 @@ const removeItem = async (req, res) => {
 };
 
 
-
-const returnOrder = async (req, res) => {
-  const  itemId  = req.params.id; 
-  console.log("itemId", itemId);
-
-  const userId = req.session.userId; 
-
-  try {
-     const order = await Orders.findOneAndUpdate(
-      { 'items._id': itemId, userId },   
-      { $set: { 'items.$.status': 'returned' } },  
-      { new: true }  
-    );
-
-    if (!order) {
-      return res.status(404).json({ success: false, message: "Order or item not found." });
-    }
-
-     const item = order.items.find((item) => item._id.toString() === itemId);
-    if (!item) {
-      return res.status(404).json({ success: false, message: "Item not found in the order." });
-    }
-
-     if (item.status !== "delivered") {
-      return res.status(400).json({
-        success: false,
-        message: "Only delivered items are eligible for return.",
-      });
-    }
-
-     const product = await Products.findById(item.productId);
-    if (product) {
-      product.stock += item.quantity;   
-      await product.save();
-    }
-
-     const refundAmount = (product?.discountedPrice || product?.price) * item.quantity;
-
-     let wallet = await Wallet.findOne({ user: userId });
-    if (!wallet) {
-      wallet = new Wallet({
-        user: userId,
-        balance: refundAmount,
-        transactions: [
-          {
+    const returnOrder = async (req, res) => {
+      const itemId = req.params.id; // Order Item ID
+      const userId = req.session.userId; // User ID from session
+    
+      console.log("Item ID:", itemId);
+    
+      try {
+        // Step 1: Find the order and update the item status to "returned"
+        const order = await Orders.findOneAndUpdate(
+          { 'items._id': itemId, userId, 'items.status': 'delivered' }, // Ensure status is 'delivered'
+          { $set: { 'items.$.status': 'returned' } }, // Update status to 'returned'
+          { new: true }
+        );
+    
+        if (!order) {
+          return res.status(404).json({ success: false, message: "Order or item not found." });
+        }
+    
+        // Step 2: Find the specific item in the order
+        const item = order.items.find((item) => item._id.toString() === itemId);
+        if (!item) {
+          return res.status(404).json({ success: false, message: "Item not found in the order." });
+        }
+    
+        // Step 3: Fetch product details and update stock
+        const product = await Products.findById(item.productId);
+        if (product) {
+          product.stock += item.quantity; // Increase stock based on returned quantity
+          await product.save();
+          console.log(`Updated product stock: ${product.name}, New stock: ${product.stock}`);
+        } else {
+          console.warn(`Product not found for item: ${item.productId}`);
+        }
+    
+        // Step 4: Calculate refund amount
+        const refundAmount = (product?.discountedPrice || product?.price) * item.quantity;
+    
+        // Step 5: Update user's wallet
+        let wallet = await Wallet.findOne({ user: userId });
+        if (!wallet) {
+          // If no wallet exists, create a new one
+          wallet = new Wallet({
+            user: userId,
+            balance: refundAmount,
+            transactions: [
+              {
+                type: "refund",
+                amount: refundAmount,
+                description: `Refund for returned item (${product?.name || "Product"})`,
+              },
+            ],
+          });
+        } else {
+          // Update existing wallet
+          wallet.balance += refundAmount;
+          wallet.transactions.push({
             type: "refund",
             amount: refundAmount,
-            description: `Refund for returned item (${product?.name})`,
-          },
-        ],
-      });
-    } else {
-      wallet.balance += refundAmount;
-      wallet.transactions.push({
-        type: "refund",
-        amount: refundAmount,
-        description: `Refund for returned item (${product?.name})`,
-      });
-    }
-    await wallet.save();
-
-    res.json({
-      success: true,
-      message: "Item successfully returned and refund processed.",
-    });
-  } catch (error) {
-    console.error("Error processing return:", error);
-    res.status(500).json({ success: false, message: "Internal server error." });
-  }
-};
-
+            description: `Refund for returned item (${product?.name || "Product"})`,
+          });
+        }
+    
+        // Save the updated wallet
+        await wallet.save();
+    
+        console.log(`Refund processed: Amount ${refundAmount} added to wallet.`);
+    
+        // Step 6: Return success response
+        res.json({
+          success: true,
+          message: "Item successfully returned, refund processed, and product stock updated.",
+          refundAmount,
+          newWalletBalance: wallet.balance,
+        });
+      } catch (error) {
+        console.error("Error processing return:", error.message);
+        res.status(500).json({ success: false, message: "Internal server error." });
+      }
+    };
+    
 
 
 
@@ -501,6 +403,9 @@ const generateInvoicePDF = async (req, res) => {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
 
+    // Filter items to exclude canceled and delivered items
+    const filteredItems = order.items.filter(item => item.status !== 'canceled');
+    
     const doc = new PDFDocument({ margin: 20 });
 
     // Set response headers for PDF download
@@ -515,10 +420,10 @@ const generateInvoicePDF = async (req, res) => {
     doc
       .font("Helvetica-Bold")
       .fontSize(20)
-      .text("NEXTIC", { align: "center" })
+      .text("NEXTICK", { align: "center" })
       .fontSize(10)
       .text("The Premium watch Store", { align: "center" })
-      .text("Contact: support@NEXTIC.com | +91 7594 06 0696", { align: "center" })
+      .text("Contact: support@NEXTICK.com | +91 7594 06 0696", { align: "center" })
       .moveDown(2);
 
     // ** Invoice Title **
@@ -539,7 +444,6 @@ const generateInvoicePDF = async (req, res) => {
       .font("Helvetica")
       .text(`Order ID       : ${orderId}`)
       .text(`Order Date    : ${new Date(order.createdAt).toLocaleDateString()}`)
-      // .text(`Order Status : scheduled`)
       .text(`Order Status : ${order.status}`)
       .moveDown(1);
 
@@ -549,7 +453,6 @@ const generateInvoicePDF = async (req, res) => {
       .text("Billing & Shipping Address")
       .moveDown(0.5)
       .fillColor("black")
-
       .fontSize(11)
       .font("Helvetica")
       .text(`Name     :${address.firstname} ${address.lastname}`)
@@ -560,135 +463,69 @@ const generateInvoicePDF = async (req, res) => {
       .text(`district: ${address.district}`)
       .moveDown();
 
-
-      
- doc
-.font("Helvetica-Bold")
-.fontSize(11)
-.fillColor("black")
-.text("     No     Product                                                            Price                          quantity     total Price  ", 55, doc.y, { width: 4000})
- 
-
- doc
-.moveTo(50, doc.y)
-.lineTo(510, doc.y)
-.stroke();
-
- let totalPrice = 0;
-let rowStartY = doc.y;  
-order.items.forEach((item, index) => {
-const product = item.productId;
- 
-const rowY = rowStartY + index * 30; // Row height (30)
-
- doc
-  .moveTo(50, rowY + 30)
-  .lineTo(560, rowY + 30)
-  .moveTo(50, rowY + 30)
-  .stroke();
-
- doc
-  .font("Helvetica")
-  .fontSize(10)
-  .fillColor("black")
-
-  .text(index + 1, 55, rowY + 5, { width: 40, align: "center" }) // No column
-  .text(product.name, 100, rowY + 5, { width: 200, align: "left" }); // Product name
- const unitPrice = item.priceWithDiscount || product.price;
-const totalItemPrice = item.quantity * unitPrice;
-
-// Draw row content
-doc
-  .font("Helvetica")
-  .fontSize(10)
-  .fillColor("black")
-  .text(index + 1, 55, rowY + 5, { width: 40, align: "center" }) // No column
-  .text(product.name, 100, rowY + 5, { width: 200, align: "left" });
-
- if (item.priceWithDiscount && item.priceWithDiscount !== product.price) {
-   doc
-    .font("Helvetica")
-    .fontSize(10)
-    .fillColor("red")
-    .text(`Rs ${product.price.toFixed(2)}`, 300, rowY + 5, { width: 80, align: "right" });
-
-  // Line over the original price
-  const priceWidth = doc.widthOfString(`Rs ${product.price.toFixed(2)}`);
-  const priceX = 300 + (80 - priceWidth);
-  doc
-    .moveTo(priceX, rowY + 10)
-    .lineTo(priceX + priceWidth, rowY + 10)
-    .strokeColor("black")
-    .stroke();
-
-  // Display discounted price
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(10)
-    .fillColor("black")
-    .text(`Rs ${item.priceWithDiscount.toFixed(2)}`, 300, rowY + 20, { width: 80, align: "right" });
-} else {
-  // Show regular price if no discount exists or prices are the same
-  doc
-    .font("Helvetica")
-    .fontSize(10)
-    .fillColor("black")
-    .text(`Rs ${product.price.toFixed(2)}`, 300, rowY + 5, { width: 80, align: "right" });
-}
+    // ** Invoice Table Headers **
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(11)
+      .fillColor("black")
+      .text("     No     Product                                                            Price                          quantity     total Price  ", 55, doc.y, { width: 4000})
 
 
-// Quantity
-doc
-  .font("Helvetica")
-  .fontSize(10)
-  .fillColor("black")
-  .text(item.quantity, 380, rowY + 5, { width: 80, align: "right" });
+    doc
+      .moveTo(50, doc.y)
+      .lineTo(510, doc.y)
+      .stroke();
 
-// Total item price
-doc
-  .font("Helvetica")
-  .fontSize(10)
-  .fillColor("black")
-  .text(`Rs ${totalItemPrice.toFixed(2)}`, 455, rowY + 5, { width: 90, align: "right" });
+    let totalPrice = 0;
+    let rowStartY = doc.y;
 
-// Update total price
-totalPrice += totalItemPrice;
-});
+    filteredItems.forEach((item, index) => {
+      const product = item.productId;
+      const rowY = rowStartY + index * 30; // Row height (30)
 
- const totalTableHeight = order.items.length * 30;
-doc
-.rect(50, rowStartY, 510, totalTableHeight)
-.stroke();
+      doc
+        .moveTo(50, rowY + 30)
+        .lineTo(560, rowY + 30)
+        .moveTo(50, rowY + 30)
+        .stroke();
 
+      doc
+        .font("Helvetica")
+        .fontSize(10)
+        .fillColor("black")
+        .text(index + 1, 55, rowY + 5, { width: 40, align: "center" }) // No column
+        .text(product.name, 100, rowY + 5, { width: 200, align: "left" }); // Product name
 
- let actualTotal = 0;
-let discountedTotal = 0;
+      const unitPrice = item.priceWithDiscount || product.price;
+      const totalItemPrice = item.quantity * unitPrice;
 
- order.items.forEach((item) => {
-  const product = item.productId;
-  const unitPrice = item.priceWithDiscount || product.price;  
-  
-   actualTotal += product.price * item.quantity;
+      // Display price and quantity
+      doc
+        .font("Helvetica")
+        .fontSize(10)
+        .fillColor("black")
+        .text(`Rs ${unitPrice.toFixed(2)}`, 300, rowY + 5, { width: 80, align: "right" })
+        .text(item.quantity, 380, rowY + 5, { width: 80, align: "right" })
+        .text(`Rs ${totalItemPrice.toFixed(2)}`, 455, rowY + 5, { width: 90, align: "right" });
 
-   discountedTotal += unitPrice * item.quantity;
-});
+      // Update total price
+      totalPrice += totalItemPrice;
+    });
 
- const totalDiscount = actualTotal - discountedTotal;
+    const totalTableHeight = filteredItems.length * 30;
+    doc
+      .rect(50, rowStartY, 510, totalTableHeight)
+      .stroke();
 
- const finalTotal = discountedTotal;
-
-const orderTotal = order.orderTotal;
-console.log("orderTotal",orderTotal)
- doc
-  .font("Helvetica-Bold")
-  .fontSize(12)
-  .moveDown(3)
-  .text(`Subtotal    : Rs ${finalTotal.toFixed(2)}`, 370, doc.y, { align: "right" })
-  .moveDown(0.2)
-  .text(`Discount    :   Rs ${totalDiscount.toFixed(2)}`, 370, doc.y, { align: "right" })
-  .moveDown(0.2)
-  .text(`Grand Total : Rs ${orderTotal.toFixed(2)}`, 370, doc.y, { align: "right", underline: true })
-  .moveDown(3)
+    // ** Total Section **
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(12)
+      .moveDown(3)
+      .text(`Subtotal    : Rs ${totalPrice.toFixed(2)}`, 370, doc.y, { align: "right" })
+      .moveDown(0.2)
+      .text(`Grand Total : Rs ${order.orderTotal.toFixed(2)}`, 370, doc.y, { align: "right", underline: true })
+      .moveDown(3);
 
     // ** Footer Section **
     doc
@@ -696,18 +533,12 @@ console.log("orderTotal",orderTotal)
       .font("Helvetica")
       .fillColor("#555")
       .text("Thank you for shopping with NEXTICK!", { align: "center" })
-      .text("For support, contact us at support@NEXTICK.com ", {
-        align: "center",
-      })
-      .text("call on ph: +91 7594 0606 96", {
-        align: "center",
-      })
+      .text("For support, contact us at support@NEXTICK.com ", { align: "center" })
+      .text("Call on ph: +91 7594 0606 96", { align: "center" })
       .moveDown()
       .fillColor("#999")
       .fontSize(8)
-      .text("NEXTICK - The Premium watches Store | All Rights Reserved.", {
-        align: "center",
-      });
+      .text("NEXTICK - The Premium watches Store | All Rights Reserved.", { align: "center" });
 
     // Finalize PDF
     doc.end();
