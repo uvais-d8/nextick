@@ -273,7 +273,7 @@ const removeItem = async (req, res) => {
       // Calculate refund amount based on the discounted price
       let refundAmount = finalPrice * item.quantity;
 
-      if (refundAmount > 0) {
+      if (refundAmount > 0 && order.paymentMethod === "razorpay") {
         console.log("Refund amount:", refundAmount);
 
         let wallet = await Wallet.findOne({ user: order.userId });
@@ -299,6 +299,8 @@ const removeItem = async (req, res) => {
           });
         }
         await wallet.save();
+      } else {
+        console.log("Refund not processed, payment method is not Razorpay.");
       }
     } else {
       console.warn("Product not found for stock update");
@@ -418,10 +420,10 @@ const generateInvoicePDF = async (req, res) => {
     doc
       .font("Helvetica-Bold")
       .fontSize(20)
-      .text("Watch Premium", { align: "center" })
+      .text("NEXTIC", { align: "center" })
       .fontSize(10)
-      .text("The Premium Smartwatch Store", { align: "center" })
-      .text("Contact: support@watchpremium.com | +91 7594 06 0696", { align: "center" })
+      .text("The Premium watch Store", { align: "center" })
+      .text("Contact: support@NEXTIC.com | +91 7594 06 0696", { align: "center" })
       .moveDown(2);
 
     // ** Invoice Title **
@@ -598,8 +600,8 @@ console.log("orderTotal",orderTotal)
       .fontSize(10)
       .font("Helvetica")
       .fillColor("#555")
-      .text("Thank you for shopping with Watch Premium!", { align: "center" })
-      .text("For support, contact us at support@watchpremium.com ", {
+      .text("Thank you for shopping with NEXTICK!", { align: "center" })
+      .text("For support, contact us at support@NEXTICK.com ", {
         align: "center",
       })
       .text("call on ph: +91 7594 0606 96", {
@@ -608,7 +610,7 @@ console.log("orderTotal",orderTotal)
       .moveDown()
       .fillColor("#999")
       .fontSize(8)
-      .text("Watch Premium - The Premium Smartwatch Store | All Rights Reserved.", {
+      .text("NEXTICK - The Premium watches Store | All Rights Reserved.", {
         align: "center",
       });
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
+    <title>Order-tracking</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
     <!-- favicon -->
@@ -136,22 +136,31 @@
         .mstatus.Cancelled {
             color: #e74c3c;
         }
-          .button-red{
+
+        .button-red {
             font-weight: bold;
             color: rgb(202, 16, 16);
-        } .button-green{
+        }
+
+        .button-green {
             font-weight: bold;
             color: rgb(75, 195, 6);
-        } .button-yellow{
+        }
+
+        .button-yellow {
             font-weight: bold;
             color: rgb(225, 210, 0);
-        } .button-blue{
+        }
+
+        .button-blue {
             font-weight: bold;
             color: rgb(38, 13, 182);
-        } .button-purple{
+        }
+
+        .button-purple {
             font-weight: bold;
             color: rgb(211, 2, 124);
-        }  
+        }
     </style>
 </head>
 
@@ -174,7 +183,9 @@
                         <!-- logo -->
                         <div class="site-logo">
                             <a href="/">
-								<p style="font-size:28px; color:white;margin-top:-5px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">NEXTIC<span style="font-weight: bold;color:rgb(238, 149, 15)">K</span></p>
+                                <p
+                                    style="font-size:28px; color:white;margin-top:-5px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
+                                    NEXTIC<span style="font-weight: bold;color:rgb(238, 149, 15)">K</span></p>
                             </a>
                         </div>
                         <!-- logo -->
@@ -313,7 +324,7 @@
             <!-- Order Status -->
             <div class="msection order-status">
                 <div class="msection-title">Order Status</div>
-                <p><span>Current Status:</span> <span class="mstatus {{product.status}}"> <span class="
+                <p><span>Current Status: <span class="mstatus {{product.status}}"> <span class="
         {{#if (eq product.status 'scheduled')}}button-blue{{else}}
         {{#if (eq product.status 'pending')}}button-yellow{{else}}
         {{#if (eq product.status 'canceled')}}button-red{{else}}
@@ -322,8 +333,8 @@
         {{#if (eq product.status 'delivered')}}button-green{{else}}
         {{#if (eq product.status 'shipped')}}button-purple{{/if}}{{/if}}
         {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}">
-							{{product.status}}
-						</span></span></p>
+                                {{product.status}}
+                            </span></p>
             </div>
         </div>
         <!-- footer -->
@@ -345,7 +356,7 @@
                             <h2 class="widget-title">Get in Touch</h2>
                             <ul>
                                 <li>34/8, malappuram, kerala, india.</li>
-                                <li>support@watchpremium.com</li>
+                                <li>support@NEXTICK.com</li>
                                 <li>+75 94 0606 96</li>
                             </ul>
                         </div>
@@ -382,7 +393,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-6 col-md-12">
-                         <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
+                        <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
                             Rights
                             Reserved.<br>
                             Distributed By - <a href="https://themewagon.com/">nextick.store</a>
