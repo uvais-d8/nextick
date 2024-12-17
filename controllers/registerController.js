@@ -162,7 +162,7 @@ const verifyOtp = async (req, res) => {
       await newUser.save();
 
       // Set the session user
-      req.session.user = newUser._id;
+      req.session.userId = newUser._id;
 
       // Clear session data
       delete req.session.userOTP;

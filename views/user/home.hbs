@@ -248,15 +248,21 @@
 									<li><a href="/cart.hbs">Cart</a></li>
 								</ul>
 								</li>
-								<li>
-									<form method="post" action="/logout">
-										<button class="a" type="submit"
-											style="color:white; background: none; border: none;cursor: pointer; font-weight:bold">
-											Log Out
+							<li>
+  {{#if userId}} 
+    <!-- Show Log Out button if user is logged in -->
+    <form method="post" action="/logout">
+      <button class="a" type="submit"
+        style="color:white; background: none; border: none; cursor: pointer; font-weight: bold">
+        Log Out
+      </button>
+    </form>
+  {{else}}
+    <!-- Show Log In button if no user is logged in -->
+    <a href="/login" style="color:white; font-weight: bold;">Log In</a>
+  {{/if}}
+</li>
 
-										</button>
-									</form>
-								</li>
 								<li>
 									<div class="header-icons">
 										<a href="/wishlist" class="love-icon">

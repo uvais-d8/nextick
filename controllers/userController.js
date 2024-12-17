@@ -70,8 +70,9 @@ const loadhome = async (req, res) => {
         stock: product.stock,
       };
     });
-
-    res.render("home", { products: productsWithOfferPrice });
+    const userId=req.session.userId;
+   console.log("req.session",req.session.userId)
+    res.render("home", { products: productsWithOfferPrice,userId });
   } catch (err) {
     console.error("Error loading home page:", err);
     res.status(500).send("Failed to load home page");
