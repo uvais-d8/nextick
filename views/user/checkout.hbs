@@ -739,7 +739,7 @@
 						key: "rzp_test_27cbwJ6wd0CuiQ",
 						amount: order.amount,
 						currency: order.currency,
-						name: "Watch Premium",
+						name: "NEXTICK",
 						description: "Payment for your order",
 						order_id: order.id,
 						handler: async function (response) {
@@ -918,7 +918,7 @@
 						document.querySelector('.total-data .total').textContent = `₹${originalTotal.toFixed(2)}`;
 						document.querySelector('.discount-section').textContent = '';
 						document.querySelector('.discount-section').style.display = 'none';
-
+location.reload()
 						// Update hidden total input
 						document.querySelector('input[name="total"]').value = originalTotal.toFixed(2);
 

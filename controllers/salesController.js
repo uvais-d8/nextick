@@ -28,7 +28,7 @@ console.log("coupon",coupon)
     }
 
     const currentDate = new Date();
-    if (coupon.ExpiryDate < currentDate) {
+    if (coupon.expiryDate < currentDate) {
       console.log("Coupon code has expired");
 
       return res.status(400).json({ message: "Coupon code has expired" });
@@ -652,7 +652,7 @@ const removecoupon = async (req, res) => {
      const couponCode = String(req.params.couponCode);    
     console.log("Coupon code to remove (converted to string):", couponCode);
     
-     const coupon = await Coupons.findOne({ CouponCode: couponCode });
+     const coupon = await Coupons.findOne({ couponCode: couponCode });
      console.log("old usage limit",coupon.UsageLimit)
 
     if (!coupon) { 

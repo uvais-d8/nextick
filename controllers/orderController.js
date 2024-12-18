@@ -243,31 +243,55 @@ const removeItem = async (req, res) => {
       });
     }
 
-    // Calculate the price to subtract (based on priceWithDiscount if available)
-    const priceToSubtract = item.priceWithDiscount ? item.priceWithDiscount : item.price;
-    let updatedOrderTotal = order.orderTotal - (priceToSubtract * item.quantity);
+    // Calculate the refund for the item
+    const Price = item.priceWithDiscount ? item.priceWithDiscount : item.price;
+    console.log("product Price",Price)
+    
+    const totalPriceOfOrder = order.items
+  .filter(item => item.status !== "canceled") 
+  .reduce((total, item) => {
+    const itemTotal = item.priceWithDiscount ? item.priceWithDiscount : item.price * (item.quantity || 1); 
+    return total + itemTotal;
+  }, 0);
+    
+    let totalRefundForItem = Price;
 
-    // Update the order total
-    order.orderTotal = updatedOrderTotal;
+    if(totalPriceOfOrder !== order.orderTotal){
+      
+      console.log("totalPriceOfOrder", totalPriceOfOrder)
+      const DiscountValue = totalPriceOfOrder - order.orderTotal;
+      console.log("DiscountValue for the enteir order ", DiscountValue);
+      let discountedPrice = (Price / totalPriceOfOrder) * DiscountValue;
+      console.log("DiscountValue for the specific order",discountedPrice);
+      totalRefundForItem = Price - discountedPrice;
+      console.log("price to Refund",totalRefundForItem);
+      console.log("orderTotal before ",order.orderTotal);
+      
+    }
+    order.orderTotal = order.orderTotal - totalRefundForItem;
 
+    console.log("orderTotal",order.orderTotal);
+
+    console.log("price to Refund or not",totalRefundForItem);
     await order.save();
 
-    // Update item status to 'canceled'
+    // Mark the specific item as 'canceled'
     await Orders.findOneAndUpdate(
       { _id: orderId, "items._id": itemId },
       { $set: { "items.$.status": "canceled" } }
     );
 
+    // Find the product and restore stock
     const product = await Products.findById(item.productId);
     if (product) {
-      // Now, update the stock based on the quantity
       product.stock += item.quantity;
       await product.save();
 
-      // Refund handling (for Razorpay)
+      // Calculate refund to wallet for Razorpay payment
       if (order.paymentMethod === "razorpay") {
-        let refundAmount = priceToSubtract * item.quantity;
-
+        let refundAmount = totalRefundForItem;
+console.log('refundAmount',refundAmount)
+        // Find or create a wallet for the user
         let wallet = await Wallet.findOne({ user: order.userId });
         if (!wallet) {
           wallet = new Wallet({
@@ -302,7 +326,7 @@ const removeItem = async (req, res) => {
       await updatedOrder.save();
     }
 
-    res.json({ success: true, message: "Item successfully canceled" });
+    res.json({ success: true, message: "Item successfully canceled and refund processed" });
   } catch (error) {
     console.error("Error canceling order:", error);
     res.status(500).send("Error updating order status");
@@ -310,7 +334,8 @@ const removeItem = async (req, res) => {
 };
 
 
-    const returnOrder = async (req, res) => {
+
+const returnOrder = async (req, res) => {
       const itemId = req.params.id; // Order Item ID
       const userId = req.session.userId; // User ID from session
     
@@ -388,7 +413,7 @@ const removeItem = async (req, res) => {
         console.error("Error processing return:", error.message);
         res.status(500).json({ success: false, message: "Internal server error." });
       }
-    };
+};
     
 
 

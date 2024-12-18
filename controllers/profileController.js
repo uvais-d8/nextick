@@ -607,10 +607,7 @@ const loadWallet = async (req, res) => {
   try {
     const userId = req.session.userId;
     console.log("User ID:", userId);
-
-    const wallet = await Wallet.findOne({ user: userId })
-    .sort({ createdAt: 1 }) 
-    .lean();
+    const wallet = await Wallet.findOne({ user: userId });
 
     if (!wallet) {
       return res.render("wallet", {
@@ -623,12 +620,15 @@ const loadWallet = async (req, res) => {
     console.log("Balance:", wallet.balance);
     console.log("Transactions:", wallet.transactions);
 
+    // Round the balance to 2 decimal places
+    const roundedBalance = Math.round(wallet.balance * 100) / 100;
+
     const sortedTransactions = wallet.transactions.sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
     res.render("wallet", {
-      balance: wallet.balance,
+      balance: roundedBalance,  // Use the rounded balance here
       transactions: sortedTransactions
     });
   } catch (error) {
@@ -636,6 +636,7 @@ const loadWallet = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
+
 
 module.exports = {
   updateDefaultAddress,
