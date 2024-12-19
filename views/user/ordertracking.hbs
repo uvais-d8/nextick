@@ -484,8 +484,7 @@
                         <hr>
                         {{/each}}
 
-                        <script>
-                            // Function to determine the status message
+                        <script> 
                             function getStatusMessage(status) {
                                 switch (status) {
                                     case 'scheduled':
@@ -502,11 +501,9 @@
                                         return 'Unknown order status.';
                                 }
                             }  
-                    </div >
-                        // Example: Replace this with your actual order status from the server
+                     </div > 
                         const orderStatus = "{{order.status}}";
-
-                            // Update the status message dynamically
+ 
                             document.getElementById('statusMessage').innerText = getStatusMessage(orderStatus);
                         </script>
 

@@ -910,26 +910,22 @@
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 			const returnModal = document.getElementById('returnModal');
-
-			// Show event for modal
+ 
 			returnModal.addEventListener('show.bs.modal', function (event) {
-				const button = event.relatedTarget; // Button that triggered the modal
+				const button = event.relatedTarget;  
 				const orderId = button.getAttribute('data-order-id');
 				const itemId = button.getAttribute('data-item-id');
 
 				console.log("Order ID:", orderId);
 				console.log("Item ID:", itemId);
-
-				// Set Order ID and Item ID in the modal
+ 
 				document.getElementById('modalOrderId').textContent = orderId;
 				document.getElementById('modalItemId').textContent = itemId;
-
-				// Attach item ID to Confirm Return button
+ 
 				const confirmReturnBtn = document.getElementById('confirmReturn');
 				confirmReturnBtn.setAttribute('data-item-id', itemId);
 			});
-
-			// Confirm Return Button Logic
+ 
 			const confirmReturnBtn = document.getElementById('confirmReturn');
 			confirmReturnBtn.addEventListener('click', function () {
 				const itemId = confirmReturnBtn.getAttribute('data-item-id');
@@ -938,8 +934,7 @@
 					console.error('Item ID is missing!');
 					return;
 				}
-
-				// API call to process return
+ 
 				fetch(`/return-order/${itemId}`, {
 					method: 'POST',
 					headers: {
@@ -959,12 +954,10 @@
 							icon: "success",
 							text: "Item returned, amount credited to your wallet.",
 							confirmButtonText: "OK",
-						}).then(() => {
-							// Reload the page after "OK" button is clicked
+						}).then(() => { 
 							location.reload();
 						});
-
-						// Close the modal
+ 
 						const modalInstance = bootstrap.Modal.getInstance(returnModal);
 						modalInstance.hide();
 					})

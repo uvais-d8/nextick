@@ -77,32 +77,25 @@ background-color: wheat;            background-size: cover;
         </form>
 
         <script>
-            // Timer Configuration
-            const countdownElement = document.getElementById('countdown');
+             const countdownElement = document.getElementById('countdown');
             const resendForm = document.getElementById('resendForm');
-            let timer = 30; // Set the timer in seconds
-
-            // Function to update the countdown every second
-            const interval = setInterval(() => {
+            let timer = 30; 
+             const interval = setInterval(() => {
                 timer--;
 
                 if (timer > 0) {
-                    // Update the timer display
-                    countdownElement.textContent = timer;
+                      countdownElement.textContent = timer;
                 } else {
-                    // Stop the timer
-                    clearInterval(interval);
+                     clearInterval(interval);
 
-                    // Hide the timer and show the resend button
-                    document.getElementById('timer').style.display = 'none';
+                     document.getElementById('timer').style.display = 'none';
                     resendForm.style.display = 'block';
                 }
-            }, 1000); // Update every second
+            }, 1000); 
         </script>
 
         <script>
-            // Function to move to the next input field
-            function moveToNext(currentInput) {
+             function moveToNext(currentInput) {
                 if (currentInput.value.length === 1) {
                     const nextInput = currentInput.nextElementSibling;
                     if (nextInput) {
@@ -111,8 +104,7 @@ background-color: wheat;            background-size: cover;
                 }
 
             }
-            // Function to update the hidden input value
-            function updateOtpValue() {
+              function updateOtpValue() {
                 const otpInputs = document.querySelectorAll('.otp-box');
                 const otpArray = Array.from(otpInputs).map(input => input.value);
                 document.getElementById('otp').value = otpArray.join('');
@@ -120,13 +112,13 @@ background-color: wheat;            background-size: cover;
             setTimeout(() => {
                 const messageElement = document.getElementById('message');
                 if (messageElement) {
-                    messageElement.remove(); // Removes the input field from the DOM
+                    messageElement.remove();  
                 }
             }, 2000);
             setTimeout(() => {
                 const messageElement = document.getElementById('success');
                 if (messageElement) {
-                    messageElement.remove(); // Removes the input field from the DOM
+                    messageElement.remove(); 
                 }
             }, 2000); 
         </script>

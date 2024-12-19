@@ -154,9 +154,8 @@
                 </div>
             </div>
 
-            <script>
-                // JavaScript to toggle the dropdown visibility
-                document.getElementById("dropdownToggle").addEventListener("click", function () {
+            <script> 
+                                document.getElementById("dropdownToggle").addEventListener("click", function () {
                     const dropdown = document.getElementById("ProductsDropdown");
                     dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
                 });
@@ -184,13 +183,13 @@
         document.getElementById('couponForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
-            // Get all selected products (checkboxes)
+ 
             const selectedProducts = [];
             document.querySelectorAll('input[name="Products[]"]:checked').forEach((checkbox) => {
                 selectedProducts.push(checkbox.value);
             });
 
-            // Get all selected categories (checkboxes)
+ 
             const selectedCategories = [];
             document.querySelectorAll('input[name="Categories[]"]:checked').forEach((checkbox) => {
                 selectedCategories.push(checkbox.value);
@@ -207,7 +206,7 @@
             };
 
 
-            // Submit to backend API to add the coupon
+  
             axios.post('/api/Offers', OfferData)
                 .then(response => {
                     document.getElementById('message').innerHTML = 'Offer added successfully!';

@@ -97,10 +97,9 @@
                     </tr>
                 </thead>
                 <script>
-                    // Wait for 2 seconds and then clear the message
-                    setTimeout(function () {
-                        document.getElementById('message').value = ''; // Clear the message
-                    }, 10000); // 2000 milliseconds = 2 seconds
+                       setTimeout(function () {
+                        document.getElementById('message').value = ''; 
+                    }, 10000); 
                 </script>
                 <tbody>
                     {{#each products}}
@@ -256,7 +255,7 @@
         let cropper;
         let currentImageInput;
         let currentImageIndex;
-        let deletedImages = []; // To track deleted images
+        let deletedImages = [];   
 
         document.addEventListener('DOMContentLoaded', function () {
             editProductModal = new bootstrap.Modal(document.getElementById('editProductModal'));
@@ -267,8 +266,7 @@
 
                 const formData = new FormData(this);
 
-                // Append deleted images to the form data
-                if (deletedImages.length > 0) {
+                  if (deletedImages.length > 0) {
                     formData.append('deletedImages', deletedImages.join(','));
                 }
 
@@ -306,8 +304,7 @@
                         const img = document.querySelector(`.product-image[data-index="${currentImageIndex}"]`);
                         img.src = url;
 
-                        // Add cropped image as Base64 to the form
-                        const base64String = cropper.getCroppedCanvas().toDataURL('image/png');
+                          const base64String = cropper.getCroppedCanvas().toDataURL('image/png');
                         const croppedDataInput = document.createElement('input');
                         croppedDataInput.type = 'hidden';
                         croppedDataInput.name = 'croppedImageData[]';
@@ -386,10 +383,10 @@
             document.querySelectorAll('.delete-button').forEach((button) => {
                 button.addEventListener('click', function () {
                     const imagePath = button.getAttribute('data-path');
-                    deletedImages.push(imagePath); // Track deleted images
+                    deletedImages.push(imagePath); 
 
                     const card = button.closest('.col-md-4');
-                    card.remove(); // Remove image card from the UI
+                    card.remove(); 
                 });
             });
 

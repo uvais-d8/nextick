@@ -190,7 +190,7 @@
             </div>
 
             <script>
-                // JavaScript to toggle the dropdown visibility
+ 
                 document.getElementById("dropdownToggle").addEventListener("click", function () {
                     const dropdown = document.getElementById("ProductsDropdown");
                     dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
@@ -218,7 +218,7 @@
             </div>
 
             <script>
-                // JavaScript to toggle the dropdown visibility
+ 
                 document.getElementById("dropdownToggles").addEventListener("click", function () {
                     const dropdown = document.getElementById("CategoryDropdown");
                     dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
@@ -256,11 +256,10 @@
             Products: Array.from(document.querySelectorAll('input[name="Products[]"]:checked')).map(checkbox => checkbox.value),
             Categories: Array.from(document.querySelectorAll('input[name="Categories[]"]:checked')).map(checkbox => checkbox.value),
             ExpiryDate: new Date(document.getElementById('ExpiryDate').value),
-            Status: document.getElementById('Status').value === 'true', // Make sure it’s a boolean
+            Status: document.getElementById('Status').value === 'true',  
         };
-
-        // Submit to the backend API to update the offer
-        axios.post(`/api/Offers/${offer._id}`, OfferData)  // Use dynamic offer._id in URL
+ 
+        axios.post(`/api/Offers/${offer._id}`, OfferData)   
             .then(response => {
                 document.getElementById('message').innerHTML = 'Offer updated successfully!';
             })

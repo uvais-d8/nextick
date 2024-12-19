@@ -13,8 +13,7 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" href="/admin/products.css">
-    {{!-- <link rel="stylesheet" href="/admin/dashboard.css"> --}}
+    <link rel="stylesheet" href="/admin/products.css"> 
 
     <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
     <style>
@@ -193,11 +192,10 @@
                             style="border-width: 0px; color:red;width:100%;background-color:rgb(9, 14, 25)"
                             name="message" id="message" value="{{message}}">
                     </tr>
-                    <script>
-                        // Wait for 2 seconds and then clear the message
+                    <script> 
                         setTimeout(function () {
-                            document.getElementById('message').value = ''; // Clear the message
-                        }, 2000); // 2000 milliseconds = 2 seconds
+                            document.getElementById('message').value = ''; 
+                        }, 2000); 
                     </script>
                     <thead>
                         <tr>

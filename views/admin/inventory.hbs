@@ -83,11 +83,11 @@
                 </tr>
 
                 <script>
-                    // Check if the message exists
+                  
                     if (document.getElementById("messageInput")) {
                         setTimeout(() => {
                             document.getElementById("messageInput").style.display = "none";
-                        }, 2000); // 2000 milliseconds = 2 seconds
+                        }, 2000);  
                     }
                 </script>
                 <thead>
@@ -155,17 +155,15 @@
                     </div>
                 </div>
 
-                <script>
-                    // Modal event listener to populate form fields dynamically
+                <script> 
                     const modal = document.getElementById('staticBackdrop');
                     modal.addEventListener('show.bs.modal', function (event) {
-                        const button = event.relatedTarget; // Button that triggered the modal
+                        const button = event.relatedTarget; 
                         const productId = button.getAttribute('data-id');
                         const productName = button.getAttribute('data-name');
                         const productStock = button.getAttribute('data-stock');
 
-                        // Update form fields with the product data
-                        const form = modal.querySelector('form');
+                          const form = modal.querySelector('form');
                         form.action = `/admin/editinventory/${productId}`;
                         form.querySelector('#name').value = productName;
                         form.querySelector('#stock').value = productStock;
@@ -176,9 +174,7 @@
             </table>
               <nav aria-label="Page navigation">
   <ul class="pagination justify-content-center pages custom-pagination">
-
-    <!-- Show the "Previous" button if there is a previous page -->
-    {{#if previousPage}}
+   {{#if previousPage}}
       <li class="page-item">
         <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
           <span aria-hidden="true">&laquo;</span>
@@ -186,15 +182,13 @@
       </li>
     {{/if}}
 
-    <!-- Generate page numbers -->
-    {{#each (range 1 totalPages)}}
+     {{#each (range 1 totalPages)}}
       <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
         <a class="page-link" href="?page={{this}}">{{this}}</a>
       </li>
     {{/each}}
 
-    <!-- Show the "Next" button if there is a next page -->
-    {{#if nextPage}}
+     {{#if nextPage}}
       <li class="page-item">
         <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
           <span aria-hidden="true">&raquo;</span>

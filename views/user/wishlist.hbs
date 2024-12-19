@@ -284,7 +284,6 @@
                     {{/if}}
 
                     <script>
-                        // Event listener for adding/removing from wishlist
                         document.addEventListener("DOMContentLoaded", function () {
                             const wishlistButtons = document.querySelectorAll('.remove-wishlist');
 
@@ -292,8 +291,7 @@
                                 button.addEventListener('click', function () {
                                     const productId = this.getAttribute('data-product-id');
 
-                                    // Call API to toggle wishlist status
-                                    fetch(`/toggle/${productId}`, {
+                                     fetch(`/toggle/${productId}`, {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/json',

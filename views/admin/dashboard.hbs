@@ -103,68 +103,18 @@
                 {{/each}}
 
 
-                {{!--
-                <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                        var ctx = document.getElementById('salesChart').getContext('2d');
-
-                        var salesData = {
-                            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-                            datasets: [
-                                {
-                                    label: 'Total Sales',
-                                    data: [65000, 56000, 20000, 81000, 56000, 55000, 40000],
-                                    borderColor: 'rgb(75, 192, 192)',
-                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                    tension: 0.4
-                                },
-                                {
-                                    label: 'Net Profit',
-                                    data: [28000, 48000, 40000, 19000, 86000, 27000, 90000],
-                                    borderColor: 'rgb(54, 162, 235)',
-                                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                    tension: 0.4
-                                }
-                            ]
-                        };
-
-                        var salesChart = new Chart(ctx, {
-                            type: 'line',
-                            data: salesData,
-                            options: {
-                                responsive: true,
-                                plugins: {
-                                    legend: {
-                                        position: 'top'
-                                    }
-                                },
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        ticks: {
-                                            callback: function (value) {
-                                                return '$' + value;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                    });
-                </script> --}}
+           
 
                 <script>
                     document.addEventListener("DOMContentLoaded", function () {
                         const filterElement = document.getElementById("filter");
 
-                        // Set default value for filter and initialize chart
-                        if (filterElement) {
+                          if (filterElement) {
                             filterElement.value = "yearly";
                             updateSalesChart();
                         }
 
-                        // Attach change event listener to the filter dropdown
-                        filterElement.addEventListener("change", updateSalesChart);
+                         filterElement.addEventListener("change", updateSalesChart);
                     });
 
                     let salesChart;
@@ -173,21 +123,18 @@
                         const filter = document.getElementById("filter").value;
 
                         try {
-                            // Fetch data from the backend
-                            const response = await fetch(`/admin/sales-data?filter=${filter}`);
+                             const response = await fetch(`/admin/sales-data?filter=${filter}`);
                             const result = await response.json();
 
                             if (response.ok) {
                                 const labels = result.labels;
                                 const data = result.totalPrices;
 
-                                // Destroy existing chart if it exists
-                                if (salesChart) {
+                                 if (salesChart) {
                                     salesChart.destroy();
                                 }
 
-                                // Create new chart
-                                const ctx = document.getElementById("salesChart").getContext("2d");
+                                 const ctx = document.getElementById("salesChart").getContext("2d");
                                 salesChart = new Chart(ctx, {
                                     type: "line",
                                     data: {
@@ -234,8 +181,7 @@
     const filter = document.getElementById("filter").value;
 
     try {
-        // Fetch data from the backend
-        const response = await fetch(`/admin/sales-data?filter=${filter}`);
+         const response = await fetch(`/admin/sales-data?filter=${filter}`);
         const result = await response.json();
 
         console.log("Fetched data:", result);
@@ -249,13 +195,11 @@
                 return;
             }
 
-            // Destroy existing chart if it exists
-            if (salesChart) {
+             if (salesChart) {
                 salesChart.destroy();
             }
 
-            // Create new chart
-            const ctx = document.getElementById("salesChart").getContext("2d");
+             const ctx = document.getElementById("salesChart").getContext("2d");
             salesChart = new Chart(ctx, {
                 type: "line",
                 data: {

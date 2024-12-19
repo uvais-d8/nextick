@@ -252,8 +252,7 @@
 		</div>
 		<!-- check out section -->
 		<script>
-			function handleCardClick(firstname, lastname, address, phone, email, place, city, pincode, district) {
-				// Populate the shipping address form with the selected address
+			function handleCardClick(firstname, lastname, address, phone, email, place, city, pincode, district) { 
 				document.getElementById('firstname').value = firstname;
 				document.getElementById('lastname').value = lastname;
 				document.getElementById('address').value = address;
@@ -676,11 +675,9 @@
 
 	<script>
 		document.getElementById("orderForm").addEventListener("submit", async (e) => {
-			e.preventDefault(); // Prevent form submission
-
+			e.preventDefault();  
 			const form = e.target;
-
-			// Collect form data
+ 
 			const formData = {
 				firstname: form.elements["firstname"].value.trim(),
 				lastname: form.elements["lastname"].value.trim(),
@@ -698,8 +695,7 @@
 				addressId: document.getElementById("addressId").textContent,
 			};
 
-			const errorMessages = [];
-			// Validate inputs
+			const errorMessages = []; 
 			if (!formData.firstname) errorMessages.push("First name is required.");
 			if (!formData.lastname) errorMessages.push("Last name is required.");
 			if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
@@ -711,8 +707,7 @@
 				errorMessages.push("Invalid pin code.");
 			if (!formData.district) errorMessages.push("District is required.");
 			if (!formData.place) errorMessages.push("Place is required.");
-
-			// Show validation errors
+ 
 			if (errorMessages.length > 0) {
 				Swal.fire({
 					title: "Validation Errors",
@@ -722,8 +717,7 @@
 				});
 				return;
 			}
-
-			// Handle payment method
+ 
 			if (formData.paymentMethod === "razorpay") {
 				try {
 					const response = await fetch("/create-razorpay-order", {
@@ -762,8 +756,7 @@
 									confirmButtonText: "OK",
 								}).then(() => {
 									window.location.href = "/orderss";
-									console.log("order", order)
-									//	    window.location.href = `/payment-success/${order.orderId}`;
+									console.log("order", order) 
 									console.log("orderId", orderId)
 
 								});
@@ -853,8 +846,7 @@
 			const couponCode = couponCodeInput.value.trim();
 			const cartTotal = parseFloat(document.querySelector('input[name="total"]').value);
 
-			if (submitButton.value === 'Apply Coupon') {
-				// Apply the coupon
+			if (submitButton.value === 'Apply Coupon') { 
 				if (!couponCode) {
 					Swal.fire({
 						title: "Oops..Error",
@@ -877,8 +869,7 @@
 					if (response.ok) {
 						const discount = data.discount;
 						const newTotal = data.newTotal;
-
-						// Update displayed total and discount
+ 
 						document.querySelector('.total-data .total').textContent = `₹${newTotal.toFixed(2)}`;
 						document.querySelector('.discount-section').textContent = `Discount Applied: ₹${discount.toFixed(2)}`;
 						document.querySelector('.discount-section').style.display = 'block';
@@ -899,30 +890,27 @@
 					console.error('Error applying coupon:', error);
 					alert('An error occurred while applying the coupon.');
 				}
-			} else if (submitButton.value === 'Remove Coupon') {
-				// Remove the coupon
+			} else if (submitButton.value === 'Remove Coupon') { 
 				try {
 
 					const response = await fetch(`/removeCoupon/${couponCode}`, {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ cartTotal }), // Send cart total if necessary
+						body: JSON.stringify({ cartTotal }),  
 					});
 
 					const data = await response.json();
 
 					if (response.ok) {
 						const originalTotal = data.originalTotal;
-
-						// Reset displayed total and discount section
+ 
 						document.querySelector('.total-data .total').textContent = `₹${originalTotal.toFixed(2)}`;
 						document.querySelector('.discount-section').textContent = '';
 						document.querySelector('.discount-section').style.display = 'none';
-location.reload()
-						// Update hidden total input
+                        location.reload()
+						 
 						document.querySelector('input[name="total"]').value = originalTotal.toFixed(2);
-
-						// Reset coupon input and button
+ 
 						couponCodeInput.value = '';
 						couponCodeInput.readOnly = false;
 						submitButton.value = 'Apply Coupon';

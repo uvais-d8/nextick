@@ -579,8 +579,7 @@
 			const cta = document.querySelector('.cta-button');
 			const featureButtons = document.querySelectorAll('.feature-button');
 			const watch3d = document.querySelector('.watch-3d');
-
-			// Animate text and button
+ 
 			setTimeout(() => {
 				title.style.opacity = '1';
 				title.style.transform = 'translateY(0)';
@@ -595,8 +594,7 @@
 				cta.style.opacity = '1';
 				cta.style.transform = 'scale(1)';
 			}, 1500);
-
-			// Feature selector functionality
+ 
 			featureButtons.forEach(button => {
 				button.addEventListener('click', () => {
 					featureButtons.forEach(btn => btn.classList.remove('active'));
@@ -620,8 +618,7 @@
 					watch3d.style.animationPlayState = 'running';
 				}, 100);
 			}
-
-			// Interactive 3D rotation on mouse move
+ 
 			const banner = document.querySelector('.banner');
 			banner.addEventListener('mousemove', (e) => {
 				const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
@@ -635,27 +632,23 @@
 		});
 	</script>
 
-	<script>
-		// Set the target date and time
+	<script> 
 		const targetDate = new Date("2025/1/01 00:00:00").getTime();
 
 		function updateCountdown() {
 			const now = new Date().getTime();
 			const timeRemaining = targetDate - now;
-
-			// Calculate days, hours, minutes, and seconds
+ 
 			const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 20));
 			const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 			const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
 			const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
-
-			// Display the results
+ 
 			document.getElementById("days").innerText = days;
 			document.getElementById("hours").innerText = hours;
 			document.getElementById("minutes").innerText = minutes;
 			document.getElementById("seconds").innerText = seconds;
-
-			// Check if the countdown has ended
+ 
 			if (timeRemaining < 0) {
 				clearInterval(countdownInterval);
 				document.getElementById("days").innerText = "00";
@@ -665,8 +658,7 @@
 				alert("Countdown has ended!");
 			}
 		}
-
-		// Update the countdown every second
+ 
 		const countdownInterval = setInterval(updateCountdown, 1000);
 	</script>
 	<!-- testimonail-section -->
@@ -996,8 +988,7 @@
 			const cta = document.querySelector('.cta-button');
 			const watches = document.querySelectorAll('.watch');
 			const particles = document.querySelector('.particles');
-
-			// Animate text and button
+ 
 			setTimeout(() => {
 				title.style.opacity = '1';
 				title.style.transform = 'translateY(0)';
@@ -1012,16 +1003,14 @@
 				cta.style.opacity = '1';
 				cta.style.transform = 'scale(1)';
 			}, 1500);
-
-			// Animate watches
+ 
 			watches.forEach((watch, index) => {
 				setTimeout(() => {
 					watch.style.opacity = '1';
 					watch.style.transform = 'translateY(0)';
 				}, 2000 + index * 300);
 			});
-
-			// Create particle effect
+ 
 			for (let i = 0; i < 50; i++) {
 				createParticle();
 			}
@@ -1059,8 +1048,7 @@
 
 				update();
 			}
-
-			// Interactive watch hover effect
+ 
 			watches.forEach(watch => {
 				watch.addEventListener('mouseover', () => {
 					const name = watch.getAttribute('data-name');

@@ -267,7 +267,9 @@
                         <!-- logo -->
                         <div class="site-logo">
                             <a href="/">
-								<p style="font-size:28px; color:white;margin-top:-5px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">NEXTIC<span style="font-weight: bold;color:rgb(238, 149, 15)">K</span></p>
+                                <p
+                                    style="font-size:28px; color:white;margin-top:-5px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
+                                    NEXTIC<span style="font-weight: bold;color:rgb(238, 149, 15)">K</span></p>
                             </a>
                         </div>
                         <!-- logo -->
@@ -306,11 +308,11 @@
                                 </li>
                                 <li>
                                     <div class="header-icons">
-                                          <a href="/wishlist" class="love-icon">
+                                        <a href="/wishlist" class="love-icon">
                                             <i class="fas fa-heart"></i>
                                         </a>
                                         <a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
-                                       
+
                                         <a class="mobile-hide search-bar-icon" href="/profile"><i
                                                 class="fas fa-user"></i></a>
                                     </div>
@@ -473,7 +475,7 @@
                     <!-- SweetAlert Confirmation Script -->
                     <script>
                         document.getElementById('delete-button-{{this._id}}').addEventListener('click', function (event) {
-                            event.preventDefault(); // Prevent the form from submitting immediately
+                            event.preventDefault(); 
 
                             Swal.fire({
                                 title: 'Are you sure?',
@@ -486,7 +488,7 @@
                                 cancelButtonText: 'Cancel'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    // If confirmed, submit the form
+                                   
                                     document.getElementById('delete-form-{{this._id}}').submit();
                                 }
                             });
@@ -528,8 +530,7 @@
                             <input id="phone" name="phone" placeholder="Phone No">
                         </div>
                         <div class="form-group">
-                            <input style="width: 100%;" id="pincode" name="pincode"
-                                placeholder="Pin code">
+                            <input style="width: 100%;" id="pincode" name="pincode" placeholder="Pin code">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -607,11 +608,11 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 col-md-12">
-                  <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
-                            Rights
-                            Reserved.<br>
-                            Distributed By - <a href="https://themewagon.com/">nextick.store</a>
-                        </p>
+                    <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
+                        Rights
+                        Reserved.<br>
+                        Distributed By - <a href="https://themewagon.com/">nextick.store</a>
+                    </p>
                 </div>
                 <div class="col-lg-6 text-right col-md-12">
                     <div class="social-icons">
@@ -632,40 +633,39 @@
             console.log("Click event detected");
 
             const card = event.target.closest(".address-card");
-            if (!card) return; // Exit if no address card was clicked
+            if (!card) return;
             console.log("Address card clicked:", card);
 
             const addressId = card.getAttribute("data-id");
             if (!addressId) {
                 console.error("Address ID not found in the data-id attribute.");
-                return; // Exit if no data-id is found
+                return;
             }
 
             try {
-                // Make the POST request to update the default address
+
                 const response = await fetch("/updateDefaultAddress", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ addressId }), // Send the address ID in the body
+                    body: JSON.stringify({ addressId }),
                 });
 
-                // Parse the JSON response
+
                 const result = await response.json();
 
-                // Handle success or failure based on response
                 if (result.success) {
                     Swal.fire({
                         text: "Default address updated successfully!",
                         icon: "success",
                         confirmButtonText: "OK",
                     }).then(() => {
-                        // Optionally reload the page or dynamically update the UI
-                        location.reload(); // Reloads the page to reflect the updated default address
+
+                        location.reload();
                     });
                 } else {
-                    // Show an error message if the update failed
+
                     Swal.fire({
                         text: `Failed to update default address: ${result.message}`,
                         icon: "error",
@@ -673,7 +673,6 @@
                     });
                 }
             } catch (error) {
-                // Catch any errors from the fetch request or JSON parsing
                 console.error("Error updating default address:", error);
                 Swal.fire({
                     text: "An error occurred while updating the address. Please try again.",

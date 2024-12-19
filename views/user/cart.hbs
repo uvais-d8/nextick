@@ -265,14 +265,12 @@
     const quantityInput = document.getElementById(`quantity-${cartId}`);
     const currentQuantity = parseInt(quantityInput.value);
     const newQuantity = currentQuantity + change;
-
-    // Prevent invalid quantity
+ 
     if (newQuantity < 1 || newQuantity > 11) {
         alert('Quantity must be between 1 and 11');
         return;
     }
-
-    // AJAX request to update quantity
+ 
     fetch('/cart/update-quantity', {
         method: 'POST',
         headers: {
@@ -282,15 +280,12 @@
     })
         .then((response) => response.json())
         .then((data) => {
-            if (data.success) {
-                // Update quantity in input field
+            if (data.success) { 
                 quantityInput.value = data.quantity;
-
-                // Update total for the item
+ 
                 const totalCell = document.querySelector(`#total-${cartId}`);
                 totalCell.textContent = data.total;
-
-                // Optionally update the cart subtotal if needed
+ 
                 updateCartSubtotal();
             } else {
                 alert(data.message || 'Failed to update quantity');
@@ -306,8 +301,7 @@ function updateCartSubtotal() {
     document.querySelectorAll('.product-total').forEach((totalCell) => {
         subtotal += parseFloat(totalCell.textContent);
     });
-
-    // Update the subtotal element
+ 
     document.getElementById('cart-subtotal').textContent = subtotal.toFixed(2);
 }
 </script>
@@ -576,12 +570,10 @@ function updateCartSubtotal() {
 					icon: 'warning',
 					confirmButtonText: 'OK'
 				}).then(() => {
-					// Redirect to orders page after clicking "OK"
-					window.location.href = '/cart';
+				 	window.location.href = '/cart';
 				});
 			} else {
-				// Only submit the form if the quantity is within the valid range
-				input.form.submit();
+			 	input.form.submit();
 			}
 		}
 	</script>

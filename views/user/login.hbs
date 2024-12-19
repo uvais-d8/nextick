@@ -162,16 +162,14 @@
         });
 
     </script>
-    <script>
-        // Wait until the DOM is fully loaded
+    <script> 
         document.addEventListener("DOMContentLoaded", function () {
             const messageInput = document.getElementById("message");
-
-            // Check if there's a message, then clear it after 3 seconds
+ 
             if (messageInput && messageInput.value) {
                 setTimeout(() => {
-                    messageInput.value = ""; // Clear the message
-                }, 2000); // 3000ms = 3 seconds
+                    messageInput.value = "";  
+                }, 2000); 
             }
         });
     </script>
@@ -187,7 +185,7 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        window.location.href = '/'; // Redirect on success
+                        window.location.href = '/'; 
                     } else {
                         alert("Google sign-in failed.");
                     }

@@ -181,10 +181,10 @@
 
         imagesInput.addEventListener('change', function (e) {
             const files = e.target.files;
-            previewsContainer.innerHTML = ''; // Clear previous previews
+            previewsContainer.innerHTML = ''; 
 
             if (cropper) {
-                cropper.destroy(); // Destroy previous cropper instance if it exists
+                cropper.destroy();  
             }
 
             Array.from(files).forEach(file => {
@@ -193,51 +193,46 @@
                     const imgElement = document.createElement('img');
                     imgElement.src = event.target.result;
 
-                    // Create a wrapper for the preview
+                  
                     const previewContainer = document.createElement('div');
                     previewContainer.className = 'image-preview';
                     previewsContainer.appendChild(previewContainer);
                     previewContainer.appendChild(imgElement);
-
-                    // Create a cropper instance
+                    
                     cropper = new Cropper(imgElement, {
-                        aspectRatio: 1, // Adjust the aspect ratio as needed
+                        aspectRatio: 1,
                         viewMode: 1,
                         autoCropArea: 1,
                         ready: function () {
-                            // Create crop button
                             const cropButton = document.createElement('button');
                             cropButton.textContent = 'Crop Image';
                             cropButton.className = 'crop-button';
                             previewContainer.appendChild(cropButton);
 
                             cropButton.addEventListener('click', async () => {
-                                // Remove previous cropped image if exists
-                                const existingPreview = previewsContainer.querySelector('.cropped-image');
+                                  const existingPreview = previewsContainer.querySelector('.cropped-image');
                                 if (existingPreview) {
                                     existingPreview.remove();
                                 }
 
                                 const canvas = cropper.getCroppedCanvas({
-                                    width: 300, // Set desired width
-                                    height: 300 // Set desired height
+                                    width: 300,  
+                                    height: 300  
                                 });
 
-                                // Convert the cropped canvas to a Blob
+                           
                                 canvas.toBlob(async (blob) => {
                                     const newFile = new File([blob], file.name, {
                                         type: file.type,
                                         lastModified: Date.now()
                                     });
-
-                                    // Create a new FileReader to display the cropped image
                                     const newReader = new FileReader();
                                     newReader.onload = function (newEvent) {
                                         const imgPreview = document.createElement('img');
                                         imgPreview.src = newEvent.target.result;
-                                        imgPreview.className = 'cropped-image'; // Class for identification
-                                        imgPreview.style.width = '100%'; // Set a width for the preview
-                                        imgPreview.style.height = '100px'; // Set a fixed height for uniformity
+                                        imgPreview.className = 'cropped-image'; 
+                                        imgPreview.style.width = '100%';  
+                                        imgPreview.style.height = '100px'; 
                                         previewContainer.appendChild(imgPreview);
                                     };
 
@@ -253,13 +248,11 @@
         });
     </script>
     <script>
-        // Clear the message after 3 seconds
-        setTimeout(() => {
+         setTimeout(() => {
             const messageField = document.getElementById('message');
             if (messageField) {
-                messageField.value = ''; // Clear the message field
-            }
-        }, 2000); // Adjust the time (in milliseconds) as needed
+                messageField.value = '';              }
+        }, 2000); 
     </script>
 
 </body>

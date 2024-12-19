@@ -236,16 +236,15 @@
     </div>
   </div>
 
-  <script>
-    // Wait until the DOM is fully loaded
+  <script> 
     document.addEventListener("DOMContentLoaded", function () {
       const messageInput = document.getElementById("message");
 
-      // Check if there's a message and then clear it after showing once
+       
       if (messageInput.value) {
         setTimeout(() => {
-          messageInput.value = ""; // Clear the message after a delay
-        }, 1000); // Adjust delay as needed (e.g., 3000ms = 3 seconds)
+          messageInput.value = "";  
+        }, 1000); 
       }
     });
   </script>
