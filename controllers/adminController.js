@@ -229,8 +229,15 @@ const loadUserMangment = async (req, res) => {
 const addcategory = async (req, res) => {
   try {
     const { category, brand, bandcolor } = req.body;
+    if (!category || !brand || !bandcolor) {
+      return res.render("admin/addcategory", {
+        message: "All fields are required"
+      });
+    }
+    const existingCategory = await Category.findOne({
+      category: { $regex: `^${category}$`, $options: "i" }
+    });
 
-    const existingCategory = await Category.findOne({ category });
     if (existingCategory) {
       console.log("Category already exists");
       return res.render("admin/addcategory", {
@@ -247,7 +254,7 @@ const addcategory = async (req, res) => {
 
     return res.redirect("/admin/category");
   } catch (error) {
-    console.error(`Something went wrong: ${error}`);
+    console.log(`Something went wrong: ${error}`);
     return res.redirect("/admin/addcategory");
   }
 };
@@ -644,30 +651,29 @@ const editinventory = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-    if (stock.length < 0) {
-      console.log("not minus allowed");
+
+    // Validate the stock value
+    if (stock < 0) {
+      return res.redirect("/admin/inventory")
     }
+
+    // Check if no changes were made
+    if (product.name === name && product.stock === parseInt(stock)) {
+      return res.redirect("/admin/inventory")
+    }
+
+    // Check for duplicate product name (case-insensitive)
     const existingProduct = await Products.findOne({
-      name: name,
+      name: { $regex: new RegExp(`^${name}$`, "i") },
       _id: { $ne: productId }
     });
     if (existingProduct) {
-      return res.render("admin/inventory", {
-        products: await Products.find({}),
-        message: "Product with this name already exists"
-      });
+      return res.redirect("/admin/inventory")
     }
 
-    if (product.name === name && product.stock === stock) {
-      return res.render("admin/inventory", {
-        products: await Products.find({}),
-        message: "No changes made to the product"
-      });
-    }
-    // Update the product details
-    product.name = name;
-    product.stock = stock;
-
+    // Update only if there are changes
+    product.name = name || product.name;
+    product.stock = stock || product.stock;
     await product.save();
 
     res.redirect("/admin/inventory");
@@ -676,6 +682,7 @@ const editinventory = async (req, res) => {
     res.status(500).send("Error updating product");
   }
 };
+
 
 // -------------------------------------------------Orders Management------------------------------------------------------
 
@@ -1630,9 +1637,8 @@ const exportExcel = async (req, res) => {
   }
 };
 const getSalesData = async (req, res) => {
-  const filter = req.query.filter; // Get filter from query params
-  const itemStatus = req.query.itemStatus || "delivered"; // Get item status from query params, default to 'delivered'
-
+  const filter = req.query.filter;  
+  const itemStatus = req.query.itemStatus || "delivered";  
   if (!filter) {
     return res.status(400).json({ error: "Filter is required" });
   }
@@ -1642,13 +1648,11 @@ const getSalesData = async (req, res) => {
     let sortStage = {};
     let labels = [];
     let totalPrices = [];
-
-    // Match stage to filter by order status and item status
+ 
     let matchStage = {
-      "items.status": itemStatus // Filter items where their status matches the itemStatus (delivered in this case)
+      "items.status": itemStatus 
     };
-
-    // Adjust aggregation stages based on the filter
+ 
     switch (filter) {
       case "yearly":
         groupStage = {
@@ -1712,7 +1716,6 @@ const getSalesData = async (req, res) => {
         "Dec"
       ];
 
-      // Ensure we have data for all 12 months, even if no sales data exists for some months
       let monthData = new Array(12).fill(0); // Array to hold data for all 12 months (initially set to 0)
 
       salesData.forEach(item => {

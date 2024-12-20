@@ -78,16 +78,16 @@
             </div>
             <table>
                 <tr>
-                    <input id="messageInput" style="color:red; background-color: #0a0d1be4; border-width: 0px;width:100%"
-                        type="text" value="{{message}}">
+                    <input id="message"
+                        style="color:red; background-color: #0a0d1be4; border-width: 0px;width:100%" type="text" value="{{message}}">
                 </tr>
 
                 <script>
-                  
-                    if (document.getElementById("messageInput")) {
+
+                    if (document.getElementById("message")) {
                         setTimeout(() => {
-                            document.getElementById("messageInput").style.display = "none";
-                        }, 2000);  
+                            document.getElementById("message").style.display = "none";
+                        }, 2000);
                     }
                 </script>
                 <thead>
@@ -116,8 +116,7 @@
                             <button type="button" class="btn btn"
                                 style="background-color: rgba(209, 139, 9, 0.849); color: white; font-size: 14px"
                                 data-bs-toggle="modal" data-id="{{this._id}}" data-name="{{this.name}}"
-                                data-stock="{{this.stock}}" data-price="{{this.price}}"
-                                data-bs-target="#staticBackdrop">
+                                data-stock="{{this.stock}}" data-bs-target="#staticBackdrop">
                                 EDIT
                             </button>
                         </td>
@@ -126,9 +125,7 @@
                 </tbody>
 
                 <!-- Modal to edit product -->
-                <div style="background-color: #0000009d;" class="modal fade" id="staticBackdrop"
-                    data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-                    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" tabindex="-1">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -137,67 +134,83 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <div class="form-container">
-                                    <form action="/admin/editinventory/{{this._id}}" method="post" id="editProductForm">
-                                        <div class="form-group">
-                                            <label for="name"><b>Product Name</b></label><br>
-                                            <input style="width: 100%;height:36px;border-radius:4px;border-width:1px" type="text" value="{{product.name}}" id="name" name="name" required>
-                                        </div>
-                                        <div style="margin-top: 10px;" class="form-group">
-                                            <label for="stock"><b>Stock Quantity</b></label><br>
-                                            <input style="width: 100%;height:36px;border-radius:4px;border-width:1px" type="number" value="{{product.quantity}}" id="stock" name="stock">
-                                        </div>
-                                        <button style="background-color:orange;margin-top:10px;margin-left:37%" type="submit" class="submit-btn">Update Product</button>
-                                    </form>
-                                </div>
+                                <form action="" method="post" id="editProductForm">
+                                    <!-- Hidden field for product ID -->
+                                    <input type="hidden" id="productId" name="id">
+
+                                    <!-- Product Name -->
+                                    <div class="form-group">
+                                        <label for="name"><b>Product Name</b></label><br>
+                                        <input style="width: 100%; height: 36px; border-radius: 4px; border-width: 1px;"
+                                            type="text" id="name" name="name" placeholder="Enter new name to product">
+                                    </div>
+
+                                    <!-- Stock Quantity -->
+                                    <div style="margin-top: 10px;" class="form-group">
+                                        <label for="stock"><b>Stock Quantity</b></label><br>
+                                        <input style="width: 100%; height: 36px; border-radius: 4px; border-width: 1px;"
+                                            type="number" id="stock" name="stock" placeholder="Update the stock quantity">
+                                    </div>
+
+                                    <button style="background-color: orange; margin-top: 10px; margin-left: 37%;"
+                                        type="submit" class="submit-btn">Update Product</button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <script> 
-                    const modal = document.getElementById('staticBackdrop');
-                    modal.addEventListener('show.bs.modal', function (event) {
-                        const button = event.relatedTarget; 
-                        const productId = button.getAttribute('data-id');
-                        const productName = button.getAttribute('data-name');
-                        const productStock = button.getAttribute('data-stock');
 
-                          const form = modal.querySelector('form');
-                        form.action = `/admin/editinventory/${productId}`;
-                        form.querySelector('#name').value = productName;
-                        form.querySelector('#stock').value = productStock;
+                <script>
+                    document.addEventListener("DOMContentLoaded", () => {
+                        const modal = document.getElementById("staticBackdrop");
+
+                        modal.addEventListener("show.bs.modal", function (event) {
+                            const button = event.relatedTarget; // Button that triggered the modal
+
+                            // Get data attributes from the button
+                            const productId = button.getAttribute("data-id");
+                            const productName = button.getAttribute("data-name");
+                            const productStock = button.getAttribute("data-stock");
+
+                            // Populate modal form fields
+                            const form = modal.querySelector("#editProductForm");
+                            form.action = `/admin/editinventory/${productId}`; // Set the form action
+                            form.querySelector("#name").value = productName;
+                            form.querySelector("#stock").value = productStock;
+                        });
                     });
+
                 </script>
 
 
             </table>
-              <nav aria-label="Page navigation">
-  <ul class="pagination justify-content-center pages custom-pagination">
-   {{#if previousPage}}
-      <li class="page-item">
-        <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
-          <span aria-hidden="true">&laquo;</span>
-        </a>
-      </li>
-    {{/if}}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center pages custom-pagination">
+                    {{#if previousPage}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {{/if}}
 
-     {{#each (range 1 totalPages)}}
-      <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
-        <a class="page-link" href="?page={{this}}">{{this}}</a>
-      </li>
-    {{/each}}
+                    {{#each (range 1 totalPages)}}
+                    <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
+                        <a class="page-link" href="?page={{this}}">{{this}}</a>
+                    </li>
+                    {{/each}}
 
-     {{#if nextPage}}
-      <li class="page-item">
-        <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
-          <span aria-hidden="true">&raquo;</span>
-        </a>
-      </li>
-    {{/if}}
+                    {{#if nextPage}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {{/if}}
 
-  </ul>
-</nav>
+                </ul>
+            </nav>
         </main>
     </div>
 

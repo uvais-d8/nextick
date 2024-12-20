@@ -3,15 +3,15 @@ const mongoose = require("mongoose");
 const categorySchema = new mongoose.Schema({
   category: {
     type: String,
-    required: true
+    required: false
   },
   brand: {
     type: String,
-    required: true
+    required: false
   },
   bandcolor: {
     type: String,
-    required: true
+    required: false
   },
   islisted: {
     type: Boolean,
