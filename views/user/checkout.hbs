@@ -729,6 +729,16 @@
 
 					console.log(order)
 
+					if (!order.success) {
+						Swal.fire({
+							title: "Order Failed",
+							text: order.message || "An error occurred while creating the order.",
+							icon: "error",
+							confirmButtonText: "Retry",
+						});
+						return;
+					}
+
 					const options = {
 						key: "rzp_test_27cbwJ6wd0CuiQ",
 						amount: order.amount,

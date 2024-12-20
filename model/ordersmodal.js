@@ -108,6 +108,7 @@ const ordersSchema = new mongoose.Schema(
       pincode: { type: Number, required: true },
       district: { type: String, required: true }
     },
+    
     orderTotal: {
       type: Number,
       required: true

@@ -350,22 +350,31 @@
                 height: 32px;
             }
         }
-        .button-red{
+
+        .button-red {
             font-weight: bold;
             color: rgb(202, 16, 16);
-        } .button-green{
+        }
+
+        .button-green {
             font-weight: bold;
             color: rgb(75, 195, 6);
-        } .button-yellow{
+        }
+
+        .button-yellow {
             font-weight: bold;
             color: rgb(225, 210, 0);
-        } .button-blue{
+        }
+
+        .button-blue {
             font-weight: bold;
             color: rgb(38, 13, 182);
-        } .button-purple{
+        }
+
+        .button-purple {
             font-weight: bold;
             color: rgb(211, 2, 124);
-        }  
+        }
     </style>
 </head>
 
@@ -417,11 +426,11 @@
                                 </li>
                                 <li>
                                     <div class="header-icons">
-                                          <a href="/wishlist" class="love-icon">
+                                        <a href="/wishlist" class="love-icon">
                                             <i class="fas fa-heart"></i>
                                         </a>
                                         <a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
-                                         
+
                                         <a style="color: orange;" class="mobile-hide search-bar-icon" href="/profile"><i
                                                 class="fas fa-user"></i></a>
                                     </div>
@@ -463,8 +472,8 @@
                             #{{_id}}</div>
                         <div class="status-header">
                             <span><b>Status :</b></span>
-                           
-                           <span class="
+
+                            <span class="
         {{#if (eq status 'scheduled')}}button-blue{{else}}
         {{#if (eq status 'pending')}}button-yellow{{else}}
         {{#if (eq status 'canceled')}}button-red{{else}}
@@ -473,18 +482,19 @@
         {{#if (eq status 'delivered')}}button-green{{else}}
         {{#if (eq status 'shipped')}}button-purple{{/if}}{{/if}}
         {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}">
-							{{status}}
-						</span>
+                                {{status}}
+                            </span>
                             <div class="status-message" id="statusMessage"></div>
                             <div style="font-size: large;" class="status-header">Item : {{this.productId.name}}</div>
 
-                            <div class="step-price"><b>Price: ${{multiply this.quantity this.priceWithDiscount}}</b></div>
+                            <div class="step-price"><b>Price: ${{multiply this.quantity this.priceWithDiscount}}</b>
+                            </div>
                             <div class="step-quantity"><b>Quantity: {{this.quantity}}</b></div>
                         </div>
                         <hr>
                         {{/each}}
 
-                        <script> 
+                        <script>
                             function getStatusMessage(status) {
                                 switch (status) {
                                     case 'scheduled':
@@ -503,48 +513,122 @@
                             }  
                      </div > 
                         const orderStatus = "{{order.status}}";
- 
+
                             document.getElementById('statusMessage').innerText = getStatusMessage(orderStatus);
                         </script>
 
 
                         <div class="timeline">
-                            <div class="step">
+                             <div class="step" id="step-pending">
                                 <div class="step-icon">✓</div>
-                                <div class="step-label">scheduled</div>
+                                <div class="step-label">Pending</div>
                             </div>
-                            <div class="step">
+                            <div class="step" id="step-scheduled">
                                 <div class="step-icon">✓</div>
-                                <div class="step-label">pending</div>
+                                <div class="step-label">Scheduled</div>
                             </div>
-                            <div class="step">
+                            <div class="step" id="step-shipped">
                                 <div class="step-icon">✓</div>
-                                <div class="step-label">shipped</div>
+                                <div class="step-label">Shipped</div>
                             </div>
-                            <div class="step">
+                            <div class="step" id="step-delivered">
                                 <div class="step-icon">✓</div>
                                 <div class="step-label">Delivered</div>
                             </div>
                         </div>
+                        <style>
+                            .timeline {
+                                display: flex;
+                                gap: 20px;
+                            }
 
-                        <div class="tracking-log">
-                            <div class="log-entry">
-                                <div class="log-time">2020-11-14 10:35UTC</div>
-                                <div class="log-status">Delivered → Delivered, In/At Mailbox</div>
-                            </div>
-                            <div class="log-entry">
-                                <div class="log-time">2020-11-14 04:25UTC</div>
-                                <div class="log-status">Out for Delivery → Out for Delivery</div>
-                            </div>
-                            <div class="log-entry">
-                                <div class="log-time">2020-11-14 04:17UTC</div>
-                                <div class="log-status">In Transit → Arrived at Post Office</div>
-                            </div>
-                        </div>
+                            .step {
+                                text-align: center;
+                                color: #000000;
+                            }
+
+                            .step .step-icon {
+                                background: #ff7c7c;
+                                color: #ffffff;
+                                border-radius: 50%;
+                                width: 35px;
+                                height: 35px;
+                                line-height: 30px;
+                                margin: 0 auto;
+                            }
+
+                            .step.active {
+                                color: #49ff29;
+                            }
+
+                            .step.active .step-icon {
+                                background: #2bff0f;
+                            }
+                        </style>
+                        <script>document.addEventListener("DOMContentLoaded", () => {
+                                const orderStatus = `{{order.status}}`;
+
+                                const steps = ["pending", "scheduled", "shipped", "delivered"];
+                                steps.forEach((step, index) => {
+                                    const stepElement = document.getElementById(`step-${step}`);
+                                    if (stepElement) {
+                                        if (steps.indexOf(orderStatus) >= index) {
+                                            stepElement.classList.add("active");
+                                        } else {
+                                            stepElement.classList.remove("active");
+                                        }
+                                    }
+                                });
+                            });
+                        </script>
+
+                  <div class="tracking-log">
+  <div class="log-entry">
+    <div class="log-time" id="order-created"></div>
+    <div class="log-status">Order Created</div>
+  </div>
+  <div class="log-entry">
+    <div class="log-time" id="shipping-expected"></div>
+    <div class="log-status">Shipping Expected Date</div>
+  </div>
+  <div class="log-entry">
+    <div class="log-time" id="delivery-expected"></div>
+    <div class="log-status">Expected Delivery Date</div>
+  </div>
+</div>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  // Replace this object with the actual data fetched from the backend
+  const order = {
+    createdAt: "2024-12-01T12:00:00Z", // Example createdAt timestamp
+    status: "Pending", // Example status
+  };
+
+  // Helper function to format dates
+  function formatDate(date) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(date).toLocaleDateString(undefined, options);
+  }
+
+  // Calculate expected shipping and delivery dates
+  const createdAt = new Date(order.createdAt);
+  const shippingExpected = new Date(createdAt);
+  const deliveryExpected = new Date(createdAt);
+
+  shippingExpected.setDate(createdAt.getDate() + 3); // Add 3 days for shipping
+  deliveryExpected.setDate(createdAt.getDate() + 7); // Add 7 days for delivery
+
+  // Populate the HTML elements with the calculated dates
+  document.getElementById('order-created').textContent = formatDate(createdAt);
+  document.getElementById('shipping-expected').textContent = formatDate(shippingExpected);
+  document.getElementById('delivery-expected').textContent = formatDate(deliveryExpected);
+});
+    </script>
+
                     </div>
 
                 </div>
         </body>
+
         <!-- footer -->
         <div class="footer-area">
             <div class="container">

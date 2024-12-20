@@ -192,8 +192,7 @@ app.engine(
         }
       },
 
-      // Helper to return the JSON representation of the context
-      json: context => JSON.stringify(context)
+       json: context => JSON.stringify(context)
     }
   })
 );

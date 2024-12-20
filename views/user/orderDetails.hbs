@@ -262,7 +262,14 @@
             <!-- User Information -->
             <div class="msection user-info">
                 <div class="msection-title">User Information</div>
-                <p><span style="font-weight: 500;">Shipping Address:</span> {{order.shippingAddress.address}}</p>
+                <p style="font-weight: bold;"><span style="font-weight: 500;">User name_________:</span>
+                    {{order.shippingAddress.firstname}} {{order.shippingAddress.lastname}}<br>
+                    <span style="font-weight: 500;">Shipping Address__:</span> {{order.shippingAddress.address}} <br>
+                    <span style="font-weight: 500;">place and city______:</span> {{order.shippingAddress.place}} ,
+                     {{order.shippingAddress.city}} <br>
+                    <span style="font-weight: 500;">pin & district_______:</span> {{order.shippingAddress.pincode}} ,
+                    {{order.shippingAddress.district}}<br>
+                </p>
             </div>
 
             <!-- Products Ordered -->
@@ -278,31 +285,31 @@
                                 <p>Price:
                                     {{#if product.priceWithDiscount}}
                                     {{#if (eq product.priceWithDiscount product.productId.price)}}
-                                    <b>₹{{product.productId.price}}</b>
+                                    <b>₹ {{product.productId.price}}</b>
                                     {{else}}
                                     <del style="color: red;">₹{{product.productId.price}}</del>
                                     <b>₹{{product.priceWithDiscount}}</b>
                                     {{/if}}
                                     {{else}}
-                                    ₹{{product.productId.price}}
+                                    ₹ {{product.productId.price}}
                                     {{/if}}
                                 </p>
 
                             </td>
                             {{!-- <td><b>Total Price: ₹ {{multiply product.price product.quantity}}</b></td> --}}
                             <td>
-                                <p>Price:
+                                <p>Total price:
                                     {{#if product.priceWithDiscount}}
                                     {{#if (eq (multiply product.priceWithDiscount product.quantity) (multiply
                                     product.productId.price product.quantity))}}
-                                    <b>₹{{multiply product.productId.price product.quantity}}</b>
+                                    <b>₹ {{multiply product.productId.price product.quantity}}</b>
                                     {{else}}
                                     <del style="color: red;">₹{{multiply product.productId.price
                                         product.quantity}}</del>
                                     <b>₹{{multiply product.priceWithDiscount product.quantity}}</b>
                                     {{/if}}
                                     {{else}}
-                                    ₹{{multiply product.productId.price product.quantity}}
+                                    ₹ {{multiply product.productId.price product.quantity}}
                                     {{/if}}
                                 </p>
 
@@ -315,10 +322,6 @@
             <div class="msection payment-info">
                 <div class="msection-title">Payment Information</div>
                 <p><span>Payment Method:</span> <b>{{order.paymentMethod}}</b></p>
-                {{!-- {{#if order.discountAmount}}
-                <p><span>Discount:</span> ₹{{order.discountAmount}}</p>
-                <p><span>Final Amount:</span> ₹{{order.total - order.discountAmount}}</p>
-                {{/if}} --}}
             </div>
 
             <!-- Order Status -->
