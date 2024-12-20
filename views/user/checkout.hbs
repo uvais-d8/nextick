@@ -262,9 +262,7 @@
 				document.getElementById('city').value = city;
 				document.getElementById('pincode').value = pincode;
 				document.getElementById('district').value = district;
-
 			}
-
 		</script>
 		<div class="checkout-section mt-150 mb-150">
 			<div class="container">
@@ -353,7 +351,7 @@
 													<input type="hidden" name="subtotal" value="{{subtotal}}">
 													<input type="hidden" name="shippingRate" value="{{shippingRate}}">
 													<input type="hidden" name="total" value="{{total}}">
-													<input type="hidden" name="addressId" value="{{addresses._id}}">
+													{{!-- <input type="hidden" name="addressId" value="{{addresses._id}}"> --}}
 											</div>
 										</div>
 									</div>
@@ -692,9 +690,9 @@
 				subtotal: parseFloat(document.querySelector('input[name="subtotal"]').value),
 				shippingRate: parseFloat(document.querySelector('input[name="shippingRate"]').value),
 				orderTotal: parseFloat(document.querySelector('input[name="total"]').value),
-				addressId: document.getElementById("addressId").textContent,
+				{{!-- addressId: document.getElementById("addressId").textContent, --}}
 			};
-
+console.log("form",form)
 			const errorMessages = []; 
 			if (!formData.firstname) errorMessages.push("First name is required.");
 			if (!formData.lastname) errorMessages.push("Last name is required.");

@@ -134,8 +134,7 @@
 								<li>
 									<form method="post" action="/logout">
 										<button class="a" type="submit"
-											style="color:white; background: none; border: none;cursor: pointer; font-weight:bold">Log
-											Out
+											style="color:white; background: none; border: none;cursor: pointer; font-weight:bold">Log Out
 										</button>
 									</form>
 								</li>
@@ -183,7 +182,7 @@
 	<!-- end search arewa -->
 
 	<!-- breadcrumb-section -->
-	<div style=" padding-top:135px ;height:330px" class="breadcrumb-section breadcrumb-bg">
+	<div style="padding-top:130px;" class="breadcrumb-section breadcrumb-bg">
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-8 offset-lg-2 text-center">
@@ -260,7 +259,18 @@
 								{{/each}}
 							</tbody>
 						</table>
-
+						<input id="message" style="border-width:0px;width:100%;color: red;text-align:center" value="{{message}}">
+  <script> 
+        document.addEventListener("DOMContentLoaded", function () {
+            const messageInput = document.getElementById("message");
+ 
+            if (messageInput && messageInput.value) {
+                setTimeout(() => {
+                    messageInput.value = "";  
+                }, 2000); 
+            }
+        });
+    </script>
 <script>function updateQuantity(cartId, change) {
     const quantityInput = document.getElementById(`quantity-${cartId}`);
     const currentQuantity = parseInt(quantityInput.value);
@@ -350,7 +360,7 @@ function updateCartSubtotal() {
 							</tbody>
 						</table>
 						<div class="cart-buttons">
-							<a onclick="location.reload();" class="boxed-btn black">Update Cart</a>
+							{{!-- <a onclick="location.reload();" class="boxed-btn black">Update Cart</a> --}}
 							<a href="/checkout" class="boxed-btn black">Check Out</a>
 						</div>
 						{{/if}}

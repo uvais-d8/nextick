@@ -3,6 +3,7 @@ const Products = require("../model/productsmodal");
 const Orders = require("../model/ordersmodal");
 const Razorpay = require("razorpay");
 const Coupons = require("../model/couponModel");
+const Address = require ("../model/addressModel")
 const Offer = require("../model/offermodel");
 
 const razorpay = new Razorpay({
@@ -160,7 +161,7 @@ const placeOrder = async (req, res) => {
       pincode,
       district,
     };
-
+  
     // Calculate total and save the order
     const orderTotal = updatedCartItems.reduce(
       (acc, item) => acc + item.total,
@@ -181,7 +182,33 @@ const placeOrder = async (req, res) => {
       shippingAddress,
       status: "scheduled", // Set the overall order status to 'scheduled'
     });
+    const addresses = await Address.find({ user: userId }); // Find addresses for the user
 
+   
+    // Create a new address document
+    const newAddress = new Address({
+      user: userId,
+      firstname,
+      lastname,
+      address,
+      phone,
+      email,
+      place,
+      city,
+      pincode,
+      district
+    });
+
+    // If the user has no existing address, mark this as the default address
+    const userAddresses = await Address.find({ user: userId });
+    if (userAddresses.length === 0) {
+      newAddress.isDefault = true; // Mark the first address as the default
+    }
+
+    // Save the address document to the database
+    await newAddress.save();
+    console.log("New address saved:", newAddress);
+ 
     console.log("New order details:", newOrder);
     await newOrder.save();
     console.log("Order saved successfully.");
@@ -222,7 +249,7 @@ const razorpayy = async (req, res) => {
       address,
       
     } = req.body;
-    
+    console.log("req.body",req.body)
     // Fetch user's cart items
     const cartItems = await Cart.find({ user: userId }).populate("productId");
 
@@ -291,7 +318,33 @@ const amount = orderTotal * 100; // Razorpay amount is in paisa
         currency: order.currency,
       },
     });
-    
+    const addresses = await Address.find({ user: userId }); // Find addresses for the user
+
+ 
+    // Create a new address document
+    const newAddress = new Address({
+      user: userId,
+      firstname,
+      lastname,
+      address,
+      phone,
+      email,
+      place,
+      city,
+      pincode,
+      district
+    });
+
+    // If the user has no existing address, mark this as the default address
+    const userAddresses = await Address.find({ user: userId });
+    if (userAddresses.length === 0) {
+      newAddress.isDefault = true; // Mark the first address as the default
+    }
+
+    // Save the address document to the database
+    await newAddress.save();
+    console.log("New address saved:", newAddress);
+ 
     console.log("Order Total before save:", newOrder.orderTotal);  
     const Order = await newOrder.save();
     console.log("Order Total after save:", Order.orderTotal);  
