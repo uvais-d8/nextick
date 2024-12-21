@@ -8,6 +8,8 @@ router.get("/login",adminAuth.islogin,adminController.loadlogin);
 router.post("/login",adminAuth.islogin,adminController.login);
 router.get("/dashboard",adminAuth.checksession,adminController.loaddashboard)
 router.post("/logout",adminAuth.checksession,adminController.logout)
+router.get("/category-sales-data", adminAuth.checksession,adminController.categorySales);
+
 
 //User Management
 router.get("/userpage",adminAuth.checksession,adminController.loadUserMangment)

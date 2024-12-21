@@ -241,6 +241,105 @@
     }
 }
 </script>  
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const filterElement = document.getElementById("filter");
+
+        if (filterElement) {
+            filterElement.value = "category"; // Set default filter to category
+            updateSalesChart();
+        }
+
+        filterElement.addEventListener("change", updateSalesChart);
+    });
+
+    let salesChart;
+
+    async function updateSalesChart() {
+        const filter = document.getElementById("filter").value;
+
+        try {
+            // Update API endpoint for category-wise sales
+            const endpoint =
+                filter === "category"
+                    ? "/admin/category-sales-data"
+                    : `/admin/sales-data?filter=${filter}`;
+            const response = await fetch(endpoint);
+            const result = await response.json();
+
+            console.log("Fetched data:", result);
+
+            if (response.ok) {
+                const labels = result.labels; // Category names
+                const data = result.totalPrices; // Total sales for each category
+
+                if (labels.length === 0 || data.length === 0) {
+                    console.warn("No data available for the selected filter.");
+                    return;
+                }
+
+                if (salesChart) {
+                    salesChart.destroy();
+                }
+
+                const ctx = document.getElementById("salesChart").getContext("2d");
+                salesChart = new Chart(ctx, {
+                    type: "bar", // Change to bar for category-wise visualization
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: "Total Sales by Category (₹)",
+                                data: data,
+                                backgroundColor: [
+                                    "rgba(75, 192, 192, 0.2)",
+                                    "rgba(255, 99, 132, 0.2)",
+                                    "rgba(255, 206, 86, 0.2)",
+                                    "rgba(54, 162, 235, 0.2)",
+                                    "rgba(153, 102, 255, 0.2)",
+                                    "rgba(255, 159, 64, 0.2)",
+                                ],
+                                borderColor: [
+                                    "rgba(75, 192, 192, 1)",
+                                    "rgba(255, 99, 132, 1)",
+                                    "rgba(255, 206, 86, 1)",
+                                    "rgba(54, 162, 235, 1)",
+                                    "rgba(153, 102, 255, 1)",
+                                    "rgba(255, 159, 64, 1)",
+                                ],
+                                borderWidth: 1,
+                                fill: true,
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: "Total Sales (₹)",
+                                },
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: "Categories",
+                                },
+                            },
+                        },
+                    },
+                });
+            } else {
+                console.error("Error:", result.error);
+            }
+        } catch (error) {
+            console.error("Error loading chart data:", error);
+        }
+    }
+</script>
 
                 <section style="height: 450px;" class="graph-container">
                     <div style="height: 500px;background-color:rgb(240, 236, 236)" class="graph">

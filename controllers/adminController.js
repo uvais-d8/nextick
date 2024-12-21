@@ -743,9 +743,10 @@ const cancelOrderItem = async (req, res) => {
 };
 
 const updateOrderStatus = async (req, res) => {
-  const { orderId, itemId, status } = req.body;
+  const { orderId, itemId, status ,currentPage} = req.body; // Get currentPage from the request body
+  // const currentPage = req.query.currentPage ; // Get current page from query parameter
 
-  console.log("Request Body:", req.body);
+   console.log("Request Body:", req.body);
 
   try {
     // Validate IDs
@@ -863,7 +864,9 @@ const updateOrderStatus = async (req, res) => {
     }
 
     console.log("Item status updated successfully for item ID:", itemId);
-    res.redirect("/admin/orders");
+
+    // Redirect to the current page to maintain pagination
+    res.redirect(`/admin/orders?page=${currentPage}`);
   } catch (error) {
     console.error("Error updating item status:", error);
     res
@@ -871,6 +874,7 @@ const updateOrderStatus = async (req, res) => {
       .json({ success: false, message: "Failed to update item status." });
   }
 };
+
 
 const loadOrder = async (req, res) => {
   try {
@@ -1637,8 +1641,9 @@ const exportExcel = async (req, res) => {
   }
 };
 const getSalesData = async (req, res) => {
-  const filter = req.query.filter;  
-  const itemStatus = req.query.itemStatus || "delivered";  
+  const filter = req.query.filter;
+  const itemStatus = req.query.itemStatus || "delivered";
+
   if (!filter) {
     return res.status(400).json({ error: "Filter is required" });
   }
@@ -1648,16 +1653,16 @@ const getSalesData = async (req, res) => {
     let sortStage = {};
     let labels = [];
     let totalPrices = [];
- 
+
     let matchStage = {
-      "items.status": itemStatus 
+      "items.status": itemStatus,
     };
- 
+
     switch (filter) {
       case "yearly":
         groupStage = {
           _id: { year: { $year: "$createdAt" } },
-          totalSales: { $sum: "$orderTotal" }
+          totalSales: { $sum: "$orderTotal" },
         };
         sortStage = { "_id.year": 1 };
         break;
@@ -1666,9 +1671,9 @@ const getSalesData = async (req, res) => {
         groupStage = {
           _id: {
             year: { $year: "$createdAt" },
-            month: { $month: "$createdAt" }
+            month: { $month: "$createdAt" },
           },
-          totalSales: { $sum: "$orderTotal" }
+          totalSales: { $sum: "$orderTotal" },
         };
         sortStage = { "_id.year": 1, "_id.month": 1 };
         break;
@@ -1676,7 +1681,7 @@ const getSalesData = async (req, res) => {
       case "weekly":
         groupStage = {
           _id: { year: { $year: "$createdAt" }, week: { $week: "$createdAt" } },
-          totalSales: { $sum: "$orderTotal" }
+          totalSales: { $sum: "$orderTotal" },
         };
         sortStage = { "_id.year": 1, "_id.week": 1 };
         break;
@@ -1687,19 +1692,26 @@ const getSalesData = async (req, res) => {
 
     // Aggregate data from MongoDB
     const salesData = await Orders.aggregate([
-      { $match: matchStage }, // Match orders with status 'delivered' and item status 'delivered'
+      { $match: matchStage },
       { $group: groupStage },
-      { $sort: sortStage }
+      { $sort: sortStage },
     ]);
 
-    // Prepare labels and totalPrices for the graph
     if (filter === "yearly") {
-      labels = salesData.map(item => `${item._id.year}`);
-      totalPrices = salesData.map(item => item.totalSales);
+      // Define the fixed range of years
+      const fixedYears = [2019, 2020, 2021, 2022, 2023, 2024, 2025];
 
-      // If no sales data exists for certain years, handle that here
-      const years = [...new Set(salesData.map(item => item._id.year))];
-      console.log("Years Found:", years);
+      // Create labels and initialize totalPrices with zeros
+      labels = [...fixedYears];
+      totalPrices = new Array(fixedYears.length).fill(0);
+
+      // Map sales data to the fixed years
+      salesData.forEach(item => {
+        const yearIndex = fixedYears.indexOf(item._id.year);
+        if (yearIndex !== -1) {
+          totalPrices[yearIndex] = item.totalSales;
+        }
+      });
     } else if (filter === "monthly") {
       const months = [
         "Jan",
@@ -1713,26 +1725,24 @@ const getSalesData = async (req, res) => {
         "Sep",
         "Oct",
         "Nov",
-        "Dec"
+        "Dec",
       ];
 
-      let monthData = new Array(12).fill(0); // Array to hold data for all 12 months (initially set to 0)
-
+      let monthData = new Array(12).fill(0);
       salesData.forEach(item => {
-        const monthIndex = item._id.month - 1; // MongoDB returns months as 1-12, so adjust to 0-11 index
-        monthData[monthIndex] = item.totalSales; // Populate the month data with actual sales
+        const monthIndex = item._id.month - 1;
+        monthData[monthIndex] = item.totalSales;
       });
 
-      labels = months; // The labels are the month names
-      totalPrices = monthData; // The totalPrices array holds the sales data for each month
+      labels = months;
+      totalPrices = monthData;
     } else if (filter === "weekly") {
-      // Initialize the labels and sales data
       labels = [];
       totalPrices = [];
 
       salesData.forEach(item => {
-        const week = item._id.week || "N/A"; // Handle missing week data
-        const year = item._id.year || "N/A"; // Handle missing year data
+        const week = item._id.week || "N/A";
+        const year = item._id.year || "N/A";
 
         if (week !== "N/A" && year !== "N/A") {
           labels.push(`Week ${week} - ${year}`);
@@ -1741,9 +1751,6 @@ const getSalesData = async (req, res) => {
           console.warn("Invalid Weekly Data:", item);
         }
       });
-
-      console.log("Weekly Labels:", labels);
-      console.log("Weekly Total Sales:", totalPrices);
     }
 
     // Log the labels and totalPrices for debugging
@@ -1758,8 +1765,51 @@ const getSalesData = async (req, res) => {
   }
 };
 
+
+const categorySales = async (req, res) => {
+  const itemStatus = req.query.itemStatus || "delivered";
+
+  try {
+    // Aggregate data for category-wise sales
+    const salesData = await Orders.aggregate([
+      { $match: { "items.status": itemStatus } }, // Match orders with the specified item status
+      { $unwind: "$items" }, // Decompose the items array
+      {
+        $lookup: {
+          from: "categories", // Collection to join
+          localField: "items.categoryId", // Field in items
+          foreignField: "_id", // Field in categories collection
+          as: "categoryDetails"
+        }
+      },
+      { $unwind: "$categoryDetails" }, // Unwind category details
+      {
+        $group: {
+          _id: "$categoryDetails.category", // Group by category name
+          totalSales: { $sum: "$items.price" }, // Calculate total sales
+          totalQuantity: { $sum: "$items.quantity" } // Optionally calculate total quantity sold
+        }
+      },
+      { $sort: { totalSales: -1 } } // Sort by total sales descending
+    ]);
+
+    // Prepare data for the graph
+    const labels = salesData.map(item => item._id); // Category names
+    const totalPrices = salesData.map(item => item.totalSales); // Total sales for each category
+
+    console.log("Category Labels:", labels);
+    console.log("Category Total Sales:", totalPrices);
+
+    res.json({ labels, totalPrices });
+  } catch (error) {
+    console.error("Error fetching category-wise sales data:", error);
+    res.status(500).json({ error: "Failed to fetch category-wise sales data" });
+  }
+};
+
 module.exports = {
   getSalesData,
+  categorySales,
   exportPDF,
   listOffer,
   unlistOffer,

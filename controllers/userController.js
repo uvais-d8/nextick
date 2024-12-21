@@ -206,13 +206,13 @@ const loadWishlist = async (req, res) => {
     const previousPage = page > 1 ? page - 1 : null;
     const nextPage = page < totalPages ? page + 1 : null;
 
-     const userWishlist = await Wishlist.find({ user: userId })  
+     const userWishlist = await Wishlist.find({ user: userId})  
       .populate({
         path: "products",
         populate: [{ path: "category" }, { path: "offer" }],
       });
 
-     const categories = await Category.find({});
+     const categories = await Category.find({islisted:true});
     const activeOffers = await Offer.find({ Status: true });
 
      const productsWithOfferPrice = userWishlist.map((item) => {

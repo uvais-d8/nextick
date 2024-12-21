@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-	<link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
 
     <link rel="stylesheet" href="/admin/products.css">
 
@@ -23,7 +23,7 @@
     <div class="dashboard">
         <aside class="sidebar">
             <div style="color: white;" class="logo">WATCH PREMIUM</div>
-          <nav>
+            <nav>
                 <a class="a" href="/admin/dashboard">
                     <div class="nav-item">
                         <i class="bi bi-house"></i> Dashboard
@@ -75,7 +75,7 @@
         <main class="main-content">
             <h1 style="font-size:43px;">USER MANAGEMENT</h1>
             <div style="height: 50px;" class="controls">
-                
+
             </div>
             <table>
                 <thead>
@@ -100,13 +100,69 @@
                         </td>
                         <td>
                             {{#if this.blocked}}
-                            <button class="action-button unblock-button" style="width: 90px;background-color: rgba(106, 0, 0, 0.828);color:white"
-                                onclick="unblockUser('{{this._id}}')">Unblock</button>
+                            <button class="action-button unblock-button"
+                                style="width: 90px; background-color: rgba(106, 0, 0, 0.828); color: white"
+                                onclick="confirmAction('unblock', '{{this._id}}')">Unblock</button>
                             {{else}}
-                            <button class="action-button block-button" style="width: 90px;background-color: rgba(39, 106, 0, 0.828);color:white"
-                                onclick="blockUser('{{this._id}}')">Block</button>
+                            <button class="action-button block-button"
+                                style="width: 90px; background-color: rgba(39, 106, 0, 0.828); color: white"
+                                onclick="confirmAction('block', '{{this._id}}')">Block</button>
                             {{/if}}
                         </td>
+
+                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                        <script>
+                            function confirmAction(action, userId) {
+                                const actionText = action === 'block' ? 'Block' : 'Unblock';
+                                const confirmButtonColor = action === 'block' ? '#d33' : '#3085d6';
+
+                                Swal.fire({
+                                    title: `Are you sure?`,
+                                    text: `Do you want to ${actionText.toLowerCase()} this user?`,
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonColor: confirmButtonColor,
+                                    cancelButtonColor: '#aaa',
+                                    confirmButtonText: `Yes, ${actionText}!`,
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        // Call the appropriate function
+                                        if (action === 'block') {
+                                            blockUser(userId);
+                                        } else {
+                                            unblockUser(userId);
+                                        }
+                                    }
+                                });
+                            }
+
+                            function blockUser(userId) {
+                                fetch(`/admin/block/${userId}`, { method: 'POST' })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            Swal.fire('Blocked!', 'The user has been blocked.', 'success')
+                                                .then(() => window.location.reload());
+                                        } else {
+                                            console.error("Failed to block user");
+                                        }
+                                    })
+                                    .catch(err => console.error("Error blocking user:", err));
+                            }
+
+                            function unblockUser(userId) {
+                                fetch(`/admin/unblock/${userId}`, { method: 'POST' })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            Swal.fire('Unblocked!', 'The user has been unblocked.', 'success')
+                                                .then(() => window.location.reload());
+                                        } else {
+                                            console.error("Failed to unblock user");
+                                        }
+                                    })
+                                    .catch(err => console.error("Error unblocking user:", err));
+                            }
+                        </script>
+
                     </tr>
                     {{/each}}
                 </tbody>
@@ -114,35 +170,35 @@
             </table>
 
             <nav aria-label="Page navigation">
-  <ul class="pagination justify-content-center pages custom-pagination">
+                <ul class="pagination justify-content-center pages custom-pagination">
 
-    <!-- Show the "Previous" button if there is a previous page -->
-    {{#if previousPage}}
-      <li class="page-item">
-        <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
-          <span aria-hidden="true">&laquo;</span>
-        </a>
-      </li>
-    {{/if}}
+                    <!-- Show the "Previous" button if there is a previous page -->
+                    {{#if previousPage}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {{/if}}
 
-    <!-- Generate page numbers -->
-    {{#each (range 1 totalPages)}}
-      <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
-        <a class="page-link" href="?page={{this}}">{{this}}</a>
-      </li>
-    {{/each}}
+                    <!-- Generate page numbers -->
+                    {{#each (range 1 totalPages)}}
+                    <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
+                        <a class="page-link" href="?page={{this}}">{{this}}</a>
+                    </li>
+                    {{/each}}
 
-    <!-- Show the "Next" button if there is a next page -->
-    {{#if nextPage}}
-      <li class="page-item">
-        <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
-          <span aria-hidden="true">&raquo;</span>
-        </a>
-      </li>
-    {{/if}}
+                    <!-- Show the "Next" button if there is a next page -->
+                    {{#if nextPage}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {{/if}}
 
-  </ul>
-</nav>
+                </ul>
+            </nav>
 
 
 

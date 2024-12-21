@@ -82,7 +82,7 @@ console.log("coupon",coupon)
     res.status(500).json({ message: "Internal server error" });
   }
 };
-const placeOrder = async (req, res) => { 
+const placeOrder = async (req, res) => {
   const userId = req.session.userId;
   const {
     email,
@@ -95,7 +95,7 @@ const placeOrder = async (req, res) => {
     place,
     city,
     lastname,
-    address
+    address,
   } = req.body;
 
   console.log(req.body);
@@ -116,7 +116,7 @@ const placeOrder = async (req, res) => {
   if (!city) errors.city = "City is required";
   if (!district) errors.district = "District is required";
 
-  const allowedPaymentMethods = ["cod","razorpay"];
+  const allowedPaymentMethods = ["cod", "razorpay"];
   if (!paymentMethod || !allowedPaymentMethods.includes(paymentMethod)) {
     errors.paymentMethod = "Invalid or unsupported payment method selected";
   }
@@ -145,7 +145,7 @@ const placeOrder = async (req, res) => {
           ...item.toObject(),
           price: product.price,
           total: product.price * item.quantity,
-          status: "scheduled",   
+          status: "scheduled",
         };
       })
     );
@@ -161,7 +161,7 @@ const placeOrder = async (req, res) => {
       pincode,
       district,
     };
-  
+
     // Calculate total and save the order
     const orderTotal = updatedCartItems.reduce(
       (acc, item) => acc + item.total,
@@ -174,19 +174,9 @@ const placeOrder = async (req, res) => {
         message: "Cash on Delivery (COD) is not available for orders above ₹1000.",
       });
     }
-    const newOrder = new Orders({
-      userId,
-      items: updatedCartItems, // Items now include the status field
-      orderTotal,
-      paymentMethod,
-      shippingAddress,
-      status: "scheduled", // Set the overall order status to 'scheduled'
-    });
-    const addresses = await Address.find({ user: userId }); // Find addresses for the user
 
-   
-    // Create a new address document
-    const newAddress = new Address({
+    // Check if the address already exists
+    const existingAddress = await Address.findOne({
       user: userId,
       firstname,
       lastname,
@@ -196,19 +186,44 @@ const placeOrder = async (req, res) => {
       place,
       city,
       pincode,
-      district
+      district,
     });
 
-    // If the user has no existing address, mark this as the default address
-    const userAddresses = await Address.find({ user: userId });
-    if (userAddresses.length === 0) {
-      newAddress.isDefault = true; // Mark the first address as the default
+    let newAddress = null;
+    if (!existingAddress) {
+      // Update other addresses for the user to set `isDefault` to false
+      await Address.updateMany({ user: userId }, { isDefault: false });
+
+      // Create a new address document and set it as the default
+      newAddress = new Address({
+        user: userId,
+        firstname,
+        lastname,
+        address,
+        phone,
+        email,
+        place,
+        city,
+        pincode,
+        district,
+        isDefault: true,
+      });
+
+      await newAddress.save();
+      console.log("New address saved:", newAddress);
+    } else {
+      console.log("Address already exists:", existingAddress);
     }
 
-    // Save the address document to the database
-    await newAddress.save();
-    console.log("New address saved:", newAddress);
- 
+    const newOrder = new Orders({
+      userId,
+      items: updatedCartItems, // Items now include the status field
+      orderTotal,
+      paymentMethod,
+      shippingAddress,
+      status: "scheduled", // Set the overall order status to 'scheduled'
+    });
+
     console.log("New order details:", newOrder);
     await newOrder.save();
     console.log("Order saved successfully.");
@@ -224,10 +239,12 @@ const placeOrder = async (req, res) => {
     });
   }
 };
+
+
  
 const razorpayy = async (req, res) => {
   const userId = req.session.userId;
-  console.log("razorppayyy processing");
+  console.log("Razorpay processing");
 
   if (!userId) {
     return res.redirect("/login");
@@ -247,30 +264,30 @@ const razorpayy = async (req, res) => {
       city,
       lastname,
       address,
-      
     } = req.body;
-    console.log("req.body",req.body)
+
+    console.log("req.body", req.body);
+
     // Fetch user's cart items
     const cartItems = await Cart.find({ user: userId }).populate("productId");
-
-const amount = orderTotal * 100; // Razorpay amount is in paisa
-
-    
-    
-    // Create Razorpay order
-    const order = await razorpay.orders.create({
-      amount,
-      currency: "INR",
-      receipt: `order_${Date.now()}`
-    });
 
     if (cartItems.length === 0) {
       throw new Error("No items in the cart.");
     }
 
+    // Razorpay amount is in paisa
+    const amount = orderTotal * 100;
+
+    // Create Razorpay order
+    const order = await razorpay.orders.create({
+      amount,
+      currency: "INR",
+      receipt: `order_${Date.now()}`,
+    });
+
     // Process cart items and stock checks
     const updatedCartItems = await Promise.all(
-      cartItems.map(async item => {
+      cartItems.map(async (item) => {
         const product = item.productId;
         if (!product) throw new Error(`Product not found.`);
         if (product.stock < item.quantity) {
@@ -280,13 +297,14 @@ const amount = orderTotal * 100; // Razorpay amount is in paisa
         product.stock -= item.quantity;
         await product.save();
         return {
-          ...item.toObject(), // Convert the Mongoose document to a plain object
+          ...item.toObject(),
           price: product.price,
-          total: product.price * item.quantity
+          total: product.price * item.quantity,
         };
       })
     );
-    shippingAddress = {
+
+    const shippingAddress = {
       email,
       phone,
       paymentMethod,
@@ -297,32 +315,10 @@ const amount = orderTotal * 100; // Razorpay amount is in paisa
       place,
       city,
       lastname,
-      address
+      address,
     };
- 
- 
-    const newOrder = new Orders({
-      userId,
-      items: updatedCartItems,
-      orderTotal: orderTotal, 
-      status: 'payment-pending',
-      shippingAddress,
-      paymentMethod: "razorpay",
-      items: updatedCartItems.map(item => ({
-        ...item,
-        status: "payment-pending",
-      })),
-      razorpayDetails: {
-        orderId: order.id, 
-        amount,
-        currency: order.currency,
-      },
-    });
-    const addresses = await Address.find({ user: userId }); // Find addresses for the user
 
- 
-    // Create a new address document
-    const newAddress = new Address({
+    const existingAddress = await Address.findOne({
       user: userId,
       firstname,
       lastname,
@@ -332,32 +328,64 @@ const amount = orderTotal * 100; // Razorpay amount is in paisa
       place,
       city,
       pincode,
-      district
+      district,
     });
 
-    // If the user has no existing address, mark this as the default address
-    const userAddresses = await Address.find({ user: userId });
-    if (userAddresses.length === 0) {
-      newAddress.isDefault = true; // Mark the first address as the default
+    if (!existingAddress) {
+      // Update other addresses to set `isDefault` to false
+      await Address.updateMany({ user: userId }, { isDefault: false });
+
+      // Create a new address document and set it as default
+      const newAddress = new Address({
+        user: userId,
+        firstname,
+        lastname,
+        address,
+        phone,
+        email,
+        place,
+        city,
+        pincode,
+        district,
+        isDefault: true,
+      });
+
+      await newAddress.save();
+      console.log("New address saved:", newAddress);
+    } else {
+      console.log("Address already exists:", existingAddress);
     }
 
-    // Save the address document to the database
-    await newAddress.save();
-    console.log("New address saved:", newAddress);
- 
-    console.log("Order Total before save:", newOrder.orderTotal);  
-    const Order = await newOrder.save();
-    console.log("Order Total after save:", Order.orderTotal);  
-     
+    const newOrder = new Orders({
+      userId,
+      items: updatedCartItems,
+      orderTotal,
+      status: "payment-pending",
+      shippingAddress,
+      paymentMethod: "razorpay",
+      items: updatedCartItems.map((item) => ({
+        ...item,
+        status: "payment-pending",
+      })),
+      razorpayDetails: {
+        orderId: order.id,
+        amount,
+        currency: order.currency,
+      },
+    });
+
+    console.log("Order Total before save:", newOrder.orderTotal);
+    const savedOrder = await newOrder.save();
+    console.log("Order Total after save:", savedOrder.orderTotal);
+
     for (let item of newOrder.items) {
-       const productId = item.productId; 
-      const quantity = item.quantity; 
- 
+      const productId = item.productId;
+      const quantity = item.quantity;
+
       const product = await Products.findById(productId);
 
-      if (product) { 
+      if (product) {
         product.salesCount += quantity;
- 
         await product.save();
         console.log(
           `Product ${product.name} salesCount updated to ${product.salesCount}`
@@ -368,21 +396,21 @@ const amount = orderTotal * 100; // Razorpay amount is in paisa
     }
 
     console.log(`Cart items for user ${userId} have been deleted.`);
+    await Cart.deleteMany({ user: userId });
+
     res.json({
       success: true,
       id: order.id,
       amount: order.amount,
       currency: order.currency,
-      orderId:newOrder._id
+      orderId: savedOrder._id,
     });
-        // Delete all items from the user's cart after placing the order
-        await Cart.deleteMany({ user: userId });
-
   } catch (error) {
     console.log("Error creating Razorpay order:", error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+ 
 
 const getProductStock = async (req, res) => {
   const { cartId } = req.params;
