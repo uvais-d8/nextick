@@ -319,6 +319,38 @@
         .bg-gradient {
             background: linear-gradient(135deg, #ff6b6b, #ff8e53);
         }
+  .navbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            width: 100%;
+            height: 60px;
+            background-color: white;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h4 {
+            margin: 0 40px;
+            font-size: 16px;
+            color: black;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .navbar h5 {
+            margin: 0 40px;
+            font-size: 18px;
+            color: rgb(255, 176, 49);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .navbar h4:hover {
+            color: orange;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
 
@@ -405,8 +437,21 @@
                 </div>
             </div>
         </div>
-        <div style="margin-left:12%;align-items:center;width:100%;height:40px" class="buttons">
+
+        <div class="navbar">
+            <a href="/profile">
+                <h5>Profile</h5>
+            </a> <a href="/address">
+                <h4>Address</h4>
+            </a>
+            <a href="/wallet">
+                <h4>Wallet</h4>
+            </a>
+            <a href="/orderss">
+                <h4>Orders</h4>
+            </a>
         </div>
+
         <main style="margin-top:40px ;" class="container">
             <section class="profile-header">
         </main>
@@ -782,4 +827,5 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>

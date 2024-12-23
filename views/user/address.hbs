@@ -40,6 +40,38 @@
 <body>
 
     <style>
+         .navbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            width: 100%;
+            height: 60px;
+            background-color: white;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h4 {
+            margin: 0 40px;
+            font-size: 16px;
+            color: black;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .navbar h5 {
+            margin: 0 40px;
+            font-size: 18px;
+            color: rgb(255, 176, 49);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .navbar h4:hover {
+            color: orange;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
         a {
             text-decoration: none;
         }
@@ -349,18 +381,31 @@
     <!-- end search arewa -->
 
     <!-- breadcrumb-section -->
-    <div class="breadcrumb-section breadcrumb-bg">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 offset-lg-2 text-center">
-                    <div class="breadcrumb-text">
-                        <p>Here is your address </p>
-                        <h1>Your Address</h1>
+    <div style="height: 200px;" class="breadcrumb-section breadcrumb-bg">
+            <div style="margin-top: -50px;" class="container">
+                <div class="row">
+                    <div class="col-lg-8 offset-lg-2 text-center">
+                        <div class="breadcrumb-text">
+                            <p>Here is your Address!</p>
+                            <h1>Address</h1>
+                        </div>
                     </div>
-                </div>
+                </div>add
             </div>
         </div>
-    </div>
+    <div class="navbar">
+            <a href="/profile">
+                <h4>Profile</h4>
+            </a> <a href="/address">
+                <h5>Address</h5>
+            </a>
+            <a href="/wallet">
+                <h4>Wallet</h4>
+            </a>
+            <a href="/orderss">
+                <h4>Orders</h4>
+            </a>
+        </div>
     <!-- end breadcrumb section -->
     <div class="container">
         <div class="row">

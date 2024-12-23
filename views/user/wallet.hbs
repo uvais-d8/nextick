@@ -36,6 +36,40 @@
 
     <!-- Custom CSS for product listing -->
     <style>
+        .navbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            width: 100%;
+            height: 60px;
+            background-color: white;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h4 {
+            margin: 0 40px;
+            font-size: 16px;
+            color: black;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .navbar h5 {
+            margin: 0 40px;
+            font-size: 18px;
+            color: rgb(255, 176, 49);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .navbar h4:hover {
+            color: orange;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
         a {
             text-decoration: none;
         }
@@ -188,9 +222,11 @@
         </div>
     </div>
     <!-- end header -->
+
+
     <div class="head">
-        <div style="height: 10px;margin-top:-40px" class="breadcrumb-section breadcrumb-bg">
-            <div class="container">
+        <div style="height: 200px;" class="breadcrumb-section breadcrumb-bg">
+            <div style="margin-top: -50px;" class="container">
                 <div class="row">
                     <div class="col-lg-8 offset-lg-2 text-center">
                         <div class="breadcrumb-text">
@@ -200,6 +236,19 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="navbar">
+            <a href="/profile">
+                <h4>Profile</h4>
+            </a> <a href="/address">
+                <h4>Address</h4>
+            </a>
+            <a href="/wallet">
+                <h5>Wallet</h5>
+            </a>
+            <a href="/orderss">
+                <h4>Orders</h4>
+            </a>
         </div>
 
         <body>
@@ -219,7 +268,7 @@
                     </div>
                 </section>
 
-                {{#if transactions.length}} 
+                {{#if transactions.length}}
                 <section class="wallet-transactions">
                     <h2>Transactions</h2>
                     <table>
@@ -243,7 +292,7 @@
                         </tbody>
                     </table>
                 </section>
-                {{else}}  
+                {{else}}
                 <p style="color: red;">No transactions available</p>
                 {{/if}}
             </div>
