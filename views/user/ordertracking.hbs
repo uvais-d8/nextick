@@ -510,16 +510,15 @@
                                     default:
                                         return 'Unknown order status.';
                                 }
-                            }  
-                     </div > 
-                        const orderStatus = "{{order.status}}";
+                            }                       </div> 
+                          const orderStatus = "{{order.status}}";
 
                             document.getElementById('statusMessage').innerText = getStatusMessage(orderStatus);
                         </script>
 
 
                         <div class="timeline">
-                             <div class="step" id="step-pending">
+                            <div class="step" id="step-pending">
                                 <div class="step-icon">✓</div>
                                 <div class="step-label">Pending</div>
                             </div>
@@ -582,47 +581,47 @@
                             });
                         </script>
 
-                  <div class="tracking-log">
-  <div class="log-entry">
-    <div class="log-time" id="order-created"></div>
-    <div class="log-status">Order Created</div>
-  </div>
-  <div class="log-entry">
-    <div class="log-time" id="shipping-expected"></div>
-    <div class="log-status">Shipping Expected Date</div>
-  </div>
-  <div class="log-entry">
-    <div class="log-time" id="delivery-expected"></div>
-    <div class="log-status">Expected Delivery Date</div>
-  </div>
-</div>
-<script>document.addEventListener('DOMContentLoaded', () => {
-  // Replace this object with the actual data fetched from the backend
-  const order = {
-    createdAt: "2024-12-01T12:00:00Z", // Example createdAt timestamp
-    status: "Pending", // Example status
-  };
+                        <div class="tracking-log">
+                            <div class="log-entry">
+                                <div class="log-time" id="order-created"></div>
+                                <div class="log-status">Order Created</div>
+                            </div>
+                            <div class="log-entry">
+                                <div class="log-time" id="shipping-expected"></div>
+                                <div class="log-status">Shipping Expected Date</div>
+                            </div>
+                            <div class="log-entry">
+                                <div class="log-time" id="delivery-expected"></div>
+                                <div class="log-status">Expected Delivery Date</div>
+                            </div>
+                        </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                                 const order = {
+                                    createdAt: `{{order.createdAt}}`,
+                                    status: `order.Status`,  
+                                };
 
-  // Helper function to format dates
-  function formatDate(date) {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(date).toLocaleDateString(undefined, options);
-  }
+                                // Helper function to format dates
+                                function formatDate(date) {
+                                    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                                    return new Date(date).toLocaleDateString(undefined, options);
+                                }
 
-  // Calculate expected shipping and delivery dates
-  const createdAt = new Date(order.createdAt);
-  const shippingExpected = new Date(createdAt);
-  const deliveryExpected = new Date(createdAt);
+                                // Calculate expected shipping and delivery dates
+                                const createdAt = new Date(order.createdAt);
+                                const shippingExpected = new Date(createdAt);
+                                const deliveryExpected = new Date(createdAt);
 
-  shippingExpected.setDate(createdAt.getDate() + 3); // Add 3 days for shipping
-  deliveryExpected.setDate(createdAt.getDate() + 7); // Add 7 days for delivery
+                                shippingExpected.setDate(createdAt.getDate() + 3); // Add 3 days for shipping
+                                deliveryExpected.setDate(createdAt.getDate() + 7); // Add 7 days for delivery
 
-  // Populate the HTML elements with the calculated dates
-  document.getElementById('order-created').textContent = formatDate(createdAt);
-  document.getElementById('shipping-expected').textContent = formatDate(shippingExpected);
-  document.getElementById('delivery-expected').textContent = formatDate(deliveryExpected);
-});
-    </script>
+                                // Populate the HTML elements with the calculated dates
+                                document.getElementById('order-created').textContent = formatDate(createdAt);
+                                document.getElementById('shipping-expected').textContent = formatDate(shippingExpected);
+                                document.getElementById('delivery-expected').textContent = formatDate(deliveryExpected);
+                            });
+                        </script>
 
                     </div>
 

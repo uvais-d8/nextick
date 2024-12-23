@@ -13,6 +13,7 @@ const { Console, profile, log, error } = require("console");
 const Category = require("../model/categoryModel");
 const Offer = require("../model/offermodel");
 const Wishlist = require("../model/wishlistModel");
+const Review = require('../model/reviewModel');
 const client = new OAuth2Client(
   "458432719748-rs94fgenq571a8jfulbls7dk9i10mv2o.apps.googleusercontent.com"
 );
@@ -80,6 +81,7 @@ const loadhome = async (req, res) => {
 };
 const loadproducts = async (req, res) => {
   try {
+    const reviews =await Review.find({});
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 8;
     const skip = (page - 1) * limit;
@@ -137,6 +139,7 @@ const loadproducts = async (req, res) => {
      res.render("products", { 
       products: productsWithOfferPrice, 
       categories,
+      reviews,
       currentPage: page,
       totalPages: totalPages,
       totalProducts: totalProducts,
@@ -152,7 +155,17 @@ const singleproduct = async (req, res) => {
   const productId = req.params.id;
 
   try {
-     const product = await Products.findById(productId).populate("offer").populate("category");
+    const product = await Products.findById(productId)
+  .populate("offer")
+  .populate("category")
+  .populate({
+    path: "reviews",
+    populate: {
+      path: "userId", // Populate the userId field to get user details
+      select: "name"  // Only select the name field from the User model
+    }
+    })
+   
     const activeOffers = await Offer.find({ Status: true });
     const products = await Products.find({ islisted: true });
 
@@ -186,8 +199,11 @@ const singleproduct = async (req, res) => {
       discountType,
     };
 
-      res.render("singleproduct", { product: productWithOffer, products });
-  } catch (error) {
+    res.render("singleproduct", {
+      product: productWithOffer,   
+      products: products,        
+      reviews: product.reviews     
+    });  } catch (error) {
     console.error("Error fetching product details:", error);
     res.status(500).send("Failed to fetch product details.");
   }
@@ -447,7 +463,68 @@ const advancedSearch = async (req, res) => {
   }
 };
 
+
+
+// Add a review for a product
+const  addReview = async (req, res) => {
+  const userId =req.session.userId;
+   if(!userId){
+    res.redirect("/login")
+  }
+  const { name, email, number, productId,rating, comment } = req.body;
+    try {
+        // Create the review document
+        const newReview = new Review({
+            name,
+            email,
+            number,
+            productId,
+            userId,
+            rating,
+            comment
+        });
+        console.log("newReview",newReview)
+
+        // Save the review to the database
+        const savedReview = await newReview.save();
+
+        // Add the review to the product's reviews
+        const product = await Products.findById(productId);
+        product.reviews.push(savedReview._id); // Pushing the review ID to the product's reviews array
+        await product.save();
+
+        // Update the product's average rating
+        await updateProductAverageRating(productId);
+
+        res.redirect("/")
+    } catch (error) {
+        console.error("Error adding review:", error);
+        res.status(500).json({ message: 'Failed to add review' });
+    }
+};
+
+// Update the product's average rating after a new review
+async function updateProductAverageRating(productId) {
+    try {
+        // Get all reviews for this product
+        const reviews = await Review.find({ productId: productId });
+
+        // Calculate the average rating
+        const totalRatings = reviews.reduce((acc, review) => acc + review.rating, 0);
+        const averageRating = totalRatings / reviews.length;
+
+        // Update the product's average rating
+        const product = await Products.findById(productId);
+        product.averageRating = averageRating;
+        await product.save();
+    } catch (error) {
+        console.error("Error updating product average rating:", error);
+    }
+}
+
+
 module.exports = {
+  addReview,
   advancedSearch,
   loadcontactpage,
   loadshop,

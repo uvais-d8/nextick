@@ -389,11 +389,11 @@
 <body>
 
 	<!--PreLoader-->
-	<div class="loader">
+	{{!-- <div class="loader">
 		<div class="loader-inner">
 			<div class="circle"></div>
 		</div>
-	</div>
+	</div> --}}
 	<!--PreLoader Ends-->
 
 	<!-- header -->
@@ -566,9 +566,9 @@
 					<p style="margin-top: -10px;">Quantity: <b>{{this.quantity}}</b></p>
 					<p style="margin-top: -10px;">Total:
 						{{#if this.priceWithDiscount}}
-						<b>₹ {{multiply this.priceWithDiscount this.quantity}}</b>
+						<b>₹ {{multiplyAndRound this.priceWithDiscount this.quantity}}</b>
 						{{else}}
-						<b>₹ {{multiply this.orderTotal this.quantity}}</b>
+						<b>₹ {{multiplyAndRound this.orderTotal this.quantity}}</b>
 						{{/if}}
 					</p>
 
@@ -577,12 +577,58 @@
 					<div class="order-actions">
 						{{#if (eq this.status "delivered")}}
 						<div>
-							<button style="margin-left: 100%;" class="btn btn-danger return-button"
-								data-bs-toggle="modal" data-bs-target="#returnModal" data-order-id="{{../_id}}"
-								data-item-id="{{this._id}}">
-								Return
-							</button>
+							<div style="display: flex;">
 
+								<div>
+									<form method="get" action="/viewDetails/{{../_id}}/{{this._id}}">
+										<button type="submit">More Details</button>
+									</form>
+								</div>
+								<div style="margin-left: 90%;"><button class="btn btn-danger return-button"
+										data-bs-toggle="modal" data-bs-target="#returnModal" data-order-id="{{../_id}}"
+										data-item-id="{{this._id}}">
+										Return
+									</button></div>
+							</div>
+							<h5 style="margin-top: 20px;">Leave a Review:</h5>
+							<button id="add-review-btn"
+								style="margin: 10px; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Add
+								Review</button>
+
+							<form id="review-form" action="/add-review" method="POST" style="display: none;">
+								<input type="hidden" name="productId" value="{{products._id}}">
+								<input style="height:30px; border-radius: 3px; border-width:1px" type="text" name="name"
+									placeholder="Your Name">
+								<input style="height:30px; border-radius: 3px; border-width:1px" type="email"
+									name="email" placeholder="Your Email">
+								<input style="height:30px; border-radius: 3px; border-width:1px" type="text"
+									name="number" placeholder="Your Phone Number">
+								<textarea
+									style="border-radius: 3px; border-width:1px; height: 30px; width:30%; margin-bottom:-9px"
+									name="comment" placeholder="Write your review"></textarea>
+								<select style="height: 30px; border-radius: 3px; border-width:1px" name="rating">
+									<option value="1">★</option>
+									<option value="2">★★</option>
+									<option value="3">★★★</option>
+									<option value="4">★★★★</option>
+									<option value="5">★★★★★</option>
+								</select>
+								<button type="submit"
+									style="margin-top: 10px; padding: 5px 10px; border-radius: 3px;">Submit</button>
+							</form>
+
+							<script>
+								const addReviewBtn = document.getElementById('add-review-btn');
+								const reviewForm = document.getElementById('review-form');
+
+								addReviewBtn.addEventListener('click', () => {
+									if (reviewForm.style.display === 'none') {
+										reviewForm.style.display = 'block';
+									} else {
+										reviewForm.style.display = 'none';
+									}
+								});
+							</script>
 
 
 							<!-- Return Confirmation Modal -->
@@ -635,11 +681,7 @@
 							</button></div>
 						{{/if}}
 					</div>
-					<form style="margin-top: -10px;" method="get" action="/viewDetails/{{../_id}}/{{this._id}}">
-						<button class="but" type="submit"
-							style="color:rgba(26, 26, 26, 0.898);font-size:13px;height: 30px;border-width:0px;margin-left:100.5%;margin-top:0px;margin-left: 1px;width:130px">view
-							more Details</button>
-					</form>
+
 				</div>
 
 				<div>
@@ -899,11 +941,9 @@
 	{{!-- cancel buton --}}
 	<script>
 		document.getElementById('confirmCancelBtn').addEventListener('click', function () {
-			location.reload();
+			window.location("/orderss")
 		});
-	</script>
-	{{!-- cancel order items --}}
-	<script>
+
 		var itemToCancelId = null;
 		var orderToCancelId = null;
 		var cancelType = null;
@@ -922,11 +962,11 @@
 			if (cancelType === 'order') {
 				url = `/orders/${orderToCancelId}`;
 				requestBody = { status: 'canceled' };
-				location.reload()
+				window.location.reload()
 			} else if (cancelType === 'item') {
 				url = `/orders/${orderToCancelId}/items/${itemToCancelId}`;
 				requestBody = { status: 'canceled' };
-				location.reload()
+				window.location.reload()
 
 			}
 
@@ -939,6 +979,8 @@
 				.then(data => {
 					if (data.success) {
 						window.location.reload();
+						location.reload()
+
 					} else {
 						document.getElementById('errorMessage').style.display = 'block';
 					}

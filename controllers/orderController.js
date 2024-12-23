@@ -152,6 +152,7 @@ const removeorder = async (req, res) => {
 };
 const loadOrders = async (req, res) => {
   try {
+    const products =await Products.find({})
     const orders = await Orders.find({ userId: req.session.userId })
       .populate({
         path: "items.productId",
@@ -173,7 +174,7 @@ const loadOrders = async (req, res) => {
       };
     });
 
-    res.render("orders", { orders: ordersWithTotals });
+    res.render("orders", { orders: ordersWithTotals ,products});
   } catch (error) {
     console.error("Error during load orders", error);
     res.status(500).send("Failed to load orders.");

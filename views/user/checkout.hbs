@@ -264,7 +264,7 @@
 				document.getElementById('district').value = district;
 			}
 		</script>
-		<div class="checkout-section mt-150 mb-150">
+		<div style="margin-left: -130px;" class="checkout-section mt-150 mb-150">
 			<div class="container">
 				<div class="row">
 					<!-- Left Side: Checkout Accordion -->
@@ -393,13 +393,12 @@
 										</td>
 
 										<td class="item-quantity">{{this.quantity}}</td>
-										{{!-- <td class="item-total">₹{{multiply this.productId.price this.quantity}}
-										</td> --}}
+										
 										<td class="product-total">
 											{{#if this.priceWithDiscount}}
-											{{multiply this.priceWithDiscount this.quantity}}
+											{{multiplyAndRound this.priceWithDiscount this.quantity}}
 											{{else}}
-											{{multiply this.productId.price this.quantity}}
+											{{multiplyAndRound this.productId.price this.quantity}}
 											{{/if}}
 										</td>
 										<td class="item-image" hidden>{{this.productId.images}}</td>

@@ -56,7 +56,9 @@
 						<!-- logo -->
 						<div class="site-logo">
 							<a href="/">
-								<p style="font-size:28px; color:white;margin-top:-5px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">NEXTIC<span style="font-weight: bold;color:rgb(238, 149, 15)">K</span></p>
+								<p
+									style="font-size:28px; color:white;margin-top:-5px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
+									NEXTIC<span style="font-weight: bold;color:rgb(238, 149, 15)">K</span></p>
 							</a>
 						</div>
 
@@ -77,11 +79,11 @@
 								</li>
 								<li>
 									<div class="header-icons">
-										  <a href="/wishlist" class="love-icon">
-                                            <i class="fas fa-heart"></i>
-                                        </a>
+										<a href="/wishlist" class="love-icon">
+											<i class="fas fa-heart"></i>
+										</a>
 										<a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
-										 
+
 										<a class="mobile-hide search-bar-icon" href="/profile"><i
 												class="fas fa-user"></i></a>
 									</div>
@@ -338,7 +340,16 @@
 					<div class="single-product-content">
 						<h3>{{product.name}}</h3>
 						<p>{{product.description}}</p>
-						<p style="margin-top: -20px; color: orange;" class="rating">★★★★★</p>
+						<p style="margin-top: -20px; color: orange;" class="rating">
+							{{#each (range 1 5)}}
+							{{#if (gte ../product.averageRating this)}}
+							★
+							{{else}}
+							☆
+							{{/if}}
+							{{/each}}
+						</p>
+
 						<p class="single-product-pricing">
 							{{#if product.discountValue}}
 							<span class="price" style="text-decoration: line-through; color: red; font-size: 15px">
@@ -391,7 +402,7 @@
 							</div>
 
 							<button
-								style="margin-left:30px;width:150px; border-width:0px; height: 46px; border-radius:4px; color:white; background-color:rgba(208, 139, 11, 0.916); font-weight:bold;margin-top:20px"
+								style="margin-left:30px;width:150px; border-width:0px; height: 46px; border-radius:4px; color:white; background-color:rgba(243, 201, 61, 0.952); font-weight:bold;margin-top:20px"
 								type="submit" class="cart-btn">
 								<i style="margin-right: 10px;" class="fas fa-shopping-cart"> </i>Add to Cart
 							</button>
@@ -422,91 +433,65 @@
 							}
 						}
 					</script>
-
-					<!-- Review Section -->
-					<h4 style="margin-left:-550px;margin-top:90px;">Customer Reviews:</h4>
-
-					<div style="padding:20px;margin-left: -550px;border-radius:5px;background-color:rgb(245, 241, 241);width:1200px"
-						class="single-product-reviews">
-						<!-- Review 1 -->
-						<div style="background-color: rgb(255, 255, 255);padding:20px;border-radius:5px;margin-bottom:4px;"
-							class="review-card">
-							<div class="review-header">
-								<div>
-									<p style="font-weight: bold;">Mubaris ibrahim</p>
-									<p style="margin-top: -20px;color:orange" class="rating">★★★★</p>
-								</div>
-							</div>
-							<p class="review-comment">
-								Absolutely love this product! The quality is amazing and it exceeded my
-								expectations.
-							</p>
-							<hr>
-							<div class="review-header">
-								<div>
-									<p style="font-weight: bold;">muhammed Mufeed</p>
-									<p style="margin-top: -20px;color:orange" class="rating">★★★★★</p>
-								</div>
-							</div>
-							<p class="review-comment">
-								The quality is nice and this product is good and worthy
-
-							</p>
-							<hr><br>
-
-							<!-- Dummy Reviews -->
-							{{#each product.reviews}}
-							<div class="review">
-								<p><strong>{{this.name}}</strong></p>
-								<p>"{{this.comment}}"</p>
-								<p>Rating:
-									<span class="rating">
-										{{#each this.rating}}★{{/each}}
-									</span>
-								</p>
-							</div>
-							{{/each}}
-
-							<div style="padding:20px;background-color: rgb(244, 244, 244);border-radius:5px">
-								<!-- Add Review Form -->
-								<h6 style="margin-top: -40px;">Leave a Review:</h6>
-								{{!-- <form action="/submit-review" method="post"> --}}
-									<div class="form-group">
-										<label style="margin-top: -40px;" for="review-name">Your Name:</label>
-										<input style="margin-top: -10px;" type="text" id="review-name" name="name"
-											class="form-control">
-									</div>
-									<div class="form-group">
-										<label for="review-comment">Your Review:</label>
-										<textarea style="margin-top: -10px;height: 60px;" id="review-comment"
-											name="comment" class="form-control" rows="4"></textarea>
-									</div>
-									<div class="form-group">
-										<label for="review-rating">Rating:</label>
-										<select style="margin-top: -10px;" id="review-rating" name="rating"
-											class="form-control">
-											<option value="1">★</option>
-											<option value="2">★★</option>
-											<option value="3">★★★</option>
-											<option value="4">★★★★</option>
-											<option value="5">★★★★★</option>
-										</select>
-									</div>
-									<button type="submit" class="btn btn-warning">Submit Review</button>
-								</form>
-							</div>
-						</div>
-
-						{{!-- <h4>Share:</h4>
-						<ul class="product-share">
-							<li><a href=""><i class="fab fa-facebook-f"></i></a></li>
-							<li><a href=""><i class="fab fa-twitter"></i></a></li>
-							<li><a href=""><i class="fab fa-google-plus-g"></i></a></li>
-							<li><a href=""><i class="fab fa-linkedin"></i></a></li>
-						</ul> --}}
-					</div>
 				</div>
 			</div>
+			<!-- views/productPage.hbs -->
+			<h4 style="margin-top: 10px;">Customer Reviews:</h4>
+			<div id="reviews">
+				{{#each reviews}}
+				<div class="review-card">
+					<p><strong>{{userId.name}}</strong> - Rating:<span style="color: orange;">
+							{{#each (range 1 rating)}}★{{/each}}
+							{{#each (range 1 (subtract 5 rating))}}☆{{/each}}</span>
+					</p>
+					<p>{{comment}}</p>
+					<hr>
+				</div>
+				{{else}}
+				<p style="color: red;">No reviews yet. Be the first to leave a review !</p>
+				{{/each}}
+			</div>
+			<h5 style="margin-top: 20px;">Leave a Review:</h5>
+			<!-- Button to show the form -->
+			<button id="toggleFormButton"
+				style="background-color: rgb(255, 196, 86);border-radius:3px;border-width:0px;width:120px;height:30px">
+				Write a Review
+			</button>
+
+			<!-- Review Form -->
+			<div id="reviewForm" style="display: none; margin-top: 10px;">
+				<form action="/add-review" method="POST">
+					<input type="hidden" name="productId" value="{{product._id}}">
+					<input style="height:30px;border-radius: 3px;border-width:1px" type="text" name="name"
+						placeholder="Your Name">
+					<input style="height:30px;border-radius: 3px;border-width:1px" type="email" name="email"
+						placeholder="Your Email">
+					<input style="height:30px;border-radius: 3px;border-width:1px" type="text" name="number"
+						placeholder="Your Phone Number">
+					<textarea style="border-radius: 3px;border-width:1px;height: 30px;width:30%;margin-bottom:-9px"
+						name="comment" placeholder="Write your review">
+    </textarea>
+					<select style="height: 30px;border-radius: 3px;border-width:1px" name="rating">
+						<option value="1">★</option>
+						<option value="2">★★</option>
+						<option value="3">★★★</option>
+						<option value="4">★★★★</option>
+						<option value="5">★★★★★</option>
+					</select>
+					<button style="background-color: orange;border-radius:3px;border-width:0px;width:80px;height:30px"
+						type="submit">
+						Submit
+					</button>
+				</form>
+			</div>
+
+			<!-- JavaScript to toggle the form -->
+			<script>
+				document.getElementById('toggleFormButton').addEventListener('click', function () {
+					const form = document.getElementById('reviewForm');
+					form.style.display = form.style.display === 'none' ? 'block' : 'none';
+				});
+			</script>
 
 			<!-- more products -->
 			<div class="more-products mb-150">
@@ -669,11 +654,11 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-6 col-md-12">
-				 <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
-                            Rights
-                            Reserved.<br>
-                            Distributed By - <a href="https://themewagon.com/">nextick.store</a>
-                        </p>
+					<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
+						Rights
+						Reserved.<br>
+						Distributed By - <a href="https://themewagon.com/">nextick.store</a>
+					</p>
 				</div>
 				<div class="col-lg-6 text-right col-md-12">
 					<div class="social-icons">

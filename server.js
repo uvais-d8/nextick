@@ -11,19 +11,18 @@ const hbs = require("hbs");
 const Handlebars = require("./helper");
 const exphbs = require("express-handlebars");
 const passport = require("passport");
-const methodOverride = require('method-override');
-app.use(methodOverride('_method'));  // Enable the use of DELETE in forms
+const methodOverride = require("method-override");
+app.use(methodOverride("_method")); // Enable the use of DELETE in forms
 const Razorpay = require("razorpay");
 
 const razorpay = new Razorpay({
-    key_id: "rzp_test_27cbwJ6wd0CuiQ", // Replace with your Razorpay Key ID
-    key_secret: "SfFbZ3vFL1AMEEY0ZvS4d1yF", // Replace with your Razorpay Key Secret
+  key_id: "rzp_test_27cbwJ6wd0CuiQ", // Replace with your Razorpay Key ID
+  key_secret: "SfFbZ3vFL1AMEEY0ZvS4d1yF" // Replace with your Razorpay Key Secret
 });
 const PORT = process.env.PORT;
 
 require("dotenv").config();
 require("./config/passport");
-
 
 // Session management
 app.use(
@@ -43,14 +42,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
 
-
 // Register views and set view engine
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static("public"));
 
 // Admin routes - set views path dynamically
-app.use("/admin",(req, res, next) => {
+app.use(
+  "/admin",
+  (req, res, next) => {
     app.set("views", path.join(__dirname, "views"));
     next();
   },
@@ -58,7 +58,9 @@ app.use("/admin",(req, res, next) => {
 );
 
 // User routes - set views path dynamically
-app.use("/",(req, res, next) => {
+app.use(
+  "/",
+  (req, res, next) => {
     app.set("views", path.join(__dirname, "views/user"));
     next();
   },
@@ -81,10 +83,17 @@ app.engine(
       allowProtoPropertiesByDefault: true,
       allowProtoMethodsByDefault: true
     },
-    
+
     helpers: {
-       // JSON stringify helper
-       JSONstringify: function (context) {
+      multiplyAndRound: function(a, b) {
+        const result = a * b;
+        return Math.floor(result);
+      },
+      toInteger: function(value) {
+        return Math.floor(value); // Converts to integer (rounds down)
+      },
+      // JSON stringify helper
+      JSONstringify: function(context) {
         return JSON.stringify(context);
       },
 
@@ -152,11 +161,11 @@ app.engine(
       multiply: (price, quantity) => {
         return price * quantity;
       },
-        // Helper to check if a number is in a given range
-        isBetween: function (value, min, max) {
-          return value >= min && value <= max
+      // Helper to check if a number is in a given range
+      isBetween: function(value, min, max) {
+        return value >= min && value <= max;
       },
-      gte: (a,b)=>a>=b,
+      gte: (a, b) => a >= b,
       // Helper to add two values
       add: (a, b) => a + b,
 
@@ -174,10 +183,10 @@ app.engine(
 
       // Helper for logical OR
       or: (a, b) => a || b,
-      
-      not: (a,b)=>a != b,
 
-      neq: (a, b) =>a !== b,
+      not: (a, b) => a != b,
+
+      neq: (a, b) => a !== b,
       // Helper to return status icon based on status
       statusIcon: status => {
         switch (status) {
@@ -192,13 +201,12 @@ app.engine(
         }
       },
 
-       json: context => JSON.stringify(context)
+      json: context => JSON.stringify(context)
     }
   })
 );
 
-
 // Start the server
-app.listen(PORT, '0.0.0.0' ,() => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${PORT}`);
 });

@@ -155,11 +155,11 @@
 <body style="background-color: rgba(255, 255, 255, 0.936);">
 
     <!--PreLoader-->
-    <div class="loader">
+    {{!-- <div class="loader">
         <div class="loader-inner">
             <div class="circle"></div>
         </div>
-    </div>
+    </div> --}}
     <!--PreLoader Ends-->
 
     <!-- header -->
@@ -264,7 +264,7 @@
                 <section class="wallet-balance">
                     <h2>Balance</h2>
                     <div class="balance">
-                        <span>₹</span><span>{{balance}}</span>
+                        <span>₹</span><span>{{toInteger balance}}</span>
                     </div>
                 </section>
 
@@ -284,7 +284,7 @@
                             {{#each transactions}}
                             <tr>
                                 <td> {{this.type}} </td>
-                                <td style="color: green;font-weight:bold"> ₹{{this.amount}} </td>
+                                <td style="color: green;font-weight:bold"> ₹{{toInteger this.amount}} </td>
                                 <td>{{this.description}}</td>
                                 <td> {{formatDate this.date}} </td>
                             </tr>

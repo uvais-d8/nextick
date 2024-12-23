@@ -25,6 +25,10 @@ router.get(
 );
 
 
+
+// Add a review
+router.post('/add-review', userAuth.checksession,userController.addReview);
+ 
 //register user routes
 router.post("/login", userAuth.islogin, registerController.login);
 router.post("/logout", registerController.logout);

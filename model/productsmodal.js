@@ -5,6 +5,12 @@ const productsShema = new mongoose.Schema({
     type: String,
     required: false
   },
+  reviews: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Review',
+    },
+  ], 
   popularity: {
     type: Number,
     default: 0
