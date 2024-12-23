@@ -436,8 +436,9 @@
 				</div>
 			</div>
 			<!-- views/productPage.hbs -->
-			<h4 style="margin-top: 10px;">Customer Reviews:</h4>
-			<div id="reviews">
+		<div style="background-color: rgb(242, 241, 241);padding:20px;border-radius:6px;margin-top: 10px;">
+				<h4 style="margin-top: 10px;">Customer Reviews :</h4>
+			<div style="background-color: white;padding:10px;border-redius:8px" id="reviews">
 				{{#each reviews}}
 				<div class="review-card">
 					<p><strong>{{userId.name}}</strong> - Rating:<span style="color: orange;">
@@ -451,7 +452,7 @@
 				<p style="color: red;">No reviews yet. Be the first to leave a review !</p>
 				{{/each}}
 			</div>
-			<h5 style="margin-top: 20px;">Leave a Review:</h5>
+			<h5 style="margin-top: 20px">Leave a Review:</h5>
 			<!-- Button to show the form -->
 			<button id="toggleFormButton"
 				style="background-color: rgb(255, 196, 86);border-radius:3px;border-width:0px;width:120px;height:30px">
@@ -459,7 +460,7 @@
 			</button>
 
 			<!-- Review Form -->
-			<div id="reviewForm" style="display: none; margin-top: 10px;">
+			<div id="reviewForm" style="display: none; margin-top: 10px;margin-left:30px">
 				<form action="/add-review" method="POST">
 					<input type="hidden" name="productId" value="{{product._id}}">
 					<input style="height:30px;border-radius: 3px;border-width:1px" type="text" name="name"
@@ -484,6 +485,7 @@
 					</button>
 				</form>
 			</div>
+		</div>
 
 			<!-- JavaScript to toggle the form -->
 			<script>
@@ -501,12 +503,12 @@
 
 						<div style="background-color: rgb(255, 255, 255); border-radius:11px" class="row">
 							{{#each products}}
-							<div style="background-color: rgb(255, 255, 255); border-radius:11px" class="col-md-4 mb-4">
+							<div  style="background-color: rgb(255, 255, 255); border-radius:11px" class="col-md-4 mb-4">
 								<a href="/product/{{this._id}}" style="text-decoration: none; color: inherit;">
-									<div style="background-color: rgb(251, 251, 251); border-radius:6px" class="card">
+									<div style="box-shadow: 4px 4px 11px 5px rgb(228, 228, 228);background-color: rgb(251, 251, 251); border-radius:6px" class="card">
 										<img src="/{{this.images.[0]}}" class="card-img-top" alt="{{this.name}}"
-											style="height: 200px; object-fit: cover;">
-										<div class="card-body">
+											style="height: 200px;padding-left:70px;padding-right:70px; object-fit: cover;">
+										<div  class="card-body">
 											<h5 class="card-title">{{this.name}}</h5>
 											<p class="card-text">Category: {{this.category}}</p>
 											<p class="card-text">

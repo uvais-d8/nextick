@@ -291,14 +291,7 @@
 							{{/each}}
 						</select>
 
-						<h5>Filter by Rating:</h5>
-						<select id="rating-filter" class="form-control mb-3">
-							<option value="all">All Ratings</option>
-							<option value="4">4 Stars & Above</option>
-							<option value="3">3 Stars & Above</option>
-							<option value="2">2 Stars & Above</option>
-							<option value="1">1 Star & Above</option>
-						</select>
+					
 						<div style="color: white;">.</div>
 						<div style="color: white;">.</div>
 						<div style="color: white;">.</div>
@@ -478,15 +471,6 @@
 					url.searchParams.set('category', category);
 					window.location.href = url;
 				});
-
-				// Rating filter functionality
-				//   const ratingFilter = document.getElementById("rating-filter");
-				//  ratingFilter.addEventListener("change", function() {
-				//     const rating = this.value;
-				//      const url = new URL(window.location.href);
-				//   url.searchParams.set('rating', rating);
-				// window.location.href = url;
-				//      });
 			});
 		</script>
 

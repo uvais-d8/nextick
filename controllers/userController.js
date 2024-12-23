@@ -167,7 +167,7 @@ const singleproduct = async (req, res) => {
     })
    
     const activeOffers = await Offer.find({ Status: true });
-    const products = await Products.find({ islisted: true });
+    const products = await Products.find({ islisted: true }).limit(3);
 
     if (!product) {
       return res.status(404).send("Product not found");

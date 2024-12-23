@@ -81,7 +81,7 @@
 
     <div class="dashboard">
         <aside class="sidebar">
-            <div style="color: white;" class="logo">WATCH PREMIUM</div>
+            <div style="color: white;margin-left:65px" class="logo">NEXTIC<span style="color: orange;">K</span></div>
             <nav>
                 <a class="a" href="/admin/dashboard">
                     <div class="nav-item">
@@ -213,11 +213,11 @@
                     </div>
                     <div class="card">
                         <h3 style="color: white;">Overall Sales amount</h3>
-                        <p style="font-size: 29px;color:rgb(93, 255, 91)">₹ {{netSale}}</p>
+                        <p style="font-size: 29px;color:rgb(93, 255, 91)">₹ {{toInteger netSale}}</p>
                     </div>
                     <div class="card">
                         <h3 style="color: white;">Overall discount amount</h3>
-                        <p style="font-size: 29px;color:rgb(255, 91, 91)">₹ {{totalDiscount}}</p>
+                        <p style="font-size: 29px;color:rgb(255, 91, 91)">₹ {{toInteger totalDiscount}}</p>
                     </div>
                      
                 </section>
@@ -251,9 +251,9 @@
                             <td>{{orderId}}</td>
                             <td>{{customer}}</td>
                             <td>{{paymentMethod}}</td>
-                            <td>₹{{totalAmount}}</td>
-                            <td>₹{{discount}}</td>
-                            <td>₹{{netSale}}</td>
+                            <td>₹{{toInteger totalAmount}}</td>
+                            <td>₹{{toInteger discount}}</td>
+                            <td>₹{{toInteger netSale}}</td>
                         </tr>
 
                         {{/each}}
