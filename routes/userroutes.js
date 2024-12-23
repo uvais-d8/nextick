@@ -96,5 +96,8 @@ router.get("/", userController.loadhome);
 router.get("/wishlist",userController.loadWishlist)
 router.post('/toggle/:productId', userController.toggleWishlist);
 
+router.use((req, res) => {
+  res.status(404).render('404')
+});
 
 module.exports = router;

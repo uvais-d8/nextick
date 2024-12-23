@@ -205,7 +205,7 @@ const singleproduct = async (req, res) => {
       reviews: product.reviews     
     });  } catch (error) {
     console.error("Error fetching product details:", error);
-    res.status(500).send("Failed to fetch product details.");
+    res.status(404).render("404");
   }
 };
 const loadWishlist = async (req, res) => {
