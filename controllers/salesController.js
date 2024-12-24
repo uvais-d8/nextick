@@ -429,23 +429,47 @@ const getProductStock = async (req, res) => {
   }
 };
 const updateQuantity = async (req, res) => {
+  console.log("ethyyy")
   const { id } = req.params;
   const { quantity } = req.body;
 
   if (quantity < 1 || quantity > 11) {
-    return res.status(400).json({ message: "Invalid quantity" });
+      return res.status(400).json({ message: "Invalid quantity" });
   }
 
   try {
-    await Cart.updateOne({ _id: id }, { $set: { quantity } });
-    res.json({ success: true });
+      const cartItem = await Cart.findById(id).populate('productId');
+      if (!cartItem) {
+          return res.status(404).json({ message: "Cart item not found" });
+      }
+      let price=0
+      console.log("cartItem.productId.priceWithDiscount",cartItem.productId.priceWithDiscount)
+
+if(cartItem.priceWithDiscount>0){
+  console.log("ullilll")
+       price = cartItem.priceWithDiscount  
+       
+}else{
+  // || cartItem.productId.price;
+    price=cartItem.productId.price
+    
+}
+console.log("price:",price)
+      const total = price * quantity;
+console.log("total",total)
+      await Cart.updateOne({ _id: id }, { $set: { quantity } });
+
+      res.json({ 
+          success: true, 
+          quantity, 
+          total: total.toFixed(2) 
+      });
   } catch (error) {
-    console.error("Error updating cart quantity:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Error updating quantity." });
+      console.error("Error updating cart quantity:", error);
+      res.status(500).json({ success: false, message: "Error updating quantity." });
   }
 };
+
 const loadcartpage = async (req, res) => {
   try {
     const userId = req.session.userId;
