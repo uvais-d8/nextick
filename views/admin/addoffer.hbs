@@ -7,6 +7,8 @@
     <title>NEXTICK</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         * {
             margin: 0;
@@ -117,107 +119,144 @@
 <body>
     <div class="container">
         <h1>Add New Offer - ( products )</h1>
-        <input id="message-box" type="text" style="border-width: 0px; color: red;" value="{{message}}" readonly>
-        <form id="couponForm" method="post" action="/admin/addingOffer">
+        {{!-- <input id="message-box" type="text" style="border-width: 0px; color: red;" value="{{message}}" readonly> --}}
+<form id="couponForm" method="post" action="/admin/addingOffer" onsubmit="return validateForm(event)">
 
-            <div class="form-group">
-                <label for="DiscountType">Discount Type:</label>
-                <select id="DiscountType" name="DiscountType">
-                    <option value="percentage">Percentage</option>
-                    <option value="fixed">Fixed Amount</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="DiscountValue">Discount Value:</label>
-                <input type="number" id="DiscountValue" name="DiscountValue" min="0" />
-            </div>
-            <div class="form-group">
-                <label for="Description">Description:</label>
-                <textarea id="Description" name="Description" maxlength="500"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="Products">Applicable Products:</label>
-                <!-- Dropdown Button -->
-                <button id="dropdownToggle" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">
-                    Select Products
-                </button>
-
-                <!-- Dropdown Content -->
-                <div id="ProductsDropdown" class="form-control"
-                    style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
-                    {{#each products}}
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
-                        <label for="product-{{this.id}}" style="margin-right: 10px;">{{this.name}}</label>
-                        <input type="checkbox" id="product-{{this._id}}" name="Products[]" value="{{this._id}}">
-                    </div>
-                    {{/each}}
-                </div>
-            </div>
-
-            <script> 
-                                document.getElementById("dropdownToggle").addEventListener("click", function () {
-                    const dropdown = document.getElementById("ProductsDropdown");
-                    dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
-                });
-            </script>
-         
-            <div class="form-group">
-                <label for="ExpiryDate">Expiry Date:</label>
-                <input type="date" id="ExpiryDate" name="ExpiryDate" />
-            </div>
-            <div class="form-group">
-                <label for="Status">Offer Status:</label>
-                <select id="Status" name="Status">
-                    <option value="true">Active</option>
-                    <option value="false">Non Active</option>
-                </select>
-            </div>
-
-            <input style="height: 35px;font-weight:bold" type="submit" value="add Offer">
-        </form>
-        <div id="message"></div>
+    <div class="form-group">
+        <label for="DiscountType">Discount Type:</label>
+        <select id="DiscountType" name="DiscountType">
+            <option value="">Select Discount Type</option>
+            <option value="percentage">Percentage</option>
+            <option value="fixed">Fixed Amount</option>
+        </select>
+        <div id="DiscountTypeError" class="error-message" style="color: red; display: none;">Please select a discount type.</div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <div class="form-group">
+        <label for="DiscountValue">Discount Value:</label>
+        <input type="number" id="DiscountValue" name="DiscountValue" />
+        <div id="DiscountValueError" class="error-message" style="color: red; display: none;">Please enter a valid discount value greater than 0.</div>
+        <div id="MaxPercentageError" class="error-message" style="color: red; display: none;">Percentage discount cannot exceed 50%.</div>
+    </div>
+
+    <div class="form-group">
+        <label for="Description">Description:</label>
+        <textarea id="Description" name="Description" maxlength="500"></textarea>
+        <div id="DescriptionError" class="error-message" style="color: red; display: none;">Please enter a description.</div>
+    </div>
+
+    <div class="form-group">
+        <label for="Products">Applicable Products:</label>
+        <button id="dropdownToggle" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">
+            Select Products
+        </button>
+
+        <div id="ProductsDropdown" class="form-control" style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
+            <button type="button" id="selectAllButton" style="margin-left:85%;font-weight:100;font-size:13px;margin-bottom: 10px; width: 14%; padding: 5px; background-color: #007bff; color: white; border: none; cursor: pointer;">
+                Select All
+            </button>
+
+            {{#each products}}
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
+                <label for="product-{{this._id}}" style="margin-right: 10px;">{{this.name}}</label>
+                <input type="checkbox" id="product-{{this._id}}" name="Products[]" value="{{this._id}}">
+            </div>
+            {{/each}}
+        </div>
+
+        <div id="ProductsError" class="error-message" style="color: red; display: none;">Please select at least one product.</div>
+    </div>
+
     <script>
-        document.getElementById('couponForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-
- 
-            const selectedProducts = [];
-            document.querySelectorAll('input[name="Products[]"]:checked').forEach((checkbox) => {
-                selectedProducts.push(checkbox.value);
+        document.getElementById("selectAllButton").addEventListener("click", function() {
+            const checkboxes = document.querySelectorAll("#ProductsDropdown input[type='checkbox']");
+            const allSelected = Array.from(checkboxes).every(checkbox => checkbox.checked);
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = !allSelected;
             });
-
- 
-            const selectedCategories = [];
-            document.querySelectorAll('input[name="Categories[]"]:checked').forEach((checkbox) => {
-                selectedCategories.push(checkbox.value);
-            });
-
-            const OfferData = {
-                DiscountType: document.getElementById('DiscountType').value,
-                DiscountValue: parseFloat(document.getElementById('DiscountValue').value),
-                Description: document.getElementById('Description').value,
-                Products: document.getElementById('ProductsDropdown').style.display = 'none';
-                Categories: document.getElementById('CategoryDropdown').style.display = 'none';
-                ExpiryDate: new Date(document.getElementById('ExpiryDate').value),
-                Status: document.getElementById('Status').value === 'true',
-            };
-
-
-  
-            axios.post('/api/Offers', OfferData)
-                .then(response => {
-                    document.getElementById('message').innerHTML = 'Offer added successfully!';
-                    document.getElementById('couponForm').reset();
-                })
-                .catch(error => {
-                    document.getElementById('message').innerHTML = 'Error adding coupon. Please try again.';
-                    console.error(error);
-                });
+            document.getElementById("selectAllButton").textContent = allSelected ? "Select All" : "Deselect All";
         });
+
+        document.getElementById("dropdownToggle").addEventListener("click", function () {
+            const dropdown = document.getElementById("ProductsDropdown");
+            dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+        });
+
+        function validateForm(event) {
+            let valid = true;
+
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(function(error) {
+                error.style.display = 'none';
+            });
+
+            // Validate DiscountType
+            const discountType = document.getElementById("DiscountType");
+            if (discountType.value === "") {
+                document.getElementById("DiscountTypeError").style.display = "block";
+                valid = false;
+            }
+
+            // Validate DiscountValue
+            const discountValue = document.getElementById("DiscountValue");
+            if (discountValue.value <= 0) {
+                document.getElementById("DiscountValueError").style.display = "block";
+                valid = false;
+            }
+
+            // If discount type is 'percentage', ensure discount value is <= 50
+            if (discountType.value === "percentage" && discountValue.value > 50) {
+                document.getElementById("MaxPercentageError").style.display = "block";
+                valid = false;
+            }
+
+            // Validate Description
+            const description = document.getElementById("Description");
+            if (description.value.trim() === "") {
+                document.getElementById("DescriptionError").style.display = "block";
+                valid = false;
+            }
+
+            // Validate Products
+            const products = document.querySelectorAll('input[name="Products[]"]:checked');
+            if (products.length === 0) {
+                document.getElementById("ProductsError").style.display = "block";
+                valid = false;
+            }
+
+            // Validate ExpiryDate
+            const expiryDate = document.getElementById("ExpiryDate");
+            const today = new Date().toISOString().split("T")[0]; // Get today's date in yyyy-mm-dd format
+            if (expiryDate.value && expiryDate.value < today) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Expiry Date',
+                    text: 'Please select a future expiry date.',
+                });
+                valid = false;
+            }
+
+            return valid;
+        }
     </script>
+
+    <div class="form-group">
+        <label for="ExpiryDate">Expiry Date:</label>
+        <input type="date" id="ExpiryDate" name="ExpiryDate" />
+    </div>
+
+    <div class="form-group">
+        <label for="Status">Offer Status:</label>
+        <select id="Status" name="Status">
+             <option value="true">Active</option>
+            <option value="false">Non Active</option>
+        </select>
+    </div>
+
+    <input style="height: 35px; font-weight: bold" type="submit" value="Add Offer">
+</form>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </body>
 
 </html>

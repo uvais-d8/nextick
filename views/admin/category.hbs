@@ -105,7 +105,7 @@
 
                         <td>{{this.brand}}</td>
                         <td>{{this.bandcolor}}</td>
-                        <td style="width: 140px;">
+                        <td style="width: 190px;">
                             {{#if this.islisted}}
                             Available
                             {{else}}
@@ -114,20 +114,20 @@
                         </td>
                         <td>
                             <form method="get" action="/admin/editcategory/{{this._id}}"><button
-                                    style="background-color: rgba(1, 171, 1, 0.776);width: 75px;height:40px;color:white"
-                                    class="btnn1">edit</button></form>
+                                    style="background-color: rgb(52, 78, 225);width: 100px;height:40px;color:white"
+                                    class="btnn1">EDIT</button></form>
 
                             {{#if this.islisted}}
                             <form action="/admin/category/unlist/{{this._id}}" method="POST">
                                 <button
-                                    style="background-color: rgba(192, 192, 6, 0.905);width: 75px;margin-top:6px;height:40px;color:white"
-                                    type="submit" class="btnn2">listed</button>
+                                    style="background-color: rgba(89, 216, 39, 0.905);width: 100px;margin-top:6px;height:40px;color:white"
+                                    type="submit" class="btnn2">LISTED</button>
                             </form>
                             {{else}}
                             <form action="/admin/category/list/{{this._id}}" method="POST">
                                 <button
-                                    style="background-color: rgba(211, 37, 25, 0.766);width: 75px;margin-top:6px;height:40px;color:white"
-                                    type="submit" class="btnn2">unlisted</button>
+                                    style="background-color: rgba(211, 37, 25, 0.766);width: 100px;margin-top:6px;height:40px;color:white"
+                                    type="submit" class="btnn2">UNLISTED</button>
                             </form>
                             {{/if}}
                             {{/each}}

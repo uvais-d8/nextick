@@ -77,10 +77,11 @@
        
    <div class="controls">
             
-                <form method="get" action="/admin/addoffer"><button style="background-color: rgb(3, 139, 39);"  class="sort-button">ADD
-                    OFFER (products)</button>
-                </form><form method="get" action="/admin/addoffers"><button style="background-color: rgb(3, 139, 39);" class="sort-button">ADD
+               
+               <form method="get" action="/admin/addoffers"><button style="color:black;background-color: rgb(1, 10, 24);" class="sort-button">ADD
                     OFFER (category)</button></form>
+                     <form method="get" action="/admin/addoffer"><button style="background-color: rgb(56, 183, 31);"  class="sort-button">ADD
+                    OFFER (products)</button></form>
             </div>  
             <table>
                 <thead>
@@ -131,13 +132,13 @@
                         <td>
                             <form action="/admin/editOffer/{{this._id}}" method="POST">
                                 <input type="submit" value="EDIT"
-                                    style="color:white;border-width:0px;width: 100px;border-radius:4px;background-color:rgba(255, 183, 0, 0.858); height:40px; margin-bottom:5px">
+                                    style="color:white;border-width:0px;width: 100px;border-radius:4px;background-color:rgba(102, 145, 215, 0.858); height:40px; margin-bottom:5px">
                             </form>
                             
                             {{#if this.Status}}
                             <form action="/admin/offer/unlist/{{this._id}}" method="POST">
                                 <button
-                                    style="color:white;background-color: rgba(0, 174, 0, 0.671);height:40px;width:100px"
+                                    style="color:white;background-color: rgb(83, 225, 32);height:40px;width:100px"
                                     class="action-button unblock-button">
                                     LISTED
                                 </button>

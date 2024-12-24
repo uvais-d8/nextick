@@ -13,34 +13,78 @@
 <body>
     <div class="container">
         <h1>Add New Category</h1>
-        <form action="/admin/category/add" method="post">
-            <input type="text" style="border-width: 0px; color:red;font-size:17px" name="message" id="message"
-                value="{{message}}">
-            <div class="form-group">
-                <label for="category">Category</label>
-                <input type="text" id="category" name="category"  >
-            </div>
-            <div class="form-group">
-                <label for="brand">Brand</label>
-                <input type="text" id="brand" name="brand"  >
-            </div>
+       <form action="/admin/category/add" method="post" onsubmit="return validateForm()">
+    <!-- Display message -->
+    <input type="text" style="border-width: 0px; color:red;font-size:17px" name="message" id="message" value="{{message}}" readonly>
 
-            <div class="form-group">
-                <label for="bandcolor">Band Color</label>
-                <input type="text" id="bandcolor" name="bandcolor"  >
-            </div>
+    <!-- Category Field -->
+    <div class="form-group">
+        <label for="category">Category</label>
+        <input type="text" id="category" name="category">
+        <div id="categoryError" class="error-message" style="color: red; display: none;">Category is required.</div>
+    </div>
 
+    <!-- Brand Field -->
+    <div class="form-group">
+        <label for="brand">Brand</label>
+        <input type="text" id="brand" name="brand">
+        <div id="brandError" class="error-message" style="color: red; display: none;">Brand is required.</div>
+    </div>
 
+    <!-- Band Color Field -->
+    <div class="form-group">
+        <label for="bandcolor">Band Color</label>
+        <input type="text" id="bandcolor" name="bandcolor">
+        <div id="bandcolorError" class="error-message" style="color: red; display: none;">Band Color is required.</div>
+    </div>
 
-            <div style="display: flex;align-content:center">
-                <div class="button-group">
-                   <a href="/admin/category"> <button type="button" style="background-color: rgb(255, 44, 44);font-weight:bold">Back</button></a>
-                </div>
-                <div style="margin-left: 75%;" class="button-group">
-                    <button style="background-color: rgb(6, 193, 6);font-weight:bold">Add Category</button>
-                </div>
-            </div>
-        </form>
+    <!-- Buttons -->
+    <div style="display: flex; align-content: center;">
+        <div class="button-group">
+            <a href="/admin/category">
+                <button type="button" style="background-color: rgb(255, 44, 44); font-weight: bold;">Back</button>
+            </a>
+        </div>
+        <div style="margin-left: 75%;" class="button-group">
+            <button type="submit" style="background-color: rgb(6, 193, 6); font-weight: bold;">Add Category</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    function validateForm() {
+        let valid = true;
+
+        // Reset all error messages
+        document.querySelectorAll('.error-message').forEach(function(error) {
+            error.style.display = 'none';
+        });
+
+        // Validate Category
+        const category = document.getElementById("category");
+        if (category.value.trim() === "") {
+            document.getElementById("categoryError").style.display = "block";
+            valid = false;
+        }
+
+        // Validate Brand
+        const brand = document.getElementById("brand");
+        if (brand.value.trim() === "") {
+            document.getElementById("brandError").style.display = "block";
+            valid = false;
+        }
+
+        // Validate Band Color
+        const bandcolor = document.getElementById("bandcolor");
+        if (bandcolor.value.trim() === "") {
+            document.getElementById("bandcolorError").style.display = "block";
+            valid = false;
+        }
+
+        return valid; // Only submit the form if all fields are valid
+    }
+</script>
+
         <script>
             setTimeout(() => {
                 const messageField = document.getElementById('message');

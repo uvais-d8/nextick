@@ -13,32 +13,79 @@
 <body>
     <div class="container">
         <h1>Edit Category</h1>
-        <form action="/admin/editcategory/{{category._id}}" method="post">
-            <input type="text" style="border-width: 0px; color:red;font-weight:bold;width:70%" name="message"
-                id="message" value="{{message}}">
-            <div class="form-group">
-                <label for="category">Category</label>
-                <input type="text" id="category" name="category" value="{{category.category}}" required>
-            </div>
-            <div class="form-group">
-                <label for="brand">Brand</label>
-                <input type="text" id="brand" name="brand" value="{{category.brand}}" required>
-            </div>
+<form action="/admin/editcategory/{{category._id}}" method="post" onsubmit="return validateForm()">
+    <!-- Display message -->
+    <input type="text" style="border-width: 0px; color: red; font-weight: bold; width: 70%;" name="message" id="message" value="{{message}}" readonly>
 
-            <div class="form-group">
-                <label for="bandcolor">Band Color</label>
-                <input type="text" id="bandcolor" name="bandcolor" value="{{category.bandcolor}}" required>
-            </div>
+    <!-- Category Field -->
+    <div class="form-group">
+        <label for="category">Category</label>
+        <input type="text" id="category" name="category" value="{{category.category}}">
+        <div id="categoryError" class="error-message" style="color: red; display: none;">Category is required.</div>
+    </div>
 
-          <div style="display: flex;">
-              <div class="button-group">
-                <a  href="/admin/category"><button style="font-weight:bold;background-color: rgb(255, 41, 41);" type="button">back</button></a>
-            </div>
-              <div style="margin-left: 73%;" class="button-group">
-                <button style="font-weight:bold;background-color:rgb(12, 176, 12)" type="submit">update Category</button>
-            </div>
-          </div>
-        </form>
+    <!-- Brand Field -->
+    <div class="form-group">
+        <label for="brand">Brand</label>
+        <input type="text" id="brand" name="brand" value="{{category.brand}}">
+        <div id="brandError" class="error-message" style="color: red; display: none;">Brand is required.</div>
+    </div>
+
+    <!-- Band Color Field -->
+    <div class="form-group">
+        <label for="bandcolor">Band Color</label>
+        <input type="text" id="bandcolor" name="bandcolor" value="{{category.bandcolor}}" required>
+        <div id="bandcolorError" class="error-message" style="color: red; display: none;">Band Color is required.</div>
+    </div>
+
+    <!-- Buttons -->
+    <div style="display: flex;">
+        <div class="button-group">
+            <a href="/admin/category">
+                <button style="font-weight: bold; background-color: rgb(255, 41, 41);" type="button">Back</button>
+            </a>
+        </div>
+        <div style="margin-left: 73%;" class="button-group">
+            <button style="font-weight: bold; background-color: rgb(12, 176, 12);" type="submit">Update Category</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    function validateForm() {
+        let valid = true;
+
+        // Reset all error messages
+        document.querySelectorAll('.error-message').forEach(function (error) {
+            error.style.display = 'none';
+        });
+
+        // Validate Category
+        const category = document.getElementById("category");
+        if (category.value.trim() === "") {
+            document.getElementById("categoryError").style.display = "block";
+            valid = false;
+        }
+
+        // Validate Brand
+        const brand = document.getElementById("brand");
+        if (brand.value.trim() === "") {
+            document.getElementById("brandError").style.display = "block";
+            valid = false;
+        }
+
+        // Validate Band Color
+        const bandcolor = document.getElementById("bandcolor");
+        if (bandcolor.value.trim() === "") {
+            document.getElementById("bandcolorError").style.display = "block";
+            valid = false;
+        }
+
+        // Prevent form submission if any field is invalid
+        return valid;
+    }
+</script>
+
 
     </div>
 

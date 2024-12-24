@@ -80,7 +80,7 @@
             </div>
             <div class="controls">
 
-                <form style="margin-left: 82%;" method="get" action="/admin/addcoupon"><button style="background-color: rgb(3, 139, 39);"
+                <form style="margin-left: 82%;" method="get" action="/admin/addcoupon"><button style="background-color: rgb(57, 183, 26);"
                         class="sort-button">ADD
                         COUPON (products)</button>
                 </form>
@@ -103,7 +103,7 @@
                 <tbody>
                     {{#each coupons}}
                     <tr>
-                        <td># {{this.couponCode}}</td>
+                        <td>{{this.couponCode}}</td>
                         <td>{{this.DiscountType}}</td>
                         <td>{{this.DiscountValue}}</td>
                         <td>{{this.Products}}</td>
@@ -115,7 +115,7 @@
                             {{#if this.Status}}
                             <form action="/admin/coupon/unlist/{{this._id}}" method="POST">
                                 <button
-                                    style="color:white;background-color: rgba(0, 174, 0, 0.671);height:40px;width:100px"
+                                    style="color:white;background-color: rgba(39, 220, 39, 0.671);height:40px;width:100px"
                                     class="action-button unblock-button">
                                     LISTED
                                 </button>
