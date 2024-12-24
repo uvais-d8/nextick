@@ -381,102 +381,55 @@ const listproducts = async (req, res) => {
 const editproducts = async (req, res) => {
   try {
     const { id, name, category, stock, price, deletedImages } = req.body;
-    console.log("Received Data:");
-    console.log("ID:", id);
-    console.log("Name:", name);
-    console.log("Category:", category);
-    console.log("Stock:", stock);
-    console.log("Price:", price);
-    console.log("Deleted Images:", deletedImages);
+
+    const trimmedName = name.trim();
+    const trimmedCategory = category.trim();
+
+    if (!trimmedName || !trimmedCategory || !stock || !price) {
+      return res.render("admin/products", {
+        message: "All fields are required",
+      });
+    }
 
     const existingProduct = await Products.findOne({
-      name: name.trim(),
-      _id: { $ne: id }
+      name: trimmedName,
+      _id: { $ne: id },
     });
 
     if (existingProduct) {
-      console.error("Product with this name already exists:", name);
       return res.render("admin/products", {
-        message: "A product with this name already exists."
+        message: "A product with this name already exists.",
+      });
+    }
+
+    const stockNumber = parseInt(stock.trim(), 10);
+    const priceNumber = parseFloat(price.trim());
+
+    if (isNaN(stockNumber) || stockNumber < 0) {
+      return res.render("admin/products", {
+        message: "Stock must be a valid number and cannot be negative.",
+      });
+    }
+
+    if (isNaN(priceNumber) || priceNumber < 0) {
+      return res.render("admin/products", {
+        message: "Price must be a valid number and cannot be negative.",
       });
     }
 
     const product = await Products.findById(id);
     if (!product) {
-      console.error("Product not found for ID:", id);
-      return res.render("admin/products", { message: "Product not found" });
-    }
-
-    const categoryObj = await Category.findById(category);
-    if (!categoryObj) {
-      return res
-        .status(400)
-        .render("admin/products", { message: "Category not found" });
-    }
-
-    const stockNumber = parseInt(stock, 10);
-    if (isNaN(stockNumber)) {
       return res.render("admin/products", {
-        message: "Stock must be a valid number"
+        message: "Product not found.",
       });
     }
 
-    if (stockNumber < 0) {
-      return res.render("admin/products", {
-        message: "Stock cannot be negative"
-      });
-    }
-
-    if (deletedImages) {
-      const deletedImagesArray = deletedImages.split(",");
-      for (const imagePath of deletedImagesArray) {
-        const index = product.images.indexOf(imagePath);
-        if (index > -1) {
-          product.images.splice(index, 1);
-          const fullImagePath = path.join(__dirname, "..", "public", imagePath);
-          if (fs.existsSync(fullImagePath)) {
-            fs.unlinkSync(fullImagePath);
-            console.log("Deleted image from server:", fullImagePath);
-          }
-        }
-      }
-    }
-
-    if (req.files && req.files.images) {
-      const newImages = req.files.images.map(
-        file => "uploads/" + file.filename
-      );
-      product.images.push(...newImages);
-      console.log("Added new images:", newImages);
-    }
-
-    if (req.body.croppedImageData) {
-      const croppedImages = Array.isArray(req.body.croppedImageData)
-        ? req.body.croppedImageData
-        : [req.body.croppedImageData];
-
-      for (const croppedImageData of croppedImages) {
-        const buffer = Buffer.from(croppedImageData.split(",")[1], "base64");
-        const croppedFileName = `cropped-${Date.now()}.png`;
-        const filePath = path.join(__dirname, "..", "uploads", croppedFileName);
-        fs.writeFileSync(filePath, buffer);
-        product.images.push("uploads/" + croppedFileName);
-        console.log("Added cropped image:", croppedFileName);
-      }
-    }
-
-    if (product.images.length === 0) {
-      console.error("No images provided for the product.");
-      return res.render("admin/products", {
-        message: "At least one image is required"
-      });
-    }
-
+    // Update product details
     Object.assign(product, {
-      name: name.trim(),
-      category: categoryObj._id,
+      name: trimmedName,
+      category: trimmedCategory,
       stock: stockNumber,
-      price: parseFloat(price).toFixed(2)
+      price: priceNumber.toFixed(2),
     });
 
     await product.save();
@@ -485,13 +438,14 @@ const editproducts = async (req, res) => {
     res.redirect("/admin/products");
   } catch (error) {
     console.error("Error updating product:", error);
-    const products = await Products.find({});
     res.status(500).render("admin/products", {
-      products,
-      message: "An error occurred while updating the product. Please try again."
+      message: "An error occurred while updating the product.",
     });
   }
 };
+
+
+
 const loadaddproduct = async (req, res) => {
   try {
     const categories = await Category.find({});
@@ -503,73 +457,102 @@ const loadaddproduct = async (req, res) => {
 };
 const addproduct = async (req, res) => {
   try {
+    // Fetch categories for rendering in case of errors
+    const categories = await Category.find({});
     const { name, category, stock, price, description } = req.body;
     const { files } = req;
+
+    // Log request details for debugging
     console.log("Request body:", req.body);
     console.log("Uploaded files:", files);
 
+    // Validation: Check if all fields are provided
     if (!name || !category || !stock || !price || !description) {
       return res.status(400).render("admin/addproduct", {
-        message: "All fields are required."
+        categories,
+        message: "All fields are required.",
       });
     }
 
+    // Validation: Check stock is a positive number
+    if (isNaN(stock) || stock <= 0) {
+      return res.status(400).render("admin/addproduct", {
+        categories,
+        message: "Stock must be a positive number.",
+      });
+    }
+
+    // Validation: Check price is a positive number
+    if (isNaN(price) || price <= 0) {
+      return res.status(400).render("admin/addproduct", {
+        categories,
+        message: "Price must be a positive number.",
+      });
+    }
+
+    // Validation: Check for at least 3 images
     if (!files || files.length < 3) {
       return res.status(400).render("admin/addproduct", {
-        message: "Please upload at least 3 images."
+        categories,
+        message: "Please upload at least 3 images.",
       });
     }
 
-    const validImageTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/jpg",
-      "image/gif"
-    ];
+    // Validation: Check image file types
+    const validImageTypes = ["image/jpeg", "image/png", "image/jpg", "image/gif"];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       if (!validImageTypes.includes(file.mimetype)) {
         return res.status(400).render("admin/addproduct", {
-          message: `Invalid image format for file: ${file.originalname}. Please upload only image files.`
+          categories,
+          message: `Invalid image format for file: ${file.originalname}. Please upload only image files.`,
         });
       }
     }
 
+    // Validation: Check if product already exists
     const existingProduct = await Products.findOne({ name });
     if (existingProduct) {
-      const products = await Products.find({});
       return res.render("admin/addproduct", {
-        products,
+        categories,
         modalError: "Product already exists",
-        message: "Product already exists"
+        message: "Product already exists.",
       });
     }
 
-    const categoryObj = await Category.findOne({ category: category });
+    // Validation: Check if category exists
+    const categoryObj = await Category.findOne({ category });
     if (!categoryObj) {
       return res.status(400).render("admin/addproduct", {
-        message: "Category not found"
+        categories,
+        message: "Category not found.",
       });
     }
 
+    // Create and save the new product
     const newProduct = new Products({
       name,
       category: categoryObj._id,
       stock,
       price,
       description: description || "Default description",
-      images: files.map(file => file.path)
+      images: files.map((file) => file.path),
     });
 
     await newProduct.save();
     console.log("New product saved:", newProduct);
 
+    // Redirect to the products list
     res.redirect("/admin/products");
   } catch (error) {
     console.error("Error adding product:", error.message);
-    res.redirect("/admin/dashboard");
+    res.status(500).render("admin/addproduct", {
+      categories,
+      message: "An error occurred while adding the product. Please try again.",
+    });
   }
 };
+
 const loadproducts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;

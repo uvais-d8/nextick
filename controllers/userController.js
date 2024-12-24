@@ -28,6 +28,7 @@ const loadhome = async (req, res) => {
     }
 
     const products = await Products.find({ islisted: true })
+      .limit(6)
       .populate("offer")
       .populate({
         path: "category",

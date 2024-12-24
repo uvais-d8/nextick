@@ -348,9 +348,9 @@
 														class="error-message" style="color: red;"></span>
 
 													<!-- Hidden fields for cart and total amounts -->
-													<input type="hidden" name="subtotal" value="{{subtotal}}">
-													<input type="hidden" name="shippingRate" value="{{shippingRate}}">
-													<input type="hidden" name="total" value="{{total}}">
+													<input type="hidden" name="subtotal" value="{{toInteger subtotal}}">
+													<input type="hidden" name="shippingRate" value="{{toInteger shippingRate}}">
+													<input type="hidden" name="total" value="{{toInteger total}}">
 													{{!-- <input type="hidden" name="addressId" value="{{addresses._id}}"> --}}
 											</div>
 										</div>
@@ -410,13 +410,13 @@
 										<td><b>Subtotal</b></td>
 										<td><b></b></td>
 										<td><b></b></td>
-										<td> {{subtotal}}</td>
+										<td> {{toInteger subtotal}}</td>
 									</tr>
 									<tr>
 										<td><b>Shipping</b></td>
 										<td><b></b></td>
 										<td><b></b></td>
-										<td><b>₹ {{shippingRate}}</b></td>
+										<td><b>₹ {{toInteger shippingRate}}</b></td>
 									</tr>
 								</tbody>
 								<tbody>
@@ -424,7 +424,7 @@
 										<td><strong>Total After Discount: </strong></td>
 										<td><b></b></td>
 										<td><b></b></td>
-										<td colspan="3" class="total"><b>₹{{total}}</b></td>
+										<td colspan="3" class="total"><b>₹{{toInteger total}}</b></td>
 									</tr>
 								</tbody>
 

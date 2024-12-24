@@ -487,7 +487,7 @@
                             <div class="status-message" id="statusMessage"></div>
                             <div style="font-size: large;" class="status-header">Item : {{this.productId.name}}</div>
 
-                            <div class="step-price"><b>Price: ${{multiply this.quantity this.priceWithDiscount}}</b>
+                            <div class="step-price"><b>Price: ₹ {{multiplyAndRound this.quantity this.priceWithDiscount}}</b>
                             </div>
                             <div class="step-quantity"><b>Quantity: {{this.quantity}}</b></div>
                         </div>

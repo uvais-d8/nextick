@@ -706,7 +706,7 @@
 				{{#if (isBetween orderTotal 0 55)}}
 				<h5 style="color: red;">Order whole order canceled</h5>
 				{{else}}
-				<h4>Order Total: ₹{{orderTotal}}</h4>
+				<h4>Order Total: ₹{{toInteger orderTotal}}</h4>
 				<p>
 					(Delivery charge: ₹50)
 				</p>{{/if}}

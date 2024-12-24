@@ -456,30 +456,34 @@
                                 </div>
                                 <div class="modal-body">
                                     <!-- Form fields for editing address -->
-                                    <form method="post" action="/editaddress/{{this._id}}">
+                                    <form method="post" action="/editaddress/{{this._id}}" id="editAddressForm">
                                         <div class="mb-3">
                                             <label for="firstname" style="font-weight: bold;" class="form-label">First
                                                 Name</label>
                                             <input name="firstname" type="text" class="form-control" id="firstname"
                                                 value="{{this.firstname}}">
+                                            <small id="firstname-error" class="text-danger"></small>
                                         </div>
                                         <div class="mb-3">
                                             <label for="lastname" style="font-weight: bold;" class="form-label">Last
                                                 Name</label>
                                             <input name="lastname" type="text" class="form-control" id="lastname"
                                                 value="{{this.lastname}}">
+                                            <small id="lastname-error" class="text-danger"></small>
                                         </div>
                                         <div class="mb-3">
                                             <label for="address" style="font-weight: bold;"
                                                 class="form-label">Address</label>
                                             <input name="address" type="text" class="form-control" id="address"
                                                 value="{{this.address}}">
+                                            <small id="address-error" class="text-danger"></small>
                                         </div>
                                         <div class="mb-3">
                                             <label for="phone" style="font-weight: bold;" class="form-label">Phone
                                                 No</label>
                                             <input name="phone" type="tel" class="form-control" id="phone"
                                                 value="{{this.phone}}">
+                                            <small id="phone-error" class="text-danger"></small>
                                         </div>
                                         <div class="mb-3">
                                             <label for="email" style="font-weight: bold;"
@@ -492,23 +496,27 @@
                                                 class="form-label">Place</label>
                                             <input name="place" type="text" class="form-control" id="place"
                                                 value="{{this.place}}">
+                                            <small id="place-error" class="text-danger"></small>
                                         </div>
                                         <div class="mb-3">
                                             <label for="city" style="font-weight: bold;" class="form-label">City</label>
                                             <input name="city" type="text" class="form-control" id="city"
                                                 value="{{this.city}}">
+                                            <small id="city-error" class="text-danger"></small>
                                         </div>
                                         <div class="mb-3">
                                             <label for="pincode" style="font-weight: bold;" class="form-label">Pin
                                                 Code</label>
                                             <input name="pincode" type="text" class="form-control" id="pincode"
                                                 value="{{this.pincode}}">
+                                            <small id="pincode-error" class="text-danger"></small>
                                         </div>
                                         <div class="mb-3">
                                             <label for="district" style="font-weight: bold;"
                                                 class="form-label">District</label>
                                             <input name="district" type="text" class="form-control" id="district"
                                                 value="{{this.district}}">
+                                            <small id="district-error" class="text-danger"></small>
                                         </div>
                                         <button type="submit" class="btn btn-warning">Save Changes</button>
                                     </form>
@@ -516,7 +524,84 @@
                             </div>
                         </div>
                     </div>
+                    <script>document.addEventListener("DOMContentLoaded", function () {
+                            const form = document.getElementById('editAddressForm');
 
+                            form.addEventListener('submit', function (event) {
+                                event.preventDefault(); // Prevent form submission initially
+
+                                let isValid = true;
+
+                                // Clear previous error messages
+                                document.querySelectorAll('.text-danger').forEach(function (element) {
+                                    element.textContent = '';
+                                });
+
+                                // Validate First Name
+                                const firstnameInput = document.getElementById('firstname');
+                                if (!firstnameInput.value.trim()) {
+                                    document.getElementById('firstname-error').textContent = "First name is required.";
+                                    isValid = false;
+                                }
+
+                                // Validate Last Name
+                                const lastnameInput = document.getElementById('lastname');
+                                if (!lastnameInput.value.trim()) {
+                                    document.getElementById('lastname-error').textContent = "Last name is required.";
+                                    isValid = false;
+                                }
+
+                                // Validate Address
+                                const addressInput = document.getElementById('address');
+                                if (!addressInput.value.trim()) {
+                                    document.getElementById('address-error').textContent = "Address is required.";
+                                    isValid = false;
+                                }
+
+                                // Validate Phone Number
+                                const phoneInput = document.getElementById('phone');
+                                const phoneRegex = /^[0-9]{10}$/; // Basic phone number validation (10 digits)
+                                if (!phoneInput.value.trim() || !phoneRegex.test(phoneInput.value.trim())) {
+                                    document.getElementById('phone-error').textContent = "Please enter a valid 10-digit phone number.";
+                                    isValid = false;
+                                }
+
+                                // Validate Place
+                                const placeInput = document.getElementById('place');
+                                if (!placeInput.value.trim()) {
+                                    document.getElementById('place-error').textContent = "Place is required.";
+                                    isValid = false;
+                                }
+
+                                // Validate City
+                                const cityInput = document.getElementById('city');
+                                if (!cityInput.value.trim()) {
+                                    document.getElementById('city-error').textContent = "City is required.";
+                                    isValid = false;
+                                }
+
+                                // Validate Pin Code
+                                const pincodeInput = document.getElementById('pincode');
+                                const pincodeRegex = /^[1-9][0-9]{5}$/; // Simple pincode validation (6 digits)
+                                if (!pincodeInput.value.trim() || !pincodeRegex.test(pincodeInput.value.trim())) {
+                                    document.getElementById('pincode-error').textContent = "Please enter a valid 6-digit pincode.";
+                                    isValid = false;
+                                }
+
+                                // Validate District
+                                const districtInput = document.getElementById('district');
+                                if (!districtInput.value.trim()) {
+                                    document.getElementById('district-error').textContent = "District is required.";
+                                    isValid = false;
+                                }
+
+                                // If the form is valid, submit the form
+                                if (isValid) {
+                                    form.submit();  // Submit the form if all validations pass
+                                }
+                            });
+                        });
+                    </script>
                     <!-- Delete Form -->
                     <form style="margin-top: 5px;" class="address-remove" action="/address/{{this._id}}?_method=DELETE"
                         method="POST" id="delete-form-{{this._id}}">
@@ -569,135 +654,155 @@
                     }
                 }, 4000);
             </script>
-            <form id="addressForm" action="/addaddress" method="post">
-                <div class="d-flex">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="text" id="firstname" name="firstname" placeholder="First Name">
-                            <small class="error" id="firstnameError"></small>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" id="lastname" name="lastname" placeholder="Last Name">
-                            <small class="error" id="lastnameError"></small>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" id="address" name="address" placeholder="Address">
-                            <small class="error" id="addressError"></small>
-                        </div>
-                        <div class="form-group">
-                            <input id="phone" name="phone" placeholder="Phone No">
-                            <small class="error" id="phoneError"></small>
-                        </div>
-                        <div class="form-group">
-                            <input style="width: 100%;" id="pincode" name="pincode" placeholder="Pin code">
-                            <small class="error" id="pincodeError"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="email" id="email" name="email" placeholder="Email">
-                            <small class="error" id="emailError"></small>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" id="place" name="place" placeholder="Place">
-                            <small class="error" id="placeError"></small>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" id="city" name="city" placeholder="City">
-                            <small class="error" id="cityError"></small>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" id="district" name="district" placeholder="District">
-                            <small class="error" id="districtError"></small>
-                        </div>
-                        <button class="w-100" type="submit" id="submitButton">Add Address</button>
-                    </div>
-                </div>
-            </form>
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    document.getElementById("addressForm").addEventListener("submit", function (e) {
+  <form id="addressForm" action="/addaddress" method="post">
+    <div class="d-flex">
+        <div class="col-md-6">
+            <div class="form-group">
+                <input type="text" id="firstname" name="firstname" placeholder="First Name">
+                <small class="error" id="firstnameError"></small>
+            </div>
+            <div class="form-group">
+                <input type="text" id="lastname" name="lastname" placeholder="Last Name">
+                <small class="error" id="lastnameError"></small>
+            </div>
+            <div class="form-group">
+                <input type="text" id="address" name="address" placeholder="Address">
+                <small class="error" id="addressError"></small>
+            </div>
+            <div class="form-group">
+                <input id="phone" name="phone" placeholder="Phone No">
+                <small class="error" id="phoneError"></small>
+            </div>
+            <div class="form-group">
+                <input style="width: 100%;" id="pincode" name="pincode" placeholder="Pin code">
+                <small class="error" id="pincodeError"></small>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <input type="email" id="email" name="email" placeholder="Email">
+                <small class="error" id="emailError"></small>
+            </div>
+            <div class="form-group">
+                <input type="text" id="place" name="place" placeholder="Place">
+                <small class="error" id="placeError"></small>
+            </div>
+            <div class="form-group">
+                <input type="text" id="city" name="city" placeholder="City">
+                <small class="error" id="cityError"></small>
+            </div>
+            <div class="form-group">
+                <input type="text" id="district" name="district" placeholder="District">
+                <small class="error" id="districtError"></small>
+            </div>
+            <button class="w-100" type="submit" id="submitButton">Add Address</button>
+        </div>
+    </div>
+</form>
 
-                        // Clear previous errors
-                        document.querySelectorAll(".error").forEach(errorElement => errorElement.innerText = "");
-
-                        // Input fields and validation rules
-                        const fields = {
-                            firstname: {
-                                value: document.getElementById("firstname").value.trim(),
-                                errorElement: "firstnameError",
-                                message: "First name is required."
-                            },
-
-                            lastname: {
-                                value: document.getElementById("lastname").value.trim(),
-                                errorElement: "lastnameError",
-                                message: "Last name is required."
-                            },
-                            address: {
-                                value: document.getElementById("address").value.trim(),
-                                errorElement: "addressError",
-                                message: "Address is required."
-                            },
-                            phone: {
-                                value: document.getElementById("phone").value.trim(),
-                                errorElement: "phoneError",
-                                message: "Phone number must be 10 digits.",
-                                regex: /^[0-9]{10}$/
-                            },
-                            email: {
-                                value: document.getElementById("email").value.trim(),
-                                errorElement: "emailError",
-                                message: "Invalid email format.",
-                                regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-                            },
-                            place: {
-                                value: document.getElementById("place").value.trim(),
-                                errorElement: "placeError",
-                                message: "Place is required."
-                            },
-                            city: {
-                                value: document.getElementById("city").value.trim(),
-                                errorElement: "cityError",
-                                message: "City is required."
-                            },
-                            pincode: {
-                                value: document.getElementById("pincode").value.trim(),
-                                errorElement: "pincodeError",
-                                message: "Pincode must be 6 digits.",
-                                regex: /^[0-9]{6}$/
-                            },
-                            district: {
-                                value: document.getElementById("district").value.trim(),
-                                errorElement: "districtError",
-                                message: "District is required."
-                            }
-                        };
-
-                        let isValid = true;
-
-                        // Validate each field
-                        for (let key in fields) {
-                            const field = fields[key];
-                            if (!field.value) {
-                                document.getElementById(field.errorElement).innerText = field.message;
-                                isValid = false;
-                            } else if (field.regex && !field.regex.test(field.value)) {
-                                document.getElementById(field.errorElement).innerText = field.message;
-                                isValid = false;
-                            }
-                        }
-
-                        // If form is valid, submit it
-                        if (isValid) {
-                            this.submit();
-                        }
-                    })
-                });
-            </script>
         </section>
     </main>
+<script>document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("addressForm");
 
+    form.addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent form submission initially
+
+        let isValid = true;
+
+        // Clear previous error messages
+        document.querySelectorAll('.error').forEach(function (element) {
+            element.textContent = '';
+        });
+
+        // Validate First Name
+        const firstnameInput = document.getElementById('firstname');
+        if (!firstnameInput.value.trim()) {
+            document.getElementById('firstnameError').textContent = "First name is required.";
+            isValid = false;
+        }
+
+        // Validate Last Name
+        const lastnameInput = document.getElementById('lastname');
+        if (!lastnameInput.value.trim()) {
+            document.getElementById('lastnameError').textContent = "Last name is required.";
+            isValid = false;
+        }
+
+        // Validate Address
+        const addressInput = document.getElementById('address');
+        if (!addressInput.value.trim()) {
+            document.getElementById('addressError').textContent = "Address is required.";
+            isValid = false;
+        }
+
+        // Validate Phone Number
+        const phoneInput = document.getElementById('phone');
+        if (!phoneInput.value.trim()) {
+            document.getElementById('phoneError').textContent = "Phone number is required.";
+            isValid = false;
+        } else {
+            const phoneRegex = /^[0-9]{10}$/; // Basic phone number validation (10 digits)
+            if (!phoneRegex.test(phoneInput.value.trim())) {
+                document.getElementById('phoneError').textContent = "Please enter a valid 10-digit phone number.";
+                isValid = false;
+            }
+        }
+
+        // Validate Pincode
+        const pincodeInput = document.getElementById('pincode');
+        if (!pincodeInput.value.trim()) {
+            document.getElementById('pincodeError').textContent = "Pincode is required.";
+            isValid = false;
+        } else {
+            const pincodeRegex = /^[1-9][0-9]{5}$/; // Basic pincode validation (6 digits)
+            if (!pincodeRegex.test(pincodeInput.value.trim())) {
+                document.getElementById('pincodeError').textContent = "Please enter a valid 6-digit pincode.";
+                isValid = false;
+            }
+        }
+
+        // Validate Email
+        const emailInput = document.getElementById('email');
+        if (!emailInput.value.trim()) {
+            document.getElementById('emailError').textContent = "Email is required.";
+            isValid = false;
+        } else {
+            const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/; // Basic email validation
+            if (!emailRegex.test(emailInput.value.trim())) {
+                document.getElementById('emailError').textContent = "Please enter a valid email address.";
+                isValid = false;
+            }
+        }
+
+        // Validate Place
+        const placeInput = document.getElementById('place');
+        if (!placeInput.value.trim()) {
+            document.getElementById('placeError').textContent = "Place is required.";
+            isValid = false;
+        }
+
+        // Validate City
+        const cityInput = document.getElementById('city');
+        if (!cityInput.value.trim()) {
+            document.getElementById('cityError').textContent = "City is required.";
+            isValid = false;
+        }
+
+        // Validate District
+        const districtInput = document.getElementById('district');
+        if (!districtInput.value.trim()) {
+            document.getElementById('districtError').textContent = "District is required.";
+            isValid = false;
+        }
+
+        // If form is valid, submit the form
+        if (isValid) {
+            form.submit(); // Submit the form
+        }
+    });
+});
+</script>
     <!-- footer -->
     <div class="footer-area">
         <div class="container">

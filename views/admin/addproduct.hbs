@@ -116,59 +116,131 @@
         }
     </style>
 </head>
+  
 
 <body style="background-color: rgba(0, 12, 48, 0.91);">
     <div class="container">
         <h1>Add New Product</h1>
-        <form action="/admin/addproducts" method="post" enctype="multipart/form-data">
-            <input type="text" style="font-size:17px;border-width: 0px; color:red;font-weight:bold;width:100%;"
-                name="message" id="message" value="{{message}}">
+        <form action="/admin/addproducts" method="post" enctype="multipart/form-data" id="addProductForm">
+  <div id="global-messages" style="color: red; font-size: 17px; font-weight: bold;">{{message}}</div>
 
-            <div class="form-group">
-                <label for="name">Product Name</label>
-                <input type="text" id="name" name="name">
-            </div>
+  <div class="form-group">
+    <label for="name">Product Name</label>
+    <input type="text" id="name" name="name" />
+    <span id="name-error" class="error-message" style="color: red; font-size: 14px;"></span>
+  </div>
 
-            <div class="form-group">
-                <label for="category">Category</label>
-                <select style="height: 40px; border-radius: 7px;" class="form-select" id="category" name="category"
-                    required>
-                    <option value="" disabled selected>Select a category</option>
-                    {{#each categories}}
-                    <option value="{{this.category}}">{{this.category}}</option>
-                    {{/each}}
-                </select>
-            </div>
+  <div class="form-group">
+    <label for="category">Category</label>
+    <select id="category" name="category" style="height: 40px; border-radius: 7px;" class="form-select">
+      <option value="" disabled selected>Select a category</option>
+      {{#each categories}}
+      <option value="{{this.category}}">{{this.category}}</option>
+      {{/each}}
+    </select>
+    <span id="category-error" class="error-message" style="color: red; font-size: 14px;"></span>
+  </div>
 
-            <div class="form-group">
-                <label for="description">Description</label>
-                <input type="text" id="description" name="description">
-            </div>
+  <div class="form-group">
+    <label for="description">Description</label>
+    <input type="text" id="description" name="description" />
+    <span id="description-error" class="error-message" style="color: red; font-size: 14px;"></span>
+  </div>
 
-            <div class="form-group">
-                <label for="stock">Stock</label>
-                <input type="number" id="stock" name="stock">
-            </div>
+  <div class="form-group">
+    <label for="stock">Stock</label>
+    <input type="number" id="stock" name="stock" />
+    <span id="stock-error" class="error-message" style="color: red; font-size: 14px;"></span>
+  </div>
 
-            <div class="form-group">
-                <label for="price">Price</label>
-                <input type="number" id="price" name="price">
-            </div>
+  <div class="form-group">
+    <label for="price">Price</label>
+    <input type="number" id="price" name="price" />
+    <span id="price-error" class="error-message" style="color: red; font-size: 14px;"></span>
+  </div>
 
-            <div class="form-group">
-                <label for="images">Upload Images (minimum 3)</label>
-                <input type="file" id="images" name="images" accept="image/*" multiple>
-            </div>
+  <div class="form-group">
+    <label for="images">Upload Images (minimum 3)</label>
+    <input type="file" id="images" name="images" accept="image/*" multiple />
+    <span id="images-error" class="error-message" style="color: red; font-size: 14px;"></span>
+  </div>
 
-          <div style="display: flex;">
-              <div class="button-group">
-                <a href="/admin/products"><button style="background-color: rgb(255, 43, 43);" type="button">Back</button></a>
-            </div>
-              <div style="margin-left:73%;" class="button-group">
-                <button style="background-color: rgb(23, 184, 23);" type="submit">Add Product</button>
-            </div>
-          </div>
-        </form>
+  <div style="display: flex;">
+    <div class="button-group">
+      <a href="/admin/products"><button style="background-color: rgb(255, 43, 43);" type="button">Back</button></a>
+    </div>
+    <div style="margin-left: 73%;" class="button-group">
+      <button style="background-color: rgb(23, 184, 23);" type="submit">Add Product</button>
+    </div>
+  </div>
+</form>
+<script>document.getElementById("addProductForm").addEventListener("submit", function (event) {
+  let isValid = true;
+
+  // Clear existing error messages
+  document.querySelectorAll(".error-message").forEach((el) => (el.textContent = ""));
+
+  // Get field values
+  const name = document.getElementById("name").value.trim();
+  const category = document.getElementById("category").value;
+  const description = document.getElementById("description").value.trim();
+  const stock = document.getElementById("stock").value.trim();
+  const price = document.getElementById("price").value.trim();
+  const images = document.getElementById("images").files;
+
+  // Validate Product Name
+  if (!name) {
+    isValid = false;
+    document.getElementById("name-error").textContent = "Product name is required.";
+  }
+
+  // Validate Category
+  if (!category) {
+    isValid = false;
+    document.getElementById("category-error").textContent = "Please select a category.";
+  }
+
+  // Validate Description
+  if (!description) {
+    isValid = false;
+    document.getElementById("description-error").textContent = "Description is required.";
+  }
+
+  // Validate Stock
+  if (!stock || isNaN(stock) || stock <= 0) {
+    isValid = false;
+    document.getElementById("stock-error").textContent = "Stock must be a positive number.";
+  }
+
+  // Validate Price
+  if (!price || isNaN(price) || price <= 0) {
+    isValid = false;
+    document.getElementById("price-error").textContent = "Price must be a positive number.";
+  }
+
+  // Validate Images
+  if (images.length < 3) {
+    isValid = false;
+    document.getElementById("images-error").textContent = "Please upload at least 3 images.";
+  } else {
+    // Validate image types
+    const validImageTypes = ["image/jpeg", "image/png", "image/jpg", "image/gif"];
+    for (let i = 0; i < images.length; i++) {
+      if (!validImageTypes.includes(images[i].type)) {
+        isValid = false;
+        document.getElementById("images-error").textContent =
+          "Invalid file type. Please upload only images.";
+        break;
+      }
+    }
+  }
+
+  // Prevent form submission if validation fails
+  if (!isValid) {
+    event.preventDefault();
+  }
+});
+</script>
 
         <div class="image-previews"></div>
         <div class="instructions">
@@ -252,14 +324,13 @@
             });
         });
     </script>
-    <script>
+  <script>
          setTimeout(() => {
-            const messageField = document.getElementById('message');
+            const messageField = document.getElementById('global-messages');
             if (messageField) {
                 messageField.value = '';              }
         }, 2000); 
     </script>
-
 </body>
 
 </html>

@@ -124,65 +124,97 @@
                     {{/each}}
                 </tbody>
 
-                <!-- Modal to edit product -->
-                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Product Inventory</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form action="" method="post" id="editProductForm">
-                                    <!-- Hidden field for product ID -->
-                                    <input type="hidden" id="productId" name="id">
+       <!-- Modal to edit product -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Product Inventory</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="" method="post" id="editProductForm">
+                    <!-- Hidden field for product ID -->
+                    <input type="hidden" id="productId" name="id">
 
-                                    <!-- Product Name -->
-                                    <div class="form-group">
-                                        <label for="name"><b>Product Name</b></label><br>
-                                        <input style="width: 100%; height: 36px; border-radius: 4px; border-width: 1px;"
-                                            type="text" id="name" name="name" placeholder="Enter new name to product">
-                                    </div>
-
-                                    <!-- Stock Quantity -->
-                                    <div style="margin-top: 10px;" class="form-group">
-                                        <label for="stock"><b>Stock Quantity</b></label><br>
-                                        <input style="width: 100%; height: 36px; border-radius: 4px; border-width: 1px;"
-                                            type="number" id="stock" name="stock" placeholder="Update the stock quantity">
-                                    </div>
-
-                                    <button style="background-color: orange; margin-top: 10px; margin-left: 37%;"
-                                        type="submit" class="submit-btn">Update Product</button>
-                                </form>
-                            </div>
-                        </div>
+                    <!-- Product Name -->
+                    <div class="form-group">
+                        <label for="name"><b>Product Name</b></label><br>
+                        <input value="{{data-name}}" style="width: 100%; height: 36px; border-radius: 4px; border-width: 1px;" type="text" id="name" name="name" placeholder="Enter new name for product">
+                        <small id="name-error" class="error-message text-danger"></small>
                     </div>
-                </div>
 
+                    <!-- Stock Quantity -->
+                    <div style="margin-top: 10px;" class="form-group">
+                        <label for="stock"><b>Stock Quantity</b></label><br>
+                        <input style="width: 100%; height: 36px; border-radius: 4px; border-width: 1px;" type="number" id="stock" name="stock" placeholder="Update the stock quantity">
+                        <small id="stock-error" class="error-message text-danger"></small>
+                    </div>
 
-                <script>
-                    document.addEventListener("DOMContentLoaded", () => {
-                        const modal = document.getElementById("staticBackdrop");
+                    <button style="background-color: orange; margin-top: 10px; margin-left: 37%;" type="submit" class="submit-btn">Update Product</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-                        modal.addEventListener("show.bs.modal", function (event) {
-                            const button = event.relatedTarget; // Button that triggered the modal
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const modal = document.getElementById("staticBackdrop");
 
-                            // Get data attributes from the button
-                            const productId = button.getAttribute("data-id");
-                            const productName = button.getAttribute("data-name");
-                            const productStock = button.getAttribute("data-stock");
+        modal.addEventListener("show.bs.modal", function (event) {
+            const button = event.relatedTarget; // Button that triggered the modal
 
-                            // Populate modal form fields
-                            const form = modal.querySelector("#editProductForm");
-                            form.action = `/admin/editinventory/${productId}`; // Set the form action
-                            form.querySelector("#name").value = productName;
-                            form.querySelector("#stock").value = productStock;
-                        });
-                    });
+            // Get data attributes from the button
+            const productId = button.getAttribute("data-id");
+            const productName = button.getAttribute("data-name");
+            const productStock = button.getAttribute("data-stock");
 
-                </script>
+            // Populate modal form fields
+            const form = modal.querySelector("#editProductForm");
+            form.action = `/admin/editinventory/${productId}`; // Set the form action
+            form.querySelector("#name").value = productName;
+            form.querySelector("#stock").value = productStock;
+        });
 
+        // Form validation and submission
+        document.getElementById("editProductForm").addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent form submission initially
+
+            let isValid = true;
+
+            // Clear previous error messages
+            document.querySelectorAll(".error-message").forEach((element) => {
+                element.textContent = "";
+            });
+
+            // Validate Product Name
+            const nameInput = document.getElementById("name");
+            if (!nameInput.value.trim()) {
+                document.getElementById("name-error").textContent = "Product name is required.";
+                isValid = false;
+            }
+
+            // Validate Stock Quantity
+            const stockInput = document.getElementById("stock");
+            if (!stockInput.value.trim()) {
+                document.getElementById("stock-error").textContent = "Stock quantity is required.";
+                isValid = false;
+            } else if (isNaN(stockInput.value) || stockInput.value < 0) {
+                document.getElementById("stock-error").textContent = "Stock quantity must be a non-negative number.";
+                isValid = false;
+            }
+
+            // If validation fails, prevent form submission
+            if (!isValid) {
+                return; // Do not proceed with form submission
+            }
+
+            // Proceed with form submission if validation is successful
+            this.submit();
+        });
+    });
+</script>
 
             </table>
             <nav aria-label="Page navigation">
