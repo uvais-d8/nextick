@@ -75,6 +75,11 @@ console.log("coupon",coupon)
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+
+
+
 const placeOrder = async (req, res) => {
   const userId = req.session.userId;
   const {
@@ -95,6 +100,7 @@ const placeOrder = async (req, res) => {
 
   const errors = {};
 
+ 
   // Validation
   if (!firstname) errors.firstname = "First name is required.";
   if (!lastname) errors.lastname = "Last name is required.";
@@ -125,23 +131,19 @@ const placeOrder = async (req, res) => {
       throw new Error("No items in the cart.");
     }
 
-    const updatedCartItems = await Promise.all(
-      cartItems.map(async (item) => {
-        const product = item.productId;
-        if (!product) throw new Error(`Product not found.`);
-        if (product.stock < item.quantity) {
-          throw new Error(`Insufficient stock for ${product.name}.`);
-        }
-        product.stock -= item.quantity;
-        await product.save();
-        return {
-          ...item.toObject(),
-          price: product.price,
-          total: product.price * item.quantity,
-          status: "scheduled",
-        };
-      })
-    );
+    const updatedCartItems = cartItems.map((item) => {
+      const product = item.productId;
+      if (!product) throw new Error(`Product not found.`);
+      if (product.stock < item.quantity) {
+        throw new Error(`Insufficient stock for ${product.name}.`);
+      }
+      return {
+        ...item.toObject(),
+        price: product.price,
+        total: product.price * item.quantity,
+        status: "scheduled",
+      };
+    });
 
     const shippingAddress = {
       firstname,
@@ -155,7 +157,7 @@ const placeOrder = async (req, res) => {
       district,
     };
 
-     const orderTotal = updatedCartItems.reduce(
+    const orderTotal = updatedCartItems.reduce(
       (acc, item) => acc + item.total,
       0
     );
@@ -167,59 +169,36 @@ const placeOrder = async (req, res) => {
       });
     }
 
-     const existingAddress = await Address.findOne({
-      user: userId,
-      firstname,
-      lastname,
-      address,
-      phone,
-      email,
-      place,
-      city,
-      pincode,
-      district,
-    });
-
-    let newAddress = null;
-    if (!existingAddress) {
-       await Address.updateMany({ user: userId }, { isDefault: false });
-
-       newAddress = new Address({
-        user: userId,
-        firstname,
-        lastname,
-        address,
-        phone,
-        email,
-        place,
-        city,
-        pincode,
-        district,
-        isDefault: true,
-      });
-
-      await newAddress.save();
-      console.log("New address saved:", newAddress);
-    } else {
-      console.log("Address already exists:", existingAddress);
-    }
-
     const newOrder = new Orders({
       userId,
-      items: updatedCartItems,  
+      items: updatedCartItems,
       orderTotal,
       paymentMethod,
       shippingAddress,
-      status: "scheduled",
+      status: "payment-pending",  // Status remains "payment-pending" for now
     });
 
     console.log("New order details:", newOrder);
-    await newOrder.save();
+    const savedOrder = await newOrder.save();
     console.log("Order saved successfully.");
+
+    // Now, update the stock and clear cart after the order is successfully created
+    for (let item of updatedCartItems) {
+      const product = await Products.findById(item.productId);
+      if (product) {
+        product.stock -= item.quantity; // Decrease stock
+        await product.save();
+        console.log(`Product ${product.name} stock updated. New stock: ${product.stock}`);
+      } else {
+        console.log(`Product with ID ${item.productId} not found.`);
+      }
+    }
+
+    // Clear the cart items
     await Cart.deleteMany({ user: userId });
     console.log(`Cart items for user ${userId} have been deleted.`);
 
-    res.json({ success: true });
+    res.json({ success: true, orderId: savedOrder._id });
   } catch (error) {
     console.log("Error placing order:", error);
     res.status(500).json({
@@ -228,6 +207,7 @@ const placeOrder = async (req, res) => {
     });
   }
 };
+
 const razorpayy = async (req, res) => {
   const userId = req.session.userId;
   console.log("Razorpay processing");
@@ -406,7 +386,6 @@ const getProductStock = async (req, res) => {
   }
 };
 const updateQuantity = async (req, res) => {
-  console.log("ethyyy")
   const { id } = req.params;
   const { quantity } = req.body;
 
@@ -420,10 +399,8 @@ const updateQuantity = async (req, res) => {
           return res.status(404).json({ message: "Cart item not found" });
       }
       let price=0
-      console.log("cartItem.productId.priceWithDiscount",cartItem.productId.priceWithDiscount)
-
+  
 if(cartItem.priceWithDiscount>0){
-  console.log("ullilll")
        price = cartItem.priceWithDiscount  
        
 }else{
@@ -445,6 +422,7 @@ console.log("total",total)
       res.status(500).json({ success: false, message: "Error updating quantity." });
   }
 };
+
 const loadcartpage = async (req, res) => {
   try {
     const userId = req.session.userId;

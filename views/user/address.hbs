@@ -572,20 +572,20 @@
                                 }
 
                                 const pincodeInput = document.getElementById('pincode');
-                                const pincodeRegex = /^[1-9][0-9]{5}$/; 
+                                const pincodeRegex = /^[1-9][0-9]{5}$/;
                                 if (!pincodeInput.value.trim() || !pincodeRegex.test(pincodeInput.value.trim())) {
                                     document.getElementById('pincode-error').textContent = "Please enter a valid 6-digit pincode.";
                                     isValid = false;
                                 }
 
-                                 const districtInput = document.getElementById('district');
+                                const districtInput = document.getElementById('district');
                                 if (!districtInput.value.trim()) {
                                     document.getElementById('district-error').textContent = "District is required.";
                                     isValid = false;
                                 }
 
-                                 if (isValid) {
-                                    form.submit(); 
+                                if (isValid) {
+                                    form.submit();
                                 }
                             });
                         });
@@ -598,7 +598,8 @@
                             class="btn btn-danger removecart" data-id="{{this._id}}"
                             id="delete-button-{{this._id}}"><b>Delete</b></button>
                     </form>
-
+                    <p style="font-weight:bold;margin-left:30px;margin-bottom:-20px; font-size: 12px;">click to set this
+                        adderss as default address</p>
                     <!-- SweetAlert Confirmation Script -->
                     <script>
                         document.getElementById('delete-button-{{this._id}}').addEventListener('click', function (event) {
@@ -694,23 +695,23 @@
             const form = document.getElementById("addressForm");
 
             form.addEventListener("submit", function (event) {
-                event.preventDefault();  
+                event.preventDefault();
                 let isValid = true;
- 
+
                 document.querySelectorAll('.error').forEach(function (element) {
                     element.textContent = '';
                 });
- 
+
                 const firstnameInput = document.getElementById('firstname');
                 if (!firstnameInput.value.trim()) {
                     document.getElementById('firstnameError').textContent = "First name is required.";
                     isValid = false;
-                } 
+                }
                 const lastnameInput = document.getElementById('lastname');
                 if (!lastnameInput.value.trim()) {
                     document.getElementById('lastnameError').textContent = "Last name is required.";
                     isValid = false;
-                } 
+                }
                 const addressInput = document.getElementById('address');
                 if (!addressInput.value.trim()) {
                     document.getElementById('addressError').textContent = "Address is required.";
@@ -721,7 +722,7 @@
                     document.getElementById('phoneError').textContent = "Phone number is required.";
                     isValid = false;
                 } else {
-                    const phoneRegex = /^[0-9]{10}$/; 
+                    const phoneRegex = /^[0-9]{10}$/;
                     if (!phoneRegex.test(phoneInput.value.trim())) {
                         document.getElementById('phoneError').textContent = "Please enter a valid 10-digit phone number.";
                         isValid = false;
@@ -733,45 +734,45 @@
                     document.getElementById('pincodeError').textContent = "Pincode is required.";
                     isValid = false;
                 } else {
-                    const pincodeRegex = /^[1-9][0-9]{5}$/;  
+                    const pincodeRegex = /^[1-9][0-9]{5}$/;
                     if (!pincodeRegex.test(pincodeInput.value.trim())) {
                         document.getElementById('pincodeError').textContent = "Please enter a valid 6-digit pincode.";
                         isValid = false;
                     }
                 }
 
-                 const emailInput = document.getElementById('email');
+                const emailInput = document.getElementById('email');
                 if (!emailInput.value.trim()) {
                     document.getElementById('emailError').textContent = "Email is required.";
                     isValid = false;
                 } else {
-                    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;  
+                    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
                     if (!emailRegex.test(emailInput.value.trim())) {
                         document.getElementById('emailError').textContent = "Please enter a valid email address.";
                         isValid = false;
                     }
                 }
 
-                 const placeInput = document.getElementById('place');
+                const placeInput = document.getElementById('place');
                 if (!placeInput.value.trim()) {
                     document.getElementById('placeError').textContent = "Place is required.";
                     isValid = false;
                 }
 
-                 const cityInput = document.getElementById('city');
+                const cityInput = document.getElementById('city');
                 if (!cityInput.value.trim()) {
                     document.getElementById('cityError').textContent = "City is required.";
                     isValid = false;
                 }
 
-                 const districtInput = document.getElementById('district');
+                const districtInput = document.getElementById('district');
                 if (!districtInput.value.trim()) {
                     document.getElementById('districtError').textContent = "District is required.";
                     isValid = false;
                 }
 
-                 if (isValid) {
-                    form.submit();  
+                if (isValid) {
+                    form.submit();
                 }
             });
         });

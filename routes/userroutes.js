@@ -80,7 +80,7 @@ router.patch("/orders/:orderId", userAuth.checksession,orderController.removeord
 router.patch("/orders/:orderId/items/:itemId", userAuth.checksession,orderController.removeItem); 
 router.post('/update-payment-status',userAuth.checksession,orderController.failedpayment)
 router.get("/download-invoice/:orderId", userAuth.checksession,orderController.generateInvoicePDF);
-
+router.post("/createWalletOrder",userAuth.checksession,orderController.walletpayment)
 router.post('/return-order/:id',userAuth.checksession,orderController.returnOrder)
 
 

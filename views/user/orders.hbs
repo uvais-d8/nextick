@@ -577,7 +577,7 @@
 					<div class="order-actions">
 						<div>
 							<form method="get" action="/viewDetails/{{../_id}}/{{this._id}}">
-								<button type="submit">More Details</button>
+								<button style="background-color: rgb(105, 98, 98);" type="submit">More Details</button>
 							</form>
 						</div>
 						{{#if (eq this.status "delivered")}}
@@ -591,7 +591,7 @@
 										Return
 									</button></div>
 							</div>
-							<h5 style="margin-top: 20px;">Leave a Review:</h5>
+							{{!-- <h5 style="margin-top: 20px;">Leave a Review:</h5>
 							<button id="add-review-btn"
 								style="margin: 10px; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Add
 								Review</button>
@@ -629,7 +629,7 @@
 										reviewForm.style.display = 'none';
 									}
 								});
-							</script>
+							</script> --}}
 
 
 							<!-- Return Confirmation Modal -->
@@ -722,6 +722,7 @@
 						<button class=" btn btn-warning" type="submit">View Order</button>
 					</form>
 				</div>
+				
 				<div>
 					{{#if (eq this.status 'payment-pending')}}
 					<button style="margin-right:5px;width:108px;font-size:13px;height: 33px;"
@@ -729,12 +730,13 @@
 						Retry Payment
 					</button>
 					{{/if}}
-				</div>
+				</div>{{#if (neq this.status "payment-pending")}}
 				<div style="width:50%;">
 					<form> <button class="btn btn-success" style="width: 134px;"
 							onclick="downloadInvoice('{{_id}}')">Download Invoice</button>
 
 					</form>
+					{{/if}}
 				</div>
 			</div>
 		</div>
