@@ -328,13 +328,13 @@
             })
                 .then((response) => response.json())
                 .then((data) => {
-                    if (data.success) {
-						console.log(data.total)
+                    if (data.success) { 
                        
                         const row = quantityInput.closest('tr');
                         const price = parseFloat(row.querySelector('.product-price').innerText);
                         const totalCell = row.querySelector('.product-total');
                         totalCell.innerText = data.total
+						document.getElementById('cellsubtotal').innerText = data.subtotal
 
                      
                         updateCartTotals();
@@ -449,7 +449,7 @@ function checkCartLimit(input) {
 							<tbody>
 								<tr class="total-data">
 									<td><strong>Subtotal: </strong></td>
-									<td>{{toInteger subtotal}}</td>
+									<td id="cellsubtotal">{{toInteger subtotal}}</td>
 								</tr>
 								<tr class="total-data">
 									<td><strong>Shipping: </strong></td>

@@ -386,8 +386,10 @@ const getProductStock = async (req, res) => {
   }
 };
 const updateQuantity = async (req, res) => {
+  const userId=req.session.userId
   const { id } = req.params;
   const { quantity } = req.body;
+  const carts = await Cart.find({ user: userId }).populate("productId");
 
   if (quantity < 1 || quantity > 11) {
       return res.status(400).json({ message: "Invalid quantity" });
@@ -406,16 +408,24 @@ if(cartItem.priceWithDiscount>0){
 }else{
      price=cartItem.productId.price
     
-}
-console.log("price:",price)
-      const total = price * quantity;
-console.log("total",total)
+} 
+let subtotal=0
+carts.forEach(item => {
+  if (item.priceWithDiscount) {
+    subtotal += item.priceWithDiscount * item.quantity;
+  } else {
+    subtotal += item.productId.price * item.quantity;
+  }
+});
+console.log("subtotal",subtotal)
+      const total = price * quantity; 
       await Cart.updateOne({ _id: id }, { $set: { quantity } });
 
       res.json({ 
           success: true, 
           quantity, 
-          total: total.toFixed(2) 
+          total: total.toFixed(2),
+          subtotal:subtotal.toFixed(2) 
       });
   } catch (error) {
       console.error("Error updating cart quantity:", error);
