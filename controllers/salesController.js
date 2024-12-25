@@ -14,14 +14,12 @@ const applycoupon = async (req, res) => {
   const { couponCode, cartTotal } = req.body;
 console.log("req.body",req.body)
   try {
-    // Check if coupon code is provided
-    if (!couponCode) {
+     if (!couponCode) {
       console.log("Coupon code is required");
       return res.status(400).json({ message: "Coupon code is required" });
     }
 
-    // Find the coupon in the database
-    const coupon = await Coupons.findOne({ couponCode: couponCode });
+     const coupon = await Coupons.findOne({ couponCode: couponCode });
 console.log("coupon",coupon)
     if (!coupon) {
       console.log("Coupon code is invalid");
@@ -35,16 +33,14 @@ console.log("coupon",coupon)
       return res.status(400).json({ message: "Coupon code has expired" });
     }
 
-    // Check usage limit
-    if (coupon.UsageLimit <= 0) {
+     if (coupon.UsageLimit <= 0) {
       console.log("Coupon code usage limit has been reached");
       return res
         .status(400)
         .json({ message: "Coupon code usage limit has been reached" });
     }
 
-    // Check minimum cart value
-    if (coupon.MinimumCartValue && cartTotal < coupon.MinimumCartValue) {
+     if (coupon.MinimumCartValue && cartTotal < coupon.MinimumCartValue) {
       console.log(
         `Minimum cart value for this coupon is ₹${coupon.MinimumCartValue}`
       );
@@ -53,8 +49,7 @@ console.log("coupon",coupon)
       });
     }
 
-    // Calculate the discount
-    let discount = 0;
+     let discount = 0;
     if (coupon.DiscountType === "percentage") {
       discount = cartTotal * coupon.DiscountValue / 100;
     } else if (coupon.DiscountType === "fixed") {
@@ -63,11 +58,9 @@ console.log("coupon",coupon)
 
     discount = Math.min(discount, cartTotal);
 
-    // Calculate the new total
-    const newTotal = cartTotal - discount;
+     const newTotal = cartTotal - discount;
 
-    // Decrement usage limit and save the coupon
-    if (coupon.UsageLimit > 0) {
+     if (coupon.UsageLimit > 0) {
       coupon.UsageLimit -= 1;
       await coupon.save();
     }
@@ -162,8 +155,7 @@ const placeOrder = async (req, res) => {
       district,
     };
 
-    // Calculate total and save the order
-    const orderTotal = updatedCartItems.reduce(
+     const orderTotal = updatedCartItems.reduce(
       (acc, item) => acc + item.total,
       0
     );
@@ -175,8 +167,7 @@ const placeOrder = async (req, res) => {
       });
     }
 
-    // Check if the address already exists
-    const existingAddress = await Address.findOne({
+     const existingAddress = await Address.findOne({
       user: userId,
       firstname,
       lastname,
@@ -191,11 +182,9 @@ const placeOrder = async (req, res) => {
 
     let newAddress = null;
     if (!existingAddress) {
-      // Update other addresses for the user to set `isDefault` to false
-      await Address.updateMany({ user: userId }, { isDefault: false });
+       await Address.updateMany({ user: userId }, { isDefault: false });
 
-      // Create a new address document and set it as the default
-      newAddress = new Address({
+       newAddress = new Address({
         user: userId,
         firstname,
         lastname,
@@ -217,11 +206,11 @@ const placeOrder = async (req, res) => {
 
     const newOrder = new Orders({
       userId,
-      items: updatedCartItems, // Items now include the status field
+      items: updatedCartItems,  
       orderTotal,
       paymentMethod,
       shippingAddress,
-      status: "scheduled", // Set the overall order status to 'scheduled'
+      status: "scheduled",
     });
 
     console.log("New order details:", newOrder);
@@ -239,9 +228,6 @@ const placeOrder = async (req, res) => {
     });
   }
 };
-
-
- 
 const razorpayy = async (req, res) => {
   const userId = req.session.userId;
   console.log("Razorpay processing");
@@ -268,33 +254,28 @@ const razorpayy = async (req, res) => {
 
     console.log("req.body", req.body);
 
-    // Fetch user's cart items
-    const cartItems = await Cart.find({ user: userId }).populate("productId");
+     const cartItems = await Cart.find({ user: userId }).populate("productId");
 
     if (cartItems.length === 0) {
       throw new Error("No items in the cart.");
     }
 
-    // Razorpay amount is in paisa
-    const amount = orderTotal * 100;
+     const amount = orderTotal * 100;
 
-    // Create Razorpay order
-    const order = await razorpay.orders.create({
+     const order = await razorpay.orders.create({
       amount,
       currency: "INR",
       receipt: `order_${Date.now()}`,
     });
 
-    // Process cart items and stock checks
-    const updatedCartItems = await Promise.all(
+     const updatedCartItems = await Promise.all(
       cartItems.map(async (item) => {
         const product = item.productId;
         if (!product) throw new Error(`Product not found.`);
         if (product.stock < item.quantity) {
           throw new Error(`Insufficient stock for ${product.name}.`);
         }
-        // Deduct stock from the product
-        product.stock -= item.quantity;
+         product.stock -= item.quantity;
         await product.save();
         return {
           ...item.toObject(),
@@ -332,11 +313,9 @@ const razorpayy = async (req, res) => {
     });
 
     if (!existingAddress) {
-      // Update other addresses to set `isDefault` to false
-      await Address.updateMany({ user: userId }, { isDefault: false });
+       await Address.updateMany({ user: userId }, { isDefault: false });
 
-      // Create a new address document and set it as default
-      const newAddress = new Address({
+       const newAddress = new Address({
         user: userId,
         firstname,
         lastname,
@@ -410,8 +389,6 @@ const razorpayy = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
- 
-
 const getProductStock = async (req, res) => {
   const { cartId } = req.params;
   try {
@@ -450,8 +427,7 @@ if(cartItem.priceWithDiscount>0){
        price = cartItem.priceWithDiscount  
        
 }else{
-  // || cartItem.productId.price;
-    price=cartItem.productId.price
+     price=cartItem.productId.price
     
 }
 console.log("price:",price)
@@ -469,7 +445,6 @@ console.log("total",total)
       res.status(500).json({ success: false, message: "Error updating quantity." });
   }
 };
-
 const loadcartpage = async (req, res) => {
   try {
     const userId = req.session.userId;
@@ -716,20 +691,19 @@ const retryRazorpay = async (req, res) => {
 const retrypaymentSuccess = async (req, res) => {
   console.log("Controller success");
 
-  const orderId = req.params.id; // This is the order ID
+  const orderId = req.params.id; 
   console.log("Order ID received:", orderId);
 
   try {
-    // Update the entire order's status to "scheduled" and each item's status to "scheduled"
-    const updatedOrder = await Orders.findOneAndUpdate(
-      { _id: orderId }, // Match the order by ID
+     const updatedOrder = await Orders.findOneAndUpdate(
+      { _id: orderId },  
       {
         $set: {
-          status: "scheduled", // Update order status
-          "items.$[].status": "scheduled", // Update all items' status
+          status: "scheduled",
+          "items.$[].status": "scheduled",  
         },
       },
-      { new: true } // Return the updated document
+      { new: true }  
     );
 
     if (!updatedOrder) {
@@ -747,7 +721,6 @@ const retrypaymentSuccess = async (req, res) => {
     });
   }
 };
-
 const removecoupon = async (req, res) => {
   try {
 

@@ -544,8 +544,6 @@
 			</div>
 		</div>
 
-		<!-- end more products -->
-
 
 		<span id="error" hidden>
 			{{message}}
@@ -554,8 +552,6 @@
 			document.addEventListener("DOMContentLoaded", function () {
 				const errorElement = document.getElementById("error");
 				const message = errorElement ? errorElement.innerText : "";
-
-				// Check if message is not empty
 				if (message.trim()) {
 					Swal.fire({
 						icon: 'error',
@@ -700,29 +696,6 @@
 	<!-- main js -->
 	<script src="/assets/js/main.js"></script>
 	<script>
-		fetch('/your-api-endpoint', {
-			method: 'POST',
-			body: JSON.stringify({ /* your data here */ }),
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		})
-			.then(response => response.json())
-			.then(data => {
-				if (data.error) {
-					swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: data.message
-					});
-				} else {
-					// Proceed with the rest of your logic if no error
-				}
-			})
-			.catch(error => console.error('Error:', error));
-
-	</script>
-	<script>
 		function checkCartLimit(input) {
 			const quantity = parseInt(input.value);
 
@@ -733,11 +706,11 @@
 					icon: 'warning',
 					confirmButtonText: 'OK'
 				}).then(() => {
-					// Redirect to orders page after clicking "OK"
+				
 					window.location.href = '/product/:id';
 				});
 			} else {
-				// Only submit the form if the quantity is within the valid range
+				
 				{ { !--input.form.submit(); --} }
 				console.log("error")
 			}

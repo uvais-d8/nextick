@@ -176,11 +176,9 @@
 </form>
 <script>document.getElementById("addProductForm").addEventListener("submit", function (event) {
   let isValid = true;
-
-  // Clear existing error messages
+ 
   document.querySelectorAll(".error-message").forEach((el) => (el.textContent = ""));
-
-  // Get field values
+ 
   const name = document.getElementById("name").value.trim();
   const category = document.getElementById("category").value;
   const description = document.getElementById("description").value.trim();
@@ -188,43 +186,36 @@
   const price = document.getElementById("price").value.trim();
   const images = document.getElementById("images").files;
 
-  // Validate Product Name
-  if (!name) {
+   if (!name) {
     isValid = false;
     document.getElementById("name-error").textContent = "Product name is required.";
   }
 
-  // Validate Category
-  if (!category) {
+   if (!category) {
     isValid = false;
     document.getElementById("category-error").textContent = "Please select a category.";
   }
 
-  // Validate Description
-  if (!description) {
+   if (!description) {
     isValid = false;
     document.getElementById("description-error").textContent = "Description is required.";
   }
 
-  // Validate Stock
-  if (!stock || isNaN(stock) || stock <= 0) {
+   if (!stock || isNaN(stock) || stock <= 0) {
     isValid = false;
     document.getElementById("stock-error").textContent = "Stock must be a positive number.";
   }
 
-  // Validate Price
-  if (!price || isNaN(price) || price <= 0) {
+   if (!price || isNaN(price) || price <= 0) {
     isValid = false;
     document.getElementById("price-error").textContent = "Price must be a positive number.";
   }
 
-  // Validate Images
-  if (images.length < 3) {
+   if (images.length < 3) {
     isValid = false;
     document.getElementById("images-error").textContent = "Please upload at least 3 images.";
   } else {
-    // Validate image types
-    const validImageTypes = ["image/jpeg", "image/png", "image/jpg", "image/gif"];
+     const validImageTypes = ["image/jpeg", "image/png", "image/jpg", "image/gif"];
     for (let i = 0; i < images.length; i++) {
       if (!validImageTypes.includes(images[i].type)) {
         isValid = false;
@@ -235,8 +226,7 @@
     }
   }
 
-  // Prevent form submission if validation fails
-  if (!isValid) {
+   if (!isValid) {
     event.preventDefault();
   }
 });

@@ -54,11 +54,11 @@ const changepassword = async (req, res) => {
 
   
   const orders = await Orders.find({ userId: user })
-    .sort({ createdAt: -1 }) // Sort by creation date in descending order
-    .limit(2) // Limit to the latest 5 orders
+    .sort({ createdAt: -1 })
+    .limit(2)
     .populate({
       path: "items.productId",
-      select: "name price images" // Select specific fields from the populated data
+      select: "name price images"
     });
   const address = await Address.findOne({ isDefault: true, user: userId });
 
@@ -149,7 +149,6 @@ const changepassword = async (req, res) => {
     user.password = hashedPassword;
     await user.save();
 
-    // Set success message in session
     req.session.successMessage = "Password updated successfully.";
     res.render("profile", {
       user,
@@ -175,12 +174,10 @@ const resendotpemail = async (req, res) => {
       });
     }
 
-    // Generate new OTP and save it in session
     const newotp = generateOtp();
     req.session.userOTP = newotp;
     console.log("New OTP generated and stored in session:", newotp);
 
-    // Send the email
     const emailSent = await sendVerificationEmail(email, newotp);
     if (emailSent) {
       console.log("OTP resent successfully");
@@ -253,11 +250,11 @@ const loadprofile = async (req, res) => {
 
     const createdAt = user.registered.toLocaleDateString("en-GB");
     const orders = await Orders.find({ userId: user })
-      .sort({ createdAt: -1 }) // Sort by creation date in descending order
-      .limit(2) // Limit to the latest 5 orders
+      .sort({ createdAt: -1 })
+      .limit(2) 
       .populate({
         path: "items.productId",
-        select: "name price images" // Select specific fields from the populated data
+        select: "name price images" 
       });
     const address = await Address.findOne({ isDefault: true, user: userId });
 
@@ -455,11 +452,9 @@ const setnewpassword = async (req, res) => {
       return res.redirect("/newpassword");
     }
 
-    // Generate salt and hash the password
     const salt = await bcrypt.genSalt(saltround);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    // Update user password
     user.password = hashedPassword;
     await user.save();
 
@@ -496,8 +491,7 @@ const addaddress = async (req, res) => {
     return res.redirect("/login");
   }
 
-  const addresses = await Address.find({ user: userId }); // Find addresses for the user
-
+  const addresses = await Address.find({ user: userId }); 
   try {
     const {
       firstname,
@@ -547,7 +541,6 @@ const addaddress = async (req, res) => {
       });
     }
 
-    // Pincode validation (check if it is numeric and 6 digits)
     const pincodeRegex = /^[0-9]{6}$/;
     if (!pincodeRegex.test(pincode)) {
       req.session.message = "Invalid pincode. It must be 6 digits.";
@@ -557,7 +550,6 @@ const addaddress = async (req, res) => {
       });
     }
 
-    // Check if an address with the same email already exists for this user
     const existingAddress = await Address.findOne({ user: userId, email });
     if (existingAddress) {
       req.session.message =
@@ -568,7 +560,6 @@ const addaddress = async (req, res) => {
       });
     }
 
-    // Create a new address document
     const newAddress = new Address({
       user: userId,
       firstname,
@@ -582,20 +573,15 @@ const addaddress = async (req, res) => {
       district
     });
 
-    // If the user has no existing address, mark this as the default address
     const userAddresses = await Address.find({ user: userId });
     if (userAddresses.length === 0) {
-      newAddress.isDefault = true; // Mark the first address as the default
-    }
+      newAddress.isDefault = true; 
+        }
 
-    // Save the address document to the database
     await newAddress.save();
     console.log("New address saved:", newAddress);
-
-    // Set a success message and redirect
-    req.session.message = "Address added successfully!";
-    req.session.useraddress = newAddress; // You may want to update this based on your needs
-
+ req.session.message = "Address added successfully!";
+    req.session.useraddress = newAddress; 
     res.redirect("/address");
   } catch (error) {
     console.error("Adding address error:", error);
@@ -620,7 +606,6 @@ const loadWallet = async (req, res) => {
     console.log("Balance:", wallet.balance);
     console.log("Transactions:", wallet.transactions);
 
-    // Round the balance to 2 decimal places
     const roundedBalance = Math.round(wallet.balance * 100) / 100;
 
     const sortedTransactions = wallet.transactions.sort(
@@ -628,7 +613,7 @@ const loadWallet = async (req, res) => {
     );
 
     res.render("wallet", {
-      balance: roundedBalance,  // Use the rounded balance here
+      balance: roundedBalance, 
       transactions: sortedTransactions
     });
   } catch (error) {
@@ -636,7 +621,6 @@ const loadWallet = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
-
 
 module.exports = {
   updateDefaultAddress,

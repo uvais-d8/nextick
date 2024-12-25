@@ -602,21 +602,18 @@
                                     status: `order.Status`,  
                                 };
 
-                                // Helper function to format dates
                                 function formatDate(date) {
                                     const options = { year: 'numeric', month: 'long', day: 'numeric' };
                                     return new Date(date).toLocaleDateString(undefined, options);
                                 }
 
-                                // Calculate expected shipping and delivery dates
                                 const createdAt = new Date(order.createdAt);
                                 const shippingExpected = new Date(createdAt);
                                 const deliveryExpected = new Date(createdAt);
 
-                                shippingExpected.setDate(createdAt.getDate() + 3); // Add 3 days for shipping
-                                deliveryExpected.setDate(createdAt.getDate() + 7); // Add 7 days for delivery
+                                shippingExpected.setDate(createdAt.getDate() + 3);
+                                deliveryExpected.setDate(createdAt.getDate() + 7);
 
-                                // Populate the HTML elements with the calculated dates
                                 document.getElementById('order-created').textContent = formatDate(createdAt);
                                 document.getElementById('shipping-expected').textContent = formatDate(shippingExpected);
                                 document.getElementById('delivery-expected').textContent = formatDate(deliveryExpected);

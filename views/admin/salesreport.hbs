@@ -12,15 +12,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <link rel="stylesheet" href="/admin/products.css"> 
+    <link rel="stylesheet" href="/admin/products.css">
 
     <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
     <style>
-
-
-
         .filters {
             width: 98%;
             display: flex;
@@ -72,8 +69,6 @@
         p {
             color: white;
         }
-
-        
     </style>
 </head>
 
@@ -136,50 +131,47 @@
             <div class="controls">
                 <div class="filters">
                     <form method="GET" action="/admin/salesreport">
-                       <label for="startDate">Start Date:</label>
-<input type="date" id="startDate" name="startDate" value="{{startDate}}" />
-<label for="endDate">End Date:</label>
-<input type="date" id="endDate" name="endDate" value="{{endDate}}" />
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" id="startDate" name="startDate" value="{{startDate}}" />
+                        <label for="endDate">End Date:</label>
+                        <input type="date" id="endDate" name="endDate" value="{{endDate}}" />
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const startDateInput = document.getElementById("startDate");
-    const endDateInput = document.getElementById("endDate");
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                const startDateInput = document.getElementById("startDate");
+                                const endDateInput = document.getElementById("endDate");
 
-    // Set max date to today's date
-    const today = new Date().toISOString().split("T")[0];
-    startDateInput.max = today;
-    endDateInput.max = today;
+                                const today = new Date().toISOString().split("T")[0];
+                                startDateInput.max = today;
+                                endDateInput.max = today;
 
-    // Validate start date and end date
-    function validateDates() {
-      const startDate = new Date(startDateInput.value);
-      const endDate = new Date(endDateInput.value);
+                                 function validateDates() {
+                                    const startDate = new Date(startDateInput.value);
+                                    const endDate = new Date(endDateInput.value);
 
-      if (startDateInput.value && endDateInput.value && startDate > endDate) {
- Swal.fire({
-          icon: "error",
-          title: "Invalid Date Range",
-          text: "Start Date cannot be greater than End Date.",
-          confirmButtonColor: "#d33",
-        }).then(() => {
-          startDateInput.value = ""; // Clear the invalid start date
-        });        startDateInput.value = "";
-      }
-    }
+                                    if (startDateInput.value && endDateInput.value && startDate > endDate) {
+                                        Swal.fire({
+                                            icon: "error",
+                                            title: "Invalid Date Range",
+                                            text: "Start Date cannot be greater than End Date.",
+                                            confirmButtonColor: "#d33",
+                                        }).then(() => {
+                                            startDateInput.value = ""; 
+                                        }); startDateInput.value = "";
+                                    }
+                                }
 
-    // Add event listeners for validation
-    startDateInput.addEventListener("change", validateDates);
-    endDateInput.addEventListener("change", validateDates);
-  });
-</script>
+                                 startDateInput.addEventListener("change", validateDates);
+                                endDateInput.addEventListener("change", validateDates);
+                            });
+                        </script>
 
-                       <select name="filter">
-  <option value="daily" {{#if (eq filter "daily")}}selected{{/if}}>Daily</option>
-  <option value="monthly" {{#if (eq filter "monthly")}}selected{{/if}}>Monthly</option>
-  <option value="yearly" {{#if (eq filter "yearly")}}selected{{/if}}>Yearly</option>
-  <option value="weekly" {{#if (eq filter "weekly")}}selected{{/if}}>Weekly</option>
-</select>
+                        <select name="filter">
+                            <option value="daily" {{#if (eq filter "daily" )}}selected{{/if}}>Daily</option>
+                            <option value="monthly" {{#if (eq filter "monthly" )}}selected{{/if}}>Monthly</option>
+                            <option value="yearly" {{#if (eq filter "yearly" )}}selected{{/if}}>Yearly</option>
+                            <option value="weekly" {{#if (eq filter "weekly" )}}selected{{/if}}>Weekly</option>
+                        </select>
 
                         <button type="submit">Filter</button>
                     </form>
@@ -219,7 +211,7 @@
                         <h3 style="color: white;">Overall discount amount</h3>
                         <p style="font-size: 29px;color:rgb(255, 91, 91)">₹ {{toInteger totalDiscount}}</p>
                     </div>
-                     
+
                 </section>
                 <table border="1" class="sales-report-table">
                     <tr>
@@ -227,9 +219,9 @@
                             style="border-width: 0px; color:red;width:100%;background-color:rgb(9, 14, 25)"
                             name="message" id="message" value="{{message}}">
                     </tr>
-                    <script> 
+                    <script>
                         setTimeout(function () {
-                            document.getElementById('message').value = ''; 
+                            document.getElementById('message').value = '';
                         }, 2000); 
                     </script>
                     <thead>

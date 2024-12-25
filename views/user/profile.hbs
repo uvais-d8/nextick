@@ -532,12 +532,11 @@
                                 style="border-width: 0px;color:rgb(0, 255, 21)">{{success}}</p>
 
                             <script>
-                                // Remove the messages after 3 seconds
+                            
                                 setTimeout(() => {
-                                    // Hide or remove the inputs
                                     document.getElementById('message').remove();
                                     document.getElementById('success').remove();
-                                }, 3000); // 3000 milliseconds = 3 seconds
+                                }, 3000); 
                             </script>
                             <form id="changePasswordForm" method="post" action="/changepassword">
                                 <div class="d-flex">
@@ -653,7 +652,7 @@
                                     valid phone number (10 digits).</small>
                             </div>
                         </form>
-                    </div>
+                    </div>      
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-warning" id="saveNameButton">Save
@@ -663,48 +662,69 @@
             </div>
         </div>
         </section>
-        <script>document.getElementById("saveNameButton").addEventListener("click", async () => {
-                const newName = document.getElementById("newName").value;
-                const newPhone = document.getElementById("newPhone").value;
-                const userId = document.getElementById('userId').textContent;
+       <script>
+    document.getElementById("saveNameButton").addEventListener("click", async () => {
+        const newName = document.getElementById("newName").value.trim();
+        const newPhone = document.getElementById("newPhone").value.trim();
+        const userId = document.getElementById("userId").textContent;
+        const phoneError = document.getElementById("phoneError");
+        const nameError = document.getElementById("nameError");
 
-                // Validate phone number
-                const phoneRegex = /^[0-9]{10}$/;
-                if (newPhone && !phoneRegex.test(newPhone)) {
-                    document.getElementById("phoneError").style.display = "block";
-                    return;
-                } else {
-                    document.getElementById("phoneError").style.display = "none";
-                }
+        let isValid = true;
 
-                if (!newName) {
-                    alert("Please enter a new username.");
-                    return;
-                }
+        if (!newName) {
+            if (!nameError) {
+                const error = document.createElement("small");
+                error.id = "nameError";
+                error.style.color = "red";
+                error.textContent = "Username is required.";
+                document.getElementById("newName").after(error);
+            }
+            isValid = false;
+        } else {
+            const existingError = document.getElementById("nameError");
+            if (existingError) existingError.remove();
+        }
 
-                try {
-                    const response = await fetch("/updateUsername", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ userId, newName, newPhone })
-                    });
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!newPhone) {
+            phoneError.style.display = "block";
+            phoneError.textContent = "Phone number is required.";
+            isValid = false;
+        } else if (!phoneRegex.test(newPhone)) {
+            phoneError.style.display = "block";
+            phoneError.textContent = "Please enter a valid 10-digit phone number.";
+            isValid = false;
+        } else {
+            phoneError.style.display = "none";
+        }
 
-                    const result = await response.json();
-                    console.log("Backend Response:", result);
+        if (!isValid) return;
 
-                    if (result.error) {
-                        alert(result.error);
-                    } else {
-                        console.log("Update successful, redirecting...");
-                        window.location.href = '/profile'; // Replace with your profile page URL
-                    }
-                } catch (error) {
-                    console.log("Error:", error);
-                }
+        try {
+            const response = await fetch("/updateUsername", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ userId, newName, newPhone })
             });
-        </script>
+
+            const result = await response.json();
+            console.log("Backend Response:", result);
+
+            if (result.error) {
+                alert(result.error);
+            } else {
+                console.log("Update successful, redirecting...");
+                window.location.href = "/profile"; 
+            }
+        } catch (error) {
+            console.log("Error:", error);
+        }
+    });
+</script>
+
 
 </html>
 <!-- footer -->
@@ -724,7 +744,7 @@
                     <h2 class="widget-title">Get in Touch</h2>
                     <ul>
                         <li>34/8, malappuram, kerala, india.</li>
-                        <li>support@watchpremium.com</li>
+                        <li>support@nextick.store</li>
                         <li>+75 94 0606 96</li>
                     </ul>
                 </div>

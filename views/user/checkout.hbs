@@ -107,13 +107,6 @@
 
 <body>
 
-	<!--PreLoader-->
-	{{!-- <div class="loader">
-		<div class="loader-inner">
-			<div class="circle"></div>
-		</div>
-	</div> --}}
-	<!--PreLoader Ends-->
 
 	<!-- header -->
 	<div class="top-header-area" id="sticker">
@@ -445,6 +438,9 @@
 										data-parent="#accordionExample">
 										<div class="card-body">
 											<div>
+												<input type="radio" id="wallet" name="paymentMethod" value="wallet">
+												<label for="wallet">wallet</label><br>
+												<hr>
 												<input type="radio" id="razorpay" name="paymentMethod" value="razorpay">
 												<label for="razorpay">Razorpay</label><br>
 												<hr>
@@ -804,7 +800,7 @@ console.log("form",form)
 						confirmButtonText: "Retry",
 					});
 				}
-			} else {
+			} else{
 				// Handle COD and UPI payment
 				try {
 					const response = await fetch("/placeOrder", {

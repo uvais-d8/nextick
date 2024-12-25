@@ -162,8 +162,8 @@ const singleproduct = async (req, res) => {
   .populate({
     path: "reviews",
     populate: {
-      path: "userId", // Populate the userId field to get user details
-      select: "name"  // Only select the name field from the User model
+      path: "userId",
+      select: "name"  
     }
     })
    
@@ -463,18 +463,13 @@ const advancedSearch = async (req, res) => {
     res.status(500).json({ message: "Error fetching products." });
   }
 };
-
-
-
-// Add a review for a product
-const  addReview = async (req, res) => {
+ const  addReview = async (req, res) => {
   const userId =req.session.userId;
    if(!userId){
     res.redirect("/login")
   }
   const { name, email, number, productId,rating, comment } = req.body;
-    try {
-        // Create the review document
+    try { 
         const newReview = new Review({
             name,
             email,
@@ -485,16 +480,10 @@ const  addReview = async (req, res) => {
             comment
         });
         console.log("newReview",newReview)
-
-        // Save the review to the database
         const savedReview = await newReview.save();
-
-        // Add the review to the product's reviews
         const product = await Products.findById(productId);
-        product.reviews.push(savedReview._id); // Pushing the review ID to the product's reviews array
+        product.reviews.push(savedReview._id);
         await product.save();
-
-        // Update the product's average rating
         await updateProductAverageRating(productId);
 
         res.redirect("/")
@@ -503,18 +492,11 @@ const  addReview = async (req, res) => {
         res.status(500).json({ message: 'Failed to add review' });
     }
 };
-
-// Update the product's average rating after a new review
-async function updateProductAverageRating(productId) {
+ async function updateProductAverageRating(productId) {
     try {
-        // Get all reviews for this product
-        const reviews = await Review.find({ productId: productId });
-
-        // Calculate the average rating
+         const reviews = await Review.find({ productId: productId });
         const totalRatings = reviews.reduce((acc, review) => acc + review.rating, 0);
         const averageRating = totalRatings / reviews.length;
-
-        // Update the product's average rating
         const product = await Products.findById(productId);
         product.averageRating = averageRating;
         await product.save();

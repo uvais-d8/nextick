@@ -17,15 +17,13 @@
     <!-- Display message -->
     <input type="text" style="border-width: 0px; color: red; font-weight: bold; width: 70%;" name="message" id="message" value="{{message}}" readonly>
 
-    <!-- Category Field -->
-    <div class="form-group">
+     <div class="form-group">
         <label for="category">Category</label>
         <input type="text" id="category" name="category" value="{{category.category}}">
         <div id="categoryError" class="error-message" style="color: red; display: none;">Category is required.</div>
     </div>
 
-    <!-- Brand Field -->
-    <div class="form-group">
+     <div class="form-group">
         <label for="brand">Brand</label>
         <input type="text" id="brand" name="brand" value="{{category.brand}}">
         <div id="brandError" class="error-message" style="color: red; display: none;">Brand is required.</div>
@@ -55,34 +53,29 @@
     function validateForm() {
         let valid = true;
 
-        // Reset all error messages
-        document.querySelectorAll('.error-message').forEach(function (error) {
+         document.querySelectorAll('.error-message').forEach(function (error) {
             error.style.display = 'none';
         });
 
-        // Validate Category
-        const category = document.getElementById("category");
+         const category = document.getElementById("category");
         if (category.value.trim() === "") {
             document.getElementById("categoryError").style.display = "block";
             valid = false;
         }
 
-        // Validate Brand
-        const brand = document.getElementById("brand");
+         const brand = document.getElementById("brand");
         if (brand.value.trim() === "") {
             document.getElementById("brandError").style.display = "block";
             valid = false;
         }
 
-        // Validate Band Color
-        const bandcolor = document.getElementById("bandcolor");
+         const bandcolor = document.getElementById("bandcolor");
         if (bandcolor.value.trim() === "") {
             document.getElementById("bandcolorError").style.display = "block";
             valid = false;
         }
 
-        // Prevent form submission if any field is invalid
-        return valid;
+         return valid;
     }
 </script>
 

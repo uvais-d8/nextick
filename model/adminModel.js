@@ -9,8 +9,6 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true
     }
-}, { collection: 'admin' });  // This forces the collection to be 'admin'
-
-
+}, { collection: 'admin' }); 
 const admin = mongoose.model("admin",adminSchema)
 module.exports=admin;

@@ -278,7 +278,7 @@
     const currentQuantity = parseInt(quantityInput.value);
     let newQuantity = currentQuantity + change;
 
-    // Validate minimum and maximum quantity
+  
     if (newQuantity > 10) {
         Swal.fire({
             icon: "error",
@@ -299,7 +299,7 @@
         return;
     }
 
-    // Check product stock from the server
+    
     fetch(`/cart/${cartId}/getProductStock`)
         .then((response) => response.json())
         .then((data) => {
@@ -316,10 +316,9 @@
                 return;
             }
 
-            // Update quantity in the input field
             quantityInput.value = newQuantity;
 
-            // Update cart quantity on the server
+        
             fetch(`/cart/${cartId}/updateQuantity`, {
                 method: 'POST',
                 headers: {
@@ -331,13 +330,13 @@
                 .then((data) => {
                     if (data.success) {
 						console.log(data.total)
-                        // Update total for this product
+                       
                         const row = quantityInput.closest('tr');
                         const price = parseFloat(row.querySelector('.product-price').innerText);
                         const totalCell = row.querySelector('.product-total');
                         totalCell.innerText = data.total
 
-                        // Update cart totals
+                     
                         updateCartTotals();
                     } else {
                         {{!-- Swal.fire({

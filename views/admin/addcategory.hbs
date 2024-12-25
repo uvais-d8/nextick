@@ -55,33 +55,29 @@
     function validateForm() {
         let valid = true;
 
-        // Reset all error messages
         document.querySelectorAll('.error-message').forEach(function(error) {
             error.style.display = 'none';
         });
 
-        // Validate Category
         const category = document.getElementById("category");
         if (category.value.trim() === "") {
             document.getElementById("categoryError").style.display = "block";
             valid = false;
         }
 
-        // Validate Brand
         const brand = document.getElementById("brand");
         if (brand.value.trim() === "") {
             document.getElementById("brandError").style.display = "block";
             valid = false;
         }
 
-        // Validate Band Color
-        const bandcolor = document.getElementById("bandcolor");
+         const bandcolor = document.getElementById("bandcolor");
         if (bandcolor.value.trim() === "") {
             document.getElementById("bandcolorError").style.display = "block";
             valid = false;
         }
 
-        return valid; // Only submit the form if all fields are valid
+        return valid;
     }
 </script>
 

@@ -17,7 +17,7 @@ async function sendVerificationEmail(email, otp) {
       requireTLS: true,
       auth: {
         user: process.env.SERVEREMAIL,
-        pass: process.env.PASS // Make sure to store this securely in environment variables
+        pass: process.env.PASS   
       }
     });
 
@@ -94,8 +94,7 @@ const registerUser = async (req, res) => {
   const { username, email, phone, password } = req.body;
 
   try {
-    // Only check for email existence here
-    const alreadyUser = await User.findOne({ email });
+     const alreadyUser = await User.findOne({ email });
     if (alreadyUser) {
       return res.render("signup", {
         message: "Email is already registered",
@@ -122,33 +121,25 @@ const registerUser = async (req, res) => {
     res.redirect("/signup");
   }
 };
-
 const loadVerifyOtp = async (req, res) => {
   res.render("verification");
 };
 const verifyOtp = async (req, res) => {
   try {
     const { otp } = req.body;
-
-    // Debug logs
+ 
     console.log("Received OTP from user:", otp);
     console.log("Stored OTP in session:", req.session.userOTP);
-
-    // Check if session data exists
+ 
     if (!req.session.userOTP || !req.session.userData) {
       return res.render("verification", {
         message: "Session expired. Try again."
       });
     }
 
-    // Verify OTP
-    if (otp === req.session.userOTP) {
+      if (otp === req.session.userOTP) {
       const user = req.session.userData;
-
-      // Hash the password
       const hashedPassword = await bcrypt.hash(user.password, 10);
-
-      // Create a new user object
       const newUser = new User({
         name: user.username,
         email: user.email,
@@ -158,21 +149,13 @@ const verifyOtp = async (req, res) => {
         ...(user.googleId ? { googleId: user.googleId } : {})
       });
 
-      // Save the user to the database
-      await newUser.save();
-
-      // Set the session user
+       await newUser.save();
+ 
       req.session.userId = newUser._id;
-
-      // Clear session data
       delete req.session.userOTP;
       req.session.userData = null;
-
-      // Redirect to home
       return res.redirect("/");
     } else {
-      // OTP mismatch
-
       console.log(req.session.userOTP.toString());
       console.error("OTP mismatch: Received OTP does not match session OTP.");
       return res.render("verification", {
@@ -216,10 +199,9 @@ const resendOtp = async (req, res) => {
     return res.render("verification", { success: "OTP resend Successfully" });
   }
 };
-// Load Forgot Password Page
-const loadforgotpassword = (req, res) => {
+ const loadforgotpassword = (req, res) => {
   res.render("forgotpassword");
-  req.session.message = null; // Clear message after rendering
+  req.session.message = null; 
 };
 module.exports = {
   loadforgotpassword,

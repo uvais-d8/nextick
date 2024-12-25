@@ -246,7 +246,7 @@
         const filterElement = document.getElementById("filter");
 
         if (filterElement) {
-            filterElement.value = "category"; // Set default filter to category
+            filterElement.value = "category"; 
             updateSalesChart();
         }
 
@@ -259,7 +259,6 @@
         const filter = document.getElementById("filter").value;
 
         try {
-            // Update API endpoint for category-wise sales
             const endpoint =
                 filter === "category"
                     ? "/admin/category-sales-data"
@@ -270,9 +269,8 @@
             console.log("Fetched data:", result);
 
             if (response.ok) {
-                const labels = result.labels; // Category names
-                const data = result.totalPrices; // Total sales for each category
-
+                const labels = result.labels; 
+                const data = result.totalPrices; 
                 if (labels.length === 0 || data.length === 0) {
                     console.warn("No data available for the selected filter.");
                     return;
@@ -284,7 +282,7 @@
 
                 const ctx = document.getElementById("salesChart").getContext("2d");
                 salesChart = new Chart(ctx, {
-                    type: "bar", // Change to bar for category-wise visualization
+                    type: "bar", 
                     data: {
                         labels: labels,
                         datasets: [

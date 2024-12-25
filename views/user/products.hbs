@@ -358,7 +358,7 @@
 											<span class="text-danger">Out of Stock</span>
 											{{/if}}
 										</p>
-										<p style="margin-top: -20px; color: orange;" class="cart-text">
+										{{!-- <p style="margin-top: -20px; color: orange;" class="cart-text">
 											{{#each (range 1 5)}}
 											{{#if (gte ../products.averageRating)}}
 											★
@@ -366,7 +366,7 @@
 											☆
 											{{/if}}
 											{{/each}}
-										</p>
+										</p> --}}
 
 						</a>
 						<div class="mt-auto">
@@ -423,9 +423,9 @@
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<script>
-			// Add your custom JavaScript here
+			
 			document.addEventListener("DOMContentLoaded", function () {
-				// Wishlist functionality
+				
 				const wishlistButtons = document.querySelectorAll(".add-to-wishlist");
 				wishlistButtons.forEach((button) => {
 					button.addEventListener("click", async (event) => {
@@ -451,7 +451,6 @@
 					});
 				});
 
-				// Price filter functionality
 				const priceFilterForm = document.getElementById("price-filter-form");
 				priceFilterForm.addEventListener("submit", function (e) {
 					e.preventDefault();
@@ -462,9 +461,7 @@
 					url.searchParams.set('maxPrice', maxPrice);
 					window.location.href = url;
 				});
-
-				// Category filter functionality
-				const categoryFilter = document.getElementById("category-filter");
+	const categoryFilter = document.getElementById("category-filter");
 				categoryFilter.addEventListener("change", function () {
 					const category = this.value;
 					const url = new URL(window.location.href);

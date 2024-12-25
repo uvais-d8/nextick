@@ -219,7 +219,6 @@ const loadViewDetails = async (req, res) => {
     console.log("error: ", error);
   }
 };
- 
 const removeItem = async (req, res) => {
   const user = req.session.userId;
   const { orderId, itemId } = req.params;
@@ -244,8 +243,7 @@ const removeItem = async (req, res) => {
       });
     }
 
-    // Calculate the refund for the item
-    const Price = item.priceWithDiscount ? item.priceWithDiscount : item.price;
+     const Price = item.priceWithDiscount ? item.priceWithDiscount : item.price;
     console.log("product Price",Price)
     
     const totalPriceOfOrder = order.items
@@ -276,23 +274,19 @@ const removeItem = async (req, res) => {
     console.log("price to Refund or not",totalRefundForItem);
     await order.save();
 
-    // Mark the specific item as 'canceled'
     await Orders.findOneAndUpdate(
       { _id: orderId, "items._id": itemId },
       { $set: { "items.$.status": "canceled" } }
     );
 
-    // Find the product and restore stock
     const product = await Products.findById(item.productId);
     if (product) {
       product.stock += item.quantity;
       await product.save();
 
-      // Calculate refund to wallet for Razorpay payment
       if (order.paymentMethod === "razorpay") {
         let refundAmount = totalRefundForItem;
-console.log('refundAmount',refundAmount)
-        // Find or create a wallet for the user
+        console.log('refundAmount',refundAmount)
         let wallet = await Wallet.findOne({ user: order.userId });
         if (!wallet) {
           wallet = new Wallet({
@@ -320,7 +314,6 @@ console.log('refundAmount',refundAmount)
       console.warn("Product not found for stock update");
     }
 
-    // If all items are canceled, update the order status
     const updatedOrder = await Orders.findById(orderId);
     if (updatedOrder.items.every((item) => item.status === "canceled")) {
       updatedOrder.status = "canceled";
@@ -333,20 +326,16 @@ console.log('refundAmount',refundAmount)
     res.status(500).send("Error updating order status");
   }
 };
-
-
-
 const returnOrder = async (req, res) => {
-      const itemId = req.params.id; // Order Item ID
-      const userId = req.session.userId; // User ID from session
+      const itemId = req.params.id; 
+      const userId = req.session.userId; 
     
       console.log("Item ID:", itemId);
     
       try {
-        // Step 1: Find the order and update the item status to "returned"
         const order = await Orders.findOneAndUpdate(
-          { 'items._id': itemId, userId, 'items.status': 'delivered' }, // Ensure status is 'delivered'
-          { $set: { 'items.$.status': 'returned' } }, // Update status to 'returned'
+          { 'items._id': itemId, userId, 'items.status': 'delivered' }, 
+          { $set: { 'items.$.status': 'returned' } },
           { new: true }
         );
     
@@ -354,29 +343,24 @@ const returnOrder = async (req, res) => {
           return res.status(404).json({ success: false, message: "Order or item not found." });
         }
     
-        // Step 2: Find the specific item in the order
         const item = order.items.find((item) => item._id.toString() === itemId);
         if (!item) {
           return res.status(404).json({ success: false, message: "Item not found in the order." });
         }
     
-        // Step 3: Fetch product details and update stock
         const product = await Products.findById(item.productId);
         if (product) {
-          product.stock += item.quantity; // Increase stock based on returned quantity
+          product.stock += item.quantity;
           await product.save();
           console.log(`Updated product stock: ${product.name}, New stock: ${product.stock}`);
         } else {
           console.warn(`Product not found for item: ${item.productId}`);
         }
     
-        // Step 4: Calculate refund amount
         const refundAmount = (product?.discountedPrice || product?.price) * item.quantity;
     
-        // Step 5: Update user's wallet
         let wallet = await Wallet.findOne({ user: userId });
         if (!wallet) {
-          // If no wallet exists, create a new one
           wallet = new Wallet({
             user: userId,
             balance: refundAmount,
@@ -389,7 +373,6 @@ const returnOrder = async (req, res) => {
             ],
           });
         } else {
-          // Update existing wallet
           wallet.balance += refundAmount;
           wallet.transactions.push({
             type: "refund",
@@ -398,12 +381,10 @@ const returnOrder = async (req, res) => {
           });
         }
     
-        // Save the updated wallet
         await wallet.save();
     
         console.log(`Refund processed: Amount ${refundAmount} added to wallet.`);
     
-        // Step 6: Return success response
         res.json({
           success: true,
           message: "Item successfully returned, refund processed, and product stock updated.",
@@ -415,34 +396,25 @@ const returnOrder = async (req, res) => {
         res.status(500).json({ success: false, message: "Internal server error." });
       }
 };
-    
-
-
-
 const generateInvoicePDF = async (req, res) => {
   const { orderId } = req.params;
 
   try {
-    // Fetch order details from the database
     const order = await Orders.findById(orderId).populate("items.productId");
     if (!order) {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
 
-    // Filter items to exclude canceled and delivered items
     const filteredItems = order.items.filter(item => item.status !== 'canceled');
     
     const doc = new PDFDocument({ margin: 20 });
 
-    // Set response headers for PDF download
     const filename = `Invoice_${orderId}.pdf`;
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
     res.setHeader("Content-Type", "application/pdf");
 
-    // Pipe the PDF stream to the response
     doc.pipe(res);
 
-    // ** Header Section **
     doc
       .font("Helvetica-Bold")
       .fontSize(20)
@@ -452,14 +424,12 @@ const generateInvoicePDF = async (req, res) => {
       .text("Contact: support@NEXTICK.com | +91 7594 06 0696", { align: "center" })
       .moveDown(2);
 
-    // ** Invoice Title **
     doc
       .fontSize(16)
       .font("Helvetica-Bold")
       .text("INVOICE", { align: "center", underline: true })
       .moveDown();
 
-    // ** Order and Customer Details **
     const address = order.shippingAddress;
     doc
       .fontSize(12)
@@ -489,7 +459,6 @@ const generateInvoicePDF = async (req, res) => {
       .text(`district: ${address.district}`)
       .moveDown();
 
-    // ** Invoice Table Headers **
     doc
       .font("Helvetica-Bold")
       .fontSize(11)
@@ -507,7 +476,7 @@ const generateInvoicePDF = async (req, res) => {
 
     filteredItems.forEach((item, index) => {
       const product = item.productId;
-      const rowY = rowStartY + index * 30; // Row height (30)
+      const rowY = rowStartY + index * 30; 
 
       doc
         .moveTo(50, rowY + 30)
@@ -519,13 +488,12 @@ const generateInvoicePDF = async (req, res) => {
         .font("Helvetica")
         .fontSize(10)
         .fillColor("black")
-        .text(index + 1, 55, rowY + 5, { width: 40, align: "center" }) // No column
-        .text(product.name, 100, rowY + 5, { width: 200, align: "left" }); // Product name
+        .text(index + 1, 55, rowY + 5, { width: 40, align: "center" }) 
+        .text(product.name, 100, rowY + 5, { width: 200, align: "left" }); 
 
       const unitPrice = item.priceWithDiscount || product.price;
       const totalItemPrice = item.quantity * unitPrice;
 
-      // Display price and quantity
       doc
         .font("Helvetica")
         .fontSize(10)
@@ -534,7 +502,6 @@ const generateInvoicePDF = async (req, res) => {
         .text(item.quantity, 380, rowY + 5, { width: 80, align: "right" })
         .text(`Rs ${totalItemPrice.toFixed(2)}`, 455, rowY + 5, { width: 90, align: "right" });
 
-      // Update total price
       totalPrice += totalItemPrice;
     });
 
@@ -543,7 +510,6 @@ const generateInvoicePDF = async (req, res) => {
       .rect(50, rowStartY, 510, totalTableHeight)
       .stroke();
 
-    // ** Total Section **
     doc
       .font("Helvetica-Bold")
       .fontSize(12)
@@ -553,7 +519,6 @@ const generateInvoicePDF = async (req, res) => {
       .text(`Grand Total : Rs ${order.orderTotal.toFixed(2)}`, 370, doc.y, { align: "right", underline: true })
       .moveDown(3);
 
-    // ** Footer Section **
     doc
       .fontSize(10)
       .font("Helvetica")
@@ -566,7 +531,6 @@ const generateInvoicePDF = async (req, res) => {
       .fontSize(8)
       .text("NEXTICK - The Premium watches Store | All Rights Reserved.", { align: "center" });
 
-    // Finalize PDF
     doc.end();
   } catch (error) {
     console.error("Error generating invoice PDF:", error);

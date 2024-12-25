@@ -575,15 +575,16 @@
 					<p style="color: rgb(48, 47, 47);margin-top: -10px;">Order Date: <b>{{formatDate ../time}}</b></p>
 
 					<div class="order-actions">
+						<div>
+							<form method="get" action="/viewDetails/{{../_id}}/{{this._id}}">
+								<button type="submit">More Details</button>
+							</form>
+						</div>
 						{{#if (eq this.status "delivered")}}
 						<div>
 							<div style="display: flex;">
 
-								<div>
-									<form method="get" action="/viewDetails/{{../_id}}/{{this._id}}">
-										<button type="submit">More Details</button>
-									</form>
-								</div>
+
 								<div style="margin-left: 90%;"><button class="btn btn-danger return-button"
 										data-bs-toggle="modal" data-bs-target="#returnModal" data-order-id="{{../_id}}"
 										data-item-id="{{this._id}}">

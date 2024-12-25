@@ -424,7 +424,6 @@ const editproducts = async (req, res) => {
       });
     }
 
-    // Update product details
     Object.assign(product, {
       name: trimmedName,
       category: trimmedCategory,
@@ -443,9 +442,6 @@ const editproducts = async (req, res) => {
     });
   }
 };
-
-
-
 const loadaddproduct = async (req, res) => {
   try {
     const categories = await Category.find({});
@@ -457,16 +453,13 @@ const loadaddproduct = async (req, res) => {
 };
 const addproduct = async (req, res) => {
   try {
-    // Fetch categories for rendering in case of errors
     const categories = await Category.find({});
     const { name, category, stock, price, description } = req.body;
     const { files } = req;
 
-    // Log request details for debugging
     console.log("Request body:", req.body);
     console.log("Uploaded files:", files);
 
-    // Validation: Check if all fields are provided
     if (!name || !category || !stock || !price || !description) {
       return res.status(400).render("admin/addproduct", {
         categories,
@@ -474,7 +467,6 @@ const addproduct = async (req, res) => {
       });
     }
 
-    // Validation: Check stock is a positive number
     if (isNaN(stock) || stock <= 0) {
       return res.status(400).render("admin/addproduct", {
         categories,
@@ -482,7 +474,6 @@ const addproduct = async (req, res) => {
       });
     }
 
-    // Validation: Check price is a positive number
     if (isNaN(price) || price <= 0) {
       return res.status(400).render("admin/addproduct", {
         categories,
@@ -490,15 +481,12 @@ const addproduct = async (req, res) => {
       });
     }
 
-    // Validation: Check for at least 3 images
     if (!files || files.length < 3) {
       return res.status(400).render("admin/addproduct", {
         categories,
         message: "Please upload at least 3 images.",
       });
     }
-
-    // Validation: Check image file types
     const validImageTypes = ["image/jpeg", "image/png", "image/jpg", "image/gif"];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -510,7 +498,6 @@ const addproduct = async (req, res) => {
       }
     }
 
-    // Validation: Check if product already exists
     const existingProduct = await Products.findOne({ name });
     if (existingProduct) {
       return res.render("admin/addproduct", {
@@ -520,7 +507,6 @@ const addproduct = async (req, res) => {
       });
     }
 
-    // Validation: Check if category exists
     const categoryObj = await Category.findOne({ category });
     if (!categoryObj) {
       return res.status(400).render("admin/addproduct", {
@@ -529,7 +515,6 @@ const addproduct = async (req, res) => {
       });
     }
 
-    // Create and save the new product
     const newProduct = new Products({
       name,
       category: categoryObj._id,
@@ -542,7 +527,6 @@ const addproduct = async (req, res) => {
     await newProduct.save();
     console.log("New product saved:", newProduct);
 
-    // Redirect to the products list
     res.redirect("/admin/products");
   } catch (error) {
     console.error("Error adding product:", error.message);
@@ -552,7 +536,6 @@ const addproduct = async (req, res) => {
     });
   }
 };
-
 const loadproducts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -629,23 +612,19 @@ const editinventory = async (req, res) => {
   const { name, stock } = req.body;
 
   try {
-    // Find the product by ID
     const product = await Products.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // Validate the stock value
     if (stock < 0) {
       return res.redirect("/admin/inventory")
     }
 
-    // Check if no changes were made
     if (product.name === name && product.stock === parseInt(stock)) {
       return res.redirect("/admin/inventory")
     }
 
-    // Check for duplicate product name (case-insensitive)
     const existingProduct = await Products.findOne({
       name: { $regex: new RegExp(`^${name}$`, "i") },
       _id: { $ne: productId }
@@ -654,7 +633,6 @@ const editinventory = async (req, res) => {
       return res.redirect("/admin/inventory")
     }
 
-    // Update only if there are changes
     product.name = name || product.name;
     product.stock = stock || product.stock;
     await product.save();
@@ -665,8 +643,6 @@ const editinventory = async (req, res) => {
     res.status(500).send("Error updating product");
   }
 };
-
-
 // -------------------------------------------------Orders Management------------------------------------------------------
 
 const cancelOrderItem = async (req, res) => {
@@ -691,7 +667,6 @@ const cancelOrderItem = async (req, res) => {
       orderId
     );
 
-    // Find the order by ID
     const order = await Orders.findById(orderId);
     if (!order) {
       console.log("Order not found for ID:", orderId);
@@ -700,7 +675,6 @@ const cancelOrderItem = async (req, res) => {
         .json({ success: false, message: "Order not found." });
     }
 
-    // Find the specific item within the order items array
     const item = order.items.id(itemId);
     if (!item) {
       console.log("Item not found for ID:", itemId);
@@ -709,30 +683,23 @@ const cancelOrderItem = async (req, res) => {
         .json({ success: false, message: "Item not found in order." });
     }
 
-    // Update the item's status to "canceled"
     item.status = "canceled";
 
-    // Save the updated order
     await order.save();
 
     console.log("Item canceled successfully for item ID:", itemId);
 
-    // Redirect or send response
-    res.redirect("/admin/orders"); // Adjust this as needed
+    res.redirect("/admin/orders"); 
   } catch (error) {
     console.error("Error canceling item:", error);
     res.status(500).json({ success: false, message: "Failed to cancel item." });
   }
 };
-
 const updateOrderStatus = async (req, res) => {
-  const { orderId, itemId, status ,currentPage} = req.body; // Get currentPage from the request body
-  // const currentPage = req.query.currentPage ; // Get current page from query parameter
-
+  const { orderId, itemId, status ,currentPage} = req.body; 
    console.log("Request Body:", req.body);
 
   try {
-    // Validate IDs
     if (
       !mongoose.Types.ObjectId.isValid(orderId) ||
       !mongoose.Types.ObjectId.isValid(itemId)
@@ -743,7 +710,6 @@ const updateOrderStatus = async (req, res) => {
         .json({ success: false, message: "Invalid order or item ID." });
     }
 
-    // Validate status
     const validStatuses = [
       "canceled",
       "scheduled",
@@ -760,7 +726,6 @@ const updateOrderStatus = async (req, res) => {
         .json({ success: false, message: "Invalid status." });
     }
 
-    // Find the order
     const order = await Orders.findById(orderId);
     if (!order) {
       console.log("Order not found for ID:", orderId);
@@ -769,7 +734,6 @@ const updateOrderStatus = async (req, res) => {
         .json({ success: false, message: "Order not found." });
     }
 
-    // Find the item in the order
     const item = order.items.id(itemId);
     if (!item) {
       console.log("Item not found for ID:", itemId);
@@ -778,7 +742,6 @@ const updateOrderStatus = async (req, res) => {
         .json({ success: false, message: "Item not found in order." });
     }
 
-    // Check if the item is already delivered
     if (item.status === "delivered") {
       return res.status(400).json({
         success: false,
@@ -786,10 +749,8 @@ const updateOrderStatus = async (req, res) => {
       });
     }
 
-    // Update item status
     item.status = status;
     if (status === "canceled") {
-      // Increment product stock
       const product = await Products.findById(item.productId);
       if (product) {
         product.stock += item.quantity;
@@ -798,7 +759,6 @@ const updateOrderStatus = async (req, res) => {
         console.warn("Product not found for stock update");
       }
 
-      // Handle refund for prepaid orders
       if (order.paymentMethod === "razorpay") {
         let refundAmount =
           (item.priceWithDiscount || item.price) * item.quantity;
@@ -808,7 +768,6 @@ const updateOrderStatus = async (req, res) => {
           let wallet = await Wallet.findOne({ user: order.userId });
 
           if (!wallet) {
-            // Create a new wallet if it doesn't exist
             wallet = new Wallet({
               user: order.userId,
               balance: refundAmount,
@@ -822,7 +781,6 @@ const updateOrderStatus = async (req, res) => {
               ]
             });
           } else {
-            // Update existing wallet balance and transactions
             wallet.balance += refundAmount;
             wallet.transactions.push({
               type: "refund",
@@ -836,11 +794,8 @@ const updateOrderStatus = async (req, res) => {
         }
       }
     }
-
-    // Save the order
     await order.save();
 
-    // Check if all items are canceled, then update the order status
     if (order.items.every(item => item.status === "canceled")) {
       order.status = "canceled";
       await order.save();
@@ -848,7 +803,6 @@ const updateOrderStatus = async (req, res) => {
 
     console.log("Item status updated successfully for item ID:", itemId);
 
-    // Redirect to the current page to maintain pagination
     res.redirect(`/admin/orders?page=${currentPage}`);
   } catch (error) {
     console.error("Error updating item status:", error);
@@ -857,8 +811,6 @@ const updateOrderStatus = async (req, res) => {
       .json({ success: false, message: "Failed to update item status." });
   }
 };
-
-
 const loadOrder = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -869,17 +821,13 @@ const loadOrder = async (req, res) => {
       .populate("items.productId", "name")
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1 }) // Sort by creation date (or change if needed)
+      .sort({ createdAt: -1 }) 
       .exec();
 
-    // Calculate total pages
     const totalPages = Math.ceil(totalOrders / limit);
-
-    // Get previous and next page numbers
     const previousPage = page > 1 ? page - 1 : null;
     const nextPage = page < totalPages ? page + 1 : null;
 
-    // Render the orders page with pagination data
     res.render("admin/orders", {
       orders,
       currentPage: page,
@@ -1009,7 +957,7 @@ const loadcoupon = async (req, res) => {
   }
 };
 const deleteCoupon = async (req, res) => {
-  const { couponId } = req.params; // Destructure couponId from req.params
+  const { couponId } = req.params;
   console.log("Coupon ID received:", couponId);
 
   try {
@@ -1052,7 +1000,6 @@ const listCoupon = async (req, res) => {
     res.status(500).redirect("/admin/coupon");
   }
 };
-
 // -------------------------------------------------Offers Management------------------------------------------------------
 
 const addoffer = async (req, res) => {
@@ -1103,13 +1050,12 @@ const addoffer = async (req, res) => {
 
     await newoffer.save();
 
-    // Update products with the offer
     await Products.updateMany(
       { _id: { $in: productIds } },
       {
         $set: {
           priceWithDiscount:
-            DiscountType === "fixed" ? DiscountValue : undefined, // Add logic for percentage if needed
+            DiscountType === "fixed" ? DiscountValue : undefined, 
           offer: newoffer._id
         }
       }
@@ -1163,22 +1109,8 @@ const addoffers = async (req, res) => {
       Status
     });
 
-    // Save the offer
     await newoffer.save();
     console.log("New offer created: ", newoffer);
-    // await Products.findByIdAndUpdate(
-    //   { _id: products._id },
-    //   { priceWithDiscount: DiscountValue }
-    // );
-
-    // const newprice = new Products.findByIdAndUpdate({
-    //   priceWithDiscount
-    // });
-
-    // Save the offer
-    // await newprice.save();
-    // console.log("New offer created: ", newprice);
-    // Now associate the offer with the products
     await Category.updateMany(
       { _id: { $in: category } },
       { $set: { offer: newoffer._id } }
@@ -1201,7 +1133,7 @@ const loadeditOffer = async (req, res) => {
   const offer = await Offer.findById(offerId);
   if (!offer) {
     console.log("Offer not found");
-    return res.redirect("/admin/offer"); // Redirect if the offer is not found
+    return res.redirect("/admin/offer");
   }
 
   try {
@@ -1227,7 +1159,6 @@ const editOffer = async (req, res) => {
       Status
     } = req.body;
 
-    // Normalize and validate input
     const productIds = Array.isArray(reqProducts) ? reqProducts : [reqProducts];
     const categoryIds = Array.isArray(reqCategories)
       ? reqCategories
@@ -1252,19 +1183,18 @@ const editOffer = async (req, res) => {
 
     const formattedExpiryDate = new Date(ExpiryDate);
 
-    // Update the offer using reference IDs
     const updatedOffer = await Offer.findByIdAndUpdate(
       offerId,
       {
         DiscountType,
         DiscountValue,
         Description,
-        Products: productIds, // Store product IDs as references
-        Categories: categoryIds, // Store category IDs as references
+        Products: productIds,
+        Categories: categoryIds, 
         ExpiryDate: formattedExpiryDate,
         Status
       },
-      { new: true } // Return the updated document
+      { new: true }
     );
 
     if (!updatedOffer) {
@@ -1492,8 +1422,7 @@ const getSalesReport = async (req, res) => {
 };
 const exportPDF = async (req, res) => {
   try {
-    const salesData = JSON.parse(req.body.salesData); // Parse the stringified salesData
-
+    const salesData = JSON.parse(req.body.salesData); 
     const doc = new PDFDocument({ margin: 20 });
     const filename = `Sales_Report_${Date.now()}.pdf`;
 
@@ -1502,14 +1431,12 @@ const exportPDF = async (req, res) => {
 
     doc.pipe(res);
 
-    // Title
     doc
       .fontSize(20)
       .font("Helvetica-Bold")
       .text("Sales Report", { align: "center" });
     doc.moveDown(1);
 
-    // Table header style
     const tableHeaders = [
       "Order Date",
       "Order ID",
@@ -1570,7 +1497,6 @@ const exportPDF = async (req, res) => {
     });
     drawLine(currentY);
 
-    // Footer
     const footerY = doc.page.height - 30;
     doc
       .fontSize(10)
@@ -1673,7 +1599,6 @@ const getSalesData = async (req, res) => {
         return res.status(400).json({ error: "Invalid filter value" });
     }
 
-    // Aggregate data from MongoDB
     const salesData = await Orders.aggregate([
       { $match: matchStage },
       { $group: groupStage },
@@ -1681,14 +1606,11 @@ const getSalesData = async (req, res) => {
     ]);
 
     if (filter === "yearly") {
-      // Define the fixed range of years
       const fixedYears = [2019, 2020, 2021, 2022, 2023, 2024, 2025];
 
-      // Create labels and initialize totalPrices with zeros
       labels = [...fixedYears];
       totalPrices = new Array(fixedYears.length).fill(0);
 
-      // Map sales data to the fixed years
       salesData.forEach(item => {
         const yearIndex = fixedYears.indexOf(item._id.year);
         if (yearIndex !== -1) {
@@ -1736,7 +1658,6 @@ const getSalesData = async (req, res) => {
       });
     }
 
-    // Log the labels and totalPrices for debugging
     console.log("Labels:", labels);
     console.log("Total Prices:", totalPrices);
     console.log("Aggregated Sales Data:", salesData);
@@ -1747,38 +1668,34 @@ const getSalesData = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch sales data" });
   }
 };
-
-
 const categorySales = async (req, res) => {
   const itemStatus = req.query.itemStatus || "delivered";
 
   try {
-    // Aggregate data for category-wise sales
     const salesData = await Orders.aggregate([
-      { $match: { "items.status": itemStatus } }, // Match orders with the specified item status
-      { $unwind: "$items" }, // Decompose the items array
+      { $match: { "items.status": itemStatus } }, 
+      { $unwind: "$items" },
       {
         $lookup: {
-          from: "categories", // Collection to join
-          localField: "items.categoryId", // Field in items
-          foreignField: "_id", // Field in categories collection
+          from: "categories", 
+          localField: "items.categoryId", 
+          foreignField: "_id",
           as: "categoryDetails"
         }
       },
-      { $unwind: "$categoryDetails" }, // Unwind category details
+      { $unwind: "$categoryDetails" },
       {
         $group: {
-          _id: "$categoryDetails.category", // Group by category name
-          totalSales: { $sum: "$items.price" }, // Calculate total sales
-          totalQuantity: { $sum: "$items.quantity" } // Optionally calculate total quantity sold
+          _id: "$categoryDetails.category",
+          totalSales: { $sum: "$items.price" },
+          totalQuantity: { $sum: "$items.quantity" }
         }
       },
-      { $sort: { totalSales: -1 } } // Sort by total sales descending
+      { $sort: { totalSales: -1 } } 
     ]);
 
-    // Prepare data for the graph
-    const labels = salesData.map(item => item._id); // Category names
-    const totalPrices = salesData.map(item => item.totalSales); // Total sales for each category
+    const labels = salesData.map(item => item._id);
+    const totalPrices = salesData.map(item => item.totalSales);
 
     console.log("Category Labels:", labels);
     console.log("Category Total Sales:", totalPrices);

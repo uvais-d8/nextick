@@ -119,83 +119,142 @@
     <div class="container">
         <h1>Add New Offer - ( Category )</h1>
         <input id="message-box" type="text" style="border-width: 0px; color: red;" value="{{message}}" readonly>
-        <form id="couponForm" method="post" action="/admin/addingOffers">
+    <form id="couponForm" method="post" action="/admin/addingOffers">
+    <div class="form-group">
+        <label for="DiscountType">Discount Type:</label>
+        <select id="DiscountType" name="DiscountType">
+            <option value="percentage">Percentage</option>
+            <option value="fixed">Fixed Amount</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="DiscountValue">Discount Value:</label>
+        <input type="number" id="DiscountValue" name="DiscountValue" min="0" />
+        <small id="discountError" style="color: red; display: none;">Invalid discount value.</small>
+    </div>
+    <div class="form-group">
+        <label for="Description">Description:</label>
+        <textarea id="Description" name="Description" maxlength="500"></textarea>
+        <small id="descriptionError" style="color: red; display: none;">Description is required.</small>
+    </div>
+    <div class="form-group">
+        <label for="Category">Applicable Categories:</label>
+        <button id="dropdownToggles" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">
+            Select Categories
+        </button>
 
-            <div class="form-group">
-                <label for="DiscountType">Discount Type:</label>
-                <select id="DiscountType" name="DiscountType">
-                    <option value="percentage">Percentage</option>
-                    <option value="fixed">Fixed Amount</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="DiscountValue">Discount Value:</label>
-                <input type="number" id="DiscountValue" name="DiscountValue" min="0" />
-            </div>
-            <div class="form-group">
-                <label for="Description">Description:</label>
-                <textarea id="Description" name="Description" maxlength="500"></textarea>
-            </div>
-            <div class="form-group">
+        <div id="CategoryDropdown" class="form-control"
+    style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
+    <button id="selectAllButton" type="button" class="btn btn-secondary" style="font-size:14px;padding-top:9px;margin-left:83%;background-color:rgb(63, 123, 243);height:30px;margin-bottom: 10px; width: 15%;">
+        Select All
+    </button>
+    {{#each category}}
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
+        <label for="category-{{this.id}}" style="margin-right: 10px;">{{this.category}}</label>
+        <input type="checkbox" id="category-{{this._id}}" name="Categories[]" value="{{this._id}}">
+    </div>
+    {{/each}}
+</div>
+
+<script>
+    document.getElementById("selectAllButton").addEventListener("click", function () {
+        const checkboxes = document.querySelectorAll("#CategoryDropdown input[type='checkbox']");
+        const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = !allChecked;
+        });
+
+        this.textContent = allChecked ? "Select All" : "Deselect All";
+    });
+</script>
+
+        <small id="categoryError" style="color: red; display: none;">Please select at least one category.</small>
+    </div>
+    <div class="form-group">
+        <label for="ExpiryDate">Expiry Date:</label>
+        <input type="date" id="ExpiryDate" name="ExpiryDate" />
+        <small id="expiryError" style="color: red; display: none;">Expiry date is required.</small>
+    </div>
+    <div class="form-group">
+        <label for="Status">Offer Status:</label>
+        <select id="Status" name="Status">
+            <option value="true">Active</option>
+            <option value="false">Non Active</option>
+        </select>
+    </div>
+    <input style="height: 35px; font-weight: bold" type="submit" value="Add Offer" id="addOfferButton">
+</form>
+
+<script>
+    document.getElementById("addOfferButton").addEventListener("click", function (event) {
+        event.preventDefault();
+        const discountType = document.getElementById("DiscountType").value;
+        const discountValue = document.getElementById("DiscountValue").value.trim();
+        const description = document.getElementById("Description").value.trim();
+        const expiryDate = document.getElementById("ExpiryDate").value;
+        const categories = document.querySelectorAll("#CategoryDropdown input[type='checkbox']:checked");
+
+        const discountError = document.getElementById("discountError");
+        const descriptionError = document.getElementById("descriptionError");
+        const expiryError = document.getElementById("expiryError");
+        const categoryError = document.getElementById("categoryError");
+
+        let isValid = true;
+
+        if (discountType === "percentage" && (discountValue <= 0 || discountValue > 50)) {
+            discountError.style.display = "block";
+            discountError.textContent = "Percentage discount must be between 1 and 50.";
+            isValid = false;
+        } else if (discountValue <= 0) {
+            discountError.style.display = "block";
+            discountError.textContent = "Discount value must be greater than 0.";
+            isValid = false;
+        } else {
+            discountError.style.display = "none";
+        }
+
+        if (!description) {
+            descriptionError.style.display = "block";
+            isValid = false;
+        } else {
+            descriptionError.style.display = "none";
+        }
+
+        const today = new Date();
+        const selectedDate = new Date(expiryDate);
+
+        if (!expiryDate) {
+            expiryError.style.display = "block";
+            expiryError.textContent = "Expiry date is required.";
+            isValid = false;
+        } else if (selectedDate <= today) {
+            expiryError.style.display = "block";
+            expiryError.textContent = "Expiry date must be a future date.";
+            isValid = false;
+        } else {
+            expiryError.style.display = "none";
+        }
+
+        if (categories.length === 0) {
+            categoryError.style.display = "block";
+            isValid = false;
+        } else {
+            categoryError.style.display = "none";
+        }
+
+        if (isValid) {
+            document.getElementById("couponForm").submit();
+        }
+    });
+
+    document.getElementById("dropdownToggles").addEventListener("click", function () {
+        const categoriesDropdown = document.getElementById("CategoryDropdown");
+        categoriesDropdown.style.display = categoriesDropdown.style.display === "none" ? "block" : "none";
+    });
+</script>
 
 
-            </div>
-
-            <script>
-          
-                document.getElementById("dropdownToggle").addEventListener("click", function () {
-                    const categoriesDropdown = document.getElementById("CategoryDropdown");
-
- 
-                    if (categoriesDropdown.style.display === "block") {
-                        categoriesDropdown.style.display = "none";
-                    }
-
-                });
-            </script>
-
-            <div class="form-group">
-                <label for="Category">Applicable Categories:</label>
-                <!-- Dropdown Button -->
-                <button id="dropdownToggles" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">
-                    Select Categories
-                </button>
-
-                <!-- Dropdown Content -->
-                <div id="CategoryDropdown" class="form-control"
-                    style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
-                    {{#each category}}
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
-                        <label for="category-{{this.id}}" style="margin-right: 10px;">{{this.category}}</label>
-                        <input type="checkbox" id="category-{{this._id}}" name="Categories[]" value="{{this._id}}">
-                    </div>
-                    {{/each}}
-                </div>
-            </div>
-
-            <script>
-                // JavaScript to toggle the Categories dropdown visibility
-                document.getElementById("dropdownToggles").addEventListener("click", function () {
-                    const categoriesDropdown = document.getElementById("CategoryDropdown");
-                    // Toggle visibility of the Categories dropdown
-                    categoriesDropdown.style.display = categoriesDropdown.style.display === "none" ? "block" : "none";
-                });
-            </script>
-
-            <div class="form-group">
-                <label for="ExpiryDate">Expiry Date:</label>
-                <input type="date" id="ExpiryDate" name="ExpiryDate" />
-            </div>
-            <div class="form-group">
-                <label for="Status">Offer Status:</label>
-                <select id="Status" name="Status">
-                    <option value="true">Active</option>
-                    <option value="false">Non Active</option>
-                </select>
-            </div>
-
-            <input style="height: 35px;font-weight:bold" type="submit" value="add Offer">
-        </form>
         <div id="message"></div>
     </div>
 
@@ -205,7 +264,6 @@
             e.preventDefault();
 
 
-            // Get all selected categories (checkboxes)
             const selectedCategories = [];
             document.querySelectorAll('input[name="Categories[]"]:checked').forEach((checkbox) => {
                 selectedCategories.push(checkbox.value);
@@ -221,7 +279,6 @@
             };
 
 
-            // Submit to backend API to add the coupon
             axios.post('/api/Offers', OfferData)
                 .then(response => {
                     document.getElementById('message').innerHTML = 'Offer added successfully!';

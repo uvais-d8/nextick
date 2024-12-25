@@ -96,12 +96,6 @@
 
                     </tr>
                 </thead>
-                {{!--
-                <script>
-                    setTimeout(function () {
-                        document.getElementById('message').value = '';
-                    }, 4000); 
-                </script> --}}
                 <tbody>
                     {{#each products}}
                     <tr>
@@ -157,14 +151,13 @@
                     </li>
                     {{/if}}
 
-                    <!-- Generate page numbers -->
+                    
                     {{#each (range 1 totalPages)}}
                     <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
                         <a class="page-link" href="?page={{this}}">{{this}}</a>
                     </li>
                     {{/each}}
-
-                    <!-- Show the "Next" button if there is a next page -->
+ 
                     {{#if nextPage}}
                     <li class="page-item">
                         <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
@@ -261,43 +254,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
         <script>document.getElementById("editProductForm").addEventListener("submit", function (event) {
-            // Prevent form submission initially
-            let isValid = true;
+             let isValid = true;
 
-            // Clear previous error messages
             document.querySelectorAll(".error-message").forEach((element) => {
                 element.textContent = "";
             });
 
-            // Validate Product Name
             const nameInput = document.getElementById("name");
             if (!nameInput.value.trim()) {
                 document.getElementById("name-error").textContent = "Product name is required.";
                 isValid = false;
             }
 
-            // Validate Category
             const categoryInput = document.getElementById("category");
             if (!categoryInput.value.trim()) {
                 document.getElementById("category-error").textContent = "Please select a category.";
                 isValid = false;
             }
 
-            // Validate Stock
             const stockInput = document.getElementById("stock");
             if (!stockInput.value.trim() || isNaN(stockInput.value) || stockInput.value < 0) {
                 document.getElementById("stock-error").textContent = "Stock must be a non-negative number.";
                 isValid = false;
             }
 
-            // Validate Price
             const priceInput = document.getElementById("price");
             if (!priceInput.value.trim() || isNaN(priceInput.value) || priceInput.value < 0) {
                 document.getElementById("price-error").textContent = "Price must be a non-negative number.";
                 isValid = false;
             }
 
-            // If validation fails, prevent form submission
             if (!isValid) {
                 event.preventDefault();
             }
@@ -312,62 +298,46 @@
     let deletedImages = [];
 
     document.addEventListener('DOMContentLoaded', function () {
-        // Initializing modals
-        editProductModal = new bootstrap.Modal(document.getElementById('editProductModal'));
+         editProductModal = new bootstrap.Modal(document.getElementById('editProductModal'));
         cropperModal = new bootstrap.Modal(document.getElementById('cropperModal'));
 
-        // Form submission event listener
-        document.getElementById('editProductForm').addEventListener('submit', async function (e) {
-            e.preventDefault();  // Prevent form submission initially
-
+         document.getElementById('editProductForm').addEventListener('submit', async function (e) {
+            e.preventDefault(); 
             let isValid = true;
-            // Clear previous error messages
             document.querySelectorAll('.error-message').forEach((element) => {
                 element.textContent = '';
             });
 
-            // Validate Product Name
             const nameInput = document.getElementById("name");
             if (!nameInput.value.trim()) {
                 document.getElementById("name-error").textContent = "Product name is required.";
                 isValid = false;
             }
 
-            // Validate Category
             const categoryInput = document.getElementById("category");
             if (!categoryInput.value.trim()) {
                 document.getElementById("category-error").textContent = "Please select a category.";
                 isValid = false;
             }
-
-            // Validate Stock
             const stockInput = document.getElementById("stock");
             if (!stockInput.value.trim() || isNaN(stockInput.value) || stockInput.value < 0) {
                 document.getElementById("stock-error").textContent = "Stock must be a non-negative number.";
                 isValid = false;
             }
 
-            // Validate Price
             const priceInput = document.getElementById("price");
             if (!priceInput.value.trim() || isNaN(priceInput.value) || priceInput.value < 0) {
                 document.getElementById("price-error").textContent = "Price must be a non-negative number.";
                 isValid = false;
             }
 
-            // If validation fails, prevent form submission
             if (!isValid) {
-                return;  // Do not proceed with form submission
+                return; 
             }
-
-            // Prepare FormData for submission
             const formData = new FormData(this);
-
-            // Add deleted images data if any
             if (deletedImages.length > 0) {
                 formData.append('deletedImages', deletedImages.join(','));
             }
-
-            // Submit form data to the server
             try {
                 const response = await fetch('/admin/editproducts', {
                     method: 'POST',
@@ -384,8 +354,6 @@
                 console.error('Error submitting form:', error);
             }
         });
-
-        // Crop Image functionality
         document.getElementById('cropImageBtn').addEventListener('click', function () {
             if (cropper) {
                 cropper.getCroppedCanvas({
@@ -416,7 +384,6 @@
         });
     });
 
-    // Function to populate the form with product data for editing
     function showEditProduct(id, name, category, stock, price, images) {
         document.getElementById('productId').value = id;
         document.getElementById('name').value = name;
@@ -442,7 +409,6 @@
             imageContainer.insertAdjacentHTML('beforeend', imageHtml);
         });
 
-        // Add event listeners for file input and image cropping
         document.querySelectorAll('.image-input').forEach((input, index) => {
             input.addEventListener('change', function (event) {
                 const file = event.target.files[0];
@@ -457,7 +423,6 @@
             });
         });
 
-        // Crop image button click event
         document.querySelectorAll('.crop-button').forEach((button, index) => {
             button.addEventListener('click', function () {
                 const input = document.querySelector(`.image-input[data-index="${index}"]`);
@@ -482,8 +447,7 @@
             });
         });
 
-        // Delete image functionality
-        document.querySelectorAll('.delete-button').forEach((button) => {
+         document.querySelectorAll('.delete-button').forEach((button) => {
             button.addEventListener('click', function () {
                 const imagePath = button.getAttribute('data-path');
                 deletedImages.push(imagePath);
@@ -493,8 +457,7 @@
             });
         });
 
-        // Show the edit product modal
-        editProductModal.show();
+         editProductModal.show();
     }
 </script>
 

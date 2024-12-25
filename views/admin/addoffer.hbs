@@ -119,8 +119,7 @@
 <body>
     <div class="container">
         <h1>Add New Offer - ( products )</h1>
-        {{!-- <input id="message-box" type="text" style="border-width: 0px; color: red;" value="{{message}}" readonly> --}}
-<form id="couponForm" method="post" action="/admin/addingOffer" onsubmit="return validateForm(event)">
+ <form id="couponForm" method="post" action="/admin/addingOffer" onsubmit="return validateForm(event)">
 
     <div class="form-group">
         <label for="DiscountType">Discount Type:</label>
@@ -185,48 +184,41 @@
         function validateForm(event) {
             let valid = true;
 
-            // Reset error messages
-            document.querySelectorAll('.error-message').forEach(function(error) {
+             document.querySelectorAll('.error-message').forEach(function(error) {
                 error.style.display = 'none';
             });
 
-            // Validate DiscountType
-            const discountType = document.getElementById("DiscountType");
+             const discountType = document.getElementById("DiscountType");
             if (discountType.value === "") {
                 document.getElementById("DiscountTypeError").style.display = "block";
                 valid = false;
             }
 
-            // Validate DiscountValue
-            const discountValue = document.getElementById("DiscountValue");
+             const discountValue = document.getElementById("DiscountValue");
             if (discountValue.value <= 0) {
                 document.getElementById("DiscountValueError").style.display = "block";
                 valid = false;
             }
-
-            // If discount type is 'percentage', ensure discount value is <= 50
+ 
             if (discountType.value === "percentage" && discountValue.value > 50) {
                 document.getElementById("MaxPercentageError").style.display = "block";
                 valid = false;
             }
 
-            // Validate Description
-            const description = document.getElementById("Description");
+             const description = document.getElementById("Description");
             if (description.value.trim() === "") {
                 document.getElementById("DescriptionError").style.display = "block";
                 valid = false;
             }
 
-            // Validate Products
-            const products = document.querySelectorAll('input[name="Products[]"]:checked');
+             const products = document.querySelectorAll('input[name="Products[]"]:checked');
             if (products.length === 0) {
                 document.getElementById("ProductsError").style.display = "block";
                 valid = false;
             }
 
-            // Validate ExpiryDate
-            const expiryDate = document.getElementById("ExpiryDate");
-            const today = new Date().toISOString().split("T")[0]; // Get today's date in yyyy-mm-dd format
+             const expiryDate = document.getElementById("ExpiryDate");
+            const today = new Date().toISOString().split("T")[0];  
             if (expiryDate.value && expiryDate.value < today) {
                 Swal.fire({
                     icon: 'error',

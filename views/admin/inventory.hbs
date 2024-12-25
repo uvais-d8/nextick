@@ -124,8 +124,7 @@
                     {{/each}}
                 </tbody>
 
-       <!-- Modal to edit product -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" tabindex="-1">
+ <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -134,18 +133,15 @@
             </div>
             <div class="modal-body">
                 <form action="" method="post" id="editProductForm">
-                    <!-- Hidden field for product ID -->
-                    <input type="hidden" id="productId" name="id">
+                     <input type="hidden" id="productId" name="id">
 
-                    <!-- Product Name -->
-                    <div class="form-group">
+                     <div class="form-group">
                         <label for="name"><b>Product Name</b></label><br>
                         <input value="{{data-name}}" style="width: 100%; height: 36px; border-radius: 4px; border-width: 1px;" type="text" id="name" name="name" placeholder="Enter new name for product">
                         <small id="name-error" class="error-message text-danger"></small>
                     </div>
 
-                    <!-- Stock Quantity -->
-                    <div style="margin-top: 10px;" class="form-group">
+                     <div style="margin-top: 10px;" class="form-group">
                         <label for="stock"><b>Stock Quantity</b></label><br>
                         <input style="width: 100%; height: 36px; border-radius: 4px; border-width: 1px;" type="number" id="stock" name="stock" placeholder="Update the stock quantity">
                         <small id="stock-error" class="error-message text-danger"></small>
@@ -163,39 +159,28 @@
         const modal = document.getElementById("staticBackdrop");
 
         modal.addEventListener("show.bs.modal", function (event) {
-            const button = event.relatedTarget; // Button that triggered the modal
-
-            // Get data attributes from the button
+            const button = event.relatedTarget; 
             const productId = button.getAttribute("data-id");
             const productName = button.getAttribute("data-name");
             const productStock = button.getAttribute("data-stock");
-
-            // Populate modal form fields
             const form = modal.querySelector("#editProductForm");
-            form.action = `/admin/editinventory/${productId}`; // Set the form action
+            form.action = `/admin/editinventory/${productId}`;
             form.querySelector("#name").value = productName;
             form.querySelector("#stock").value = productStock;
         });
-
-        // Form validation and submission
         document.getElementById("editProductForm").addEventListener("submit", function (event) {
-            event.preventDefault(); // Prevent form submission initially
-
+            event.preventDefault(); 
             let isValid = true;
 
-            // Clear previous error messages
             document.querySelectorAll(".error-message").forEach((element) => {
                 element.textContent = "";
             });
 
-            // Validate Product Name
             const nameInput = document.getElementById("name");
             if (!nameInput.value.trim()) {
                 document.getElementById("name-error").textContent = "Product name is required.";
                 isValid = false;
             }
-
-            // Validate Stock Quantity
             const stockInput = document.getElementById("stock");
             if (!stockInput.value.trim()) {
                 document.getElementById("stock-error").textContent = "Stock quantity is required.";
@@ -205,12 +190,10 @@
                 isValid = false;
             }
 
-            // If validation fails, prevent form submission
             if (!isValid) {
-                return; // Do not proceed with form submission
+                return;
             }
 
-            // Proceed with form submission if validation is successful
             this.submit();
         });
     });

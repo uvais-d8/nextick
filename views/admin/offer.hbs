@@ -113,22 +113,17 @@
                             {{/each}}
                         </td>
 
-                        <!-- Display Categories -->
                         <td>
                             {{#each this.Categories}}
-                            <p>{{this.category}}</p> <!-- Assuming Categories have a 'name' property -->
+                            <p>{{this.category}}</p> 
                             {{else}}
                             <p>No Categories</p>
                             {{/each}}
                         </td>
 
-                        <!-- Display Expiry Date -->
-                        <td>{{formatDate this.ExpiryDate}}</td> <!-- Use the formatDate helper -->
-
-                        <!-- Display Status -->
+                        <td>{{formatDate this.ExpiryDate}}</td> 
                         <td>{{#if this.Status}}Active{{else}}Inactive{{/if}}</td>
 
-                        <!-- Edit and Delete Forms -->
                         <td>
                             <form action="/admin/editOffer/{{this._id}}" method="POST">
                                 <input type="submit" value="EDIT"
@@ -161,11 +156,9 @@
 
 
             <div style="margin-left: 44%;" class="pagination">
-              <!-- Pagination -->
 <nav aria-label="Page navigation">
   <ul class="pagination justify-content-center pages custom-pagination">
-    <!-- Show the "Previous" button if there is a previous page -->
-    {{#if previousPage}}
+     {{#if previousPage}}
       <li class="page-item">
         <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
           <span aria-hidden="true">&laquo;</span>
@@ -173,15 +166,13 @@
       </li>
     {{/if}}
 
-    <!-- Generate page numbers -->
-    {{#each (range 1 totalPages)}}
+     {{#each (range 1 totalPages)}}
       <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
         <a class="page-link" href="?page={{this}}">{{this}}</a>
       </li>
     {{/each}}
 
-    <!-- Show the "Next" button if there is a next page -->
-    {{#if nextPage}}
+     {{#if nextPage}}
       <li class="page-item">
         <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
           <span aria-hidden="true">&raquo;</span>
