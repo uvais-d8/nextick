@@ -11,10 +11,10 @@ const productsShema = new mongoose.Schema({
       ref: 'Review',
     },
   ], 
-  popularity: {
-    type: Number,
-    default: 0
-  },
+  // popularity: {
+  //   type: Number,
+  //   default: 0
+  // },
   averageRating: {
     type: Number,
     default: 0
@@ -45,13 +45,13 @@ const productsShema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  availability: {
-    type: String,
-    enum: ["in-stock", "out-of-stock"],
-    default: function () {
-      return this.stock > 0 ? "in-stock" : "out-of-stock";
-    }
-  },
+  // availability: {
+  //   type: String,
+  //   enum: ["in-stock", "out-of-stock"],
+  //   default: function () {
+  //     return this.stock > 0 ? "in-stock" : "out-of-stock";
+  //   }
+  // },
   price: {
     type: Number,
     required: false
