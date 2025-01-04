@@ -7,6 +7,14 @@ const ordersSchema = new mongoose.Schema(
       ref: "user",
       required: true
     },
+    referralCodeUsed: { 
+      type: String, 
+      default: null 
+    },
+    orderReference:{
+      type:String,
+      unique:true,
+    },
     islisted: {
       type: Boolean,
       default: true

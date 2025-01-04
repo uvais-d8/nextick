@@ -13,8 +13,8 @@ const userSchema = new mongoose.Schema(
 
     googleId: {
       type: String,
-      unique: true,
-    }, 
+      unique: true
+    },
     password: {
       type: String,
       required: false
@@ -31,9 +31,23 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
-    phone:{
-      type:Number,
-      required:false
+    phone: {
+      type: Number,
+      required: false
+    },
+    referralCode: {
+      type: String,
+      unique: true
+    },
+    referrals: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
+    referralReward: {
+      type: Number,
+      default: 0
     }
   },
   { timestamps: true }

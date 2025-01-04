@@ -593,34 +593,47 @@ const loadWallet = async (req, res) => {
   try {
     const userId = req.session.userId;
     console.log("User ID:", userId);
+
+    // Fetch wallet details
     const wallet = await Wallet.findOne({ user: userId });
 
-    if (!wallet) {
+    // Fetch user details
+    const user = await User.findById(userId).populate("referrals");
+
+    if (!user) {
       return res.render("wallet", {
-        message: "There is nothing in your wallet",
+        message: "User not found",
         balance: 0,
-        transactions: []
+        transactions: [],
+        user: {}
       });
     }
 
-    console.log("Balance:", wallet.balance);
-    console.log("Transactions:", wallet.transactions);
-
-    const roundedBalance = Math.round(wallet.balance * 100) / 100;
-
-    const sortedTransactions = wallet.transactions.sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    // Wallet balance and transactions
+    let balance = 0;
+    let transactions = [];
+    if (wallet) {
+      balance = Math.round(wallet.balance * 100) / 100;
+      transactions = wallet.transactions.sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    }
 
     res.render("wallet", {
-      balance: roundedBalance, 
-      transactions: sortedTransactions
+      balance, // Wallet balance
+      transactions, // Sorted wallet transactions
+      user: {
+        referralCode: user.referralCode,
+        referrals: user.referrals, // Populated referrals
+        referralReward: user.referralReward // Reward points
+      }
     });
   } catch (error) {
     console.error("Error loading wallet:", error);
     res.status(500).send("Server Error");
   }
 };
+
 
 module.exports = {
   updateDefaultAddress,

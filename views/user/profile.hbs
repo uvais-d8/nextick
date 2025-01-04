@@ -36,6 +36,59 @@
 
     <!-- Custom CSS for product listing -->
     <style>
+        /* Container for the coupon */
+        .coupon-container {
+            background-color: #333;
+            border-radius: 10px;
+            padding: 10px 20px;
+            max-width: 330px;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: translateY(50px);
+            animation: slideUp 0.5s ease-out forwards;
+        }
+
+        /* Text style */
+        .coupon-text {
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Highlight referral code with a special style */
+        #referralCode {
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFD700;
+            text-transform: uppercase;
+            margin-left: 8px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        /* Animation when hovering over the referral code */
+        #referralCode:hover {
+            transform: scale(1.1);
+        }
+
+        /* Animation to slide the coupon from the bottom */
+        @keyframes slideUp {
+            0% {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         a {
             text-decoration: none;
         }
@@ -319,7 +372,8 @@
         .bg-gradient {
             background: linear-gradient(135deg, #ff6b6b, #ff8e53);
         }
-  .navbar {
+
+        .navbar {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -338,6 +392,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+
         .navbar h5 {
             margin: 0 40px;
             font-size: 18px;
@@ -352,6 +407,16 @@
             transition: all 0.3s ease;
         }
     </style>
+    <script>window.addEventListener('load', () => {
+            const referralCodeElement = document.getElementById('referralCode');
+
+            // Add animation for showing the referral code when the page loads
+            setTimeout(() => {
+                referralCodeElement.style.transition = 'transform 0.3s ease';
+                referralCodeElement.style.transform = 'scale(1)';
+            }, 500);
+        });
+    </script>
 </head>
 
 <body style="background-color: rgba(255, 255, 255, 0.936);">
@@ -463,15 +528,20 @@
                     <div class="col-12 col-md-4">
                         <div class="card p-4">
                             <h4 class="mb-4">My profile</h4>
-                            <img style="width: 50px;height:50px;"
+                            <img style="width: 50px;height:50px;margin-top:-15px"
                                 src="https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg"
                                 alt="User Avatar" class="profile-avatar">
-                            <p style="font-weight:bold;color: rgb(0, 0, 0);font-size:16px">{{user.name}}</p>
+                            <p style="font-weight:bold;color: rgb(0, 0, 0);font-size:16px;">{{user.name}}</p>
                             <span style="color:white" id="userId">{{user._id}}</span>
-                            <p style="font-weight:bold;color: rgb(87, 87, 87); font-size:12px">Menber Since
+                            <p style="font-weight:bold;color: rgb(87, 87, 87); font-size:12px;margin-top:-30px">Menber Since
                                 :{{createdAt}}</p>
-                            <p style="color: rgb(29, 29, 29);font-size :13px;">Phone No :{{user.phone}}</p>
-                            <p style="color: rgb(29, 29, 29); font-size :13px;">Email: {{user.email}}</p>
+                            <p style="color: rgb(29, 29, 29);font-size :13px;margin-top:-9px">Phone No :{{user.phone}}</p>
+                            <p style="color: rgb(29, 29, 29); font-size :13px;margin-top:-9px">Email: {{user.email}}</p>
+                            <div class="coupon-container">
+                                <p class="coupon-text">Referral Code: <span
+                                        id="referralCode">{{user.referralCode}}</span></p>
+                            </div>
+
                             <p style="color: white;">.</p>
                             <form method="get" action="/wallet"
                                 style="font-size:15px;margin-bottom:-25px;font-weight:bold;color:black"><button
@@ -498,7 +568,7 @@
                             <label for="name">Place : {{address.place}}</label>
                             <label for="name">City : {{address.city}}</label>
                             <label for="name">Pincode : {{address.pincode}}</label>
-                            <label for="name">District : {{address.district}}</label>
+                            <label style="margin-bottom: 40px;" for="name">District : {{address.district}}</label>
 
                             <!-- Show both buttons if address exists -->
                             <div style="display: flex;">
@@ -532,7 +602,7 @@
                                 style="border-width: 0px;color:rgb(0, 255, 21)">{{success}}</p>
 
                             <script>
-                            
+
                                 setTimeout(() => {
                                     document.getElementById('message').remove();
                                     document.getElementById('success').remove();
@@ -652,7 +722,7 @@
                                     valid phone number (10 digits).</small>
                             </div>
                         </form>
-                    </div>      
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-warning" id="saveNameButton">Save
@@ -662,68 +732,68 @@
             </div>
         </div>
         </section>
-       <script>
-    document.getElementById("saveNameButton").addEventListener("click", async () => {
-        const newName = document.getElementById("newName").value.trim();
-        const newPhone = document.getElementById("newPhone").value.trim();
-        const userId = document.getElementById("userId").textContent;
-        const phoneError = document.getElementById("phoneError");
-        const nameError = document.getElementById("nameError");
+        <script>
+            document.getElementById("saveNameButton").addEventListener("click", async () => {
+                const newName = document.getElementById("newName").value.trim();
+                const newPhone = document.getElementById("newPhone").value.trim();
+                const userId = document.getElementById("userId").textContent;
+                const phoneError = document.getElementById("phoneError");
+                const nameError = document.getElementById("nameError");
 
-        let isValid = true;
+                let isValid = true;
 
-        if (!newName) {
-            if (!nameError) {
-                const error = document.createElement("small");
-                error.id = "nameError";
-                error.style.color = "red";
-                error.textContent = "Username is required.";
-                document.getElementById("newName").after(error);
-            }
-            isValid = false;
-        } else {
-            const existingError = document.getElementById("nameError");
-            if (existingError) existingError.remove();
-        }
+                if (!newName) {
+                    if (!nameError) {
+                        const error = document.createElement("small");
+                        error.id = "nameError";
+                        error.style.color = "red";
+                        error.textContent = "Username is required.";
+                        document.getElementById("newName").after(error);
+                    }
+                    isValid = false;
+                } else {
+                    const existingError = document.getElementById("nameError");
+                    if (existingError) existingError.remove();
+                }
 
-        const phoneRegex = /^[0-9]{10}$/;
-        if (!newPhone) {
-            phoneError.style.display = "block";
-            phoneError.textContent = "Phone number is required.";
-            isValid = false;
-        } else if (!phoneRegex.test(newPhone)) {
-            phoneError.style.display = "block";
-            phoneError.textContent = "Please enter a valid 10-digit phone number.";
-            isValid = false;
-        } else {
-            phoneError.style.display = "none";
-        }
+                const phoneRegex = /^[0-9]{10}$/;
+                if (!newPhone) {
+                    phoneError.style.display = "block";
+                    phoneError.textContent = "Phone number is required.";
+                    isValid = false;
+                } else if (!phoneRegex.test(newPhone)) {
+                    phoneError.style.display = "block";
+                    phoneError.textContent = "Please enter a valid 10-digit phone number.";
+                    isValid = false;
+                } else {
+                    phoneError.style.display = "none";
+                }
 
-        if (!isValid) return;
+                if (!isValid) return;
 
-        try {
-            const response = await fetch("/updateUsername", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ userId, newName, newPhone })
+                try {
+                    const response = await fetch("/updateUsername", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ userId, newName, newPhone })
+                    });
+
+                    const result = await response.json();
+                    console.log("Backend Response:", result);
+
+                    if (result.error) {
+                        alert(result.error);
+                    } else {
+                        console.log("Update successful, redirecting...");
+                        window.location.href = "/profile";
+                    }
+                } catch (error) {
+                    console.log("Error:", error);
+                }
             });
-
-            const result = await response.json();
-            console.log("Backend Response:", result);
-
-            if (result.error) {
-                alert(result.error);
-            } else {
-                console.log("Update successful, redirecting...");
-                window.location.href = "/profile"; 
-            }
-        } catch (error) {
-            console.log("Error:", error);
-        }
-    });
-</script>
+        </script>
 
 
 </html>

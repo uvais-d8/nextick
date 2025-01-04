@@ -1,3 +1,4 @@
+const crypto = require ("crypto")
 const Cart = require("../model/cartModel");
 const Products = require("../model/productsmodal");
 const Orders = require("../model/ordersmodal");
@@ -169,17 +170,24 @@ const placeOrder = async (req, res) => {
       });
     }
 
-    const newOrder = new Orders({
+    const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase(); 
+    const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, ''); 
+    const orderReference = `ORD-${datePart}-${randomSuffix}`;
+        
+        
+        const newOrder = new Orders({
       userId,
       items: updatedCartItems,
       orderTotal,
       paymentMethod,
       shippingAddress,
+      orderReference,
       status: "payment-pending",  // Status remains "payment-pending" for now
     });
 
     console.log("New order details:", newOrder);
     const savedOrder = await newOrder.save();
+    
     console.log("Order saved successfully.");
 
     // Now, update the stock and clear cart after the order is successfully created
@@ -315,8 +323,14 @@ const razorpayy = async (req, res) => {
       console.log("Address already exists:", existingAddress);
     }
 
+    
+    const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase(); 
+    const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, ''); 
+    const orderReference = `ORD-${datePart}-${randomSuffix}`;
+
     const newOrder = new Orders({
       userId,
+      orderReference,
       items: updatedCartItems,
       orderTotal,
       status: "payment-pending",

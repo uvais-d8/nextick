@@ -260,9 +260,13 @@
                     <h1>User Wallet</h1>
                     <p>Manage your balance and transactions</p>
                 </header>
-
-                <section class="wallet-balance">
-                    <h2>Balance</h2>
+                <div>
+                    <h4>Your Referral Code : {{user.referralCode}}</h4>
+                   
+                </div>
+            
+                <section style="margin-top: 30px;" class="wallet-balance">
+                    <h1>Balance</h1>
                     <div class="balance">
                         <span>₹</span><span>{{toInteger balance}}</span>
                     </div>

@@ -235,8 +235,6 @@
 										{{else}}
 										<span class="original-price">{{toInteger this.productId.price}}</span>
 										{{/if}}
-										{{else}}
-										<span class="original-price">{{toInteger this.productId.price}}</span>
 										{{/if}}
 									</td>
 									<td class="product-quantity">
@@ -378,11 +376,10 @@ function updateCartTotals() {
     document.querySelectorAll('.product-total').forEach((cell) => {
         subtotal += parseFloat(cell.innerText);
     });
-
     const shippingRate = 50; // Example shipping rate
     const total = subtotal + shippingRate;
 
-    document.querySelector('#subtotal').innerText = subtotal.toFixed(2);
+   document.getElementById('subtotal').innerText = subtotal.toFixed(2); 
     document.querySelector('#shippingRate').innerText = shippingRate.toFixed(2);
     document.querySelector('#total').innerText = total.toFixed(2);
 }
@@ -455,10 +452,10 @@ function checkCartLimit(input) {
 									<td><strong>Shipping: </strong></td>
 									<td>{{toInteger shippingRate}}</td>
 								</tr>
-								<tr class="total-data">
+								{{!-- <tr class="total-data">
 									<td><strong>Total: </strong></td>
 									<td>{{toInteger total}}</td>
-								</tr>
+								</tr> --}}
 							</tbody>
 						</table>
 						<div class="cart-buttons">

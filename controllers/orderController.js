@@ -173,7 +173,7 @@ const loadOrders = async (req, res) => {
         total, 
       };
     });
-
+    console.log('orders',ordersWithTotals);
     res.render("orders", { orders: ordersWithTotals ,products});
   } catch (error) {
     console.error("Error during load orders", error);
@@ -328,6 +328,7 @@ const removeItem = async (req, res) => {
 };
 const returnOrder = async (req, res) => {
   const itemId = req.params.id;
+  console.log("req.params::",req.params)
   const userId = req.session.userId;
 
   console.log("Item ID:", itemId);
@@ -462,8 +463,8 @@ const generateInvoicePDF = async (req, res) => {
       .font("Helvetica")
       .text(`Name     :${address.firstname} ${address.lastname}`)
       .text(`Address :${address.address}`)
-      .text(`Phone   : ${address.phone}`)
-      .text(`Email    : ${address.email}`)
+      .text(`Phone    : ${address.phone}`)
+      .text(`Email     : ${address.email}`)
       .text(`Location:${address.place} , ${address.city} , ${address.pincode}`)
       .text(`district: ${address.district}`)
       .moveDown();
@@ -472,7 +473,7 @@ const generateInvoicePDF = async (req, res) => {
       .font("Helvetica-Bold")
       .fontSize(11)
       .fillColor("black")
-      .text("     No     Product                                                            Price                          quantity     total Price  ", 55, doc.y, { width: 4000})
+      .text("     No     Product                                                             Price                          quantity     total Price  ", 55, doc.y, { width: 4000})
 
 
     doc
@@ -524,6 +525,8 @@ const generateInvoicePDF = async (req, res) => {
       .fontSize(12)
       .moveDown(3)
       .text(`Subtotal    : Rs ${totalPrice.toFixed(2)}`, 370, doc.y, { align: "right" })
+      .moveDown(0.2)
+      .text(`Shipping    :      Rs 50.00`, 370, doc.y, { align: "right" })
       .moveDown(0.2)
       .text(`Grand Total : Rs ${order.orderTotal.toFixed(2)}`, 370, doc.y, { align: "right", underline: true })
       .moveDown(3);
@@ -705,7 +708,7 @@ console.log("orderTotal",orderTotal)
 module.exports = {
   walletpayment,
   generateInvoicePDF,
-   ordertracking,
+  ordertracking,
   removeorder,
   removeItem,
   checkout,

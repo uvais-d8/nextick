@@ -526,8 +526,11 @@
 				</div>
 				<div class="modal-body">
 					<p id="modalMessage"></p>
-					<h4>Are you sure you want to cancel this order?</h4>
-					<p>Once canceled, the order cannot be restored. Please confirm if you want to proceed with the
+					<h5><i
+													class="bi bi-exclamation-circle-fill text-danger"
+													style="font-size: 2rem;"></i> Are you sure you want to cancel this order?</h5>
+					 
+					<p style="color: orange;">Once canceled, the order cannot be restored.</p><p>Please confirm if you want to proceed with the
 						cancellation.</p>
 					<p id="errorMessage" style="color: red; display: none;">An error occurred. Please try again.</p>
 				</div>
@@ -585,7 +588,7 @@
 							<div style="display: flex;">
 
 
-								<div style="margin-left: 90%;"><button class="btn btn-danger return-button"
+								<div style="margin-left: 100%;"><button class="btn btn-danger return-button"
 										data-bs-toggle="modal" data-bs-target="#returnModal" data-order-id="{{../_id}}"
 										data-item-id="{{this._id}}">
 										Return
@@ -648,7 +651,7 @@
 											<p style="font-size: 1.1rem; font-weight: 500;"><i
 													class="bi bi-exclamation-circle-fill text-danger"
 													style="font-size: 2rem;"></i>
-												Are you <strong>absolutely sure</strong> you want to return this item?
+												Are you <strong>completely sure</strong> you want to return this item?
 											</p>
 											<p class="text-muted">
 												<strong>Order ID :</strong> <span id="modalOrderId"></span><br>
@@ -662,8 +665,7 @@
 											<button type="button" class="btn btn-secondary"
 												data-bs-dismiss="modal">Cancel</button>
 											<button style="font-size: 12px;" type="button" class="btn btn-danger"
-												id="confirmReturn">Confirm
-												Return</button>
+												id="confirmReturn">Confirm Return</button>
 										</div>
 									</div>
 								</div>
@@ -731,12 +733,18 @@
 					</button>
 					{{/if}}
 				</div>{{#if (neq this.status "payment-pending")}}
-				<div style="width:50%;">
-					<form> <button class="btn btn-success" style="width: 134px;"
-							onclick="downloadInvoice('{{_id}}')">Download Invoice</button>
+  {{#if (neq this.status "canceled")}}
+    {{#if (neq this.status "returned")}}
+      <div style="width:50%;">
+          <form>
+              <button class="btn btn-success" style="width: 134px;"
+                      onclick="downloadInvoice('{{_id}}')">Download Invoice</button>
+          </form>
+      </div>
+    {{/if}}
+  {{/if}}
+{{/if}}
 
-					</form>
-					{{/if}}
 				</div>
 			</div>
 		</div>

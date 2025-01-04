@@ -253,35 +253,51 @@
 					<div class="sidebar-sticky pt-3">
 						<h5>Sort By:</h5>
 						<div class="nav flex-column">
-							<a class="nav-link" href="/products">Default</a>
-							<a class="nav-link" href="/advancedSearch?sort=popularity">Popularity</a>
-							<a class="nav-link" href="/advancedSearch?sort=priceLowToHigh">Price: Low to High</a>
-							<a class="nav-link" href="/advancedSearch?sort=priceHighToLow">Price: High to Low</a>
-							<a class="nav-link" href="/advancedSearch?sort=averageRating">Average Rating</a>
-							<a class="nav-link" href="/advancedSearch?sort=featured">Featured</a>
-							<a class="nav-link" href="/advancedSearch?sort=newArrivals">New Arrivals</a>
+							<a class="nav-link"
+								href="/advancedSearch?sort=popularity&page={{currentPage}}&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}">Popularity</a>
+							<a class="nav-link"
+								href="/advancedSearch?sort=priceLowToHigh&page={{currentPage}}&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}">Price:
+								Low to High</a>
+							<a class="nav-link"
+								href="/advancedSearch?sort=priceHighToLow&page={{currentPage}}&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}">Price:
+								High to Low</a>
+							<a class="nav-link"
+								href="/advancedSearch?sort=averageRating&page={{currentPage}}&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}">Average
+								Rating</a>
+							<a class="nav-link"
+								href="/advancedSearch?sort=featured&page={{currentPage}}&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}">Featured</a>
+							<a class="nav-link"
+								href="/advancedSearch?sort=newArrivals&page={{currentPage}}&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}">New
+								Arrivals</a>
 						</div>
+
 
 						<h5 class="mt-4">Filter Stock:</h5>
 						<div class="nav flex-column">
-							<a class="nav-link" href="/advancedSearch?showOutOfStock=include">Show All Products</a>
-							<a class="nav-link" href="/advancedSearch?showOutOfStock=exclude">Hide Out of Stock</a>
+							<a class="nav-link"
+								href="/advancedSearch?showOutOfStock=include&page={{currentPage}}&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}">Show
+								All Products</a>
+							<a class="nav-link"
+								href="/advancedSearch?showOutOfStock=exclude&page={{currentPage}}&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}">Hide
+								Out of Stock</a>
 						</div>
 
+
 						<h5 class="mt-4">Filter by Price:</h5>
-						<form id="price-filter-form" class="mb-3">
+						<form id="price-filter-form" class="mb-3" action="/advancedSearch" method="get">
 							<div class="form-group">
 								<label for="min-price">Min Price:</label>
-								<input type="number" id="min-price" name="minPrice" class="form-control"
-									placeholder="0">
+								<input type="number" id="min-price" name="minPrice" class="form-control" placeholder="0"
+									value="{{minPrice}}">
 							</div>
 							<div class="form-group">
 								<label for="max-price">Max Price:</label>
 								<input type="number" id="max-price" name="maxPrice" class="form-control"
-									placeholder="10000">
+									placeholder="10000" value="{{maxPrice}}">
 							</div>
 							<button type="submit" class="btn btn-warning btn-block">Apply Price Filter</button>
 						</form>
+
 
 						<h5>Filter by Category:</h5>
 						<select id="category-filter" class="form-control mb-3">
@@ -291,7 +307,7 @@
 							{{/each}}
 						</select>
 
-					
+
 						<div style="color: white;">.</div>
 						<div style="color: white;">.</div>
 						<div style="color: white;">.</div>
@@ -326,7 +342,12 @@
 								<button class="btn btn-outline-secondary" type="submit">Search</button>
 							</div>
 						</div>
+						<input type="hidden" name="page" value="{{currentPage}}">
+						<input type="hidden" name="minPrice" value="{{minPrice}}">
+						<input type="hidden" name="maxPrice" value="{{maxPrice}}">
+						<input type="hidden" name="category" value="{{category}}">
 					</form>
+
 
 					<!-- Product grid -->
 					<div class="row">
@@ -423,9 +444,9 @@
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<script>
-			
+
 			document.addEventListener("DOMContentLoaded", function () {
-				
+
 				const wishlistButtons = document.querySelectorAll(".add-to-wishlist");
 				wishlistButtons.forEach((button) => {
 					button.addEventListener("click", async (event) => {
@@ -461,7 +482,7 @@
 					url.searchParams.set('maxPrice', maxPrice);
 					window.location.href = url;
 				});
-	const categoryFilter = document.getElementById("category-filter");
+				const categoryFilter = document.getElementById("category-filter");
 				categoryFilter.addEventListener("change", function () {
 					const category = this.value;
 					const url = new URL(window.location.href);

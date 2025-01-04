@@ -356,24 +356,23 @@ const advancedSearch = async (req, res) => {
     if (showOutOfStock === "exclude") {
       filter.stock = { $gt: 0 };
     }
-       // Standalone Price Filter
-       if ((minPrice && !isNaN(parseFloat(minPrice))) || (maxPrice && !isNaN(parseFloat(maxPrice)))) {
-        filter.price = {};
-        
-        if (minPrice && !isNaN(parseFloat(minPrice))) {
-          filter.price.$gte = parseFloat(minPrice);
-        }
-  
-        if (maxPrice && !isNaN(parseFloat(maxPrice))) {
-          filter.price.$lte = parseFloat(maxPrice);
-        }
+
+    if ((minPrice && !isNaN(parseFloat(minPrice))) || (maxPrice && !isNaN(parseFloat(maxPrice)))) {
+      filter.price = {};
+      
+      if (minPrice && !isNaN(parseFloat(minPrice))) {
+        filter.price.$gte = parseFloat(minPrice);
       }
+
+      if (maxPrice && !isNaN(parseFloat(maxPrice))) {
+        filter.price.$lte = parseFloat(maxPrice);
+      }
+    }
 
     if (category && category !== "all") {
       const categoryDoc = await Category.findOne({ category: category.trim() });
       if (categoryDoc) {
         filter.category = categoryDoc._id;
-        console.log("categoryDoc",categoryDoc)
       } else {
         console.warn(`Category not found: ${category}`);
       }
@@ -434,8 +433,10 @@ const advancedSearch = async (req, res) => {
     });
 
     const totalProducts = await Products.countDocuments(filter); 
-  const allCategories = await Category.find({}, "category").lean();
-  
+    const allCategories = await Category.find({}, "category").lean();
+    
+    const totalPages = Math.ceil(totalProducts / limit);
+    
     if (req.xhr) {
       return res.json({
         products: productsWithOfferPrice,
@@ -453,9 +454,9 @@ const advancedSearch = async (req, res) => {
         category,
         rating,
         totalProducts,
-        categories: allCategories, 
+        categories: allCategories,
         currentPage: parseInt(page),
-        totalPages: Math.ceil(totalProducts / limit),
+        totalPages,
       });
     }
   } catch (error) {
@@ -463,6 +464,7 @@ const advancedSearch = async (req, res) => {
     res.status(500).json({ message: "Error fetching products." });
   }
 };
+
  const  addReview = async (req, res) => {
   const userId =req.session.userId;
    if(!userId){

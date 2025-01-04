@@ -186,168 +186,214 @@
 <body>
   <div class="container">
     <div class="left-side">
-      <h1>Let's Get Started!</h1>
+      <h1>Let's Get Started!<br>Welcome to the worlds of watches</h1>
     </div>
     <div class="right-side">
       <h2 class="form-title">Create Account</h2>
       <form id="signform" method="post" action="/signup" onsubmit="return validateForm()">
-        <input type="text" id="message" style="color: red; border-width:0px; font-size:14px;width:100%" name="message"
-          value="{{message}}" readonly>
+        <input type="text" id="message" style="color: red;font-size:13px;border-width:0px; font-size:14px;width:100%"
+          name="message" value="{{message}}" readonly>
         <div class="name-fields">
           <div class="input-group">
             <label for="firstname">User name</label>
             <input type="text" id="username" name="username" placeholder="Username">
-            <div id="error1" style="display: none;width:100%;color:red" ></div>
+            <div id="error1" style="display: none;width:100%;color:red;font-size:13px"></div>
           </div>
         </div>
         <div class="input-group">
           <label for="email">Email</label>
           <input type="text" name="email" id="email" placeholder="Enter your email">
-           <div id="error2"  style="display: none;width:100%;color:red" ></div>
-        </div> 
+          <div id="error2" style="display: none;width:100%;color:red;font-size:13px"></div>
+        </div>
         <div class="input-group">
           <label for="phone">Phone</label>
           <input type="tell" name="phone" id="phone" placeholder="Enter your phone no">
-           <div id="error3"  style="display: none;width:100%;color:red" ></div>
+          <div id="error3" style="display: none;width:100%;color:red;font-size:13px"></div>
         </div>
         <div class="input-group">
           <label for="password">Password</label>
           <input type="password" id="password" name="password" placeholder="Create password">
-           <div id="error4"  style="display: none;width:100%;color:red"  ></div>
+          <div id="error4" style="display: none;width:100%;color:red;font-size:13px"></div>
         </div>
         <div class="input-group">
           <label for="confirm-password">Confirm Password</label>
           <input type="password" id="confirm-password" name="confirm-password" placeholder="confirm password">
-           <div id="error5"  style="display: none;width:100%;color:red"  ></div>
+          <div id="error5" style="display: none;width:100%;color:red;font-size:13px"></div>
         </div>
-        <button type="submit"  style="margin-top: 10px;"  class="create-account-btn">Create Account</button>
-         </form>
-         <div style="margin-top: 3px;margin-bottom:3px" class="divider">OR</div>
-        <a style="text-decoration:none" href="/auth/google"><button type="button" class="google-btn">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png"
-              alt="Google" width="20" height="20">
-            Sign up with Google
-          </button></a>
-        <div class="login-link">
-          Already have an account? <a href="/login">Log in</a>
-        </div>
-     
+        <button type="submit" class="create-account-btn">Create Account</button>
+
+    
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px;">
+        <!-- Input field for referral code -->
+        <input name="referral" type="text" id="referralInput" class="google-btn" style="
+      display: none;
+      margin-top:-12px;
+      width: 100%;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;" placeholder="Enter your referral code here" />
+
+       <div>
+  <!-- Sign-up button -->
+  <button id="signupButton" type="button" 
+    style="width: 418px; padding: 5px; margin-top: -7px; background-color: #e7e7e7; color: rgb(0, 0, 0); border: none; 
+      border-radius: 5px; font-size: 13px; cursor: pointer; transition: background-color 0.3s;">
+    Signup with referral
+  </button>
+
+  <!-- Referral input field -->
+  <input 
+    type="text" 
+    id="referralInput" 
+    style="display: none; width: 100%; padding: 5px; margin-top: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 13px;" 
+    placeholder="Enter your referral code here"
+  />
+</div>
+</div>
+</form>
+<script>
+  document.getElementById('signupButton').addEventListener('click', function () {
+    const inputField = document.getElementById('referralInput');
+    const signupButton = document.getElementById('signupButton');
+
+    // Show the input field
+    inputField.style.display = 'block';
+
+    // Remove the button after it's clicked
+    signupButton.style.display = 'none';
+  });
+</script>
+
+
+      <div style="margin-top: 5px;font-size:14px;margin-bottom:5px" class="divider">OR</div>
+      <a style="text-decoration:none;" href="/auth/google"><button style="border-color:rgb(153, 152, 152)" type="button"
+          class="google-btn">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png"
+            alt="Google" width="20" height="20">
+          Sign up with Google
+        </button></a>
+      <div style="margin-top: 5px;" class="login-link">
+        Already have an account? <a href="/login">Log in</a>
+      </div>
+
     </div>
   </div>
 
-  <script> 
+  <script>
     document.addEventListener("DOMContentLoaded", function () {
       const messageInput = document.getElementById("message");
 
-       
+
       if (messageInput.value) {
         setTimeout(() => {
-          messageInput.value = "";  
-        }, 1000); 
+          messageInput.value = "";
+        }, 1000);
       }
     });
   </script>
 
-<script>
-        const nameId = document.getElementById("username");
-        const emailId = document.getElementById("email");
-        const phoneId = document.getElementById("phone");
-        const passwordId = document.getElementById("password");
-        const confirmPassword = document.getElementById("confirm-password");
-        const error1 = document.getElementById("error1");
-        const error2 = document.getElementById("error2");
-        const error3 = document.getElementById("error3");
-        const error4 = document.getElementById("error4");
-        const error5 = document.getElementById("error5");
-        const signform = document.getElementById("signform");
+  <script>
+    const nameId = document.getElementById("username");
+    const emailId = document.getElementById("email");
+    const phoneId = document.getElementById("phone");
+    const passwordId = document.getElementById("password");
+    const confirmPassword = document.getElementById("confirm-password");
+    const referral = document.getElementById("referralInput")
+    const error1 = document.getElementById("error1");
+    const error2 = document.getElementById("error2");
+    const error3 = document.getElementById("error3");
+    const error4 = document.getElementById("error4");
+    const error5 = document.getElementById("error5");
+    const signform = document.getElementById("signform");
 
-        function nameValidateChecking() {
-            const nameval = nameId.value.trim();
-            const namepattern = /^[A-Za-z\s]+$/;
-            if (nameval === "") {
-                error1.innerHTML = "Please enter a valid name.";
-                error1.style.display = "block";
-                return false;
-            } else if (!namepattern.test(nameval)) {
-                error1.innerHTML = "Name can only contain alphabets and space.";
-                error1.style.display = "block";
-                return false;
-            } else {
-                error1.innerHTML = "";
-                error1.style.display = "none";
-                return true;
-            }
-        }
+    function nameValidateChecking() {
+      const nameval = nameId.value.trim();
+      const namepattern = /^[A-Za-z\s]+$/;
+      if (nameval === "") {
+        error1.innerHTML = "Please enter a valid name.";
+        error1.style.display = "block";
+        return false;
+      } else if (!namepattern.test(nameval)) {
+        error1.innerHTML = "Name can only contain alphabets and space.";
+        error1.style.display = "block";
+        return false;
+      } else {
+        error1.innerHTML = "";
+        error1.style.display = "none";
+        return true;
+      }
+    }
 
-        function emailValidateChecking() {
-            const emailval = emailId.value;
-            const emailpattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-            if (!emailpattern.test(emailval)) {
-                error2.innerHTML = "Invalid email format.";
-                error2.style.display = "block";
-                return false;
-            } else {
-                error2.innerHTML = "";
-                error2.style.display = "none";
-                return true;
-            }
-        }
+    function emailValidateChecking() {
+      const emailval = emailId.value;
+      const emailpattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+      if (!emailpattern.test(emailval)) {
+        error2.innerHTML = "Invalid email format.";
+        error2.style.display = "block";
+        return false;
+      } else {
+        error2.innerHTML = "";
+        error2.style.display = "none";
+        return true;
+      }
+    }
 
-        function phoneValidateChecking() {
-            const phoneval = phoneId.value;
-            const phonepattern = /^[0-9]{10}$/;
-            if (!phonepattern.test(phoneval)) {
-                error3.innerHTML = "Phone number must be 10 digits.";
-                error3.style.display = "block";
-                return false;
-            } else {
-                error3.innerHTML = "";
-                error3.style.display = "none";
-                return true;
-            }
-        }
+    function phoneValidateChecking() {
+      const phoneval = phoneId.value;
+      const phonepattern = /^[0-9]{10}$/;
+      if (!phonepattern.test(phoneval)) {
+        error3.innerHTML = "Phone number must be 10 digits.";
+        error3.style.display = "block";
+        return false;
+      } else {
+        error3.innerHTML = "";
+        error3.style.display = "none";
+        return true;
+      }
+    }
 
-        function passwordValidateChecking() {
-            const passwordval = passwordId.value;
-            const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/;
+    function passwordValidateChecking() {
+      const passwordval = passwordId.value;
+      const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/;
 
 
-            if (!passwordPattern.test(passwordval)) {
-                error4.innerHTML = "Password must be 8 charecters and include a uppercase letter, lowercase letter, number and a special charecter";
-                error4.style.display = "block";
-                return false;
-            } else {
-                error4.innerHTML = "";
-                error4.style.display = "none";
-                return true;
-            }
-        }
+      if (!passwordPattern.test(passwordval)) {
+        error4.innerHTML = "Password must be 8 charecters and include a uppercase letter, lowercase letter, number and a special charecter";
+        error4.style.display = "block";
+        return false;
+      } else {
+        error4.innerHTML = "";
+        error4.style.display = "none";
+        return true;
+      }
+    }
 
-        function confirmPasswordValidateChecking() {
-            if (passwordId.value !== confirmPassword.value) {
-                error5.innerHTML = "Passwords do not match.";
-                error5.style.display = "block";
-                return false;
-            } else {
-                error5.innerHTML = "";
-                error5.style.display = "none";
-                return true;
-            }
-        }
+    function confirmPasswordValidateChecking() {
+      if (passwordId.value !== confirmPassword.value) {
+        error5.innerHTML = "Passwords do not match.";
+        error5.style.display = "block";
+        return false;
+      } else {
+        error5.innerHTML = "";
+        error5.style.display = "none";
+        return true;
+      }
+    }
 
-        signform.addEventListener("submit", (event) => {
-            const isNameValid = nameValidateChecking();
-            const isEmailValid = emailValidateChecking();
-            const isPhoneValid = phoneValidateChecking();
-            const isPasswordValid = passwordValidateChecking();
-            const isConfirmPasswordValid = confirmPasswordValidateChecking();
+    signform.addEventListener("submit", (event) => {
+      const isNameValid = nameValidateChecking();
+      const isEmailValid = emailValidateChecking();
+      const isPhoneValid = phoneValidateChecking();
+      const isPasswordValid = passwordValidateChecking();
+      const isConfirmPasswordValid = confirmPasswordValidateChecking();
 
-            if (!isNameValid || !isEmailValid || !isPhoneValid || !isPasswordValid || !isConfirmPasswordValid) {
-                event.preventDefault()
-            }
-        });
-    </script>
+      if (!isNameValid || !isEmailValid || !isPhoneValid || !isPasswordValid || !isConfirmPasswordValid) {
+        event.preventDefault()
+      }
+    });
+  </script>
 
   <script>
     function handleCredentialResponse(response) {
@@ -361,7 +407,7 @@
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            window.location.href = '/home'; 
+            window.location.href = '/home';
           } else {
             alert("Google sign-in failed.");
           }
