@@ -62,7 +62,7 @@ background-color: wheat;            background-size: cover;
             <input type="hidden" name="otp" id="otp" required>
 
             <div id="timer" onclick="location.reload()" style="font-size: 14px; margin-bottom: 10px;margin-top:15px">
-                Resend OTP in <span id="countdown">30</span> seconds</div>
+                Resend OTP in <span id="countdown">60</span> seconds</div>
 
 
             <button style="background-color:rgba(255, 145, 0, 0.944);color:rgb(0, 0, 0)" type="submit"
@@ -79,7 +79,7 @@ background-color: wheat;            background-size: cover;
         <script>
              const countdownElement = document.getElementById('countdown');
             const resendForm = document.getElementById('resendForm');
-            let timer = 30; 
+            let timer = 60; 
              const interval = setInterval(() => {
                 timer--;
 

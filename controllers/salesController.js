@@ -6,6 +6,7 @@ const Razorpay = require("razorpay");
 const Coupons = require("../model/couponModel");
 const Address = require ("../model/addressModel")
 const Offer = require("../model/offermodel");
+const Wallet = require("../model/walletModel");
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -116,7 +117,7 @@ const placeOrder = async (req, res) => {
   if (!city) errors.city = "City is required";
   if (!district) errors.district = "District is required";
 
-  const allowedPaymentMethods = ["cod", "razorpay"];
+  const allowedPaymentMethods = ["wallet","cod", "razorpay"];
   if (!paymentMethod || !allowedPaymentMethods.includes(paymentMethod)) {
     errors.paymentMethod = "Invalid or unsupported payment method selected";
   }
@@ -173,6 +174,28 @@ const placeOrder = async (req, res) => {
     const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase(); 
     const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, ''); 
     const orderReference = `ORD-${datePart}-${randomSuffix}`;
+
+    let wallet = await Wallet.findOne({user:userId})
+console.log("wallet",wallet)
+console.log("paymentmethode",paymentMethod)
+    if(paymentMethod == "wallet"){
+      if(orderTotal > wallet.balance){
+        console.log("insufficient balance in wallet")
+        return res.json({
+          success: false,
+          message: 'Insufficient balance in wallet', 
+        });
+        
+      }else{
+        wallet.balance-=orderTotal;
+        wallet.transactions.push({
+        type: "debit",
+        amount: orderTotal,
+        description: `payment for the order ( ${orderReference} )`,
+      });
+      }
+    }
+    wallet.save()
         
         
         const newOrder = new Orders({
@@ -182,7 +205,7 @@ const placeOrder = async (req, res) => {
       paymentMethod,
       shippingAddress,
       orderReference,
-      status: "payment-pending",  // Status remains "payment-pending" for now
+      status: "scheduled",  // Status remains "payment-pending" for now
     });
 
     console.log("New order details:", newOrder);
@@ -379,8 +402,8 @@ const razorpayy = async (req, res) => {
       orderId: savedOrder._id,
     });
   } catch (error) {
-    console.log("Error creating Razorpay order:", error.message);
-    res.status(500).json({ success: false, message: error.message });
+    console.log("Error creating Razorpay order:", error);
+    res.status(500).json({ success: false, message: error });
   }
 };
 const getProductStock = async (req, res) => {

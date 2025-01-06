@@ -284,7 +284,7 @@ const removeItem = async (req, res) => {
       product.stock += item.quantity;
       await product.save();
 
-      if (order.paymentMethod === "razorpay") {
+      if (order.paymentMethod === "razorpay" , "wallet") {
         let refundAmount = totalRefundForItem;
         console.log('refundAmount',refundAmount)
         let wallet = await Wallet.findOne({ user: order.userId });
@@ -296,7 +296,7 @@ const removeItem = async (req, res) => {
               {
                 type: "refund",
                 amount: refundAmount,
-                description: `Refund for canceled product (${product?.name}) in order ${orderId}`
+                description: `Refund for canceled product ( ${product?.name} )`
               }
             ]
           });
@@ -305,7 +305,7 @@ const removeItem = async (req, res) => {
           wallet.transactions.push({
             type: "refund",
             amount: refundAmount-50,
-            description: `Refund for canceled product (${product?.name}) in order ${orderId}`
+            description: `Refund for canceled product ( ${product?.name} )`
           });
         }
         await wallet.save();
@@ -360,30 +360,32 @@ const returnOrder = async (req, res) => {
     const refundAmount = (product?.priceWithDiscount > 0 ? product?.priceWithDiscount : product?.price) * item.quantity;
  
     let wallet = await Wallet.findOne({ user: userId });
-    if (!wallet) {
-      wallet = new Wallet({
-        user: userId,
-        balance: refundAmount,
-        transactions: [
-          {
-            type: "refund",
-            amount: refundAmount,
-            description: `Refund for returned item (${product?.name || "Product"})`,
-          },
-        ],
-      });
-    } else {
-      wallet.balance += refundAmount;
-      wallet.transactions.push({
-        type: "refund",
-        amount: refundAmount,
-        description: `Refund for returned item (${product?.name || "Product"})`,
-      });
+    if(order.paymentMethod !== "cod"){
+      if (!wallet) {
+        wallet = new Wallet({
+          user: userId,
+          balance: refundAmount,
+          transactions: [
+            {
+              type: "refund",
+              amount: refundAmount,
+              description: `Refund for returned item ( ${product?.name || "Product"} )`,
+            },
+          ],
+        });
+      } else {
+        wallet.balance += refundAmount;
+        wallet.transactions.push({
+          type: "refund",
+          amount: refundAmount,
+          description: `Refund for returned item ( ${product?.name || "Product"} )`,
+        });
+      }
+  
+      await wallet.save();
+      console.log(`Refund processed: Amount ${refundAmount} added to wallet.`);
+  
     }
-
-    await wallet.save();
-    console.log(`Refund processed: Amount ${refundAmount} added to wallet.`);
-
     // Check if all items in the order are returned
     const allItemsReturned = order.items.every(item => item.status === "returned");
 

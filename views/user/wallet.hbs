@@ -262,9 +262,9 @@
                 </header>
                 <div>
                     <h4>Your Referral Code : {{user.referralCode}}</h4>
-                   
+
                 </div>
-            
+
                 <section style="margin-top: 30px;" class="wallet-balance">
                     <h1>Balance</h1>
                     <div class="balance">
@@ -288,12 +288,16 @@
                             {{#each transactions}}
                             <tr>
                                 <td> {{this.type}} </td>
-                                <td style="color: green;font-weight:bold"> ₹{{toInteger this.amount}} </td>
+                                <td
+                                    style="font-weight:500; color: {{#if (eq this.type 'refund')}}green{{else if (eq this.type 'debit')}}red{{else}}black{{/if}}">
+                                    ₹{{toInteger this.amount}}
+                                </td>
                                 <td>{{this.description}}</td>
                                 <td> {{formatDate this.date}} </td>
                             </tr>
                             {{/each}}
                         </tbody>
+
                     </table>
                 </section>
                 {{else}}

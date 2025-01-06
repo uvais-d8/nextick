@@ -548,8 +548,12 @@
                 color = 'red'; 
                 break;
             case 'shipped':
-                message = 'Your order is on the way!';
+                message = 'Your order is on the way !';
                 color = 'purple';  
+                break;
+            case 'returned':
+                message = 'Your order is returned after delivery !';
+                color = 'orange';  
                 break;
             default:
                 message = 'Unknown order status.';
