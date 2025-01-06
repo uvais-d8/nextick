@@ -375,6 +375,24 @@
             font-weight: bold;
             color: rgb(211, 2, 124);
         }
+        .mback {
+            border: 1px solid #c68531;
+            color: #cb872e;
+            background-color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            position: absolute;
+           left: 80%;
+           top:67%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+        }
+
+        .mback:hover {
+            background-color: #ca852b;
+            color: white;
+        }
     </style>
 </head>
 
@@ -459,21 +477,35 @@
                 </div>
             </div>
         </div>
-        </head>
+    </div>
+    <div style="background-color: rgb(237, 237, 237);padding-top:80px;padding-bottom:80px">
+        <div style="background-color:rgb(255, 255, 255);padding:50px;border-radius:6px" class="tracking-container">
+            <h4>Your Order ID : {{order.orderReference}}</h4> <a href="/orderss"><button class="mback">Back</button></a>
 
-        <body>
+            <div style="color: rgb(25, 162, 1);" class="status-message" id="statusMessage"></div>
+            <div class="step-price">Whole Shipping amount for the Order :<b> ₹ 50</b></div><br>
+            <div class="msection user-info">
+                <div class="msection-title">
+                    <h5>User Information</h5>
+                </div>
+                <p><span style="font-weight: 500;">User name_________:</span>
+                    {{order.shippingAddress.firstname}} {{order.shippingAddress.lastname}}<br>
+                    <span style="font-weight: 500;">Phone No__________:</span> {{order.shippingAddress.phone}} <br>
+                    <span style="font-weight: 500;">Shipping Address__:</span> {{order.shippingAddress.address}} <br>
+                    <span style="font-weight: 500;">place and city______:</span> {{order.shippingAddress.place}} ,
+                    {{order.shippingAddress.city}} <br>
+                    <span style="font-weight: 500;">pin & district_______:</span> {{order.shippingAddress.district}} ,
+                    {{order.shippingAddress.pincode}}<br>
+                </p>
+            </div>
+            <hr>
+            <h5>The Products</h5>
+            <div class="order-info"> {{#each order.items}}
+                <div class="status-header">
+                    <div style="font-size: large;" class="status-header">Item : {{this.productId.name}}</div>
 
-            <div
-                style="background-color: rgb(255, 248, 248);width:100%;align-items:center;padding-top:120px;padding-bottom:50px">
-                <div class="tracking-container">
-                    <div class="order-info"> {{#each order.items}}
-
-                        <div style="font-size: 16px;" class="order-number"> <label>Your product Id :</label>
-                            #{{orderReference}}</div>
-                        <div class="status-header">
-                            <span><b>Status :</b></span>
-
-                            <span class="
+                    <span><b>Status :</b></span>
+                    <span class="
         {{#if (eq status 'scheduled')}}button-blue{{else}}
         {{#if (eq status 'pending')}}button-yellow{{else}}
         {{#if (eq status 'canceled')}}button-red{{else}}
@@ -482,251 +514,272 @@
         {{#if (eq status 'delivered')}}button-green{{else}}
         {{#if (eq status 'shipped')}}button-purple{{/if}}{{/if}}
         {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}">
-                                {{status}}
-                            </span>
-                            <div class="status-message" id="statusMessage"></div>
-                            <div style="font-size: large;" class="status-header">Item : {{this.productId.name}}</div>
+                        {{status}}
+                    </span>
 
-                            <div class="step-price"><b>Price  :   ₹ {{multiplyAndRound this.quantity this.priceWithDiscount}}</b>
-                            <div class="step-price"><b>Shipping Price  :   ₹ 50</b>
-                            </div>
-                            <div class="step-quantity"><b>Quantity: {{this.quantity}}</b></div>
+
+                    <div class="step-price"><b>Price : ₹ {{multiplyAndRound this.quantity this.priceWithDiscount}}</b>
+
+                        <div class="step-quantity"><b>Quantity: {{this.quantity}}</b></div>
+                    </div>
+                    <hr>
+                    {{/each}}
+
+                   <script>
+    function getStatusMessage(status) {
+        let message = '';
+        let color = '';
+
+        switch (status) {
+            case 'scheduled':
+                message = 'Your order is scheduled for delivery.';
+                color = 'blue';  
+                break;
+            case 'payment-pending':
+                message = 'Your order payment is pending. Please retry your payment soon.';
+                color = 'orange';  
+                break;
+            case 'delivered':
+                message = 'The order has been delivered successfully.';
+                color = 'green';  
+                break;
+            case 'canceled':
+                message = 'The order has been canceled.';
+                color = 'red'; 
+                break;
+            case 'shipped':
+                message = 'Your order is on the way!';
+                color = 'purple';  
+                break;
+            default:
+                message = 'Unknown order status.';
+                color = 'gray';  
+                break;
+        }
+
+        return { message: message, color: color };
+    }
+
+    const orderStatus = "{{order.status}}";
+    const statusDetails = getStatusMessage(orderStatus);
+
+    const statusMessageElement = document.getElementById('statusMessage');
+    statusMessageElement.innerText = statusDetails.message;
+    statusMessageElement.style.color = statusDetails.color;
+</script>
+
+
+
+                    <div class="timeline">
+                        <div class="step" id="step-pending">
+                            <div class="step-icon">✓</div>
+                            <div class="step-label">Pending</div>
                         </div>
-                        <hr>
-                        {{/each}}
-
-                        <script>
-                            function getStatusMessage(status) {
-                                switch (status) {
-                                    case 'scheduled':
-                                        return 'Your order is scheduled for delivery.';
-                                    case 'pending':
-                                        return 'Your order is pending and will be processed soon.';
-                                    case 'delivered':
-                                        return 'The order has been delivered successfully.';
-                                    case 'canceled':
-                                        return 'The order has been canceled.';
-                                    case 'shipped':
-                                        return 'Your order is on the way!';
-                                    default:
-                                        return 'Unknown order status.';
-                                }
-                            }                       </div> 
-                          const orderStatus = "{{order.status}}";
-
-                            document.getElementById('statusMessage').innerText = getStatusMessage(orderStatus);
-                        </script>
-
-
-                        <div class="timeline">
-                            <div class="step" id="step-pending">
-                                <div class="step-icon">✓</div>
-                                <div class="step-label">Pending</div>
-                            </div>
-                            <div class="step" id="step-scheduled">
-                                <div class="step-icon">✓</div>
-                                <div class="step-label">Scheduled</div>
-                            </div>
-                            <div class="step" id="step-shipped">
-                                <div class="step-icon">✓</div>
-                                <div class="step-label">Shipped</div>
-                            </div>
-                            <div class="step" id="step-delivered">
-                                <div class="step-icon">✓</div>
-                                <div class="step-label">Delivered</div>
-                            </div>
+                        <div class="step" id="step-scheduled">
+                            <div class="step-icon">✓</div>
+                            <div class="step-label">Scheduled</div>
                         </div>
-                        <style>
-                            .timeline {
-                                display: flex;
-                                gap: 20px;
-                            }
+                        <div class="step" id="step-shipped">
+                            <div class="step-icon">✓</div>
+                            <div class="step-label">Shipped</div>
+                        </div>
+                        <div class="step" id="step-delivered">
+                            <div class="step-icon">✓</div>
+                            <div class="step-label">Delivered</div>
+                        </div>
+                    </div>
+                    <style>
+                        .timeline {
+                            display: flex;
+                            gap: 20px;
+                        }
 
-                            .step {
-                                text-align: center;
-                                color: #000000;
-                            }
+                        .step {
+                            text-align: center;
+                            color: #000000;
+                        }
 
-                            .step .step-icon {
-                                background: #ff7c7c;
-                                color: #ffffff;
-                                border-radius: 50%;
-                                width: 35px;
-                                height: 35px;
-                                line-height: 30px;
-                                margin: 0 auto;
-                            }
+                        .step .step-icon {
+                            background: #ff7c7c;
+                            color: #ffffff;
+                            border-radius: 50%;
+                            width: 35px;
+                            height: 35px;
+                            line-height: 30px;
+                            margin: 0 auto;
+                        }
 
-                            .step.active {
-                                color: #49ff29;
-                            }
+                        .step.active {
+                            color: #49ff29;
+                        }
 
-                            .step.active .step-icon {
-                                background: #2bff0f;
-                            }
-                        </style>
-                        <script>document.addEventListener("DOMContentLoaded", () => {
-                                const orderStatus = `{{order.status}}`;
+                        .step.active .step-icon {
+                            background: #2bff0f;
+                        }
+                    </style>
+                    <script>document.addEventListener("DOMContentLoaded", () => {
+                            const orderStatus = `{{order.status}}`;
 
-                                const steps = ["pending", "scheduled", "shipped", "delivered"];
-                                steps.forEach((step, index) => {
-                                    const stepElement = document.getElementById(`step-${step}`);
-                                    if (stepElement) {
-                                        if (steps.indexOf(orderStatus) >= index) {
-                                            stepElement.classList.add("active");
-                                        } else {
-                                            stepElement.classList.remove("active");
-                                        }
+                            const steps = ["pending", "scheduled", "shipped", "delivered"];
+                            steps.forEach((step, index) => {
+                                const stepElement = document.getElementById(`step-${step}`);
+                                if (stepElement) {
+                                    if (steps.indexOf(orderStatus) >= index) {
+                                        stepElement.classList.add("active");
+                                    } else {
+                                        stepElement.classList.remove("active");
                                     }
-                                });
-                            });
-                        </script>
-
-                        <div class="tracking-log">
-                            <div class="log-entry">
-                                <div class="log-time" id="order-created"></div>
-                                <div class="log-status">Order Created</div>
-                            </div>
-                            <div class="log-entry">
-                                <div class="log-time" id="shipping-expected"></div>
-                                <div class="log-status">Shipping Expected Date</div>
-                            </div>
-                            <div class="log-entry">
-                                <div class="log-time" id="delivery-expected"></div>
-                                <div class="log-status">Expected Delivery Date</div>
-                            </div>
-                        </div>
-                        <script>
-                            document.addEventListener('DOMContentLoaded', () => {
-                                 const order = {
-                                    createdAt: `{{order.createdAt}}`,
-                                    status: `order.Status`,  
-                                };
-
-                                function formatDate(date) {
-                                    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                                    return new Date(date).toLocaleDateString(undefined, options);
                                 }
-
-                                const createdAt = new Date(order.createdAt);
-                                const shippingExpected = new Date(createdAt);
-                                const deliveryExpected = new Date(createdAt);
-
-                                shippingExpected.setDate(createdAt.getDate() + 3);
-                                deliveryExpected.setDate(createdAt.getDate() + 7);
-
-                                document.getElementById('order-created').textContent = formatDate(createdAt);
-                                document.getElementById('shipping-expected').textContent = formatDate(shippingExpected);
-                                document.getElementById('delivery-expected').textContent = formatDate(deliveryExpected);
                             });
-                        </script>
+                        });
+                    </script>
 
+                    <div class="tracking-log">
+                        <div class="log-entry">
+                            <div class="log-time" id="order-created"></div>
+                            <div class="log-status">Order Created</div>
+                        </div>
+                        <div class="log-entry">
+                            <div class="log-time" id="shipping-expected"></div>
+                            <div class="log-status">Shipping Expected Date</div>
+                        </div>
+                        <div class="log-entry">
+                            <div class="log-time" id="delivery-expected"></div>
+                            <div class="log-status">Expected Delivery Date</div>
+                        </div>
                     </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const order = {
+                                createdAt: `{{order.createdAt}}`,
+                                status: `order.Status`,
+                            };
+
+                            function formatDate(date) {
+                                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                                return new Date(date).toLocaleDateString(undefined, options);
+                            }
+
+                            const createdAt = new Date(order.createdAt);
+                            const shippingExpected = new Date(createdAt);
+                            const deliveryExpected = new Date(createdAt);
+
+                            shippingExpected.setDate(createdAt.getDate() + 3);
+                            deliveryExpected.setDate(createdAt.getDate() + 7);
+
+                            document.getElementById('order-created').textContent = formatDate(createdAt);
+                            document.getElementById('shipping-expected').textContent = formatDate(shippingExpected);
+                            document.getElementById('delivery-expected').textContent = formatDate(deliveryExpected);
+                        });
+                    </script>
 
                 </div>
-                </div>
-                </div>
-        </body>
 
-        <!-- footer -->
-        <div class="footer-area">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-3 col-md-6">
-                        <div class="footer-box about-widget">
-                            <h2 class="widget-title">About us</h2>
-                            <p>Discover an exclusive selection of premium watches on our e-commerce website,
-                                featuring
-                                luxury brands and unique designs. Enjoy seamless shopping, secure payment options,
-                                and
-                                exceptional customer service for your perfect timepiece.</p>
-                        </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    </div>
+
+    <!-- footer -->
+    <div class="footer-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-box about-widget">
+                        <h2 class="widget-title">About us</h2>
+                        <p>Discover an exclusive selection of premium watches on our e-commerce website,
+                            featuring
+                            luxury brands and unique designs. Enjoy seamless shopping, secure payment options,
+                            and
+                            exceptional customer service for your perfect timepiece.</p>
                     </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="footer-box get-in-touch">
-                            <h2 class="widget-title">Get in Touch</h2>
-                            <ul>
-                                <li>34/8, malappuram, kerala, india.</li>
-                                <li>support@watchpremium.com</li>
-                                <li>+75 94 0606 96</li>
-                            </ul>
-                        </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-box get-in-touch">
+                        <h2 class="widget-title">Get in Touch</h2>
+                        <ul>
+                            <li>34/8, malappuram, kerala, india.</li>
+                            <li>support@watchpremium.com</li>
+                            <li>+75 94 0606 96</li>
+                        </ul>
                     </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="footer-box pages">
-                            <h2 class="widget-title">Pages</h2>
-                            <ul>
-                                <li><a href="/home.hbs">Home</a></li>
-                                <li><a href="/about.hbs">About</a></li>
-                                <li><a href="/services.hbs">Shop</a></li>
-                                <li><a href="/news.hbs">News</a></li>
-                                <li><a href="/contact.hbs">Contact</a></li>
-                            </ul>
-                        </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-box pages">
+                        <h2 class="widget-title">Pages</h2>
+                        <ul>
+                            <li><a href="/home.hbs">Home</a></li>
+                            <li><a href="/about.hbs">About</a></li>
+                            <li><a href="/services.hbs">Shop</a></li>
+                            <li><a href="/news.hbs">News</a></li>
+                            <li><a href="/contact.hbs">Contact</a></li>
+                        </ul>
                     </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="footer-box subscribe">
-                            <h2 class="widget-title">Subscribe</h2>
-                            <p>Subscribe to our mailing list to get the latest updates.</p>
-                            <form action="/home.hbs">
-                                <input type="email" placeholder="Email">
-                                <button type="submit"><i class="fas fa-paper-plane"></i></button>
-                            </form>
-                        </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-box subscribe">
+                        <h2 class="widget-title">Subscribe</h2>
+                        <p>Subscribe to our mailing list to get the latest updates.</p>
+                        <form action="/home.hbs">
+                            <input type="email" placeholder="Email">
+                            <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- end footer -->
+    </div>
+    <!-- end footer -->
 
-        <!-- copyright -->
-        <div class="copyright">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-6 col-md-12">
-                        <p>Copyrights &copy; 2005 - <a href="https://imransdesign.com/">Muhammed Uvais</a>, All
-                            Rights
-                            Reserved.<br>
-                            Distributed By - <a href="https://themewagon.com/">NEXTICK</a>
-                        </p>
-                    </div>
-                    <div class="col-lg-6 text-right col-md-12">
-                        <div class="social-icons">
-                            <ul>
-                                <li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-                                <li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
-                                <li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
-                                <li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
-                                <li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
-                            </ul>
-                        </div>
+    <!-- copyright -->
+    <div class="copyright">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-md-12">
+                    <p>Copyrights &copy; 2005 - <a href="https://imransdesign.com/">Muhammed Uvais</a>, All
+                        Rights
+                        Reserved.<br>
+                        Distributed By - <a href="https://themewagon.com/">NEXTICK</a>
+                    </p>
+                </div>
+                <div class="col-lg-6 text-right col-md-12">
+                    <div class="social-icons">
+                        <ul>
+                            <li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                            <li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                            <li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                            <li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+                            <li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- end copyright -->
 
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="/assets/js/jquery-1.11.3.min.js"></script>
-        <!-- bootstrap -->
-        <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
-        <!-- count down -->
-        <script src="/assets/js/jquery.countdown.js"></script>
-        <!-- isotope -->
-        <script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
-        <!-- waypoints -->
-        <script src="/assets/js/waypoints.js"></script>
-        <!-- owl carousel -->
-        <script src="/assets/js/owl.carousel.min.js"></script>
-        <!-- magnific popup -->
-        <script src="/assets/js/jquery.magnific-popup.min.js"></script>
-        <!-- mean menu -->
-        <script src="/assets/js/jquery.meanmenu.min.js"></script>
-        <!-- sticker js -->
-        <script src="/assets/js/sticker.js"></script>
-        <!-- main js -->
-        <script src="/assets/js/main.js"></script>
+            <!-- end copyright -->
+
+            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="/assets/js/jquery-1.11.3.min.js"></script>
+            <!-- bootstrap -->
+            <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+            <!-- count down -->
+            <script src="/assets/js/jquery.countdown.js"></script>
+            <!-- isotope -->
+            <script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
+            <!-- waypoints -->
+            <script src="/assets/js/waypoints.js"></script>
+            <!-- owl carousel -->
+            <script src="/assets/js/owl.carousel.min.js"></script>
+            <!-- magnific popup -->
+            <script src="/assets/js/jquery.magnific-popup.min.js"></script>
+            <!-- mean menu -->
+            <script src="/assets/js/jquery.meanmenu.min.js"></script>
+            <!-- sticker js -->
+            <script src="/assets/js/sticker.js"></script>
+            <!-- main js -->
+            <script src="/assets/js/main.js"></script>
 </body>
 
 </html>

@@ -39,16 +39,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       unique: true
     },
-    referrals: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-      }
-    ],
-    referralReward: {
-      type: Number,
-      default: 0
-    }
   },
   { timestamps: true }
 );

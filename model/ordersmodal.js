@@ -7,18 +7,18 @@ const ordersSchema = new mongoose.Schema(
       ref: "user",
       required: true
     },
-    referralCodeUsed: { 
-      type: String, 
-      default: null 
-    },
+    // referralCodeUsed: { 
+    //   type: String, 
+    //   default: null 
+    // },
     orderReference:{
       type:String,
       unique:true,
     },
-    islisted: {
-      type: Boolean,
-      default: true
-    },
+    // islisted: {
+    //   type: Boolean,
+    //   default: true
+    // },
     status: {
       type: String,
       enum: [
@@ -54,13 +54,13 @@ const ordersSchema = new mongoose.Schema(
           ],
           required: false
         },
-        stock: {
-          type: Number
-        },
-        price: {
-          type: Number,
-          required: true
-        },
+        // stock: {
+        //   type: Number
+        // },
+        // price: {
+        //   type: Number,
+        //   required: true
+        // },
         priceWithDiscount: {
           type: Number,
           required: false,
@@ -75,9 +75,9 @@ const ordersSchema = new mongoose.Schema(
           type: Number,
           required: true
         },
-        description: {
-          type: String
-        },
+        // description: {
+        //   type: String
+        // },
         images: [
           {
             type: String,

@@ -36,9 +36,24 @@
 
     <!-- Custom CSS for product listing -->
     <style>
+        .edit{
+            background-color: red;
+        margin-left:75%;
+        font-size:13px;width: 90px;
+        color:rgb(0, 0, 0);
+        background-color:rgba(255, 166, 0, 0.785);
+        height: 30px;
+        font-size:13px;
+        border-width:0px;
+        border-radius: 4px
+                               
+        }
+        .edit:hover:{
+            background-color: red;
+        }
         /* Container for the coupon */
         .coupon-container {
-            background-color: #333;
+            background-color: #525252;
             border-radius: 10px;
             padding: 10px 20px;
             max-width: 330px;
@@ -48,32 +63,29 @@
             align-items: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             transform: translateY(50px);
-            animation: slideUp 0.5s ease-out forwards;
+            animation: slideUp 1s ease-out forwards;
         }
 
         /* Text style */
         .coupon-text {
             color: #fff;
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 14px;
             margin: 0;
             display: flex;
             align-items: center;
         }
 
-        /* Highlight referral code with a special style */
-        #referralCode {
-            font-size: 18px;
+          #referralCode {
+            font-size: 16px;
             font-weight: bold;
-            color: #FFD700;
+            color: #ffbb00;
             text-transform: uppercase;
             margin-left: 8px;
             transition: transform 0.2s ease-in-out;
         }
 
-        /* Animation when hovering over the referral code */
-        #referralCode:hover {
-            transform: scale(1.1);
+         #referralCode {
+            transform: scale(1.2);
         }
 
         /* Animation to slide the coupon from the bottom */
@@ -295,7 +307,7 @@
         }
 
         .gradient-button-blue {
-            background: linear-gradient(to right, #347bd3, #108cb9);
+            background: linear-gradient(to right, #66a8f9, #0064a7);
             border: none;
             color: white;
             padding: 4px 12px;
@@ -304,7 +316,7 @@
         }
 
         .gradient-button-green {
-            background: linear-gradient(to right, #34d35c, #10b91e);
+            background: linear-gradient(to right, #53fa7d, #07ec1a);
             border: none;
             color: white;
             padding: 4px 12px;
@@ -315,7 +327,7 @@
         }
 
         .gradient-button-yellow {
-            background: linear-gradient(to right, #d3b834, #dfca0f);
+            background: linear-gradient(to right, #fde25b, #f4dc09);
             border: none;
             color: white;
             padding: 4px 12px;
@@ -326,7 +338,7 @@
         }
 
         .gradient-button-purple {
-            background: linear-gradient(to right, #da52c1, #e251d3);
+            background: linear-gradient(to right, #f86ade, #c10aaf);
             border: none;
             color: white;
             padding: 4px 12px;
@@ -337,13 +349,21 @@
         }
 
         .gradient-button-red {
-            background: linear-gradient(to right, #c63a3a, #df1515);
+            background: linear-gradient(to right, #ff6363, #ee0b0b);
             border: none;
             color: white;
             padding: 4px 12px;
             border-radius: 20px;
             width: 82px;
-
+            font-size: 14px;
+        }
+        .gradient-button-orange {
+            background: linear-gradient(to right, #f4b938, #f48f01);
+            border: none;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            width: 82px;
             font-size: 14px;
         }
 
@@ -412,9 +432,9 @@
 
             // Add animation for showing the referral code when the page loads
             setTimeout(() => {
-                referralCodeElement.style.transition = 'transform 0.3s ease';
+                referralCodeElement.style.transition = 'transform 2s ease';
                 referralCodeElement.style.transform = 'scale(1)';
-            }, 500);
+            }, 50);
         });
     </script>
 </head>
@@ -533,17 +553,20 @@
                                 alt="User Avatar" class="profile-avatar">
                             <p style="font-weight:bold;color: rgb(0, 0, 0);font-size:16px;">{{user.name}}</p>
                             <span style="color:white" id="userId">{{user._id}}</span>
-                            <p style="font-weight:bold;color: rgb(87, 87, 87); font-size:12px;margin-top:-30px">Menber Since
+                            <p style="font-weight:bold;color: rgb(87, 87, 87); font-size:12px;margin-top:-30px">Menber
+                                Since
                                 :{{createdAt}}</p>
-                            <p style="color: rgb(29, 29, 29);font-size :13px;margin-top:-9px">Phone No :{{user.phone}}</p>
+                            <p style="color: rgb(29, 29, 29);font-size :13px;margin-top:-9px">Phone No :{{user.phone}}
+                            </p>
                             <p style="color: rgb(29, 29, 29); font-size :13px;margin-top:-9px">Email: {{user.email}}</p>
-                           <div class="coupon-container">
-  {{#if user.referralCode}}
-    <p class="coupon-text">Referral Code: <span id="referralCode">{{user.referralCode}}</span></p>
-  {{else}}
-    <p class="coupon-text">No Referral Code Available</p>
-  {{/if}}
-</div>
+                            <div class="coupon-container">
+                                {{#if user.referralCode}}
+                                <p class="coupon-text">Referral Code: <span
+                                        id="referralCode">{{user.referralCode}}</span></p>
+                                {{else}}
+                                <p class="coupon-text">No Referral Code Available</p>
+                                {{/if}}
+                            </div>
 
 
                             <p style="color: white;">.</p>
@@ -551,9 +574,8 @@
                                 style="font-size:15px;margin-bottom:-25px;font-weight:bold;color:black"><button
                                     type="submit" style="background-color: white;border-width:0px;font-weight:bold"
                                     value="See My Wallet">See My Wallet</button></form>
-                            <button
-                                style="margin-left:75%;font-size:13px;width: 90px;color:white;background-color:rgba(255, 166, 0, 0.785);height: 30px;font-size:13px;border-width:0px;border-radius: 4px"
-                                class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editUsernameModal">
+                            <button 
+                               class="edit btn btn-warning" data-bs-toggle="modal" data-bs-target="#editUsernameModal">
                                 <b>Edit</b>
                             </button>
 
@@ -587,7 +609,7 @@
                             <p style="color: red;">There is no address for you.</p>
                             <!-- Show only "add address" button if no address exists -->
                             <div style="display: flex;">
-                                <a href="/address"><button
+                                <a href="/address"><button 
                                         style="font-size:13px;width: 90px;color:white;background-color:rgba(255, 166, 0, 0.785);height: 30px;font-size:13px;border-width:0px;border-radius: 4px">add
                                         address</button> </a>
                             </div>
@@ -669,13 +691,12 @@
                                 </div>
                                 <span class="
                     {{#if (eq status 'scheduled')}}gradient-button-blue{{else}}
-                    {{#if (eq status 'pending')}}gradient-button-yellow{{else}}
-                    {{#if (eq status 'canceled')}}gradient-button-red{{else}}
+                     {{#if (eq status 'canceled')}}gradient-button-red{{else}}
                     {{#if (eq status 'returned')}}gradient-button-yellow{{else}}
                     {{#if (eq status 'delivered')}}gradient-button-green{{else}}
-                    {{#if (eq status 'payment-pending')}}gradient-button-red{{else}}
+                    {{#if (eq status 'payment-pending')}}gradient-button-orange{{else}}
                     {{#if (eq status 'shipped')}}gradient-button-purple{{/if}}{{/if}}{{/if}}
-                    {{/if}}{{/if}}{{/if}}{{/if}}">
+                    {{/if}}{{/if}}{{/if}}">
                                     {{status}}
                                 </span>
                             </div>
@@ -716,7 +737,7 @@
                             <div class="mb-3">
                                 <label for="newName" class="form-label">New Username</label>
                                 <input type="text" class="form-control" id="newName" name="newName"
-                                    value="{{user.name}}" required>
+                                    value="{{user.name}}">
                             </div>
                             <div class="mb-3">
                                 <label for="newphone" class="form-label">Add Phone Number</label>

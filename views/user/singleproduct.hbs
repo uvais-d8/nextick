@@ -436,288 +436,307 @@
 				</div>
 			</div>
 			<!-- views/productPage.hbs -->
-		<div style="background-color: rgb(242, 241, 241);padding:20px;border-radius:6px;margin-top: 10px;">
+			<div style="background-color: rgb(242, 241, 241);padding:20px;border-radius:6px;margin-top: 10px;">
 				<h4 style="margin-top: 10px;">Customer Reviews :</h4>
-			<div style="background-color: white;padding:10px;border-redius:8px" id="reviews">
-				{{#each reviews}}
-				<div class="review-card">
-					<p><strong>{{userId.name}}</strong> - Rating:<span style="color: orange;">
-							{{#each (range 1 rating)}}★{{/each}}
-							{{#each (range 1 (subtract 5 rating))}}☆{{/each}}</span>
-					</p>
-					<p>{{comment}}</p>
-					<hr>
+				<div style="background-color: white;padding:10px;border-redius:8px" id="reviews">
+					{{#each reviews}}
+					<div class="review-card">
+						<p><strong>{{userId.name}}</strong> - Rating:<span style="color: orange;">
+								{{#each (range 1 rating)}}★{{/each}}
+								{{#each (range 1 (subtract 5 rating))}}☆{{/each}}</span>
+						</p>
+						<p style="margin-top: -9px;">comment : {{comment}}</p>
+						<hr>
+					</div>
+					{{else}}
+					<p style="color: red;">No reviews yet. Be the first to leave a review !</p>
+					{{/each}}
 				</div>
-				{{else}}
-				<p style="color: red;">No reviews yet. Be the first to leave a review !</p>
-				{{/each}}
-			</div>
-			<h5 style="margin-top: 20px">Leave a Review:</h5>
-			<!-- Button to show the form -->
-			<button id="toggleFormButton"
-				style="background-color: rgb(255, 196, 86);border-radius:3px;border-width:0px;width:120px;height:30px">
-				Write a Review
-			</button>
+				<h5 style="margin-top: 20px">Leave a Review:</h5>
+				<!-- Button to show the form -->
+				<button id="toggleFormButton"
+					style="background-color: rgb(255, 196, 86);border-radius:3px;border-width:0px;width:120px;height:30px">
+					Write a Review
+				</button>
 
-			<!-- Review Form -->
-			<div id="reviewForm" style="display: none; margin-top: 10px;margin-left:30px">
-				<form action="/add-review" method="POST">
-					<input type="hidden" name="productId" value="{{product._id}}">
-					<input style="height:30px;border-radius: 3px;border-width:1px" type="text" name="name"
-						placeholder="Your Name">
-					<input style="height:30px;border-radius: 3px;border-width:1px" type="email" name="email"
-						placeholder="Your Email">
-					<input style="height:30px;border-radius: 3px;border-width:1px" type="text" name="number"
-						placeholder="Your Phone Number">
-					<textarea style="border-radius: 3px;border-width:1px;height: 30px;width:30%;margin-bottom:-9px"
-						name="comment" placeholder="Write your review">
-    </textarea>
-					<select style="height: 30px;border-radius: 3px;border-width:1px" name="rating">
-						<option value="1">★</option>
-						<option value="2">★★</option>
-						<option value="3">★★★</option>
-						<option value="4">★★★★</option>
-						<option value="5">★★★★★</option>
-					</select>
-					<button style="background-color: orange;border-radius:3px;border-width:0px;width:80px;height:30px"
-						type="submit">
-						Submit
-					</button>
-				</form>
-			</div>
-		</div>
+				<!-- Review Form -->
+				<div id="reviewForm" style="display: none; margin-top: 10px;margin-left:30px">
+					<form id="myForm" action="/add-review" method="POST">
+						<input type="hidden" name="productId" value="{{product._id}}">
+						<span id="error-message" style="color: red; display: none;">Comment is required.</span><br>
+						<input placeholder="Enter your comments on this product here"
+							style="border-radius: 3px;border-width:1px;height: 30px;width: 81%;margin-bottom:-9px"
+							id="comment" name="comment">
 
-			<!-- JavaScript to toggle the form -->
-			<script>
-				document.getElementById('toggleFormButton').addEventListener('click', function () {
-					const form = document.getElementById('reviewForm');
-					form.style.display = form.style.display === 'none' ? 'block' : 'none';
+
+						<select style="height: 30px;border-radius: 3px;border-width:1px" name="rating">
+							<option value="5">★★★★★</option>
+							<option value="4">★★★★</option>
+							<option value="3">★★★</option>
+							<option value="2">★★</option>
+							<option value="1">★</option>
+						</select>
+
+						<button
+							style="background-color: orange;border-radius:3px;border-width:0px;width:80px;height:30px"
+							type="submit">
+							Submit
+						</button>
+					</form>
+				</div>
+
+				<script>
+					document.getElementById('myForm').addEventListener('submit', function (event) {
+						var comment = document.getElementById('comment').value;
+						var errorMessage = document.getElementById('error-message');
+
+						// Check if comment is empty
+						if (comment.trim() === '') {
+							event.preventDefault();  // Prevent form submission
+							errorMessage.style.display = 'inline';  // Show the error message
+						} else {
+							errorMessage.style.display = 'none';  // Hide the error message
+						}
+					});
+				</script>
+
+
+				<!-- JavaScript to toggle the form -->
+				<script>
+					document.getElementById('toggleFormButton').addEventListener('click', function () {
+						const form = document.getElementById('reviewForm');
+						form.style.display = form.style.display === 'none' ? 'block' : 'none';
+					});
+				</script>
+</div>
+				<!-- more products -->
+				<div class="more-products mb-150">
+					<div class="container">
+						<div class="container mt-5">
+							<h3> Products</h3>
+
+							<div style="background-color: rgb(255, 255, 255); border-radius:11px" class="row">
+								{{#each products}}
+								<div style="background-color: rgb(255, 255, 255); border-radius:11px"
+									class="col-md-4 mb-4">
+									<a href="/product/{{this._id}}" style="text-decoration: none; color: inherit;">
+										<div style="box-shadow: 4px 4px 11px 5px rgb(228, 228, 228);background-color: rgb(251, 251, 251); border-radius:6px"
+											class="card">
+											<img src="/{{this.images.[0]}}" class="card-img-top" alt="{{this.name}}"
+												style="height: 200px;padding-left:70px;padding-right:70px; object-fit: cover;">
+											<div class="card-body">
+												<h5 class="card-title">{{this.name}}</h5>
+												<p class="card-text">Category: {{this.category}}</p>
+												<p class="card-text">
+													Price: ₹<span>{{this.price}}</span>
+													{{#if this.discount}}
+													<span class="discount">(Discount: ₹{{this.discount}})</span>
+													{{/if}}
+												</p>
+												<p class="card-text stock">
+													Stock:
+													{{#if this.stock}}
+													<span style="color: green;" class="in-stock">{{this.stock}}
+														Available</span>
+													{{else}}
+													<span style="color: red;" class="out-of-stock">Out of Stock</span>
+													{{/if}}
+												</p>
+												<p class="card-text">
+													Rating:
+													<span class="rating">
+														{{#each this.rating}}★{{/each}}
+													</span>
+													<span class="review-count">({{this.reviews.length}} Reviews)</span>
+												</p>
+											</div>
+										</div>
+									</a>
+								</div>
+								{{/each}}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<span id="error" hidden>
+				{{message}}
+			</span>
+			<script defer>
+				document.addEventListener("DOMContentLoaded", function () {
+					const errorElement = document.getElementById("error");
+					const message = errorElement ? errorElement.innerText : "";
+					if (message.trim()) {
+						Swal.fire({
+							icon: 'error',
+							title: 'Oops...',
+							text: message,
+							confirmButtonText: 'OK'
+						});
+					}
 				});
 			</script>
+		</div>
+		<!-- logo carousel -->
+		<div class="logo-carousel-section">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="logo-carousel-inner">
 
-			<!-- more products -->
-			<div class="more-products mb-150">
-				<div class="container">
-					<div class="container mt-5">
-						<h3> Products</h3>
-
-						<div style="background-color: rgb(255, 255, 255); border-radius:11px" class="row">
-							{{#each products}}
-							<div  style="background-color: rgb(255, 255, 255); border-radius:11px" class="col-md-4 mb-4">
-								<a href="/product/{{this._id}}" style="text-decoration: none; color: inherit;">
-									<div style="box-shadow: 4px 4px 11px 5px rgb(228, 228, 228);background-color: rgb(251, 251, 251); border-radius:6px" class="card">
-										<img src="/{{this.images.[0]}}" class="card-img-top" alt="{{this.name}}"
-											style="height: 200px;padding-left:70px;padding-right:70px; object-fit: cover;">
-										<div  class="card-body">
-											<h5 class="card-title">{{this.name}}</h5>
-											<p class="card-text">Category: {{this.category}}</p>
-											<p class="card-text">
-												Price: ₹<span>{{this.price}}</span>
-												{{#if this.discount}}
-												<span class="discount">(Discount: ₹{{this.discount}})</span>
-												{{/if}}
-											</p>
-											<p class="card-text stock">
-												Stock:
-												{{#if this.stock}}
-												<span style="color: green;" class="in-stock">{{this.stock}}
-													Available</span>
-												{{else}}
-												<span style="color: red;" class="out-of-stock">Out of Stock</span>
-												{{/if}}
-											</p>
-											<p class="card-text">
-												Rating:
-												<span class="rating">
-													{{#each this.rating}}★{{/each}}
-												</span>
-												<span class="review-count">({{this.reviews.length}} Reviews)</span>
-											</p>
-										</div>
-									</div>
-								</a>
+							<div class="single-logo-item">
+								<img style="margin-top: 50px;"
+									src="https://logos-world.net/wp-content/uploads/2020/04/Louis-Vuitton-Logo.png"
+									alt="">
 							</div>
-							{{/each}}
+							<div class="single-logo-item">
+								<img style="margin-top: 10px"
+									src="https://parspng.com/wp-content/uploads/2022/10/pumapng.parspng.com_-300x300.png"
+									alt="">
+							</div>
+							<div class="single-logo-item">
+								<img style="height:120px;width:120px;margin-top:36px"
+									src="https://cdn2.iconfinder.com/data/icons/apple-tv-1/512/apple_logo-512.png"
+									alt="">
+							</div>
+							<div class="single-logo-item">
+								<img style="margin-top: 17px;height:175px"
+									src="https://images.samsung.com/is/image/samsung/assets/global/about-us/brand/logo/256_144_2.png?$512_N_PNG$"
+									alt="">
+							</div>
+							<div class="single-logo-item">
+								<img style="margin-top: 45px"
+									src="https://download.logo.wine/logo/Citizen_Watch/Citizen_Watch-Logo.wine.png"
+									alt="">
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+		<!-- end logo carousel -->
+		<!-- footer -->
+		<div class="footer-area">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-3 col-md-6">
+						<div class="footer-box about-widget">
+							<h2 class="widget-title">About us</h2>
+							<p>Ut enim ad minim veniam perspiciatis unde omnis iste natus error sit voluptatem
+								accusantium
+								doloremque laudantium, totam rem aperiam, eaque ipsa quae.</p>
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-6">
+						<div class="footer-box get-in-touch">
+							<h2 class="widget-title">Get in Touch</h2>
+							<ul>
+								<li>34/8, East Hukupara, Gifirtok, Sadan.</li>
+								<li>support@fruitkha.com</li>
+								<li>+00 111 222 3333</li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-6">
+						<div class="footer-box pages">
+							<h2 class="widget-title">Pages</h2>
+							<ul>
+								<li><a href="/index.hbs">Home</a></li>
+								<li><a href="/about.hbs">About</a></li>
+								<li><a href="/services.hbs">Shop</a></li>
+								<li><a href="/news.hbs">News</a></li>
+								<li><a href="/contact.hbs">Contact</a></li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-6">
+						<div class="footer-box subscribe">
+							<h2 class="widget-title">Subscribe</h2>
+							<p>Subscribe to our mailing list to get the latest updates.</p>
+							<form action="/index.hbs">
+								<input type="email" placeholder="Email">
+								<button type="submit"><i class="fas fa-paper-plane"></i></button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- end footer -->
 
+		<!-- copyright -->
+		<div class="copyright">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-6 col-md-12">
+						<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
+							Rights
+							Reserved.<br>
+							Distributed By - <a href="https://themewagon.com/">nextick.store</a>
+						</p>
+					</div>
+					<div class="col-lg-6 text-right col-md-12">
+						<div class="social-icons">
+							<ul>
+								<li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+								<li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
+								<li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
+								<li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+								<li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- end copyright -->
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-		<span id="error" hidden>
-			{{message}}
-		</span>
-		<script defer>
-			document.addEventListener("DOMContentLoaded", function () {
-				const errorElement = document.getElementById("error");
-				const message = errorElement ? errorElement.innerText : "";
-				if (message.trim()) {
+		<!-- jquery -->
+		<script src="/assets/js/jquery-1.11.3.min.js"></script>
+		<!-- bootstrap -->
+		<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+		<!-- count down -->
+		<script src="/assets/js/jquery.countdown.js"></script>
+		<!-- isotope -->
+		<script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
+		<!-- waypoints -->
+		<script src="/assets/js/waypoints.js"></script>
+		<!-- owl carousel -->
+		<script src="/assets/js/owl.carousel.min.js"></script>
+		<!-- magnific popup -->
+		<script src="/assets/js/jquery.magnific-popup.min.js"></script>
+		<!-- mean menu -->
+		<script src="/assets/js/jquery.meanmenu.min.js"></script>
+		<!-- sticker js -->
+		<script src="/assets/js/sticker.js"></script>
+		<!-- main js -->
+		<script src="/assets/js/main.js"></script>
+		<script>
+			function checkCartLimit(input) {
+				const quantity = parseInt(input.value);
+
+				if (quantity > 9) {
 					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: message,
+						title: 'Cart Limit Exceeded!',
+						text: 'Your cart limit has been reached. You cannot add more than 10 items of this product..',
+						icon: 'warning',
 						confirmButtonText: 'OK'
+					}).then(() => {
+
+						window.location.href = '/product/:id';
 					});
+				} else {
+
+					{ { !--input.form.submit(); --} }
+					console.log("error")
 				}
-			});
-		</script>
-	</div>
-	<!-- logo carousel -->
-	<div class="logo-carousel-section">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-12">
-					<div class="logo-carousel-inner">
-
-						<div class="single-logo-item">
-							<img style="margin-top: 50px;"
-								src="https://logos-world.net/wp-content/uploads/2020/04/Louis-Vuitton-Logo.png" alt="">
-						</div>
-						<div class="single-logo-item">
-							<img style="margin-top: 10px"
-								src="https://parspng.com/wp-content/uploads/2022/10/pumapng.parspng.com_-300x300.png"
-								alt="">
-						</div>
-						<div class="single-logo-item">
-							<img style="height:120px;width:120px;margin-top:36px"
-								src="https://cdn2.iconfinder.com/data/icons/apple-tv-1/512/apple_logo-512.png" alt="">
-						</div>
-						<div class="single-logo-item">
-							<img style="margin-top: 17px;height:175px"
-								src="https://images.samsung.com/is/image/samsung/assets/global/about-us/brand/logo/256_144_2.png?$512_N_PNG$"
-								alt="">
-						</div>
-						<div class="single-logo-item">
-							<img style="margin-top: 45px"
-								src="https://download.logo.wine/logo/Citizen_Watch/Citizen_Watch-Logo.wine.png" alt="">
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- end logo carousel -->
-	<!-- footer -->
-	<div class="footer-area">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-3 col-md-6">
-					<div class="footer-box about-widget">
-						<h2 class="widget-title">About us</h2>
-						<p>Ut enim ad minim veniam perspiciatis unde omnis iste natus error sit voluptatem
-							accusantium
-							doloremque laudantium, totam rem aperiam, eaque ipsa quae.</p>
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<div class="footer-box get-in-touch">
-						<h2 class="widget-title">Get in Touch</h2>
-						<ul>
-							<li>34/8, East Hukupara, Gifirtok, Sadan.</li>
-							<li>support@fruitkha.com</li>
-							<li>+00 111 222 3333</li>
-						</ul>
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<div class="footer-box pages">
-						<h2 class="widget-title">Pages</h2>
-						<ul>
-							<li><a href="/index.hbs">Home</a></li>
-							<li><a href="/about.hbs">About</a></li>
-							<li><a href="/services.hbs">Shop</a></li>
-							<li><a href="/news.hbs">News</a></li>
-							<li><a href="/contact.hbs">Contact</a></li>
-						</ul>
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<div class="footer-box subscribe">
-						<h2 class="widget-title">Subscribe</h2>
-						<p>Subscribe to our mailing list to get the latest updates.</p>
-						<form action="/index.hbs">
-							<input type="email" placeholder="Email">
-							<button type="submit"><i class="fas fa-paper-plane"></i></button>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- end footer -->
-
-	<!-- copyright -->
-	<div class="copyright">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-6 col-md-12">
-					<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
-						Rights
-						Reserved.<br>
-						Distributed By - <a href="https://themewagon.com/">nextick.store</a>
-					</p>
-				</div>
-				<div class="col-lg-6 text-right col-md-12">
-					<div class="social-icons">
-						<ul>
-							<li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-							<li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
-							<li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
-							<li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
-							<li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- end copyright -->
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-	<!-- jquery -->
-	<script src="/assets/js/jquery-1.11.3.min.js"></script>
-	<!-- bootstrap -->
-	<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
-	<!-- count down -->
-	<script src="/assets/js/jquery.countdown.js"></script>
-	<!-- isotope -->
-	<script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
-	<!-- waypoints -->
-	<script src="/assets/js/waypoints.js"></script>
-	<!-- owl carousel -->
-	<script src="/assets/js/owl.carousel.min.js"></script>
-	<!-- magnific popup -->
-	<script src="/assets/js/jquery.magnific-popup.min.js"></script>
-	<!-- mean menu -->
-	<script src="/assets/js/jquery.meanmenu.min.js"></script>
-	<!-- sticker js -->
-	<script src="/assets/js/sticker.js"></script>
-	<!-- main js -->
-	<script src="/assets/js/main.js"></script>
-	<script>
-		function checkCartLimit(input) {
-			const quantity = parseInt(input.value);
-
-			if (quantity > 9) {
-				Swal.fire({
-					title: 'Cart Limit Exceeded!',
-					text: 'Your cart limit has been reached. You cannot add more than 10 items of this product..',
-					icon: 'warning',
-					confirmButtonText: 'OK'
-				}).then(() => {
-				
-					window.location.href = '/product/:id';
-				});
-			} else {
-				
-				{ { !--input.form.submit(); --} }
-				console.log("error")
 			}
-		}
 
-	</script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		</script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 

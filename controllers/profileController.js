@@ -598,7 +598,7 @@ const loadWallet = async (req, res) => {
     const wallet = await Wallet.findOne({ user: userId });
 
     // Fetch user details
-    const user = await User.findById(userId).populate("referrals");
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.render("wallet", {
@@ -624,8 +624,7 @@ const loadWallet = async (req, res) => {
       transactions, // Sorted wallet transactions
       user: {
         referralCode: user.referralCode,
-        referrals: user.referrals, // Populated referrals
-        referralReward: user.referralReward // Reward points
+ 
       }
     });
   } catch (error) {
