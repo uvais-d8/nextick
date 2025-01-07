@@ -550,36 +550,37 @@
 	<main style="background-color: rgba(240, 237, 237, 0.523);" class="section order-history">
 		<h1 style="margin-left: 10%;">Orders History</h1>
 		{{#each orders}}
-		{{#each items}}
-		<div>
-			<div style="width: 1200px;margin-left:10%;background-color:white;margin-top:-20px;border-color:rgba(222, 222, 220, 0.715);border-radius:3px"
-				class="order">
-				<div class="order-details">
-					<div class="client-avatar">
-						<img src="/{{this.productId.images.[0]}}" alt="{{this.productId.name}}" />
-					</div>
-					<h4>{{this.productId.name}}</h4>
-					<p>Price:
-						{{#if this.priceWithDiscount}}
-						{{#if (eq this.priceWithDiscount this.productId.price)}}
-						<b>₹{{this.productId.price}}</b>
-						{{else}}
-						<del style="color: red;">₹{{this.productId.price}}</del>
-						<b>₹{{this.priceWithDiscount}}</b>
-						{{/if}}
-						{{else}}
-						₹{{this.productId.price}}
-						{{/if}}
-					</p>
-					<p style="margin-top: -10px;">Quantity: <b>{{this.quantity}}</b></p>
-					<p style="margin-top: -10px;">Total:
-						{{#if this.priceWithDiscount}}
-						<b>₹ {{multiplyAndRound this.priceWithDiscount this.quantity}}</b>
-						{{else}}
-						<b>₹ {{multiplyAndRound this.orderTotal this.quantity}}</b>
-						{{/if}}
-					</p>
-
+  {{#each items}}
+    <div>
+      <div style="width: 1200px; margin-left:10%; background-color:white; margin-top:-20px; border-color:rgba(222, 222, 220, 0.715); border-radius:3px"
+        class="order">
+        <div class="order-details">
+          <div class="client-avatar">
+            <img src="/{{this.productId.images.[0]}}" alt="{{this.productId.name}}" />
+          </div>
+          <h4>{{this.productId.name}}</h4>
+          <p>Price:
+            {{#if this.productId.priceWithDiscount}}
+              {{#if (neq this.productId.priceWithDiscount this.productId.price)}}
+                <del style="color: red;">₹{{this.productId.price}}</del>
+                <b>₹{{this.productId.priceWithDiscount}}</b>
+              {{else}}
+                <b>₹{{this.productId.price}}</b>
+              {{/if}}
+            {{else}}
+              ₹{{this.productId.price}}
+            {{/if}}
+          </p>
+          <p style="margin-top: -10px;">Quantity: <b>{{this.quantity}}</b></p>
+          <p style="margin-top: -10px;">Total:
+            {{#if this.productId.priceWithDiscount}}
+              <b>₹{{multiplyAndRound this.productId.priceWithDiscount this.quantity}}</b>
+            {{else}}
+              <b>₹{{multiplyAndRound this.productId.price this.quantity}}</b>
+            {{/if}}
+          </p>
+        
+      
 					<p style="color: rgb(48, 47, 47);margin-top: -10px;">Order Date: <b>{{formatDate ../time}}</b></p>
 
 					<div class="order-actions">

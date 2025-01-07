@@ -72,8 +72,8 @@ const checkout = async (req, res) => {
 
     let subtotal = 0;
 carts.forEach((item) => {
-  if (item.priceWithDiscount) {
-    subtotal += item.priceWithDiscount * item.quantity;
+  if (item.productId.priceWithDiscount) {
+    subtotal += item.productId.priceWithDiscount * item.quantity;
   } else {
     subtotal += item.productId.price * item.quantity;
   }
@@ -151,35 +151,34 @@ const removeorder = async (req, res) => {
   }
 };
 const loadOrders = async (req, res) => {
+  const userId = req.session.userId;
+  
   try {
-    const products =await Products.find({})
-    const orders = await Orders.find({ userId: req.session.userId })
+      const orders = await Orders.find({ userId })  
       .populate({
-        path: "items.productId",
-        select: "name images description price",
+        path: 'items.productId',  
+        select: 'price priceWithDiscount images name' 
       })
-      .sort({ createdAt: -1 });
-
-     const ordersWithTotals = orders.map(order => {
-      let total = 0;
-
+      .sort({ createdAt: -1 })
+      .exec();
+   orders.forEach(order => {
       order.items.forEach(item => {
-        const price = item.priceWithDiscount || item.productId.price;
-        total += price * item.quantity;
+          item.discountedPrice = item.productId.priceWithDiscount > 0
+          ? item.productId.priceWithDiscount
+          : item.productId.price;
       });
-
-      return {
-        ...order.toObject(),
-        total, 
-      };
     });
-    console.log('orders',ordersWithTotals);
-    res.render("orders", { orders: ordersWithTotals ,products});
+ 
+    res.render('orders', {
+      orders
+    });
+
   } catch (error) {
-    console.error("Error during load orders", error);
-    res.status(500).send("Failed to load orders.");
+    console.error('Error loading orders:', error);
+    res.status(500).send('Internal Server Error');
   }
 };
+
 const ordertracking = async (req, res) => {
   const { id } = req.params;
   try {
@@ -243,13 +242,13 @@ const removeItem = async (req, res) => {
       });
     }
 
-     const Price = item.priceWithDiscount ? item.priceWithDiscount : item.price;
+     const Price = item.productId.priceWithDiscount ? item.productId.priceWithDiscount : item.price;
     console.log("product Price",Price)
     
     const totalPriceOfOrder = order.items
   .filter(item => item.status !== "canceled") 
   .reduce((total, item) => {
-    const itemTotal = item.priceWithDiscount ? item.priceWithDiscount : item.price * (item.quantity || 1); 
+    const itemTotal = item.productId.priceWithDiscount ? item.productId.priceWithDiscount : item.price * (item.quantity || 1); 
     return total + itemTotal;
   }, 0);
     
@@ -357,7 +356,7 @@ const returnOrder = async (req, res) => {
       console.warn(`Product not found for item: ${item.productId}`);
     }
  
-    const refundAmount = (product?.priceWithDiscount > 0 ? product?.priceWithDiscount : product?.price) * item.quantity;
+    const refundAmount = (product?.productId.priceWithDiscount > 0 ? product?.productId.priceWithDiscount : product?.price) * item.quantity;
  
     let wallet = await Wallet.findOne({ user: userId });
     if(order.paymentMethod !== "cod"){
@@ -503,7 +502,7 @@ const generateInvoicePDF = async (req, res) => {
         .text(index + 1, 55, rowY + 5, { width: 40, align: "center" }) 
         .text(product.name, 100, rowY + 5, { width: 200, align: "left" }); 
 
-      const unitPrice = item.priceWithDiscount || product.price;
+      const unitPrice = item.productId.priceWithDiscount || product.price;
       const totalItemPrice = item.quantity * unitPrice;
 
       doc

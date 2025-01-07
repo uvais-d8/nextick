@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const productsShema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: false
+  },
   description: {
     type: String,
     required: false
@@ -11,25 +15,9 @@ const productsShema = new mongoose.Schema({
       ref: 'Review',
     },
   ], 
-  // popularity: {
-  //   type: Number,
-  //   default: 0
-  // },
   averageRating: {
     type: Number,
     default: 0
-  },
-  featured: {
-    type: Boolean,
-    default: false
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  name: {
-    type: String,
-    required: false
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,
@@ -45,13 +33,6 @@ const productsShema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  // availability: {
-  //   type: String,
-  //   enum: ["in-stock", "out-of-stock"],
-  //   default: function () {
-  //     return this.stock > 0 ? "in-stock" : "out-of-stock";
-  //   }
-  // },
   price: {
     type: Number,
     required: false
@@ -65,7 +46,6 @@ const productsShema = new mongoose.Schema({
     required: true,
     default: 1
   }, 
-
   priceWithDiscount:{
     type:Number,
     required:false,
@@ -80,7 +60,11 @@ const productsShema = new mongoose.Schema({
       type: String,
       required: true
     }
-  ]
+  ],
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
 });
 
 productsShema.index({ name: "text", description: "text" });

@@ -16,10 +16,6 @@ const cartSchema = new mongoose.Schema({
     required: false,
     default: 1
   },
-  priceWithDiscount: {
-    type: Number,
-    required: false
-  },
 });
 
 const cartmodal = mongoose.model("cart", cartSchema);

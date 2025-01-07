@@ -228,15 +228,18 @@
 									</td>
 									<td class="product-name">{{this.productId.name}}</td>
 									<td class="product-price">
-										{{#if this.priceWithDiscount}}
-										{{#if (neq this.priceWithDiscount this.productId.price)}}
-										<del class="original-price">{{toInteger this.productId.price}}</del>
-										<span class="discounted-price">{{toInteger this.priceWithDiscount}}</span>
-										{{else}}
-										<span class="original-price">{{toInteger this.productId.price}}</span>
-										{{/if}}
-										{{/if}}
-									</td>
+  {{#if this.productId.priceWithDiscount}}
+    {{#if (neq this.productId.priceWithDiscount this.productId.price)}}
+      <del class="original-price">₹ {{toInteger this.productId.price}}</del>
+      <span class="discounted-price">₹ {{toInteger this.productId.priceWithDiscount}}</span>
+    {{else}}
+      <span class="original-price">₹ {{toInteger this.productId.price}}</span>
+    {{/if}}
+  {{else}}
+    <span class="original-price">₹ {{toInteger this.productId.price}}</span>
+  {{/if}}
+</td>
+
 									<td class="product-quantity">
 										<button type="button"
 											style="border-width: 0px;border-radius:3px;background-color:rgb(255, 74, 71);width:20px"
@@ -248,8 +251,8 @@
 											onclick="updateQuantity('{{this._id}}', 1)">+</button>
 									</td>
 									<td class="product-total">
-										{{#if this.priceWithDiscount}}
-										{{multiplyAndRound this.priceWithDiscount this.quantity}}
+										{{#if this.productId.priceWithDiscount}}
+										{{multiplyAndRound this.productId.priceWithDiscount this.quantity}}
 										{{else}}
 										{{multiplyAndRound this.productId.price this.quantity}}
 										{{/if}}

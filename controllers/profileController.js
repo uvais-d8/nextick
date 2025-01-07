@@ -592,7 +592,6 @@ const addaddress = async (req, res) => {
 const loadWallet = async (req, res) => {
   try {
     const userId = req.session.userId;
-    console.log("User ID:", userId);
 
     // Fetch wallet details
     const wallet = await Wallet.findOne({ user: userId });
@@ -614,17 +613,15 @@ const loadWallet = async (req, res) => {
     let transactions = [];
     if (wallet) {
       balance = Math.round(wallet.balance * 100) / 100;
-      transactions = wallet.transactions.sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
+      transactions = wallet.transactions
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sort by date descending
     }
 
     res.render("wallet", {
-      balance, // Wallet balance
-      transactions, // Sorted wallet transactions
+      balance,  
+      transactions,  
       user: {
         referralCode: user.referralCode,
- 
       }
     });
   } catch (error) {

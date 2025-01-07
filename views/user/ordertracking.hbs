@@ -375,6 +375,7 @@
             font-weight: bold;
             color: rgb(211, 2, 124);
         }
+
         .mback {
             border: 1px solid #c68531;
             color: #cb872e;
@@ -383,8 +384,8 @@
             cursor: pointer;
             text-align: center;
             position: absolute;
-           left: 80%;
-           top:67%;
+            left: 80%;
+            top: 67%;
             transform: translateX(-50%);
             padding: 10px 20px;
         }
@@ -518,59 +519,60 @@
                     </span>
 
 
-                    <div class="step-price"><b>Price : ₹ {{multiplyAndRound this.quantity this.priceWithDiscount}}</b>
+                    <div class="step-price"><b>Price : ₹ {{multiplyAndRound this.quantity
+                            this.productId.priceWithDiscount}}</b>
 
                         <div class="step-quantity"><b>Quantity: {{this.quantity}}</b></div>
                     </div>
                     <hr>
                     {{/each}}
 
-                   <script>
-    function getStatusMessage(status) {
-        let message = '';
-        let color = '';
+                    <script>
+                        function getStatusMessage(status) {
+                            let message = '';
+                            let color = '';
 
-        switch (status) {
-            case 'scheduled':
-                message = 'Your order is scheduled for delivery.';
-                color = 'blue';  
-                break;
-            case 'payment-pending':
-                message = 'Your order payment is pending. Please retry your payment soon.';
-                color = 'orange';  
-                break;
-            case 'delivered':
-                message = 'The order has been delivered successfully.';
-                color = 'green';  
-                break;
-            case 'canceled':
-                message = 'The order has been canceled.';
-                color = 'red'; 
-                break;
-            case 'shipped':
-                message = 'Your order is on the way !';
-                color = 'purple';  
-                break;
-            case 'returned':
-                message = 'Your order is returned after delivery !';
-                color = 'orange';  
-                break;
-            default:
-                message = 'Unknown order status.';
-                color = 'gray';  
-                break;
-        }
+                            switch (status) {
+                                case 'scheduled':
+                                    message = 'Your order is scheduled for delivery.';
+                                    color = 'blue';
+                                    break;
+                                case 'payment-pending':
+                                    message = 'Your order payment is pending. Please retry your payment soon.';
+                                    color = 'orange';
+                                    break;
+                                case 'delivered':
+                                    message = 'The order has been delivered successfully.';
+                                    color = 'green';
+                                    break;
+                                case 'canceled':
+                                    message = 'The order has been canceled.';
+                                    color = 'red';
+                                    break;
+                                case 'shipped':
+                                    message = 'Your order is on the way !';
+                                    color = 'purple';
+                                    break;
+                                case 'returned':
+                                    message = 'Your order is returned after delivery !';
+                                    color = 'orange';
+                                    break;
+                                default:
+                                    message = 'Unknown order status.';
+                                    color = 'gray';
+                                    break;
+                            }
 
-        return { message: message, color: color };
-    }
+                            return { message: message, color: color };
+                        }
 
-    const orderStatus = "{{order.status}}";
-    const statusDetails = getStatusMessage(orderStatus);
+                        const orderStatus = "{{order.status}}";
+                        const statusDetails = getStatusMessage(orderStatus);
 
-    const statusMessageElement = document.getElementById('statusMessage');
-    statusMessageElement.innerText = statusDetails.message;
-    statusMessageElement.style.color = statusDetails.color;
-</script>
+                        const statusMessageElement = document.getElementById('statusMessage');
+                        statusMessageElement.innerText = statusDetails.message;
+                        statusMessageElement.style.color = statusDetails.color;
+                    </script>
 
 
 

@@ -96,7 +96,10 @@ app.engine(
       JSONstringify: function(context) {
         return JSON.stringify(context);
       },
-
+      reverse: function(array) {
+        return array.slice().reverse();
+      },
+      
       // Helper to calculate subtotal
       calculateSubtotal: carts => {
         return carts.reduce((acc, item) => acc + item.total, 0);

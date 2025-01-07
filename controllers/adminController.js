@@ -136,7 +136,7 @@ console.log("categorySalesData",categorySalesData)
 
       const totalDiscount = order.items.reduce(
         (sum, item) =>
-          sum + (item.price - (item.priceWithDiscount || item.price)) * item.quantity,
+          sum + (item.price - (item.productId.priceWithDiscount || item.price)) * item.quantity,
         0
       );
 
@@ -899,7 +899,7 @@ const updateOrderStatus = async (req, res) => {
 
       if (order.paymentMethod === "razorpay") {
         let refundAmount =
-          (item.priceWithDiscount || item.price) * item.quantity;
+          (item.productId.priceWithDiscount || item.price) * item.quantity;
         if (refundAmount > 0) {
           console.log("Refund amount:", refundAmount);
 
@@ -1153,6 +1153,7 @@ const addoffer = async (req, res) => {
       Status
     } = req.body;
 
+    // Validate input fields
     if (
       !DiscountType ||
       !DiscountValue ||
@@ -1177,6 +1178,7 @@ const addoffer = async (req, res) => {
       });
     }
 
+    // Create new offer
     const newoffer = new Offer({
       DiscountType,
       DiscountValue,
@@ -1188,16 +1190,36 @@ const addoffer = async (req, res) => {
 
     await newoffer.save();
 
-    await Products.updateMany(
-      { _id: { $in: productIds } },
-      {
-        $set: {
-          priceWithDiscount:
-            DiscountType === "fixed" ? DiscountValue : undefined,
-          offer: newoffer._id
-        }
+    // Update products with offer details and calculate priceWithDiscount
+    const updates = [];
+    for (const productId of productIds) {
+      const product = await Products.findById(productId);
+
+      if (!product) continue;
+
+      let discountedPrice = product.price; // Start with original price
+      if (DiscountType === "percentage") {
+        const discount = product.price * (DiscountValue / 100);
+        discountedPrice = Math.max(0, product.price - discount); // Ensure price doesn't go negative
+      } else if (DiscountType === "fixed") {
+        discountedPrice = Math.max(0, product.price - DiscountValue);
       }
-    );
+
+      updates.push(
+        Products.updateOne(
+          { _id: productId },
+          {
+            $set: {
+              priceWithDiscount: discountedPrice,
+              offer: newoffer._id
+            }
+          }
+        )
+      );
+    }
+
+    // Execute all updates in parallel
+    await Promise.all(updates);
 
     console.log("New offer created: ", newoffer);
     res.redirect("/admin/offer");
@@ -1209,6 +1231,7 @@ const addoffer = async (req, res) => {
     });
   }
 };
+
 const addoffers = async (req, res) => {
   const category = await Category.find({});
   try {
@@ -1431,25 +1454,150 @@ const deleteOffer = async (req, res) => {
 const unlistOffer = async (req, res) => {
   try {
     const offerId = req.params.id;
+
+    // Fetch the offer being unlisted
+    const offer = await Offer.findById(offerId);
+
+    if (!offer) {
+      console.log(`Offer ${offerId} not found`);
+      return res.redirect("/admin/offer");
+    }
+
+    // Unlist the offer
     await Offer.findByIdAndUpdate(offerId, { Status: false });
-    console.log(`Product ${offerId} successfully unlisted`);
+
+    // Check and update products associated with the unlisted offer
+    const updates = [];
+    for (const productId of offer.Products) {
+      // Find other active offers for the product
+      const otherOffers = await Offer.find({
+        Products: productId,
+        Status: true,
+        ExpiryDate: { $gt: new Date() } // Only consider valid offers
+      }).sort({ ExpiryDate: 1 }); // Prioritize the earliest expiry date
+
+      if (otherOffers.length > 0) {
+        // Apply the next valid offer
+        const nextOffer = otherOffers[0];
+        const product = await Products.findById(productId);
+
+        if (!product) continue;
+
+        let discountedPrice = product.price;
+        if (nextOffer.DiscountType === "percentage") {
+          const discount = product.price * (nextOffer.DiscountValue / 100);
+          discountedPrice = Math.max(0, product.price - discount);
+        } else if (nextOffer.DiscountType === "fixed") {
+          discountedPrice = Math.max(0, product.price - nextOffer.DiscountValue);
+        }
+
+        updates.push(
+          Products.updateOne(
+            { _id: productId },
+            {
+              $set: {
+                priceWithDiscount: discountedPrice,
+                offer: nextOffer._id
+              }
+            }
+          )
+        );
+      } else {
+        // No other offers exist, reset priceWithDiscount to 0
+        updates.push(
+          Products.updateOne(
+            { _id: productId },
+            {
+              $set: {
+                priceWithDiscount: 0,
+                offer: null
+              }
+            }
+          )
+        );
+      }
+    }
+
+    // Execute all updates in parallel
+    await Promise.all(updates);
+
+    console.log(`Offer ${offerId} successfully unlisted and products updated`);
     res.redirect("/admin/offer");
   } catch (error) {
-    console.error("Failed to unlist the product:", error);
+    console.error("Failed to unlist the offer:", error);
     res.status(500).redirect("/admin/offer");
   }
 };
+
 const listOffer = async (req, res) => {
   try {
     const offerId = req.params.id;
+
+    // Fetch the offer being listed
+    const offer = await Offer.findById(offerId);
+
+    if (!offer) {
+      console.log(`Offer ${offerId} not found`);
+      return res.redirect("/admin/offer");
+    }
+
+    // List the offer by updating its status to true
     await Offer.findByIdAndUpdate(offerId, { Status: true });
-    console.log(`Product ${offerId} successfully listed`);
+
+    // Update prices for the products in the newly listed offer
+    const updates = [];
+    for (const productId of offer.Products) {
+      // Check if the product already has an active offer
+      const activeOffers = await Offer.find({
+        Products: productId,
+        Status: true,
+        ExpiryDate: { $gt: new Date() }
+      }).sort({ ExpiryDate: 1 }); // Prioritize the earliest expiry date
+
+      if (activeOffers.length > 1) {
+        // If there are multiple offers, skip updating the price
+        console.log(
+          `Product ${productId} already has another active offer. Skipping update.`
+        );
+        continue;
+      }
+
+      // Update priceWithDiscount for the newly listed offer
+      const product = await Products.findById(productId);
+      if (!product) continue;
+
+      let discountedPrice = product.price;
+      if (offer.DiscountType === "percentage") {
+        const discount = product.price * (offer.DiscountValue / 100);
+        discountedPrice = Math.max(0, product.price - discount);
+      } else if (offer.DiscountType === "fixed") {
+        discountedPrice = Math.max(0, product.price - offer.DiscountValue);
+      }
+
+      updates.push(
+        Products.updateOne(
+          { _id: productId },
+          {
+            $set: {
+              priceWithDiscount: discountedPrice,
+              offer: offer._id
+            }
+          }
+        )
+      );
+    }
+
+    // Execute all updates in parallel
+    await Promise.all(updates);
+
+    console.log(`Offer ${offerId} successfully listed and products updated`);
     res.redirect("/admin/offer");
   } catch (error) {
-    console.error("Failed to list the product:", error);
+    console.error("Failed to list the offer:", error);
     res.status(500).redirect("/admin/offer");
   }
 };
+
 //-------------sales report-------------------------------------------------
 
 const getSalesReport = async (req, res) => {
@@ -1505,7 +1653,7 @@ const getSalesReport = async (req, res) => {
       const totalDiscount = order.items.reduce(
         (sum, item) =>
           sum +
-          (item.price - (item.priceWithDiscount || item.price)) * item.quantity,
+          (item.price - (item.productId.priceWithDiscount || item.price)) * item.quantity,
         0
       );
 

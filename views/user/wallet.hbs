@@ -278,22 +278,24 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Transaction Type</th>
-                                <th>Amount</th>
-                                <th>Description</th>
                                 <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Transaction Type</th>
                             </tr>
                         </thead>
                         <tbody id="transaction-list">
-                            {{#each transactions}}
+                            {{#each (reverse transactions)}}
                             <tr>
-                                <td> {{this.type}} </td>
+                                <td> {{formatDate this.date}} </td>
+                                <td>{{this.description}}</td>
                                 <td
                                     style="font-weight:500; color: {{#if (eq this.type 'refund')}}green{{else if (eq this.type 'debit')}}red{{else}}black{{/if}}">
                                     ₹ {{toInteger this.amount}}
-                                </td>
-                                <td>{{this.description}}</td>
-                                <td> {{formatDate this.date}} </td>
+                                </td> 
+                                <td> {{this.type}} </td>
+                               
+                                
                             </tr>
                             {{/each}}
                         </tbody>

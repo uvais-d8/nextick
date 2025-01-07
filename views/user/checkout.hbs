@@ -375,12 +375,12 @@
 										<td class="item-name">{{this.productId.name}}</td>
 										{{!-- <td class="item-price">₹{{this.productId.price}}</td> --}}
 										<td class="product-price">
-											{{#if this.priceWithDiscount}}
-											{{#if (eq this.priceWithDiscount this.productId.price)}}
+											{{#if this.productId.priceWithDiscount}}
+											{{#if (eq this.productId.priceWithDiscount this.productId.price)}}
 											{{this.productId.price}}
 											{{else}}
 											<del class="original-price">{{this.productId.price}}</del>
-											<span class="discounted-price">{{this.priceWithDiscount}}</span>
+											<span class="discounted-price">{{this.productId.priceWithDiscount}}</span>
 											{{/if}}
 											{{else}}
 											{{this.productId.price}}
@@ -390,8 +390,8 @@
 										<td class="item-quantity">{{this.quantity}}</td>
 
 										<td class="product-total">
-											{{#if this.priceWithDiscount}}
-											{{multiplyAndRound this.priceWithDiscount this.quantity}}
+											{{#if this.productId.priceWithDiscount}}
+											{{multiplyAndRound this.productId.priceWithDiscount this.quantity}}
 											{{else}}
 											{{multiplyAndRound this.productId.price this.quantity}}
 											{{/if}}
@@ -419,7 +419,7 @@
 										<td><strong>Total After Discount: </strong></td>
 										<td><b></b></td>
 										<td><b></b></td>
-										<td colspan="3" class="total"><b>₹{{toInteger total}}</b></td>
+										<td colspan="3" class="total"><b>₹ {{toInteger total}}</b></td>
 									</tr>
 								</tbody>
 
@@ -874,13 +874,10 @@
 					if (response.ok) {
 						const discount = data.discount;
 						const newTotal = data.newTotal;
-
 						document.querySelector('.total-data .total').textContent = `₹${newTotal.toFixed(2)}`;
-						document.querySelector('.discount-section').textContent = `Discount Applied: ₹${discount.toFixed(2)}`;
+						document.querySelector('.discount-section').textContent = `The order total discounted for the coupon : ₹${toInteger total} Discountm amount Applied : ₹${discount.toFixed(2)} `;
 						document.querySelector('.discount-section').style.display = 'block';
-
 						document.querySelector('input[name="total"]').value = newTotal.toFixed(2);
-
 						submitButton.value = 'Remove Coupon';
 						couponCodeInput.readOnly = true;
 					} else {

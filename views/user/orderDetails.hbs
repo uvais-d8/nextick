@@ -284,12 +284,12 @@
                             <td><b>Quantity: {{product.quantity}}</b></td>
                             <td>
                                 <p>Price:
-                                    {{#if product.priceWithDiscount}}
-                                    {{#if (eq product.priceWithDiscount product.productId.price)}}
+                                    {{#if product.productId.priceWithDiscount}}
+                                    {{#if (eq product.productId.priceWithDiscount product.productId.price)}}
                                     <b>₹ {{product.productId.price}}</b>
                                     {{else}}
                                     <del style="color: red;">₹{{product.productId.price}}</del>
-                                    <b>₹{{product.priceWithDiscount}}</b>
+                                    <b>₹{{product.productId.priceWithDiscount}}</b>
                                     {{/if}}
                                     {{else}}
                                     ₹ {{product.productId.price}}
@@ -300,14 +300,14 @@
                             {{!-- <td><b>Total Price: ₹ {{multiply product.price product.quantity}}</b></td> --}}
                             <td>
                                 <p>Total price:
-                                    {{#if product.priceWithDiscount}}
-                                    {{#if (eq (multiply product.priceWithDiscount product.quantity) (multiply
+                                    {{#if product.productId.priceWithDiscount}}
+                                    {{#if (eq (multiply product.productId.priceWithDiscount product.quantity) (multiply
                                     product.productId.price product.quantity))}}
                                     <b>₹ {{multiply product.productId.price product.quantity}}</b>
                                     {{else}}
                                     <del style="color: red;">₹{{multiply product.productId.price
                                         product.quantity}}</del>
-                                    <b>₹{{multiply product.priceWithDiscount product.quantity}}</b>
+                                    <b>₹{{multiply product.productId.priceWithDiscount product.quantity}}</b>
                                     {{/if}}
                                     {{else}}
                                     ₹ {{multiply product.productId.price product.quantity}}

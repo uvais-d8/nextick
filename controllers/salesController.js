@@ -435,58 +435,58 @@ const getProductStock = async (req, res) => {
   }
 };
 const updateQuantity = async (req, res) => {
-  const userId=req.session.userId
+  const userId = req.session.userId;
   const { id } = req.params;
   const { quantity } = req.body;
-  const carts = await Cart.find({ user: userId }).populate("productId");
 
   if (quantity < 1 || quantity > 11) {
-      return res.status(400).json({ message: "Invalid quantity" });
+    return res.status(400).json({ message: "Invalid quantity" });
   }
 
   try {
-      const cartItem = await Cart.findById(id).populate('productId');
-      if (!cartItem) {
-          return res.status(404).json({ message: "Cart item not found" });
-      }
-      let price=0
-  
-if(cartItem.priceWithDiscount>0){
-       price = cartItem.priceWithDiscount  
-       
-}else{
-     price=cartItem.productId.price
-    
-} 
-let subtotal=0
-carts.forEach(item => {
-  if (item.priceWithDiscount) {
-    subtotal += item.priceWithDiscount * item.quantity;
-  } else {
-    subtotal += item.productId.price * item.quantity;
-  }
-});
-console.log("subtotal",subtotal)
-      const total = price * quantity; 
-      await Cart.updateOne({ _id: id }, { $set: { quantity } });
+    const cartItem = await Cart.findById(id).populate("productId");
+    if (!cartItem) {
+      return res.status(404).json({ message: "Cart item not found" });
+    }
 
-      res.json({ 
-          success: true, 
-          quantity, 
-          total: total.toFixed(2),
-          subtotal:subtotal.toFixed(2) 
-      });
+    // Get the price based on product discount or original price
+    let price = cartItem.productId.priceWithDiscount > 0 ? cartItem.productId.priceWithDiscount : cartItem.productId.price;
+
+    // Recalculate the total price for the current item after updating quantity
+    const total = price * quantity;
+
+    // Update the quantity of the cart item
+    await Cart.updateOne({ _id: id }, { $set: { quantity } });
+
+    // Recalculate the subtotal for all cart items based on the updated quantities and prices
+    let subtotal = 0;
+    const carts = await Cart.find({ user: userId }).populate("productId");
+
+    carts.forEach(item => {
+      const itemPrice = item.productId.priceWithDiscount > 0 ? item.productId.priceWithDiscount : item.productId.price;
+      subtotal += itemPrice * item.quantity;
+    });
+
+    res.json({
+      success: true,
+      quantity,
+      total: total.toFixed(2),
+      subtotal: subtotal.toFixed(2)
+    });
   } catch (error) {
-      console.error("Error updating cart quantity:", error);
-      res.status(500).json({ success: false, message: "Error updating quantity." });
+    console.error("Error updating cart quantity:", error);
+    res.status(500).json({ success: false, message: "Error updating quantity." });
   }
 };
+
+
 
 const loadcartpage = async (req, res) => {
   try {
     const userId = req.session.userId;
-    console.log("sesssio user id::", userId);
+    console.log("Session User ID:", userId);
 
+    // Fetch cart items and populate the product details (including priceWithDiscount)
     const carts = await Cart.find({ user: userId }).populate("productId");
     console.log("Cart Items:", carts);
 
@@ -497,31 +497,36 @@ const loadcartpage = async (req, res) => {
       });
     }
 
+    // Adding product image to the cart item
     carts.forEach(cart => {
       if (cart.productId.images && cart.productId.images.length > 0) {
         cart.firstImage = cart.productId.images[0];
       }
     });
+
+    // Calculate the subtotal using the priceWithDiscount from the product model
     let subtotal = 0;
     carts.forEach(item => {
-      if (item.priceWithDiscount) {
-        subtotal += item.priceWithDiscount * item.quantity;
-      } else {
-        subtotal += item.productId.price * item.quantity;
-      }
+      const price = item.productId.priceWithDiscount > 0 ? item.productId.priceWithDiscount : item.productId.price;
+      subtotal += price * item.quantity;
     });
+
+    // Add shipping rate to the total
+    const shippingRate = 50;
+    const total = subtotal + shippingRate;
 
     res.render("cart", {
       carts,
       subtotal,
-      shippingRate: 50,
-      total: subtotal + 50
+      shippingRate,
+      total
     });
   } catch (error) {
     console.error("Error occurred during cart page:", error);
     res.status(500).send("Internal Server Error");
   }
 };
+
 const removecart = async (req, res) => {
   const { id } = req.params;
 
@@ -570,6 +575,7 @@ const addtocart = async (req, res) => {
       });
     }
 
+    // Check if there's enough stock for the requested quantity
     if (product.stock < productQuantity) {
       return res.render("singleproduct", {
         message: "Not enough stock available for this quantity",
@@ -578,22 +584,22 @@ const addtocart = async (req, res) => {
     }
 
     let discountedPrice = product.price;
+
+    // Apply discount if offer exists and is valid
     if (
       product.offer &&
       product.offer.Status &&
       product.offer.ExpiryDate > Date.now()
     ) {
       if (product.offer.DiscountType === "percentage") {
-        const discount = product.price * product.offer.DiscountValue / 100;
+        const discount = (product.price * product.offer.DiscountValue) / 100;
         discountedPrice = Math.max(0, product.price - discount); // Prevent negative price
       } else if (product.offer.DiscountType === "fixed") {
-        discountedPrice = Math.max(
-          0,
-          product.price - product.offer.DiscountValue
-        );
+        discountedPrice = Math.max(0, product.price - product.offer.DiscountValue);
       }
     }
 
+    // Check if product is already in the cart
     const existingItem = await Cart.findOne({ user: userId, productId });
 
     if (existingItem) {
@@ -614,8 +620,8 @@ const addtocart = async (req, res) => {
       }
 
       existingItem.quantity = newQuantity;
-      existingItem.priceWithDiscount = discountedPrice;
-      // existingItem.totalPrice = newQuantity * discountedPrice;
+      existingItem.productId.priceWithDiscount = discountedPrice;
+      existingItem.totalPrice = newQuantity * discountedPrice;  // Calculate the new total price
       await existingItem.save();
     } else {
       const cartItem = new Cart({
@@ -623,7 +629,7 @@ const addtocart = async (req, res) => {
         productId,
         quantity: productQuantity,
         priceWithDiscount: discountedPrice,
-        // totalPrice: productQuantity * discountedPrice
+        totalPrice: productQuantity * discountedPrice  // Calculate the total price on adding to cart
       });
       await cartItem.save();
     }
@@ -634,6 +640,7 @@ const addtocart = async (req, res) => {
     res.status(500).json({ error: "Failed to add product to cart" });
   }
 };
+
 const paymentSuccess = async (req, res) => {
   const orderId = req.params.id;
   console.log("Order ID:", orderId);
