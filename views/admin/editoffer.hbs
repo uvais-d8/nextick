@@ -151,96 +151,154 @@
                 }
             });
         </script>
-        <form id="editOfferForm" method="post" action="/admin/editingoffer/{{offer._id}}">
-            <div class="form-group">
-                <label for="DiscountType">Discount Type:</label>
-                <select id="DiscountType" name="DiscountType">
-                    <!-- Pre-select the discount type -->
-                    <option value="percentage" {{#if (eq offer.DiscountType "percentage" )}}selected{{/if}}>Percentage
-                    </option>
-                    <option value="fixed" {{#if (eq offer.DiscountType "fixed" )}}selected{{/if}}>Fixed Amount</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="DiscountValue">Discount Value:</label>
-                <input type="number" value="{{offer.DiscountValue}}" id="DiscountValue" name="DiscountValue" min="0" />
-            </div>
-            <div class="form-group">
-                <label for="Description">Description:</label>
-                <textarea id="Description" name="Description" maxlength="500">{{offer.Description}}</textarea>
-            </div>
-            <div class="form-group">
-                <label for="Products">Applicable Products:</label>
-                <!-- Dropdown Button -->
-                <button id="dropdownToggle" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">
-                    Select Products
-                </button>
+    <form id="editOfferForm" method="post" action="/admin/editingoffer/{{offer._id}}">
+  <div class="form-group">
+    <label for="DiscountType">Discount Type:</label>
+    <select id="DiscountType" name="DiscountType">
+      <option value="percentage" {{#if (eq offer.DiscountType "percentage")}}selected{{/if}}>Percentage</option>
+      <option value="fixed" {{#if (eq offer.DiscountType "fixed")}}selected{{/if}}>Fixed Amount</option>
+    </select>
+    <span class="error-message" id="error-DiscountType"></span>
+  </div>
 
-                <!-- Dropdown Content -->
-                <div id="ProductsDropdown" class="form-control"
-                    style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
-                    {{#each products}}
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
-                        <label for="product-{{this._id}}" style="margin-right: 10px;">{{this.name}}</label>
-                        <input type="checkbox" id="product-{{this._id}}" name="Products[]" value="{{this._id}}" {{#if
-                            (contains ../offer.Products this._id)}}checked{{/if}}>
-                    </div>
-                    {{/each}}
-                </div>
-            </div>
+  <div class="form-group">
+    <label for="DiscountValue">Discount Value:</label>
+    <input type="number" value="{{offer.DiscountValue}}" id="DiscountValue" name="DiscountValue" min="0"  />
+    <span class="error-message" id="error-DiscountValue"></span>
+  </div>
 
-            <script>
- 
-                document.getElementById("dropdownToggle").addEventListener("click", function () {
-                    const dropdown = document.getElementById("ProductsDropdown");
-                    dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
-                });
-            </script>
+  <div class="form-group">
+    <label for="Description">Description:</label>
+    <textarea id="Description" name="Description" maxlength="500" >{{offer.Description}}</textarea>
+    <span class="error-message" id="error-Description"></span>
+  </div>
 
-            <div class="form-group">
-                <label for="Category">Applicable Categories:</label>
-                <!-- Dropdown Button -->
-                <button id="dropdownToggles" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">
-                    Select Categories
-                </button>
+  <div class="form-group">
+    <label for="Products">Applicable Products:</label>
+    <button id="dropdownToggle" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">Select Products</button>
+    <div id="ProductsDropdown" class="form-control"
+      style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
+      {{#each products}}
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
+        <label for="product-{{this._id}}" style="margin-right: 10px;">{{this.name}}</label>
+        <input type="checkbox" id="product-{{this._id}}" name="Products[]" value="{{this._id}}" {{#if (contains ../offer.Products this._id)}}checked{{/if}} />
+      </div>
+      {{/each}}
+    </div>
+  </div>
 
-                <!-- Dropdown Content -->
-                <div id="CategoryDropdown" class="form-control"
-                    style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
-                    {{#each category}}
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
-                        <label for="category-{{this._id}}" style="margin-right: 10px;">{{this.category}}</label>
-                        <input type="checkbox" id="category-{{this._id}}" name="Categories[]" value="{{this._id}}" {{#if
-                            (contains ../offer.Categories this._id)}}checked{{/if}}>
-                    </div>
-                    {{/each}}
-                </div>
-            </div>
+  <div class="form-group">
+    <label for="Category">Applicable Categories:</label>
+    <button id="dropdownToggles" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">Select Categories</button>
+    <div id="CategoryDropdown" class="form-control"
+      style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
+      {{#each category}}
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
+        <label for="category-{{this._id}}" style="margin-right: 10px;">{{this.category}}</label>
+        <input type="checkbox" id="category-{{this._id}}" name="Categories[]" value="{{this._id}}" {{#if (contains ../offer.Categories this._id)}}checked{{/if}} />
+      </div>
+      {{/each}}
+    </div>
+  </div>
 
-            <script>
- 
-                document.getElementById("dropdownToggles").addEventListener("click", function () {
-                    const dropdown = document.getElementById("CategoryDropdown");
-                    dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
-                });
-            </script>
+  <div class="form-group">
+    <label for="ExpiryDate">Expiry Date:</label>
+    <input type="date" id="ExpiryDate" name="ExpiryDate" 
+      value="{{formatDate offer.ExpiryDate}}" />
+    <span class="error-message" id="error-ExpiryDate"></span>
+  </div>
 
+  <div class="form-group">
+    <label for="Status">Offer Status:</label>
+    <select id="Status" name="Status" >
+      <option value="true" {{#if (eq offer.Status "true")}}selected{{/if}}>Active</option>
+      <option value="false" {{#if (eq offer.Status "false")}}selected{{/if}}>Non Active</option>
+    </select>
+    <span class="error-message" id="error-Status"></span>
+  </div>
 
-            <div class="form-group">
-                <label for="ExpiryDate">Current Expiry Date:{{formatDate offer.ExpiryDate}}</label>
-                <p style="color: red;">Expiry date updation is compelsery</p>
-                <input type="date" id="ExpiryDate" value="{{formatDate offer.ExpiryDate}}" name="ExpiryDate" />
-            </div>
-            <div class="form-group">
-                <label for="Status">Offer Status:</label>
-                <select id="Status" name="Status">
-                    <option value="true" {{#if (eq offer.Status "true" )}}selected{{/if}}>Active</option>
-                    <option value="false" {{#if (eq offer.Status "false" )}}selected{{/if}}>Non Active</option>
-                </select>
-            </div>
+  <input style="height: 35px; font-weight: bold" type="submit" value="Update Offer">
+  <a href="/admin/offer"><input style="margin-top:5px;width:100%;height: 35px; font-weight: bold" type="button" value="back"></a>
+</form>
 
-            <input style="height: 35px;font-weight:bold" type="submit" value="add Offer">
-        </form>
+ <script>
+    // Helper Function to Show Error Messages
+    function showError(inputId, message) {
+      const errorElement = document.getElementById(`error-${inputId}`);
+      if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.color = "red";
+        errorElement.style.fontSize = "0.9em";
+      }
+    }
+
+    function clearError(inputId) {
+      const errorElement = document.getElementById(`error-${inputId}`);
+      if (errorElement) {
+        errorElement.textContent = "";
+      }
+    }
+
+    // Toggle Products Dropdown
+    document.getElementById("dropdownToggle").addEventListener("click", function () {
+      const dropdown = document.getElementById("ProductsDropdown");
+      dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+    });
+
+    // Toggle Categories Dropdown
+    document.getElementById("dropdownToggles").addEventListener("click", function () {
+      const dropdown = document.getElementById("CategoryDropdown");
+      dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+    });
+
+    // Form Validation
+    document.getElementById("editOfferForm").addEventListener("submit", function (event) {
+      let isValid = true;
+
+      // Clear all previous errors
+      ["DiscountType", "DiscountValue", "Description", "ExpiryDate", "Status"].forEach(clearError);
+
+      const discountType = document.getElementById("DiscountType").value;
+      const discountValue = parseFloat(document.getElementById("DiscountValue").value);
+      const description = document.getElementById("Description").value;
+      const expiryDate = document.getElementById("ExpiryDate").value;
+
+      // Validate Discount Type and Value
+      if (discountType === "percentage" && discountValue > 50) {
+        isValid = false;
+        showError("DiscountValue", "Percentage discount cannot exceed 50%.");
+      } else if (discountType === "fixed" && discountValue >= 1000) {
+        isValid = false;
+        showError("DiscountValue", "Fixed discount must be below Rs. 1000.");
+      }
+
+      // Validate Description
+      if (description.trim() === "") {
+        isValid = false;
+        showError("Description", "Description cannot be empty.");
+      }
+
+      // Validate Expiry Date
+      if (!expiryDate) {
+        isValid = false;
+        showError("ExpiryDate", "Expiry Date is required.");
+      } else if (new Date(expiryDate) < new Date()) {
+        isValid = false;
+        showError("ExpiryDate", "Expiry Date cannot be in the past.");
+      }
+
+      // Enforce Minimum Purchase Value
+      const minPurchase = 1000; // You can customize this based on your logic
+      if (discountType === "fixed" && minPurchase < 1000) {
+        isValid = false;
+        showError("DiscountType", "Minimum purchase must be Rs. 1000 or more.");
+      }
+
+      if (!isValid) {
+        event.preventDefault(); // Prevent form submission if validation fails
+      }
+    });
+  </script>
         <div id="message"></div>
     </div>
 

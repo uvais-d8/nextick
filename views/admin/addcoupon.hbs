@@ -177,7 +177,7 @@
                                 <label for="minPurchase" class="form-label">Minimum Purchase</label>
                                 <input type="number" class="form-control" name="minPurchase" id="minPurchase">
                             </div>
- 
+
                             <div class="form-group">
                                 <label for="Products">Applicable Products:</label>
                                 <!-- Dropdown Button -->
@@ -190,7 +190,8 @@
                                 <div id="ProductsDropdown" class="form-control"
                                     style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
                                     <button id="selectToggleButton" type="button" onclick="toggleSelectAll()"
-                                        style="margin-left:85%;font-size:12px;width:100px;background-color:rgb(0, 119, 255);padding-top:10px;height:30px">Select All</button>
+                                        style="margin-left:85%;font-size:12px;width:100px;background-color:rgb(0, 119, 255);padding-top:10px;height:30px">Select
+                                        All</button>
                                     {{#each products}}
                                     <div
                                         style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
@@ -213,9 +214,9 @@
                                         });
 
                                         if (allSelected) {
-                                            button.textContent = 'Select All'; 
+                                            button.textContent = 'Select All';
                                         } else {
-                                            button.textContent = 'Deselect All'; 
+                                            button.textContent = 'Deselect All';
                                         }
                                     }
                                 </script>
@@ -237,148 +238,101 @@
                             </div>
 
                         </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-success">Add Coupon</button>
-                        </div>
+
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center;">
+                            <!-- Submit Button -->
+                            <div>
+                                <a href="/admin/coupon">
+                                    <button type="button"
+                                        style="height: 40px; font-size: 14px; background-color: rgb(245, 36, 36);"
+                                        class="btn btn-danger">Back</button>
+                                </a>
+                            </div>
+                            <div>
+                                <button style="height: 40px; font-size: 14px;" type="submit" class="btn btn-success">Add
+                                    Coupon</button>
+                            </div>
                     </form>
+                    <!-- Back Button -->
+
                 </div>
+
+
             </div>
         </div>
+    </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const form = document.querySelector('#addCouponModal form');
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.querySelector('#addCouponModal form');
 
-                form.addEventListener('submit', (event) => {
-                    let isValid = true;
-                    const couponCode = form.querySelector('#couponCode').value.trim();
-                    const DiscountType = form.querySelector('#DiscountType').value;
-                    const DiscountValue = parseFloat(form.querySelector('#DiscountValue').value);
-                    const minPurchase = parseFloat(form.querySelector('#minPurchase').value) || 0;
-                    const UsageLimit = parseFloat(form.querySelector('#UsageLimit').value) || 0;
-                    const expiryDate = new Date(form.querySelector('#expiryDate').value);
-                    const currentDate = new Date();
+            form.addEventListener('submit', (event) => {
+                let isValid = true;
+                const couponCode = form.querySelector('#couponCode').value.trim();
+                const DiscountType = form.querySelector('#DiscountType').value;
+                const DiscountValue = parseFloat(form.querySelector('#DiscountValue').value);
+                const minPurchase = parseFloat(form.querySelector('#minPurchase').value) || 0;
+                const UsageLimit = parseFloat(form.querySelector('#UsageLimit').value) || 0;
+                const expiryDate = new Date(form.querySelector('#expiryDate').value);
+                const currentDate = new Date();
 
-                    form.querySelectorAll('.text-danger').forEach((el) => (el.textContent = ''));
+                form.querySelectorAll('.text-danger').forEach((el) => (el.textContent = ''));
 
-                    if (!couponCode) {
-                        showError('#couponCode', 'Coupon code is required.');
-                        isValid = false;
-                    }
-
-                    if (!DiscountValue || DiscountValue <= 0) {
-                        showError('#DiscountValue', 'Discount value must be a positive number.');
-                        isValid = false;
-                    } else if (DiscountType === 'percentage' && DiscountValue > 50) {
-                        showError('#DiscountValue', 'Percentage discount cannot exceed 50%.');
-                        isValid = false;
-                    }
-
-                    if (minPurchase < 1000) {
-                        showError('#minPurchase', 'Minimum purchase must be greater than 1000.');
-                        isValid = false;
-                    }
-
-                    if (UsageLimit < 1) {
-                        showError('#UsageLimit', 'enter a positive usage limit.');
-                        isValid = false;
-                    }
-
-                    if (isNaN(expiryDate.getTime()) || expiryDate < currentDate) {
-                        showError('#expiryDate', 'Expiry date must be a valid future date.');
-                        isValid = false;
-                    }
-
-                    if (!isValid) {
-                        event.preventDefault();
-                    }
-                });
-
-                function showError(fieldSelector, message) {
-                    const field = form.querySelector(fieldSelector);
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'text-danger';
-                    errorDiv.style.color = "red"
-                    errorDiv.textContent = message;
-                    field.parentElement.appendChild(errorDiv);
+                if (!couponCode) {
+                    showError('#couponCode', 'Coupon code is required.');
+                    isValid = false;
                 }
-            });</script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-NI16xFJyr0z2mzz/j9A5n3dvvzRr+cXv7kZHYtU4hIW44C5SRsCXumtp92MOaF3Y"
-            crossorigin="anonymous"></script>
-        <script>
- 
-            document.getElementById("dropdownToggle").addEventListener("click", function () {
-                const dropdown = document.getElementById("ProductsDropdown");
-                dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+
+                if (!DiscountValue || DiscountValue <= 0) {
+                    showError('#DiscountValue', 'Discount value must be a positive number.');
+                    isValid = false;
+                } else if (DiscountType === 'percentage' && DiscountValue > 50) {
+                    showError('#DiscountValue', 'Percentage discount cannot exceed 50%.');
+                    isValid = false;
+                }
+
+                if (minPurchase < 1000) {
+                    showError('#minPurchase', 'Minimum purchase must be greater than 1000.');
+                    isValid = false;
+                }
+
+                if (UsageLimit < 1) {
+                    showError('#UsageLimit', 'enter a positive usage limit.');
+                    isValid = false;
+                }
+
+                if (isNaN(expiryDate.getTime()) || expiryDate < currentDate) {
+                    showError('#expiryDate', 'Expiry date must be a valid future date.');
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    event.preventDefault();
+                }
             });
-        </script>
+
+            function showError(fieldSelector, message) {
+                const field = form.querySelector(fieldSelector);
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'text-danger';
+                errorDiv.style.color = "red"
+                errorDiv.textContent = message;
+                field.parentElement.appendChild(errorDiv);
+            }
+        });</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-NI16xFJyr0z2mzz/j9A5n3dvvzRr+cXv7kZHYtU4hIW44C5SRsCXumtp92MOaF3Y"
+        crossorigin="anonymous"></script>
+    <script>
+
+        document.getElementById("dropdownToggle").addEventListener("click", function () {
+            const dropdown = document.getElementById("ProductsDropdown");
+            dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+        });
+    </script>
 
 </body>
 
 </html>
-
-
-
-
-
-
-{{!--
-
-<form method="post" action="/admin/addingcoupon">
-    <div class="form-group">
-        <label for="CouponCode">Coupon Code:</label>
-        <input type="text" id="CouponCode" name="CouponCode" />
-    </div>
-    <div class="form-group">
-        <label for="DiscountType">Discount Type:</label>
-        <select id="DiscountType" name="DiscountType">
-            <option value="percentage">Percentage</option>
-            <option value="fixed">Fixed Amount</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="DiscountValue">Discount Value:</label>
-        <input type="number" id="DiscountValue" name="DiscountValue" min="0" />
-    </div>
-    <div class="form-group">
-        <label for="Products">Applicable Products:</label>
-        <!-- Dropdown Button -->
-        <button id="dropdownToggle" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">
-            Select Products
-        </button>
-
-        <!-- Dropdown Content -->
-        <div id="ProductsDropdown" class="form-control"
-            style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
-            {{#each products}}
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
-                <label for="product-{{this.id}}" style="margin-right: 10px;">{{this.name}}</label>
-                <input type="checkbox" id="product-{{this.id}}" name="Products[]" value="{{this.name}}">
-            </div>
-            {{/each}}
-        </div>
-    </div>
-
-
-
-    <div class="form-group">
-        <label for="MinimumCartValue">Minimum Cart Value:</label>
-        <input type="number" id="MinimumCartValue" name="MinimumCartValue" min="0" />
-    </div>
-    <div class="form-group">
-        <label for="UsageLimit">Usage Limit:</label>
-        <input type="number" id="UsageLimit" name="UsageLimit" min="1" />
-    </div>
-    <div class="form-group">
-        <label for="ExpiryDate">Expiry Date:</label>
-        <input type="date" id="ExpiryDate" name="ExpiryDate" />
-    </div>
-    <div class="form-group">
-        <label for="Description">Description:</label>
-        <textarea id="Description" name="Description" maxlength="500"></textarea>
-    </div>
-
-    <input style="height: 35px;font-weight:bold" type="submit" value="add Coupon">
-</form> --}}

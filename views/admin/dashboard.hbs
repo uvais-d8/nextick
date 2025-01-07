@@ -137,7 +137,7 @@
 
                                 const ctx = document.getElementById("salesChart").getContext("2d");
                                 salesChart = new Chart(ctx, {
-                                    type: "line",
+                                    type: "bar",
                                     data: {
                                         labels: labels,
                                         datasets: [{
@@ -342,7 +342,7 @@
 
                 <section style="height: 450px;" class="graph-container">
                     <div style="height: 500px;background-color:rgb(240, 236, 236)" class="graph">
-                        <h3 style="color: black;font-weight:bold">Sales Overview</h3>
+                        <h2 style="color: black;font-weight:bold">Sales Overview</h2>
                         <select id="filter"
                             style="margin-bottom: 10px; margin-left: 87%;margin-top:-200px;width:90px;height:30px;border-radius:4px;font-size:14px">
                             <option value="yearly">Yearly</option>
@@ -379,142 +379,144 @@
                         </div>
                     </div>
                 </section>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <style>
+                    .container {
+                        margin: 0 auto;
+                        background: #fff;
+                        padding: 20px;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        border-radius: 8px;
+                        margin-left: 0px;
+                    }
 
-                <div style="display: flex;">
-                    <div style="height:200px;margin-top:70px;width:50%" class="graph">
-                        <h3>Best-Selling Categories</h3>
-                        <div class="graph-placeholmder pulse">
+                    h1 {
+                        text-align: center;
+                        color: #333;
+                    }
 
-                            <table>
-                                <colgroup>
-                                    <col style="width: 170px;">
-                                    <col style="width: 200px;">
-                                </colgroup>
-                                <thead>
-                                    <tr style="font-size:19px;font-weight:bold">
-                                        <th>Category</th>
-                                        <th>Total Sales</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{#each topSellingCategories}}
-                                    <tr>
-                                        <td>{{this.categoryDetails.category}}</td>
-                                        <td style="padding-left: 40px;">{{this.totalSales}}</td>
-                                    </tr>
-                                    {{/each}}
-                                </tbody>
-                            </table>
+                    .canvas {
+                        display: block;
+                        width: 101%;
+                        height: 400px;
+                        margin: 0 auto;
+                    }
+                </style>
+                </head>
 
-                        </div>
-                    </div>
-                    <div style="height: 200px;margin-top:70px;margin-left:20px;width:50%" class="graph">
-                        <h3>Best-Selling Brands</h3>
-                        <div class="graph-placeholmder pulse">
-
-                            <table>
-                                <colgroup>
-                                    <col style="width: 170px;">
-                                    <col style="width: 200px;">
-                                </colgroup>
-                                <thead>
-                                    <tr>
-                                        <th>Brand</th>
-                                        <th>Total Sales</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{#each topSellingCategories}}
-                                    <tr>
-                                        <td>{{this.categoryDetails.brand}}</td>
-                                        <td style="padding-left: 40px;">{{this.totalSales}}</td>
-                                    </tr>
-                                    {{/each}}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                    <style>
-                        .container {
-                            max-width: 800px;
-                            margin: 0 auto;
-                            background: #fff;
-                            padding: 20px;
-                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                            border-radius: 8px;
-                        }
-
-                        h1 {
-                            text-align: center;
-                            color: #333;
-                        }
-
-                        .canvas {
-                            display: block;
-                            width: 100%;
-                            margin: 0 auto;
-                        }
-                    </style>
-                    </head>
-
-                    <body>
-                        <div style="margin-top: 30px;" class="container">
-                            <h1>Category-wise Sales</h1>
+                <body>
+                    <div style="display: flex;">
+                        <div style="margin-top: 80px;" class="container">
+                             <h3 style="color: black;font-weight:bold">Category-wise Sales</h3>
                             <canvas class="canvas" id="salesCharts"></canvas>
                         </div>
 
-                        <script>
-                            document.addEventListener("DOMContentLoaded", () => {
-                                // Debug: Check if Chart.js is loaded
-                                console.log('Chart.js loaded:', Chart);
+                        <div style="height:400px;margin-top:80px;width:50%;margin-left:15px" class="graph">
+                            <h3>Best-Selling Categories</h3>
+                            <div class="graph-placeholmder pulse">
 
-                                // Sample data
-                                const categories = ["Round dial", "Luxury Items", "Low Varients"];
-                                const salesData = [40,35,28];
+                                <table>
+                                    <colgroup>
+                                        <col style="width: 170px;">
+                                        <col style="width: 200px;">
+                                    </colgroup>
+                                    <thead>
+                                        <tr style="font-size:19px;font-weight:bold">
+                                            <th>Category</th>
+                                            <th>Total Sales</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{#each topSellingCategories}}
+                                        <tr>
+                                            <td>{{this.categoryDetails.category}}</td>
+                                            <td style="padding-left: 40px;">{{this.totalSales}}</td>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
 
-                                // Debug: Check data
-                                console.log('Categories:', categories);
-                                console.log('Sales Data:', salesData);
+                            </div>
+                        </div>
 
-                                // Render Chart
-                                const ctx = document.getElementById("salesCharts").getContext("2d");
-                                const salesCharts = new Chart(ctx, {
-                                    type: "bar", // Bar chart
-                                    data: {
-                                        labels: categories,
-                                        datasets: [{
-                                            label: "Sales (in ₹)",
-                                            data: salesData,
-                                            backgroundColor: ["#4CAF50", "#2196F3", "#FFC107", "#FF5722", "#9C27B0"],
-                                            borderColor: ["#388E3C", "#1976D2", "#FFA000", "#E64A19", "#7B1FA2"],
-                                            borderWidth: 1
-                                        }]
-                                    },
-                                    options: {
-                                        responsive: true,
-                                        plugins: {
-                                            legend: {
-                                                position: "top"
-                                            },
-                                            title: {
-                                                display: true,
-                                                text: "Sales by Category"
-                                            }
+
+                        <div style="height:400px;margin-top:80px;width:50%;margin-left:15px" class="graph">
+                            <h3>Best-Selling Brands</h3>
+                            <div class="graph-placeholmder pulse">
+
+                                <table>
+                                    <colgroup>
+                                        <col style="width: 200px;">
+                                        <col style="width: 200px;">
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th>Brand</th>
+                                            <th>Total Sales</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{#each topSellingCategories}}
+                                        <tr>
+                                            <td>{{this.categoryDetails.brand}}</td>
+                                            <td style="padding-left: 40px;">{{this.totalSales}}</td>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        document.addEventListener("DOMContentLoaded", () => {
+                            // Debug: Check if Chart.js is loaded
+                            console.log('Chart.js loaded:', Chart);
+
+                            // Sample data
+                            const categories = ["Round dial", "Luxury Items", "Low Varients"];
+                            const salesData = [40, 35, 28];
+
+                            // Debug: Check data
+                            console.log('Categories:', categories);
+                            console.log('Sales Data:', salesData);
+
+                            // Render Chart
+                            const ctx = document.getElementById("salesCharts").getContext("2d");
+                            const salesCharts = new Chart(ctx, {
+                                type: "bar", // Bar chart
+                                data: {
+                                    labels: categories,
+                                    datasets: [{
+                                        label: "Sales (by count)",
+                                        data: salesData,
+                                        backgroundColor: ["#2196F3", "#2196F3", "#2196F3", "#2196F3", "#2196F3"],
+                                        borderColor: ["#2196F3", "#2196F3", "#2196F3", "#2196F3", "#2196F3"],
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: {
+                                            position: "top"
                                         },
-                                        scales: {
-                                            y: {
-                                                beginAtZero: true
-                                            }
+                                        title: {
+                                            display: true,
+                                            text: "Sales by Category"
+                                        }
+                                    },
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
                                         }
                                     }
-                                });
-
-                                // Debug: Check chart instance
-                                console.log('Chart instance:', salesCharts);
+                                }
                             });
-                        </script>
+
+                            // Debug: Check chart instance
+                            console.log('Chart instance:', salesCharts);
+                        });
+                    </script>
 
         </main>
     </div>

@@ -7,7 +7,7 @@
     <title>NEXTICK</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="shortcut icon" type="image/png" href="/assets/img/favicon.png">
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         * {
@@ -119,136 +119,144 @@
 <body>
     <div class="container">
         <h1>Add New Offer - ( products )</h1>
- <form id="couponForm" method="post" action="/admin/addingOffer" onsubmit="return validateForm(event)">
+        <form id="couponForm" method="post" action="/admin/addingOffer" onsubmit="return validateForm(event)">
 
-    <div class="form-group">
-        <label for="DiscountType">Discount Type:</label>
-        <select id="DiscountType" name="DiscountType">
-            <option value="">Select Discount Type</option>
-            <option value="percentage">Percentage</option>
-            <option value="fixed">Fixed Amount</option>
-        </select>
-        <div id="DiscountTypeError" class="error-message" style="color: red; display: none;">Please select a discount type.</div>
-    </div>
-
-    <div class="form-group">
-        <label for="DiscountValue">Discount Value:</label>
-        <input type="number" id="DiscountValue" name="DiscountValue" />
-        <div id="DiscountValueError" class="error-message" style="color: red; display: none;">Please enter a valid discount value greater than 0.</div>
-        <div id="MaxPercentageError" class="error-message" style="color: red; display: none;">Percentage discount cannot exceed 50%.</div>
-    </div>
-
-    <div class="form-group">
-        <label for="Description">Description:</label>
-        <textarea id="Description" name="Description" maxlength="500"></textarea>
-        <div id="DescriptionError" class="error-message" style="color: red; display: none;">Please enter a description.</div>
-    </div>
-
-    <div class="form-group">
-        <label for="Products">Applicable Products:</label>
-        <button id="dropdownToggle" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">
-            Select Products
-        </button>
-
-        <div id="ProductsDropdown" class="form-control" style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
-            <button type="button" id="selectAllButton" style="margin-left:85%;font-weight:100;font-size:13px;margin-bottom: 10px; width: 14%; padding: 5px; background-color: #007bff; color: white; border: none; cursor: pointer;">
-                Select All
-            </button>
-
-            {{#each products}}
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
-                <label for="product-{{this._id}}" style="margin-right: 10px;">{{this.name}}</label>
-                <input type="checkbox" id="product-{{this._id}}" name="Products[]" value="{{this._id}}">
+            <div class="form-group">
+                <label for="DiscountType">Discount Type:</label>
+                <select id="DiscountType" name="DiscountType">
+                    <option value="">Select Discount Type</option>
+                    <option value="percentage">Percentage</option>
+                    <option value="fixed">Fixed Amount</option>
+                </select>
+                <div id="DiscountTypeError" class="error-message" style="color: red; display: none;">Please select a
+                    discount type.</div>
             </div>
-            {{/each}}
-        </div>
 
-        <div id="ProductsError" class="error-message" style="color: red; display: none;">Please select at least one product.</div>
-    </div>
+            <div class="form-group">
+                <label for="DiscountValue">Discount Value:</label>
+                <input type="number" id="DiscountValue" name="DiscountValue" />
+                <div id="DiscountValueError" class="error-message" style="color: red; display: none;">Please enter a
+                    valid discount value greater than 0.</div>
+                <div id="MaxPercentageError" class="error-message" style="color: red; display: none;">Percentage
+                    discount cannot exceed 50%.</div>
+            </div>
 
-    <script>
-        document.getElementById("selectAllButton").addEventListener("click", function() {
-            const checkboxes = document.querySelectorAll("#ProductsDropdown input[type='checkbox']");
-            const allSelected = Array.from(checkboxes).every(checkbox => checkbox.checked);
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = !allSelected;
-            });
-            document.getElementById("selectAllButton").textContent = allSelected ? "Select All" : "Deselect All";
-        });
+            <div class="form-group">
+                <label for="Description">Description:</label>
+                <textarea id="Description" name="Description" maxlength="500"></textarea>
+                <div id="DescriptionError" class="error-message" style="color: red; display: none;">Please enter a
+                    description.</div>
+            </div>
 
-        document.getElementById("dropdownToggle").addEventListener("click", function () {
-            const dropdown = document.getElementById("ProductsDropdown");
-            dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
-        });
+            <div class="form-group">
+                <label for="Products">Applicable Products:</label>
+                <button id="dropdownToggle" class="btn btn-secondary" type="button" style="margin-bottom: 10px;">
+                    Select Products
+                </button>
 
-        function validateForm(event) {
-            let valid = true;
+                <div id="ProductsDropdown" class="form-control"
+                    style="display: none; height: auto; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
+                    <button type="button" id="selectAllButton"
+                        style="margin-left:85%;font-weight:100;font-size:13px;margin-bottom: 10px; width: 14%; padding: 5px; background-color: #007bff; color: white; border: none; cursor: pointer;">
+                        Select All
+                    </button>
 
-             document.querySelectorAll('.error-message').forEach(function(error) {
-                error.style.display = 'none';
-            });
+                    {{#each products}}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
+                        <label for="product-{{this._id}}" style="margin-right: 10px;">{{this.name}}</label>
+                        <input type="checkbox" id="product-{{this._id}}" name="Products[]" value="{{this._id}}">
+                    </div>
+                    {{/each}}
+                </div>
 
-             const discountType = document.getElementById("DiscountType");
-            if (discountType.value === "") {
-                document.getElementById("DiscountTypeError").style.display = "block";
-                valid = false;
-            }
+                <div id="ProductsError" class="error-message" style="color: red; display: none;">Please select at least
+                    one product.</div>
+            </div>
 
-             const discountValue = document.getElementById("DiscountValue");
-            if (discountValue.value <= 0) {
-                document.getElementById("DiscountValueError").style.display = "block";
-                valid = false;
-            }
- 
-            if (discountType.value === "percentage" && discountValue.value > 50) {
-                document.getElementById("MaxPercentageError").style.display = "block";
-                valid = false;
-            }
-
-             const description = document.getElementById("Description");
-            if (description.value.trim() === "") {
-                document.getElementById("DescriptionError").style.display = "block";
-                valid = false;
-            }
-
-             const products = document.querySelectorAll('input[name="Products[]"]:checked');
-            if (products.length === 0) {
-                document.getElementById("ProductsError").style.display = "block";
-                valid = false;
-            }
-
-             const expiryDate = document.getElementById("ExpiryDate");
-            const today = new Date().toISOString().split("T")[0];  
-            if (expiryDate.value && expiryDate.value < today) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Invalid Expiry Date',
-                    text: 'Please select a future expiry date.',
+            <script>
+                document.getElementById("selectAllButton").addEventListener("click", function () {
+                    const checkboxes = document.querySelectorAll("#ProductsDropdown input[type='checkbox']");
+                    const allSelected = Array.from(checkboxes).every(checkbox => checkbox.checked);
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = !allSelected;
+                    });
+                    document.getElementById("selectAllButton").textContent = allSelected ? "Select All" : "Deselect All";
                 });
-                valid = false;
-            }
 
-            return valid;
-        }
-    </script>
+                document.getElementById("dropdownToggle").addEventListener("click", function () {
+                    const dropdown = document.getElementById("ProductsDropdown");
+                    dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+                });
 
-    <div class="form-group">
-        <label for="ExpiryDate">Expiry Date:</label>
-        <input type="date" id="ExpiryDate" name="ExpiryDate" />
-    </div>
+                function validateForm(event) {
+                    let valid = true;
 
-    <div class="form-group">
-        <label for="Status">Offer Status:</label>
-        <select id="Status" name="Status">
-             <option value="true">Active</option>
-            <option value="false">Non Active</option>
-        </select>
-    </div>
+                    document.querySelectorAll('.error-message').forEach(function (error) {
+                        error.style.display = 'none';
+                    });
 
-    <input style="height: 35px; font-weight: bold" type="submit" value="Add Offer">
-</form>
+                    const discountType = document.getElementById("DiscountType");
+                    if (discountType.value === "") {
+                        document.getElementById("DiscountTypeError").style.display = "block";
+                        valid = false;
+                    }
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+                    const discountValue = document.getElementById("DiscountValue");
+                    if (discountValue.value <= 0) {
+                        document.getElementById("DiscountValueError").style.display = "block";
+                        valid = false;
+                    }
+
+                    if (discountType.value === "percentage" && discountValue.value > 50) {
+                        document.getElementById("MaxPercentageError").style.display = "block";
+                        valid = false;
+                    }
+
+                    const description = document.getElementById("Description");
+                    if (description.value.trim() === "") {
+                        document.getElementById("DescriptionError").style.display = "block";
+                        valid = false;
+                    }
+
+                    const products = document.querySelectorAll('input[name="Products[]"]:checked');
+                    if (products.length === 0) {
+                        document.getElementById("ProductsError").style.display = "block";
+                        valid = false;
+                    }
+
+                    const expiryDate = document.getElementById("ExpiryDate");
+                    const today = new Date().toISOString().split("T")[0];
+                    if (expiryDate.value && expiryDate.value < today) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Expiry Date',
+                            text: 'Please select a future expiry date.',
+                        });
+                        valid = false;
+                    }
+
+                    return valid;
+                }
+            </script>
+
+            <div class="form-group">
+                <label for="ExpiryDate">Expiry Date:</label>
+                <input type="date" id="ExpiryDate" name="ExpiryDate" />
+            </div>
+
+            <div class="form-group">
+                <label for="Status">Offer Status:</label>
+                <select id="Status" name="Status">
+                    <option value="true">Active</option>
+                    <option value="false">Non Active</option>
+                </select>
+            </div>
+
+            <input style="height: 35px; font-weight: bold" type="submit" value="Add Offer">
+            <a href="/admin/offer"> <input style="margin-top:5px;width:100%;height: 35px; font-weight: bold" type="button" value="Back"></a>
+        </form>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </body>
 
 </html>
