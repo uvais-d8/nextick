@@ -451,7 +451,7 @@
 
 											</div>
 										</div>
-										<div style="margin-left: 15px;color:rgb(18, 175, 18);font-weight:bold"
+										<div style="margin-left: 15px;color:rgb(0, 177, 0);font-weight:bold"
 											class="discount-section">{{#if discount}}Discount Applied successfully:
 											₹{{discount}}{{/if}}
 										</div>
@@ -874,10 +874,13 @@
 					if (response.ok) {
 						const discount = data.discount;
 						const newTotal = data.newTotal;
+
 						document.querySelector('.total-data .total').textContent = `₹${newTotal.toFixed(2)}`;
-						document.querySelector('.discount-section').textContent = `The order total discounted for the coupon : ₹${toInteger total} Discountm amount Applied : ₹${discount.toFixed(2)} `;
+						document.querySelector('.discount-section').textContent = `The Discount Applied for your Order is : ₹ ${discount.toFixed(2)}  Total amount after discount is Rs ${newTotal.toFixed(2)}`;
 						document.querySelector('.discount-section').style.display = 'block';
+
 						document.querySelector('input[name="total"]').value = newTotal.toFixed(2);
+
 						submitButton.value = 'Remove Coupon';
 						couponCodeInput.readOnly = true;
 					} else {

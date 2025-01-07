@@ -194,7 +194,7 @@ console.log("paymentmethode",paymentMethod)
             {
               type: "debit",
               amount: orderTotal,
-              description: `payment for the order ( ${orderReference} )`,
+              description: `Payment for the order ( ${orderReference} )`,
             },
           ],
         });
@@ -203,7 +203,7 @@ console.log("paymentmethode",paymentMethod)
         wallet.transactions.push({
         type: "debit",
         amount: orderTotal,
-        description: `payment for the order ( ${orderReference} )`,
+        description: `Payment for the order ( ${orderReference} )`,
       });
       }
     }

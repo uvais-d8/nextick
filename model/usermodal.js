@@ -37,7 +37,8 @@ const userSchema = new mongoose.Schema(
     },
     referralCode: {
       type: String,
-      unique: true
+      unique: true,
+      require:false
     },
   },
   { timestamps: true }
