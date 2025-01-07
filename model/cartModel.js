@@ -20,10 +20,6 @@ const cartSchema = new mongoose.Schema({
     type: Number,
     required: false
   },
-  totalPrice: {
-    type: Number,
-    required: true
-  }
 });
 
 const cartmodal = mongoose.model("cart", cartSchema);

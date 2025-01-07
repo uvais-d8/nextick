@@ -352,18 +352,18 @@
 
 						<p class="single-product-pricing">
 							{{#if product.discountValue}}
-							<span class="price" style="text-decoration: line-through; color: red; font-size: 15px">
-								₹{{product.price}} <!-- Original price -->
+							<span class="price" style="text-decoration: line-through; color: rgb(208, 0, 0); font-size: 15px">
+								₹ {{product.price}} <!-- Original price -->
 							</span>
 							{{#if (gte product.priceWithDiscount 0)}} <!-- Check if offer price is not negative -->
 							<span class="offer-price"
-								style="color: green; font-weight: bold; font-size: 21px; margin-top: -5px">
-								₹{{product.priceWithDiscount}} <!-- Discounted price -->
+								style="color: green; font-weight: bold; font-size: 23px; margin-top: -5px">
+								₹ {{product.priceWithDiscount}} <!-- Discounted price -->
 							</span>
 							{{else}}
 							<span class="offer-price"
-								style="color: green; font-weight: bold; font-size: 21px; margin-top: -5px">
-								₹{{product.price}} <!-- Show original price if offer price is negative -->
+								style="color: green; font-weight: bold; font-size: 23px; margin-top: -5px">
+								₹ {{product.price}} <!-- Show original price if offer price is negative -->
 							</span>
 							{{/if}}
 							<span class="discount-tag"
@@ -371,8 +371,8 @@
 								({{product.discountValue}} OFF)
 							</span>
 							{{else}}
-							<span class="price" style="font-weight: bold; color: black;">
-								₹{{product.price}} <!-- No discount price -->
+							<span class="price" style="font-weight: bold; color: black;font=size:22px">
+								₹ {{product.price}}  
 							</span>
 							{{/if}}
 						</p>

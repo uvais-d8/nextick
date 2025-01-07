@@ -7,18 +7,10 @@ const ordersSchema = new mongoose.Schema(
       ref: "user",
       required: true
     },
-    // referralCodeUsed: { 
-    //   type: String, 
-    //   default: null 
-    // },
-    orderReference:{
-      type:String,
-      unique:true,
+    orderReference: {
+      type: String,
+      unique: true
     },
-    // islisted: {
-    //   type: Boolean,
-    //   default: true
-    // },
     status: {
       type: String,
       enum: [
@@ -33,7 +25,6 @@ const ordersSchema = new mongoose.Schema(
       required: false,
       default: "payment-pending"
     },
- 
     items: [
       {
         productId: {
@@ -54,13 +45,6 @@ const ordersSchema = new mongoose.Schema(
           ],
           required: false
         },
-        // stock: {
-        //   type: Number
-        // },
-        // price: {
-        //   type: Number,
-        //   required: true
-        // },
         priceWithDiscount: {
           type: Number,
           required: false,
@@ -75,9 +59,10 @@ const ordersSchema = new mongoose.Schema(
           type: Number,
           required: true
         },
-        // description: {
-        //   type: String
-        // },
+        price: {
+          type: Number,
+          required: true
+        },
         images: [
           {
             type: String,
@@ -116,7 +101,6 @@ const ordersSchema = new mongoose.Schema(
       pincode: { type: Number, required: true },
       district: { type: String, required: true }
     },
-    
     orderTotal: {
       type: Number,
       required: true
@@ -132,7 +116,6 @@ const ordersSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
 
 const orders = mongoose.model("orders", ordersSchema);
 module.exports = orders;

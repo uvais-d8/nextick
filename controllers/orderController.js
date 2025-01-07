@@ -410,7 +410,6 @@ const returnOrder = async (req, res) => {
 
 const generateInvoicePDF = async (req, res) => {
   const { orderId } = req.params;
-
   try {
     const order = await Orders.findById(orderId).populate("items.productId");
     if (!order) {
@@ -418,10 +417,11 @@ const generateInvoicePDF = async (req, res) => {
     }
 
     const filteredItems = order.items.filter(item => item.status !== 'canceled');
-    
+    const orderReference = order.orderReference;
+
     const doc = new PDFDocument({ margin: 20 });
 
-    const filename = `Invoice_${orderId}.pdf`;
+    const filename = `Invoice-${orderReference}.pdf`;
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
     res.setHeader("Content-Type", "application/pdf");
 
@@ -433,7 +433,7 @@ const generateInvoicePDF = async (req, res) => {
       .text("NEXTICK", { align: "center" })
       .fontSize(10)
       .text("The Premium watch Store", { align: "center" })
-      .text("Contact: support@NEXTICK.com | +91 7594 06 0696", { align: "center" })
+      .text("Contact: support@NEXTICK.store | +91 7594 06 0696", { align: "center" })
       .moveDown(2);
 
     doc
@@ -450,7 +450,7 @@ const generateInvoicePDF = async (req, res) => {
       .moveDown(0.5)
       .fontSize(11)
       .font("Helvetica")
-      .text(`Order ID       : ${orderId}`)
+      .text(`Order ID        : ${orderReference}`)
       .text(`Order Date    : ${new Date(order.createdAt).toLocaleDateString()}`)
       .text(`Order Status : ${order.status}`)
       .moveDown(1);
@@ -463,12 +463,12 @@ const generateInvoicePDF = async (req, res) => {
       .fillColor("black")
       .fontSize(11)
       .font("Helvetica")
-      .text(`Name     :${address.firstname} ${address.lastname}`)
-      .text(`Address :${address.address}`)
-      .text(`Phone    : ${address.phone}`)
-      .text(`Email     : ${address.email}`)
-      .text(`Location:${address.place} , ${address.city} , ${address.pincode}`)
-      .text(`district: ${address.district}`)
+      .text(`Name       :${address.firstname} ${address.lastname}`)
+      .text(`Address   :${address.address}`)
+      .text(`Phone      : ${address.phone}`)
+      .text(`Email       : ${address.email}`)
+      .text(`Location  :${address.place} , ${address.city} , ${address.pincode}`)
+      .text(`district     : ${address.district}`)
       .moveDown();
 
     doc
@@ -528,7 +528,7 @@ const generateInvoicePDF = async (req, res) => {
       .moveDown(3)
       .text(`Subtotal    : Rs ${totalPrice.toFixed(2)}`, 370, doc.y, { align: "right" })
       .moveDown(0.2)
-      .text(`Shipping    :      Rs 50.00`, 370, doc.y, { align: "right" })
+      .text(`Shipping    :     Rs 50.00`, 370, doc.y, { align: "right" })
       .moveDown(0.2)
       .text(`Grand Total : Rs ${order.orderTotal.toFixed(2)}`, 370, doc.y, { align: "right", underline: true })
       .moveDown(3);

@@ -290,7 +290,7 @@
                                 <td> {{this.type}} </td>
                                 <td
                                     style="font-weight:500; color: {{#if (eq this.type 'refund')}}green{{else if (eq this.type 'debit')}}red{{else}}black{{/if}}">
-                                    ₹{{toInteger this.amount}}
+                                    ₹ {{toInteger this.amount}}
                                 </td>
                                 <td>{{this.description}}</td>
                                 <td> {{formatDate this.date}} </td>

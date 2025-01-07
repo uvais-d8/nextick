@@ -71,5 +71,4 @@ router.post('/salesreport/pdf', adminAuth.checksession,adminController.exportPDF
 router.post('/salesreport/excel', adminAuth.checksession,adminController.exportExcel);
 router.get("/sales-data?",adminAuth.checksession,adminController.getSalesData)
 
-// Export the router to use it in server.js
 module.exports = router;

@@ -9,6 +9,14 @@ const categorySchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  brand:{
+    type :String,
+    require:false
+  },
+  bandcolor:{
+    type :String,
+    require:false
+  },
   offer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Offer",

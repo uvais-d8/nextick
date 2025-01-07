@@ -186,6 +186,18 @@ console.log("paymentmethode",paymentMethod)
           message: 'Insufficient balance in wallet', 
         });
         
+      }else if (!wallet) {
+        wallet = new Wallet({
+          user: userId,
+          balance: orderTotal,
+          transactions: [
+            {
+              type: "debit",
+              amount: orderTotal,
+              description: `payment for the order ( ${orderReference} )`,
+            },
+          ],
+        });
       }else{
         wallet.balance-=orderTotal;
         wallet.transactions.push({
@@ -603,7 +615,7 @@ const addtocart = async (req, res) => {
 
       existingItem.quantity = newQuantity;
       existingItem.priceWithDiscount = discountedPrice;
-      existingItem.totalPrice = newQuantity * discountedPrice;
+      // existingItem.totalPrice = newQuantity * discountedPrice;
       await existingItem.save();
     } else {
       const cartItem = new Cart({
@@ -611,7 +623,7 @@ const addtocart = async (req, res) => {
         productId,
         quantity: productQuantity,
         priceWithDiscount: discountedPrice,
-        totalPrice: productQuantity * discountedPrice
+        // totalPrice: productQuantity * discountedPrice
       });
       await cartItem.save();
     }

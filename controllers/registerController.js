@@ -162,7 +162,7 @@ const verifyOtp = async (req, res) => {
         }
       }
 
-      const referralCode = await generateReferralCode(); // Generate a new referral code for the new user
+      const referralCode = await generateReferralCode();  
 
       const newUser = new User({
         name: user.username,
@@ -170,60 +170,57 @@ const verifyOtp = async (req, res) => {
         phone: user.phone,
         password: hashedPassword,
         verified: true,
-        referralCode, // Assign the generated referral code to the new user
+        referralCode,  
         ...(referrerUser ? { referrer: referrerUser._id } : {}),
         ...(user.googleId ? { googleId: user.googleId } : {})
       });
 
-      await newUser.save(); // Save the new user
-
-// Reward both users if referral code is valid
+      await newUser.save();  
 if (referrerUser) {
-  // Check if referrer's wallet exists, otherwise create one
+  
   let referrerWallet = await Wallet.findOne({ user: referrerUser._id });
   if (!referrerWallet) {
     referrerWallet = new Wallet({
       user: referrerUser._id,
-      balance: 100,  // Initialize with ₹100
+      balance: 50,  
       transactions: [{
         type: "credit",
-        amount: 100,
+        amount: 50,
         description: "Referral bonus for referring a new user",
       }],
     });
   } else {
-    referrerWallet.balance += 100;  // Add ₹100 to the existing wallet
+    referrerWallet.balance += 50;  
     referrerWallet.transactions.push({
       type: "credit",
-      amount: 100,
+      amount: 50,
       description: "Referral bonus for referring a new user",
     });
   }
 
-  await referrerWallet.save(); // Save the updated referrer's wallet
-
-  // Check if new user's wallet exists, otherwise create one
+  await referrerWallet.save(); 
+  
   let newUserWallet = await Wallet.findOne({ user: newUser._id });
   if (!newUserWallet) {
     newUserWallet = new Wallet({
       user: newUser._id,
-      balance: 100,  // Initialize with ₹100
+      balance: 50, 
       transactions: [{
         type: "credit",
-        amount: 100,
+        amount: 50,
         description: "Referral bonus for signing up with referral code",
       }],
     });
   } else {
-    newUserWallet.balance += 100;  // Add ₹100 to the existing wallet
+    newUserWallet.balance += 50;  
     newUserWallet.transactions.push({
       type: "credit",
-      amount: 100,
+      amount: 50,
       description: "Referral bonus for signing up with referral code",
     });
   }
 
-  await newUserWallet.save(); // Save the updated new user's wallet
+  await newUserWallet.save();  
 
   console.log("Referrer Wallet Balance:", referrerWallet.balance);
   console.log("New User Wallet Balance:", newUserWallet.balance);

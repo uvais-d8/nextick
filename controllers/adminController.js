@@ -64,21 +64,25 @@ const loaddashboard = async (req, res) => {
     const { startDate, endDate, filter, page = 1, limit = 5 } = req.query;
 
     const filterConditions = { "items.status": "delivered" };
+
+    // Fetch the top-selling products
     const topSellingProducts = await Products.find()
       .sort({ salesCount: -1 })
       .limit(10);
+
+    // Fetch the category-wise sales data
     const topSellingCategories = await Products.aggregate([
       {
         $group: {
-          _id: "$category",
-          totalSales: { $sum: "$salesCount" }
+          _id: "$category", // Group by category
+          totalSales: { $sum: "$salesCount" } // Sum sales count for each category
         }
       },
-      { $sort: { totalSales: -1 } },
+      { $sort: { totalSales: -1 } }, // Sort by total sales in descending order
       { $limit: 10 },
       {
         $lookup: {
-          from: "categories",
+          from: "categories", // Join with categories collection
           localField: "_id",
           foreignField: "_id",
           as: "categoryDetails"
@@ -86,6 +90,17 @@ const loaddashboard = async (req, res) => {
       },
       { $unwind: "$categoryDetails" }
     ]);
+
+    // Prepare category labels and sales data for frontend
+    const categoryLabels = topSellingCategories.map(
+      category => category.categoryDetails.category
+    );
+    const categorySalesData = topSellingCategories.map(
+      category => category.totalSales
+    );
+console.log("categoryLabels",categoryLabels)
+console.log("categorySalesData",categorySalesData)
+    // If start and end date filters are applied
     if (startDate && endDate) {
       filterConditions.time = {
         $gte: new Date(startDate),
@@ -93,21 +108,19 @@ const loaddashboard = async (req, res) => {
       };
     }
 
-    const orders = await Orders.find(filterConditions).populate(
-      "items.productId"
-    );
+    // Fetch the orders based on the filter conditions
+    const orders = await Orders.find(filterConditions).populate("items.productId");
 
     const groupByKey =
       filter === "daily"
         ? order => order.time.toISOString().split("T")[0]
         : filter === "monthly"
-          ? order => `${order.time.getMonth() + 1}-${order.time.getFullYear()}`
-          : filter === "yearly"
-            ? order =>
-                `Week-${Math.ceil(
-                  order.time.getDate() / 7
-                )} ${order.time.getFullYear()}`
-            : order => `${order.time.getFullYear()}`;
+        ? order => `${order.time.getMonth() + 1}-${order.time.getFullYear()}`
+        : filter === "yearly"
+        ? order =>
+            `Week-${Math.ceil(order.time.getDate() / 7)} ${order.time.getFullYear()}`
+        : order => `${order.time.getFullYear()}`;
+
     const salesData = orders.reduce((acc, order) => {
       const key = groupByKey(order);
 
@@ -123,8 +136,7 @@ const loaddashboard = async (req, res) => {
 
       const totalDiscount = order.items.reduce(
         (sum, item) =>
-          sum +
-          (item.price - (item.priceWithDiscount || item.price)) * item.quantity,
+          sum + (item.price - (item.priceWithDiscount || item.price)) * item.quantity,
         0
       );
 
@@ -141,10 +153,13 @@ const loaddashboard = async (req, res) => {
       (total, period) => total + period.netSale,
       0
     );
+
+    // Pagination
     const skip = (page - 1) * limit;
     const paginatedReports = salesReport.slice(skip, skip + limit);
     const totalPages = Math.ceil(salesReport.length / limit);
 
+    // Pass the data to the view
     res.render("admin/dashboard", {
       topSellingProducts,
       topSellingCategories,
@@ -155,7 +170,9 @@ const loaddashboard = async (req, res) => {
       startDate,
       endDate,
       salesData,
-      overallNetSale
+      overallNetSale,
+      categoryLabels: JSON.stringify(categoryLabels),
+      categorySalesData: JSON.stringify(categorySalesData)
     });
 
     const admin = req.session.admin;
@@ -165,6 +182,8 @@ const loaddashboard = async (req, res) => {
     res.render("admin/login", { message: "Failed to load dashboard" });
   }
 };
+
+
 const logout = (req, res) => {
   delete req.session.admin;
   res.render("admin/login");
@@ -387,18 +406,18 @@ const editproducts = async (req, res) => {
 
     if (!trimmedName || !trimmedCategory || !stock || !price) {
       return res.render("admin/products", {
-        message: "All fields are required",
+        message: "All fields are required"
       });
     }
 
     const existingProduct = await Products.findOne({
       name: trimmedName,
-      _id: { $ne: id },
+      _id: { $ne: id }
     });
 
     if (existingProduct) {
       return res.render("admin/products", {
-        message: "A product with this name already exists.",
+        message: "A product with this name already exists."
       });
     }
 
@@ -407,20 +426,20 @@ const editproducts = async (req, res) => {
 
     if (isNaN(stockNumber) || stockNumber < 0) {
       return res.render("admin/products", {
-        message: "Stock must be a valid number and cannot be negative.",
+        message: "Stock must be a valid number and cannot be negative."
       });
     }
 
     if (isNaN(priceNumber) || priceNumber < 0) {
       return res.render("admin/products", {
-        message: "Price must be a valid number and cannot be negative.",
+        message: "Price must be a valid number and cannot be negative."
       });
     }
 
     const product = await Products.findById(id);
     if (!product) {
       return res.render("admin/products", {
-        message: "Product not found.",
+        message: "Product not found."
       });
     }
 
@@ -428,7 +447,7 @@ const editproducts = async (req, res) => {
       name: trimmedName,
       category: trimmedCategory,
       stock: stockNumber,
-      price: priceNumber.toFixed(2),
+      price: priceNumber.toFixed(2)
     });
 
     await product.save();
@@ -438,7 +457,7 @@ const editproducts = async (req, res) => {
   } catch (error) {
     console.error("Error updating product:", error);
     res.status(500).render("admin/products", {
-      message: "An error occurred while updating the product.",
+      message: "An error occurred while updating the product."
     });
   }
 };
@@ -463,37 +482,42 @@ const addproduct = async (req, res) => {
     if (!name || !category || !stock || !price || !description) {
       return res.status(400).render("admin/addproduct", {
         categories,
-        message: "All fields are required.",
+        message: "All fields are required."
       });
     }
 
     if (isNaN(stock) || stock <= 0) {
       return res.status(400).render("admin/addproduct", {
         categories,
-        message: "Stock must be a positive number.",
+        message: "Stock must be a positive number."
       });
     }
 
     if (isNaN(price) || price <= 0) {
       return res.status(400).render("admin/addproduct", {
         categories,
-        message: "Price must be a positive number.",
+        message: "Price must be a positive number."
       });
     }
 
     if (!files || files.length < 3) {
       return res.status(400).render("admin/addproduct", {
         categories,
-        message: "Please upload at least 3 images.",
+        message: "Please upload at least 3 images."
       });
     }
-    const validImageTypes = ["image/jpeg", "image/png", "image/jpg", "image/gif"];
+    const validImageTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "image/gif"
+    ];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       if (!validImageTypes.includes(file.mimetype)) {
         return res.status(400).render("admin/addproduct", {
           categories,
-          message: `Invalid image format for file: ${file.originalname}. Please upload only image files.`,
+          message: `Invalid image format for file: ${file.originalname}. Please upload only image files.`
         });
       }
     }
@@ -503,7 +527,7 @@ const addproduct = async (req, res) => {
       return res.render("admin/addproduct", {
         categories,
         modalError: "Product already exists",
-        message: "Product already exists.",
+        message: "Product already exists."
       });
     }
 
@@ -511,7 +535,7 @@ const addproduct = async (req, res) => {
     if (!categoryObj) {
       return res.status(400).render("admin/addproduct", {
         categories,
-        message: "Category not found.",
+        message: "Category not found."
       });
     }
 
@@ -521,7 +545,7 @@ const addproduct = async (req, res) => {
       stock,
       price,
       description: description || "Default description",
-      images: files.map((file) => file.path),
+      images: files.map(file => file.path)
     });
 
     await newProduct.save();
@@ -532,7 +556,7 @@ const addproduct = async (req, res) => {
     console.error("Error adding product:", error.message);
     res.status(500).render("admin/addproduct", {
       categories,
-      message: "An error occurred while adding the product. Please try again.",
+      message: "An error occurred while adding the product. Please try again."
     });
   }
 };
@@ -618,11 +642,11 @@ const editinventory = async (req, res) => {
     }
 
     if (stock < 0) {
-      return res.redirect("/admin/inventory")
+      return res.redirect("/admin/inventory");
     }
 
     if (product.name === name && product.stock === parseInt(stock)) {
-      return res.redirect("/admin/inventory")
+      return res.redirect("/admin/inventory");
     }
 
     const existingProduct = await Products.findOne({
@@ -630,7 +654,7 @@ const editinventory = async (req, res) => {
       _id: { $ne: productId }
     });
     if (existingProduct) {
-      return res.redirect("/admin/inventory")
+      return res.redirect("/admin/inventory");
     }
 
     product.name = name || product.name;
@@ -689,15 +713,15 @@ const cancelOrderItem = async (req, res) => {
 
     console.log("Item canceled successfully for item ID:", itemId);
 
-    res.redirect("/admin/orders"); 
+    res.redirect("/admin/orders");
   } catch (error) {
     console.error("Error canceling item:", error);
     res.status(500).json({ success: false, message: "Failed to cancel item." });
   }
 };
 const updateOrderStatus = async (req, res) => {
-  const { orderId, itemId, status ,currentPage} = req.body; 
-   console.log("Request Body:", req.body);
+  const { orderId, itemId, status, currentPage } = req.body;
+  console.log("Request Body:", req.body);
 
   try {
     if (
@@ -821,7 +845,7 @@ const loadOrder = async (req, res) => {
       .populate("items.productId", "name")
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1 }) 
+      .sort({ createdAt: -1 })
       .exec();
 
     const totalPages = Math.ceil(totalOrders / limit);
@@ -1055,7 +1079,7 @@ const addoffer = async (req, res) => {
       {
         $set: {
           priceWithDiscount:
-            DiscountType === "fixed" ? DiscountValue : undefined, 
+            DiscountType === "fixed" ? DiscountValue : undefined,
           offer: newoffer._id
         }
       }
@@ -1190,7 +1214,7 @@ const editOffer = async (req, res) => {
         DiscountValue,
         Description,
         Products: productIds,
-        Categories: categoryIds, 
+        Categories: categoryIds,
         ExpiryDate: formattedExpiryDate,
         Status
       },
@@ -1377,7 +1401,7 @@ const getSalesReport = async (req, res) => {
       acc[key].totalDiscount += totalDiscount;
       acc[key].netSale += netSale;
       acc[key].orders.push({
-        orderId: order._id,
+        orderReference: order.orderReference,
         date: order.time,
         customer: `${order.shippingAddress.firstname} ${order.shippingAddress
           .lastname}`,
@@ -1420,100 +1444,144 @@ const getSalesReport = async (req, res) => {
     res.status(500).send("Failed to load sales report.");
   }
 };
+
 const exportPDF = async (req, res) => {
   try {
-    const salesData = JSON.parse(req.body.salesData); 
-    const doc = new PDFDocument({ margin: 20 });
-    const filename = `Sales_Report_${Date.now()}.pdf`;
+    const salesData = JSON.parse(req.body.salesData);
 
+    // Calculate overall net sale
+    const overallNetSale = salesData.reduce((total, report) => {
+      return (
+        total + report.orders.reduce((sum, order) => sum + order.netSale, 0)
+      );
+    }, 0);
+
+    // Create a new PDF document
+    const doc = new PDFDocument({ margin: 20 });
+    const filename = `Sales-Report-${new Date().toLocaleDateString()}.pdf`;
+
+    // Set response headers
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
     res.setHeader("Content-Type", "application/pdf");
 
+    // Pipe the document to the response
     doc.pipe(res);
 
+    // Header
     doc
-      .fontSize(20)
+      .fontSize(16)
       .font("Helvetica-Bold")
-      .text("Sales Report", { align: "center" });
-    doc.moveDown(1);
+      .text("Sales Report", { align: "center" })
+      .fontSize(10)
+      .font("Helvetica")
+      .text("NEXTICK - The premium e-commerce watch website", {
+        align: "center"
+      })
+      .moveDown(1);
 
+    // Table Headers
     const tableHeaders = [
       "Order Date",
-      "Order ID",
+      "Product ID",
       "User Name",
-      "paying Type",
+      "Payment Type",
       "Amount",
       "Discount",
       "Net Sale"
     ];
 
     const drawLine = y => {
-      doc.moveTo(30, y + 10).lineTo(560, y + 10).stroke();
+      doc.moveTo(30, y).lineTo(560, y).stroke();
     };
 
-    let currentY = doc.y + 100;
+    let currentY = doc.y + 20;
 
-    salesData.forEach((report, index) => {
+    // Generate sales data
+    salesData.forEach(report => {
+      // Section Header
       doc
-        .fontSize(14)
+        .fontSize(12)
         .font("Helvetica-Bold")
-        .text(`Group: ${report.key}`, 40, currentY);
-      currentY = doc.y + 20;
+        .text(`Group: ${report.key}`, 30, currentY);
+      currentY = doc.y + 10;
+
+      // Table Header Row
       drawLine(currentY);
-      currentY += 25;
-      doc.fontSize(12).font("Helvetica-Bold");
+      currentY += 5;
+      doc.fontSize(10).font("Helvetica-Bold");
       tableHeaders.forEach((header, i) => {
-        const x = 40 + i * 75;
+        const x = 30 + i * 75;
         doc.text(header, x, currentY, { width: 70, align: "left" });
       });
-      currentY += 25;
+      currentY += 15;
+      drawLine(currentY);
+      currentY += 15;
+
+      // Table Data Rows
       report.orders.forEach(order => {
-        doc.fontSize(10).font("Helvetica");
         const rowData = [
           new Date(order.date).toLocaleDateString(),
-          order.orderId,
+          order.orderReference,
           order.customer,
           order.paymentMethod,
-          `₹${order.totalAmount.toLocaleString()}`,
-          `₹${order.discount.toLocaleString()}`,
-          `₹${order.netSale.toLocaleString()}`
+          `Rs ${order.totalAmount.toLocaleString()}`,
+          `Rs ${order.discount.toLocaleString()}`,
+          `Rs ${order.netSale.toLocaleString()}`
         ];
 
+        doc.fontSize(9).font("Helvetica");
         rowData.forEach((data, i) => {
-          const x = 40 + i * 75;
+          const x = 30 + i * 75;
           doc.text(data, x, currentY, { width: 70, align: "left" });
         });
 
         currentY += 30;
 
-        if (currentY > 750) {
+        // Check if we need a new page
+        if (currentY > doc.page.height - 50) {
           doc.addPage();
-          currentY = 70;
-          drawLine(currentY);
+          currentY = 30; // Reset Y for the new page
         }
       });
 
-      currentY += 30;
+      currentY += 20;
     });
-    drawLine(currentY);
 
-    const footerY = doc.page.height - 30;
+    // Overall Net Sale
     doc
-      .fontSize(10)
+      .fontSize(12)
+      .font("Helvetica-Bold")
+      .text(
+        `Overall Net Sale: Rs ${overallNetSale.toLocaleString()}`,
+        30,
+        currentY
+      );
+    currentY = doc.y + 10;
+
+    // Footer
+    const footerY = doc.page.height - 30;
+    drawLine(footerY - 10);
+    doc
+      .fontSize(8)
       .font("Helvetica")
-      .text("Sales Report Generated Automatically", 40, footerY, {
-        align: "left"
-      })
-      .text(`Date: ${new Date().toLocaleDateString()}`, 500, footerY, {
+      .text(
+        `Sales Report of Nextick.store generated on ${new Date().toLocaleDateString()} automatically`,
+        30,
+        footerY,
+        { align: "left" }
+      )
+      .text(`Date: ${new Date().toLocaleDateString()}`, 450, footerY, {
         align: "right"
       });
 
+    // Finalize the document
     doc.end();
   } catch (error) {
     console.error("Error generating PDF:", error);
     res.status(500).send("Failed to generate PDF.");
   }
 };
+
 const exportExcel = async (req, res) => {
   try {
     const salesData = JSON.parse(req.body.salesData);
@@ -1564,14 +1632,14 @@ const getSalesData = async (req, res) => {
     let totalPrices = [];
 
     let matchStage = {
-      "items.status": itemStatus,
+      "items.status": itemStatus
     };
 
     switch (filter) {
       case "yearly":
         groupStage = {
           _id: { year: { $year: "$createdAt" } },
-          totalSales: { $sum: "$orderTotal" },
+          totalSales: { $sum: "$orderTotal" }
         };
         sortStage = { "_id.year": 1 };
         break;
@@ -1580,9 +1648,9 @@ const getSalesData = async (req, res) => {
         groupStage = {
           _id: {
             year: { $year: "$createdAt" },
-            month: { $month: "$createdAt" },
+            month: { $month: "$createdAt" }
           },
-          totalSales: { $sum: "$orderTotal" },
+          totalSales: { $sum: "$orderTotal" }
         };
         sortStage = { "_id.year": 1, "_id.month": 1 };
         break;
@@ -1590,7 +1658,7 @@ const getSalesData = async (req, res) => {
       case "weekly":
         groupStage = {
           _id: { year: { $year: "$createdAt" }, week: { $week: "$createdAt" } },
-          totalSales: { $sum: "$orderTotal" },
+          totalSales: { $sum: "$orderTotal" }
         };
         sortStage = { "_id.year": 1, "_id.week": 1 };
         break;
@@ -1602,7 +1670,7 @@ const getSalesData = async (req, res) => {
     const salesData = await Orders.aggregate([
       { $match: matchStage },
       { $group: groupStage },
-      { $sort: sortStage },
+      { $sort: sortStage }
     ]);
 
     if (filter === "yearly") {
@@ -1630,7 +1698,7 @@ const getSalesData = async (req, res) => {
         "Sep",
         "Oct",
         "Nov",
-        "Dec",
+        "Dec"
       ];
 
       let monthData = new Array(12).fill(0);
@@ -1673,12 +1741,12 @@ const categorySales = async (req, res) => {
 
   try {
     const salesData = await Orders.aggregate([
-      { $match: { "items.status": itemStatus } }, 
+      { $match: { "items.status": itemStatus } },
       { $unwind: "$items" },
       {
         $lookup: {
-          from: "categories", 
-          localField: "items.categoryId", 
+          from: "categories",
+          localField: "items.categoryId",
           foreignField: "_id",
           as: "categoryDetails"
         }
@@ -1691,7 +1759,7 @@ const categorySales = async (req, res) => {
           totalQuantity: { $sum: "$items.quantity" }
         }
       },
-      { $sort: { totalSales: -1 } } 
+      { $sort: { totalSales: -1 } }
     ]);
 
     const labels = salesData.map(item => item._id);
@@ -1706,6 +1774,8 @@ const categorySales = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch category-wise sales data" });
   }
 };
+
+
 
 module.exports = {
   getSalesData,
