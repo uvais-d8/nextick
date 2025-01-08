@@ -93,6 +93,7 @@ const placeOrder = async (req, res) => {
     district,
     firstname,
     place,
+    orderTotal,
     city,
     lastname,
     address,
@@ -102,7 +103,6 @@ const placeOrder = async (req, res) => {
 
   const errors = {};
 
- 
   // Validation
   if (!firstname) errors.firstname = "First name is required.";
   if (!lastname) errors.lastname = "Last name is required.";
@@ -117,7 +117,7 @@ const placeOrder = async (req, res) => {
   if (!city) errors.city = "City is required";
   if (!district) errors.district = "District is required";
 
-  const allowedPaymentMethods = ["wallet","cod", "razorpay"];
+  const allowedPaymentMethods = ["wallet", "cod", "razorpay"];
   if (!paymentMethod || !allowedPaymentMethods.includes(paymentMethod)) {
     errors.paymentMethod = "Invalid or unsupported payment method selected";
   }
@@ -159,11 +159,6 @@ const placeOrder = async (req, res) => {
       district,
     };
 
-    const orderTotal = updatedCartItems.reduce(
-      (acc, item) => acc + item.total,
-      0
-    );
-
     if (paymentMethod === "cod" && orderTotal > 1000) {
       return res.status(400).json({
         success: false,
@@ -171,58 +166,59 @@ const placeOrder = async (req, res) => {
       });
     }
 
-    const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase(); 
-    const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, ''); 
+    const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
+    const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, '');
     const orderReference = `ORD-${datePart}-${randomSuffix}`;
 
-    let wallet = await Wallet.findOne({user:userId})
-console.log("wallet",wallet)
-console.log("paymentmethode",paymentMethod)
-    if(paymentMethod == "wallet"){
-      if(orderTotal > wallet.balance){
-        console.log("insufficient balance in wallet")
+    let wallet = await Wallet.findOne({ user: userId });
+    console.log("wallet", wallet);
+    console.log("paymentMethod", paymentMethod);
+
+    if (paymentMethod == "wallet") {
+      if (orderTotal > wallet.balance) {
+        console.log("Insufficient balance in wallet");
         return res.json({
           success: false,
-          message: 'Insufficient balance in wallet', 
+          message: 'Insufficient balance in wallet',
         });
-        
-      }else if (!wallet) {
+      } else if (!wallet) {
         return res.json({
           success: false,
-          message: 'You dont have the wallet yet', 
+          message: 'You don\'t have the wallet yet',
         });
-      }else{
-        wallet.balance-=orderTotal;
+      } else {
+        wallet.balance -= orderTotal;
         wallet.transactions.push({
-        type: "debit",
-        amount: orderTotal,
-        description: `Payment for the order ( ${orderReference} )`,
-      });
+          type: "debit",
+          amount: orderTotal,
+          description: `Payment for the order ( ${orderReference} )`,
+        });
       }
     }
-    wallet.save()
-        
-        
-        const newOrder = new Orders({
+
+    await wallet.save();
+
+    // Create the new order and save the orderTotal in the database
+    const newOrder = new Orders({
       userId,
       items: updatedCartItems,
-      orderTotal,
+      orderTotal, // Save orderTotal here
       paymentMethod,
       shippingAddress,
       orderReference,
-      status: "scheduled",  
+      status: "scheduled",
     });
 
     console.log("New order details:", newOrder);
     const savedOrder = await newOrder.save();
-    
+
     console.log("Order saved successfully.");
 
-   
+    // Update the product stock
     for (let item of updatedCartItems) {
       const product = await Products.findById(item.productId);
       if (product) {
-        product.stock -= item.quantity;  
+        product.stock -= item.quantity;
         await product.save();
         console.log(`Product ${product.name} stock updated. New stock: ${product.stock}`);
       } else {
@@ -243,6 +239,7 @@ console.log("paymentmethode",paymentMethod)
     });
   }
 };
+
 
 const razorpayy = async (req, res) => {
   const userId = req.session.userId;

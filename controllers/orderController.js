@@ -250,8 +250,8 @@ const removeItem = async (req, res) => {
     .reduce((total, item) => {
       const itemPrice = item.productId.priceWithDiscount > 0 
         ? item.productId.priceWithDiscount 
-        : item.price; // Get the correct price based on discount availability
-      const itemTotal = itemPrice * (item.quantity || 1); // Multiply by quantity
+        : item.price;  
+      const itemTotal = itemPrice * (item.quantity || 1);  
       return total + itemTotal;
     }, 0);
   
@@ -307,7 +307,7 @@ const removeItem = async (req, res) => {
           wallet.balance += refundAmount;
           wallet.transactions.push({
             type: "refund",
-            amount: refundAmount-50,
+            amount: refundAmount,
             description: `Refund for canceled product ( ${product?.name} )`
           });
         }

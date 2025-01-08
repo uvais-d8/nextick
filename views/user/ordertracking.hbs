@@ -500,6 +500,7 @@
                 </p>
             </div>
             <hr>
+
             <h5>The Products</h5>
             <div class="order-info"> {{#each order.items}}
                 <div class="status-header">
@@ -526,7 +527,7 @@
                     </div>
                     <hr>
                     {{/each}}
-
+                    <h5 style="color: rgb(70, 70, 70);">The Order Total after all stages :<span style="color: green;"> {{order.orderTotal}}</span></h5>
                     <script>
                         function getStatusMessage(status) {
                             let message = '';

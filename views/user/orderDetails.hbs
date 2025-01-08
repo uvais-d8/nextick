@@ -318,17 +318,27 @@
                         </tr>
                     </tbody>
                 </table>
-            </div>
-            <!-- Payment Information -->
-            <div class="msection payment-info">
-                <div class="msection-title">Payment Information</div>
-                <p><span>Payment Method:</span> <b>{{order.paymentMethod}}</b></p>
-            </div>
 
-            <!-- Order Status -->
-            <div class="msection order-status">
-                <div class="msection-title">Order Status</div>
-                <p><span>Current Status: <span class="mstatus {{product.status}}"> <span class="
+                {{#if (lt order.orderTotal (multiply product.productId.priceWithDiscount product.quantity))}}
+               <!-- Do not display the extra line if total price matches order.orderTotal -->
+                {{else}}
+                <div> <div style="margin-top: 20px;" class="msection-title">Payment Information</div>
+                    <h6 style="color: rgb(70, 70, 70);">
+                        The Order Total after all stages :
+                        <span style="color: green;"> ₹{{order.orderTotal}}</span>
+                    </h6>
+                </div></div>
+                {{/if}}
+                <!-- Payment Information -->
+                <div class="msection payment-info">
+                   
+                    <p><span>Payment Method:</span> <b>{{order.paymentMethod}}</b></p>
+                </div>
+
+                <!-- Order Status -->
+                <div class="msection order-status">
+                    <div class="msection-title">Order Status</div>
+                    <p><span>Current Status: <span class="mstatus {{product.status}}"> <span class="
         {{#if (eq product.status 'scheduled')}}button-blue{{else}}
         {{#if (eq product.status 'pending')}}button-yellow{{else}}
         {{#if (eq product.status 'canceled')}}button-red{{else}}
@@ -337,109 +347,109 @@
         {{#if (eq product.status 'delivered')}}button-green{{else}}
         {{#if (eq product.status 'shipped')}}button-purple{{/if}}{{/if}}
         {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}">
-                                {{product.status}}
-                            </span></p>
-            </div>
-        </div>
-        <!-- footer -->
-        <div class="footer-area">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-3 col-md-6">
-                        <div class="footer-box about-widget">
-                            <h2 class="widget-title">About us</h2>
-                            <p>Discover an exclusive selection of premium watches on our e-commerce website,
-                                featuring
-                                luxury brands and unique designs. Enjoy seamless shopping, secure payment options,
-                                and
-                                exceptional customer service for your perfect timepiece.</p>
+                                    {{product.status}}
+                                </span></p>
+                </div>
+            </div></div>
+            <!-- footer -->
+            <div class="footer-area">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="footer-box about-widget">
+                                <h2 class="widget-title">About us</h2>
+                                <p>Discover an exclusive selection of premium watches on our e-commerce website,
+                                    featuring
+                                    luxury brands and unique designs. Enjoy seamless shopping, secure payment options,
+                                    and
+                                    exceptional customer service for your perfect timepiece.</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="footer-box get-in-touch">
-                            <h2 class="widget-title">Get in Touch</h2>
-                            <ul>
-                                <li>34/8, malappuram, kerala, india.</li>
-                                <li>support@NEXTICK.com</li>
-                                <li>+75 94 0606 96</li>
-                            </ul>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="footer-box get-in-touch">
+                                <h2 class="widget-title">Get in Touch</h2>
+                                <ul>
+                                    <li>34/8, malappuram, kerala, india.</li>
+                                    <li>support@NEXTICK.com</li>
+                                    <li>+75 94 0606 96</li>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="footer-box pages">
-                            <h2 class="widget-title">Pages</h2>
-                            <ul>
-                                <li><a href="/home.hbs">Home</a></li>
-                                <li><a href="/about.hbs">About</a></li>
-                                <li><a href="/services.hbs">Shop</a></li>
-                                <li><a href="/news.hbs">News</a></li>
-                                <li><a href="/contact.hbs">Contact</a></li>
-                            </ul>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="footer-box pages">
+                                <h2 class="widget-title">Pages</h2>
+                                <ul>
+                                    <li><a href="/home.hbs">Home</a></li>
+                                    <li><a href="/about.hbs">About</a></li>
+                                    <li><a href="/services.hbs">Shop</a></li>
+                                    <li><a href="/news.hbs">News</a></li>
+                                    <li><a href="/contact.hbs">Contact</a></li>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="footer-box subscribe">
-                            <h2 class="widget-title">Subscribe</h2>
-                            <p>Subscribe to our mailing list to get the latest updates.</p>
-                            <form action="/home.hbs">
-                                <input type="email" placeholder="Email">
-                                <button type="submit"><i class="fas fa-paper-plane"></i></button>
-                            </form>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="footer-box subscribe">
+                                <h2 class="widget-title">Subscribe</h2>
+                                <p>Subscribe to our mailing list to get the latest updates.</p>
+                                <form action="/home.hbs">
+                                    <input type="email" placeholder="Email">
+                                    <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- end footer -->
+            <!-- end footer -->
 
-        <!-- copyright -->
-        <div class="copyright">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-6 col-md-12">
-                        <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
-                            Rights
-                            Reserved.<br>
-                            Distributed By - <a href="https://themewagon.com/">nextick.store</a>
-                        </p>
-                    </div>
-                    <div class="col-lg-6 text-right col-md-12">
-                        <div class="social-icons">
-                            <ul>
-                                <li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-                                <li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
-                                <li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
-                                <li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
-                                <li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
-                            </ul>
+            <!-- copyright -->
+            <div class="copyright">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-12">
+                            <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">muhammed uvais</a>, All
+                                Rights
+                                Reserved.<br>
+                                Distributed By - <a href="https://themewagon.com/">nextick.store</a>
+                            </p>
+                        </div>
+                        <div class="col-lg-6 text-right col-md-12">
+                            <div class="social-icons">
+                                <ul>
+                                    <li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                                    <li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                                    <li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                                    <li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+                                    <li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- end copyright -->
+            <!-- end copyright -->
 
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="/assets/js/jquery-1.11.3.min.js"></script>
-        <!-- bootstrap -->
-        <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
-        <!-- count down -->
-        <script src="/assets/js/jquery.countdown.js"></script>
-        <!-- isotope -->
-        <script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
-        <!-- waypoints -->
-        <script src="/assets/js/waypoints.js"></script>
-        <!-- owl carousel -->
-        <script src="/assets/js/owl.carousel.min.js"></script>
-        <!-- magnific popup -->
-        <script src="/assets/js/jquery.magnific-popup.min.js"></script>
-        <!-- mean menu -->
-        <script src="/assets/js/jquery.meanmenu.min.js"></script>
-        <!-- sticker js -->
-        <script src="/assets/js/sticker.js"></script>
-        <!-- main js -->
-        <script src="/assets/js/main.js"></script>
+            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="/assets/js/jquery-1.11.3.min.js"></script>
+            <!-- bootstrap -->
+            <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+            <!-- count down -->
+            <script src="/assets/js/jquery.countdown.js"></script>
+            <!-- isotope -->
+            <script src="/assets/js/jquery.isotope-3.0.6.min.js"></script>
+            <!-- waypoints -->
+            <script src="/assets/js/waypoints.js"></script>
+            <!-- owl carousel -->
+            <script src="/assets/js/owl.carousel.min.js"></script>
+            <!-- magnific popup -->
+            <script src="/assets/js/jquery.magnific-popup.min.js"></script>
+            <!-- mean menu -->
+            <script src="/assets/js/jquery.meanmenu.min.js"></script>
+            <!-- sticker js -->
+            <script src="/assets/js/sticker.js"></script>
+            <!-- main js -->
+            <script src="/assets/js/main.js"></script>
 </body>
 
 </html>
