@@ -9,29 +9,28 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: "/auth/google/callback",
-      passReqToCallback: true, // Include req in the callback
+      passReqToCallback: true
     },
     async (req, accessToken, refreshToken, profile, done) => {
       try {
-        // Check if the user already exists in the database
         let user = await User.findOne({ googleId: profile.id });
 
         if (user) {
-          // Existing user
           console.log("Existing user found:", user);
           return done(null, user);
         } else {
-          // Create a new user
           const newUser = new User({
             name: profile.displayName,
             email: profile.emails[0].value,
             googleId: profile.id,
+            referralCode,
+            ...(referrerUser ? { referrer: referrerUser._id } : {}),
+            ...(user.googleId ? { googleId: user.googleId } : {})
           });
 
           const savedUser = await newUser.save();
           console.log("New user created:", savedUser);
 
-          // Store user ID in the session
           req.session.userId = savedUser._id;
           return done(null, savedUser);
         }
@@ -43,20 +42,28 @@ passport.use(
   )
 );
 
-// Serialize user ID to save in session
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-// Deserialize user from session
 passport.deserializeUser((id, done) => {
   User.findById(id)
-    .then((user) => {
+    .then(user => {
       done(null, user);
     })
-    .catch((err) => {
+    .catch(err => {
       done(err, null);
     });
 });
+
+const generateReferralCode = () => {
+  const prefix = "NEXTICK";
+  const randomString = Math.random().toString(36).substr(2, 5).toUpperCase();
+  const timestamp = Date.now().toString(36).slice(-3).toUpperCase();
+
+  return `${prefix}${randomString}${timestamp}`;
+};
+
+const referralCode = generateReferralCode();
 
 module.exports = passport;

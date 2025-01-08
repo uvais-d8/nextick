@@ -261,7 +261,9 @@
                     <p>Manage your balance and transactions</p>
                 </header>
                 <div>
-                    <h4>Your Referral Code : {{user.referralCode}}</h4>
+                   {{#if user.referralCode}}
+  <h4>Your Referral Code: {{user.referralCode}}</h4>
+{{/if}}
 
                 </div>
 
