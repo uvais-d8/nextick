@@ -242,39 +242,36 @@ const removeItem = async (req, res) => {
       });
     }
 
-     const Price = item.productId.priceWithDiscount ? item.productId.priceWithDiscount : item.price;
-    console.log("product Price",Price)
+    const Price = item.productId.priceWithDiscount ? item.productId.priceWithDiscount : item.price;
+    console.log("product Price", Price);
     
     const totalPriceOfOrder = order.items
-    .filter(item => item.status !== "canceled")
-    .reduce((total, item) => {
-      const itemPrice = item.productId.priceWithDiscount > 0 
-        ? item.productId.priceWithDiscount 
-        : item.price;  
-      const itemTotal = itemPrice * (item.quantity || 1);  
-      return total + itemTotal;
-    }, 0);
+      .filter(item => item.status !== "canceled")
+      .reduce((total, item) => {
+        const itemPrice = item.productId.priceWithDiscount > 0 
+          ? item.productId.priceWithDiscount 
+          : item.price;  
+        const itemTotal = itemPrice * (item.quantity || 1);  
+        return total + itemTotal;
+      }, 0);
   
-    
     let totalRefundForItem = Price;
 
-    if(totalPriceOfOrder !== order.orderTotal){
-      
-      console.log("totalPriceOfOrder", totalPriceOfOrder)
+    if (totalPriceOfOrder !== order.orderTotal) {
+      console.log("totalPriceOfOrder", totalPriceOfOrder);
       const DiscountValue = totalPriceOfOrder - order.orderTotal;
-      console.log("DiscountValue for the enteir order ", DiscountValue);
+      console.log("DiscountValue for the entire order ", DiscountValue);
       let discountedPrice = (Price / totalPriceOfOrder) * DiscountValue;
-      console.log("DiscountValue for the specific order",discountedPrice);
+      console.log("DiscountValue for the specific order", discountedPrice);
       totalRefundForItem = Price - discountedPrice;
-      console.log("price to Refund",totalRefundForItem);
-      console.log("orderTotal before ",order.orderTotal);
-      
+      console.log("price to Refund", totalRefundForItem);
+      console.log("orderTotal before ", order.orderTotal);
     }
-    order.orderTotal = order.orderTotal - totalRefundForItem;
 
-    console.log("orderTotal",order.orderTotal);
+    order.orderTotal = order.orderTotal - totalRefundForItem * item.quantity;
+    console.log("orderTotal", order.orderTotal);
 
-    console.log("price to Refund or not",totalRefundForItem);
+    console.log("price to Refund or not", totalRefundForItem);
     await order.save();
 
     await Orders.findOneAndUpdate(
@@ -287,9 +284,14 @@ const removeItem = async (req, res) => {
       product.stock += item.quantity;
       await product.save();
 
-      if (order.paymentMethod === "razorpay" , "wallet") {
-        let refundAmount = totalRefundForItem;
-        console.log('refundAmount',refundAmount)
+      if (order.paymentMethod === "razorpay" || order.paymentMethod === "wallet") {
+        // Calculate refundAmount based on your conditions
+        let refundAmount = totalRefundForItem * item.quantity; // Condition 1: Based on totalRefundForItem
+        // const calculatedAmount = (product?.priceWithDiscount > 0 ? product?.priceWithDiscount : product?.price)  // Condition 2
+       
+
+        console.log('Final refundAmount', refundAmount);
+
         let wallet = await Wallet.findOne({ user: order.userId });
         if (!wallet) {
           wallet = new Wallet({
@@ -329,6 +331,7 @@ const removeItem = async (req, res) => {
     res.status(500).send("Error updating order status");
   }
 };
+
 const returnOrder = async (req, res) => {
   const itemId = req.params.id;
   console.log("req.params::",req.params)

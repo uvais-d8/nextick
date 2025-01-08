@@ -304,8 +304,10 @@
 						<h5>Filter by Category:</h5>
 						<select id="category-filter" class="form-control mb-3">
 
-							<option>all categories</option>
+							<option>Filter by categories</option>
+							<a href="/products"><option value="all categories">show all</option></a>
 							{{#each categories}}
+							
 							<option value="{{this.category}}">{{this.category}}</option>
 							{{/each}}
 						</select>
