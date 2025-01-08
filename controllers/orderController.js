@@ -80,7 +80,7 @@ carts.forEach((item) => {
 });
 
     const shippingRate = 50;
-    const total = subtotal + shippingRate;
+    const total = subtotal ;
 
     carts.forEach(cart => {
       if (cart.productId.images && cart.productId.images.length > 0) {
@@ -246,11 +246,15 @@ const removeItem = async (req, res) => {
     console.log("product Price",Price)
     
     const totalPriceOfOrder = order.items
-  .filter(item => item.status !== "canceled") 
-  .reduce((total, item) => {
-    const itemTotal = item.productId.priceWithDiscount ? item.productId.priceWithDiscount : item.price * (item.quantity || 1); 
-    return total + itemTotal;
-  }, 0);
+    .filter(item => item.status !== "canceled")
+    .reduce((total, item) => {
+      const itemPrice = item.productId.priceWithDiscount > 0 
+        ? item.productId.priceWithDiscount 
+        : item.price; // Get the correct price based on discount availability
+      const itemTotal = itemPrice * (item.quantity || 1); // Multiply by quantity
+      return total + itemTotal;
+    }, 0);
+  
     
     let totalRefundForItem = Price;
 
@@ -356,7 +360,7 @@ const returnOrder = async (req, res) => {
       console.warn(`Product not found for item: ${item.productId}`);
     }
  
-    const refundAmount = (product?.productId.priceWithDiscount > 0 ? product?.productId.priceWithDiscount : product?.price) * item.quantity;
+    const refundAmount = (product?.priceWithDiscount > 0 ? product?.priceWithDiscount : product?.price) * item.quantity;
  
     let wallet = await Wallet.findOne({ user: userId });
     if(order.paymentMethod !== "cod"){

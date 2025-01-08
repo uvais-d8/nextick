@@ -187,16 +187,9 @@ console.log("paymentmethode",paymentMethod)
         });
         
       }else if (!wallet) {
-        wallet = new Wallet({
-          user: userId,
-          balance: orderTotal,
-          transactions: [
-            {
-              type: "debit",
-              amount: orderTotal,
-              description: `Payment for the order ( ${orderReference} )`,
-            },
-          ],
+        return res.json({
+          success: false,
+          message: 'You dont have the wallet yet', 
         });
       }else{
         wallet.balance-=orderTotal;
@@ -217,7 +210,7 @@ console.log("paymentmethode",paymentMethod)
       paymentMethod,
       shippingAddress,
       orderReference,
-      status: "scheduled",  // Status remains "payment-pending" for now
+      status: "scheduled",  
     });
 
     console.log("New order details:", newOrder);
@@ -225,11 +218,11 @@ console.log("paymentmethode",paymentMethod)
     
     console.log("Order saved successfully.");
 
-    // Now, update the stock and clear cart after the order is successfully created
+   
     for (let item of updatedCartItems) {
       const product = await Products.findById(item.productId);
       if (product) {
-        product.stock -= item.quantity; // Decrease stock
+        product.stock -= item.quantity;  
         await product.save();
         console.log(`Product ${product.name} stock updated. New stock: ${product.stock}`);
       } else {
@@ -513,7 +506,7 @@ const loadcartpage = async (req, res) => {
 
     // Add shipping rate to the total
     const shippingRate = 50;
-    const total = subtotal + shippingRate;
+    const total = subtotal ;
 
     res.render("cart", {
       carts,
