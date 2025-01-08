@@ -267,6 +267,12 @@
 							<a class="nav-link {{#if (eq sort 'newArrivals')}}active{{/if}}"
 								href="/advancedSearch?sort=newArrivals&page={{currentPage}}&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}">New
 								Arrivals</a>
+							<a class="nav-link {{#if (eq sort 'aToZ')}}active{{/if}}"
+								href="/advancedSearch?sort=aToZ&page={{currentPage}}&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}">A to Z
+								</a>
+							<a class="nav-link {{#if (eq sort 'zToA')}}active{{/if}}"
+								href="/advancedSearch?sort=zToA&page={{currentPage}}&query={{query}}&minPrice={{minPrice}}&maxPrice={{maxPrice}}&category={{category}}">Z to A
+								</a>
 						</div>
 
 
@@ -286,28 +292,32 @@
 
 
 						<h5 class="mt-4">Filter by Price:</h5>
-						<form id="price-filter-form" class="mb-3" action="/advancedSearch" method="get">
+						<form id="price-filter-form" class="mb-3">
 							<div class="form-group">
 								<label for="min-price">Min Price:</label>
 								<input type="number" id="min-price" name="minPrice" class="form-control" placeholder="0"
 									value="{{minPrice}}">
+								<small id="min-price-error" class="text-danger" style="display: none;font-weight:bold">Min price cannot
+									be negative.</small>
 							</div>
 							<div class="form-group">
 								<label for="max-price">Max Price:</label>
 								<input type="number" id="max-price" name="maxPrice" class="form-control"
 									placeholder="10000" value="{{maxPrice}}">
+								<small id="max-price-error" class="text-danger" style="display: none;font-weight:bold">Maximum price must be
+									greater than minimum price.</small>
 							</div>
 							<button type="submit" class="btn btn-warning btn-block">Apply Price Filter</button>
 						</form>
-
-
 						<h5>Filter by Category:</h5>
 						<select id="category-filter" class="form-control mb-3">
 
 							<option>Filter by categories</option>
-							<a href="/products"><option value="all categories">show all</option></a>
+							<a href="/products">
+								<option value="all categories">show all</option>
+							</a>
 							{{#each categories}}
-							
+
 							<option value="{{this.category}}">{{this.category}}</option>
 							{{/each}}
 						</select>
@@ -485,14 +495,44 @@
 				});
 
 				const priceFilterForm = document.getElementById("price-filter-form");
+
 				priceFilterForm.addEventListener("submit", function (e) {
+					// Prevent form submission by default
 					e.preventDefault();
-					const minPrice = document.getElementById("min-price").value;
-					const maxPrice = document.getElementById("max-price").value;
-					const url = new URL(window.location.href);
-					url.searchParams.set('minPrice', minPrice);
-					url.searchParams.set('maxPrice', maxPrice);
-					window.location.href = url;
+
+					// Get the values for minPrice and maxPrice
+					const minPriceInput = document.getElementById("min-price");
+					const maxPriceInput = document.getElementById("max-price");
+					const minPriceError = document.getElementById("min-price-error");
+					const maxPriceError = document.getElementById("max-price-error");
+
+					// Reset previous error messages
+					minPriceError.style.display = 'none';
+					maxPriceError.style.display = 'none';
+
+					// Validate prices
+					let hasError = false;
+					const minPrice = parseFloat(minPriceInput.value);
+					const maxPrice = parseFloat(maxPriceInput.value);
+
+					// Check for validation errors
+					if (minPrice < 0) {
+						minPriceError.style.display = 'block';
+						hasError = true;
+					}
+
+					if (!isNaN(maxPrice) && maxPrice < minPrice) {
+						maxPriceError.style.display = 'block';
+						hasError = true;
+					}
+
+					// Only submit the form if there are no errors
+					if (!hasError) {
+						const url = new URL(window.location.href);
+						url.searchParams.set('minPrice', minPrice);
+						url.searchParams.set('maxPrice', maxPrice);
+						window.location.href = url;
+					}
 				});
 				const categoryFilter = document.getElementById("category-filter");
 				categoryFilter.addEventListener("change", function () {

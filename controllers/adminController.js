@@ -851,7 +851,6 @@ const updateOrderStatus = async (req, res) => {
     const validStatuses = [
       "canceled",
       "scheduled",
-      "pending",
       "delivered",
       "shipped",
       "payment-pending",

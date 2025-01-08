@@ -359,11 +359,9 @@ const advancedSearch = async (req, res) => {
 
     if ((minPrice && !isNaN(parseFloat(minPrice))) || (maxPrice && !isNaN(parseFloat(maxPrice)))) {
       filter.price = {};
-      
       if (minPrice && !isNaN(parseFloat(minPrice))) {
         filter.price.$gte = parseFloat(minPrice);
       }
-
       if (maxPrice && !isNaN(parseFloat(maxPrice))) {
         filter.price.$lte = parseFloat(maxPrice);
       }
@@ -379,26 +377,27 @@ const advancedSearch = async (req, res) => {
     }
 
     const sortOptions = {
-      popularity: { popularity: -1 },
       priceLowToHigh: { price: 1 },
       priceHighToLow: { price: -1 },
-      averageRatings: { averageRating: -1 },
-      featured: { featured: -1 },
       newArrivals: { createdAt: -1 },
       aToZ: { name: 1 },
       zToA: { name: -1 },
     };
+    
     const sortOption = sortOptions[sort] || {};
-
+    
     const skip = (parseInt(page) - 1) * parseInt(limit);
-
+    
     const products = await Products.find(filter)
       .sort(sortOption)
+      .collation({ locale: 'en', strength: 2 })   
       .skip(skip)
       .limit(parseInt(limit))
       .populate("category", "category brand")
       .populate("offer");
+    
 
+    console.log("Filtered products:", products); 
     const activeOffers = await Offer.find({ Status: true });
 
     const productsWithOfferPrice = products.map((product) => {

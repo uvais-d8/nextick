@@ -15,7 +15,6 @@ const ordersSchema = new mongoose.Schema(
       type: String,
       enum: [
         "scheduled",
-        "pending",
         "delivered",
         "shipped",
         "canceled",
@@ -36,7 +35,6 @@ const ordersSchema = new mongoose.Schema(
           type: String,
           enum: [
             "scheduled",
-            "pending",
             "delivered",
             "shipped",
             "canceled",
