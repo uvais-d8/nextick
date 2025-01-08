@@ -24,8 +24,6 @@ passport.use(
             email: profile.emails[0].value,
             googleId: profile.id,
             referralCode,
-            ...(referrerUser ? { referrer: referrerUser._id } : {}),
-            ...(user.googleId ? { googleId: user.googleId } : {})
           });
 
           const savedUser = await newUser.save();
