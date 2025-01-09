@@ -284,11 +284,8 @@ const removeItem = async (req, res) => {
       product.stock += item.quantity;
       await product.save();
 
-      if (order.paymentMethod === "razorpay" || order.paymentMethod === "wallet") {
-        // Calculate refundAmount based on your conditions
-        let refundAmount = totalRefundForItem * item.quantity; // Condition 1: Based on totalRefundForItem
-        // const calculatedAmount = (product?.priceWithDiscount > 0 ? product?.priceWithDiscount : product?.price)  // Condition 2
-       
+      if (order.paymentMethod === "razorpay" || order.paymentMethod === "wallet") { 
+        let refundAmount = totalRefundForItem * item.quantity;  
 
         console.log('Final refundAmount', refundAmount);
 
@@ -391,12 +388,10 @@ const returnOrder = async (req, res) => {
       await wallet.save();
       console.log(`Refund processed: Amount ${refundAmount} added to wallet.`);
   
-    }
-    // Check if all items in the order are returned
+    } 
     const allItemsReturned = order.items.every(item => item.status === "returned");
 
-    if (allItemsReturned) {
-      // If all items are returned, update the order status to "returned"
+    if (allItemsReturned) { 
       order.status = "returned";
       await order.save();
       console.log("All items returned, order status updated to 'returned'.");
@@ -576,8 +571,7 @@ const walletpayment = async (req, res) => {
 
   console.log(req.body);
   const errors = {};
-
-  // Validation
+ 
   if (!firstname) errors.firstname = "First name is required.";
   if (!lastname) errors.lastname = "Last name is required.";
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "Invalid email.";
@@ -641,16 +635,14 @@ console.log("cartItems",cartItems)
     };
 
     const orderTotal = updatedCartItems.reduce((acc, item) => acc + item.total, 0);
-
-    // Check wallet balance before proceeding
+ 
     const wallet = await Wallet.findOne({ user: userId });
 console.log("wallet.balance",wallet.balance)
 console.log("orderTotal",orderTotal)
     if (!wallet || wallet.balance < orderTotal) {
       return res.status(400).json({ error: "Insufficient wallet balance" });
     }
-
-    // Proceed to update wallet balance after order confirmation
+ 
     wallet.balance -= orderTotal;
     await wallet.save();
 
@@ -696,8 +688,7 @@ console.log("orderTotal",orderTotal)
     });
 
     await newOrder.save();
-
-    // Clear cart after order
+ 
     await Cart.deleteMany({ user: userId });
 
     res.render("orderss");

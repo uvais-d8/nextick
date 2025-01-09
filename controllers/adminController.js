@@ -64,34 +64,30 @@ const loaddashboard = async (req, res) => {
     const { startDate, endDate, filter, page = 1, limit = 5 } = req.query;
 
     const filterConditions = { "items.status": "delivered" };
-
-    // Fetch the top-selling products
+ 
     const topSellingProducts = await Products.find()
       .sort({ salesCount: -1 })
       .limit(10);
-
-    // Fetch the category-wise sales data
+ 
     const topSellingCategories = await Products.aggregate([
       {
         $group: {
-          _id: "$category", // Group by category
-          totalSales: { $sum: "$salesCount" } // Sum sales count for each category
+          _id: "$category" ,
+          totalSales: { $sum: "$salesCount" }  
         }
       },
-      { $sort: { totalSales: -1 } }, // Sort by total sales in descending order
+      { $sort: { totalSales: -1 } }, 
       { $limit: 10 },
       {
         $lookup: {
-          from: "categories", // Join with categories collection
+          from: "categories", 
           localField: "_id",
           foreignField: "_id",
           as: "categoryDetails"
         }
       },
       { $unwind: "$categoryDetails" }
-    ]);
-
-    // Prepare category labels and sales data for frontend
+    ]); 
     const categoryLabels = topSellingCategories.map(
       category => category.categoryDetails.category
     );
@@ -100,15 +96,14 @@ const loaddashboard = async (req, res) => {
     );
 console.log("categoryLabels",categoryLabels)
 console.log("categorySalesData",categorySalesData)
-    // If start and end date filters are applied
+   
     if (startDate && endDate) {
       filterConditions.time = {
         $gte: new Date(startDate),
         $lte: new Date(endDate)
       };
     }
-
-    // Fetch the orders based on the filter conditions
+ 
     const orders = await Orders.find(filterConditions).populate("items.productId");
 
     const groupByKey =
@@ -153,13 +148,11 @@ console.log("categorySalesData",categorySalesData)
       (total, period) => total + period.netSale,
       0
     );
-
-    // Pagination
+ 
     const skip = (page - 1) * limit;
     const paginatedReports = salesReport.slice(skip, skip + limit);
     const totalPages = Math.ceil(salesReport.length / limit);
-
-    // Pass the data to the view
+ 
     res.render("admin/dashboard", {
       topSellingProducts,
       topSellingCategories,
@@ -511,70 +504,7 @@ const editproducts = async (req, res) => {
     });
   }
 };
-// const editproducts = async (req, res) => {
-//   try {
-//     const { id, name, category, stock, price, deletedImages } = req.body;
-
-//     const trimmedName = name.trim();
-//     const trimmedCategory = category.trim();
-
-//     if (!trimmedName || !trimmedCategory || !stock || !price) {
-//       return res.render("admin/products", {
-//         message: "All fields are required"
-//       });
-//     }
-
-//     const existingProduct = await Products.findOne({
-//       name: trimmedName,
-//       _id: { $ne: id }
-//     });
-
-//     if (existingProduct) {
-//       return res.render("admin/products", {
-//         message: "A product with this name already exists."
-//       });
-//     }
-
-//     const stockNumber = parseInt(stock.trim(), 10);
-//     const priceNumber = parseFloat(price.trim());
-
-//     if (isNaN(stockNumber) || stockNumber < 0) {
-//       return res.render("admin/products", {
-//         message: "Stock must be a valid number and cannot be negative."
-//       });
-//     }
-
-//     if (isNaN(priceNumber) || priceNumber < 0) {
-//       return res.render("admin/products", {
-//         message: "Price must be a valid number and cannot be negative."
-//       });
-//     }
-
-//     const product = await Products.findById(id);
-//     if (!product) {
-//       return res.render("admin/products", {
-//         message: "Product not found."
-//       });
-//     }
-
-//     Object.assign(product, {
-//       name: trimmedName,
-//       category: trimmedCategory,
-//       stock: stockNumber,
-//       price: priceNumber.toFixed(2)
-//     });
-
-//     await product.save();
-//     console.log("Product updated successfully:", product);
-
-//     res.redirect("/admin/products");
-//   } catch (error) {
-//     console.error("Error updating product:", error);
-//     res.status(500).render("admin/products", {
-//       message: "An error occurred while updating the product."
-//     });
-//   }
-// };
+ 
 const loadaddproduct = async (req, res) => {
   try {
     const categories = await Category.find({});
@@ -1818,8 +1748,7 @@ const exportPDF = async (req, res) => {
         currentY
       );
     currentY = doc.y + 10;
-
-    // Footer
+ 
     const footerY = doc.page.height - 30;
     drawLine(footerY - 10);
     doc
@@ -1834,8 +1763,7 @@ const exportPDF = async (req, res) => {
       .text(`Date: ${new Date().toLocaleDateString()}`, 450, footerY, {
         align: "right"
       });
-
-    // Finalize the document
+ 
     doc.end();
   } catch (error) {
     console.error("Error generating PDF:", error);

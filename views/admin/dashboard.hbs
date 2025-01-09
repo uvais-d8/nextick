@@ -372,18 +372,15 @@
                     </div>
                     <script>
                         document.addEventListener("DOMContentLoaded", () => {
-                            // Debug: Check if Chart.js is loaded
                             console.log('Chart.js loaded:', Chart);
 
-                            // Sample data
                             const categories = [ "Luxury Items","Round dial","Low Varients"];
-                            const salesData = [23, 16, 10];
+                            const salesData = [23, 2, 10];
 
                            
                             console.log('Categories:', categories);
                             console.log('Sales Data:', salesData);
-
-                            // Render Chart
+ 
                             const ctx = document.getElementById("salesCharts").getContext("2d");
                             const salesCharts = new Chart(ctx, {
                                 type: "bar",  
@@ -414,9 +411,7 @@
                                         }
                                     }
                                 }
-                            });
-
-                            // Debug: Check chart instance
+                            }); 
                             console.log('Chart instance:', salesCharts);
                         });
                     </script>

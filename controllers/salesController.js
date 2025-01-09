@@ -197,12 +197,11 @@ const placeOrder = async (req, res) => {
     }
 
     await wallet.save();
-
-    // Create the new order and save the orderTotal in the database
+ 
     const newOrder = new Orders({
       userId,
       items: updatedCartItems,
-      orderTotal, // Save orderTotal here
+      orderTotal,  
       paymentMethod,
       shippingAddress,
       orderReference,
@@ -213,8 +212,7 @@ const placeOrder = async (req, res) => {
     const savedOrder = await newOrder.save();
 
     console.log("Order saved successfully.");
-
-    // Update the product stock
+ 
     for (let item of updatedCartItems) {
       const product = await Products.findById(item.productId);
       if (product) {
@@ -225,8 +223,7 @@ const placeOrder = async (req, res) => {
         console.log(`Product with ID ${item.productId} not found.`);
       }
     }
-
-    // Clear the cart items
+ 
     await Cart.deleteMany({ user: userId });
     console.log(`Cart items for user ${userId} have been deleted.`);
 

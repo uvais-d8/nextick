@@ -592,11 +592,9 @@ const addaddress = async (req, res) => {
 const loadWallet = async (req, res) => {
   try {
     const userId = req.session.userId;
-
-    // Fetch wallet details
+ 
     const wallet = await Wallet.findOne({ user: userId });
-
-    // Fetch user details
+ 
     const user = await User.findById(userId);
 
     if (!user) {
@@ -607,14 +605,13 @@ const loadWallet = async (req, res) => {
         user: {}
       });
     }
-
-    // Wallet balance and transactions
+ 
     let balance = 0;
     let transactions = [];
     if (wallet) {
       balance = Math.round(wallet.balance * 100) / 100;
       transactions = wallet.transactions
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sort by date descending
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); 
     }
 
     res.render("wallet", {

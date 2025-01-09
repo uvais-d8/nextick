@@ -151,7 +151,7 @@ const verifyOtp = async (req, res) => {
       const {referral}=req.session.userData
       console.log("referral",referral)
       if (referral) {
-        referrerUser = await User.findOne({ referralCode: referral });  // Fixed typo here as well
+        referrerUser = await User.findOne({ referralCode: referral });  
         console.log("Referrer user found:", referrerUser);
 
         if (!referrerUser) {
@@ -227,13 +227,12 @@ if (referrerUser) {
   console.log("Referrer Wallet:", referrerWallet);
   console.log("New User Wallet:", newUserWallet);
 }
-
-      // Assign session and clean up
+ 
       req.session.userId = newUser._id;
       delete req.session.userOTP;
       req.session.userData = null;
 
-      return res.redirect("/"); // Redirect to home page or wherever needed
+      return res.redirect("/");
     } else {
       console.log(req.session.userOTP.toString());
       console.error("OTP mismatch: Received OTP does not match session OTP.");

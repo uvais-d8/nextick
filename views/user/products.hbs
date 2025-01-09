@@ -497,25 +497,25 @@
 				const priceFilterForm = document.getElementById("price-filter-form");
 
 				priceFilterForm.addEventListener("submit", function (e) {
-					// Prevent form submission by default
+				 
 					e.preventDefault();
 
-					// Get the values for minPrice and maxPrice
+				 
 					const minPriceInput = document.getElementById("min-price");
 					const maxPriceInput = document.getElementById("max-price");
 					const minPriceError = document.getElementById("min-price-error");
 					const maxPriceError = document.getElementById("max-price-error");
 
-					// Reset previous error messages
+				 
 					minPriceError.style.display = 'none';
 					maxPriceError.style.display = 'none';
 
-					// Validate prices
+				 
 					let hasError = false;
 					const minPrice = parseFloat(minPriceInput.value);
 					const maxPrice = parseFloat(maxPriceInput.value);
 
-					// Check for validation errors
+					 
 					if (minPrice < 0) {
 						minPriceError.style.display = 'block';
 						hasError = true;
@@ -526,7 +526,7 @@
 						hasError = true;
 					}
 
-					// Only submit the form if there are no errors
+				 
 					if (!hasError) {
 						const url = new URL(window.location.href);
 						url.searchParams.set('minPrice', minPrice);
