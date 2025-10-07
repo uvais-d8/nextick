@@ -77,11 +77,6 @@ console.log("coupon",coupon)
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
-
-
-
 const placeOrder = async (req, res) => {
   const userId = req.session.userId;
   const {
@@ -99,7 +94,7 @@ const placeOrder = async (req, res) => {
     address,
   } = req.body;
 
-  console.log(req.body);
+  console.log("reqq.bodyy::",req.body);
 
   const errors = {};
 
@@ -194,9 +189,9 @@ const placeOrder = async (req, res) => {
           description: `Payment for the order ( ${orderReference} )`,
         });
       }
+    await wallet.save();
     }
 
-    await wallet.save();
  
     const newOrder = new Orders({
       userId,
@@ -236,8 +231,6 @@ const placeOrder = async (req, res) => {
     });
   }
 };
-
-
 const razorpayy = async (req, res) => {
   const userId = req.session.userId;
   console.log("Razorpay processing");
@@ -465,9 +458,6 @@ const updateQuantity = async (req, res) => {
     res.status(500).json({ success: false, message: "Error updating quantity." });
   }
 };
-
-
-
 const loadcartpage = async (req, res) => {
   try {
     const userId = req.session.userId;
@@ -513,7 +503,6 @@ const loadcartpage = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
 const removecart = async (req, res) => {
   const { id } = req.params;
 
@@ -627,7 +616,6 @@ const addtocart = async (req, res) => {
     res.status(500).json({ error: "Failed to add product to cart" });
   }
 };
-
 const paymentSuccess = async (req, res) => {
   const orderId = req.params.id;
   console.log("Order ID:", orderId);
