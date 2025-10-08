@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,7 +9,6 @@
 
 	<!-- title -->
 	<title>NEXTICK</title>
-
 	<!-- favicon -->
 	<link rel="shortcut icon" type="image/png" href="/assets/favicons.png">
 	<!-- google font -->
@@ -32,391 +30,154 @@
 	<link rel="stylesheet" href="/assets/css/main.css">
 	<!-- responsive -->
 	<link rel="stylesheet" href="/assets/css/responsive.css">
-
-</head>
-
-<body>
-
-	<!--PreLoader-->
-	<div class="loader">
-		<div class="loader-inner">
-			<div class="circle"></div>
-		</div>
-	</div>
-	<!--PreLoader Ends-->
-
-	<!-- header -->
-	<div class="top-header-area" id="sticker">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-12 col-sm-12 text-center">
-					<div class="main-menu-wrap">
-						<!-- logo -->
-						<div class="site-logo">
-							<a href="/">
-								<p
-									style="font-size:28px; color:white;margin-top:-5px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
-									NEXTIC<span style="font-weight: bold;color:rgb(238, 149, 15)">K</span></p>
-							</a>
-						</div>
-						<!-- logo -->
-
-						<!-- menu start -->
-						<nav class="main-menu">
-
-							<ul>
-								<li class="current-list-item"><a href="/">Home</a>
-								</li>
-								<li><a href="/about">About</a></li>
-								<li><a href="/products">Products</a></li>
-
-								<ul class="sub-menu">
-									<li><a href="/news">News</a></li>
-									<li><a href="/single-news">Single News</a></li>
-								</ul>
-								</li>
-								<li><a href="/contact">Contact</a></li>
-
-								<ul class="sub-menu">
-									<li>
-										<form class="a" method="get" action="/shop">Shop</form>
-									</li>
-									<li><a href="/checkout">Check Out</a></li>
-									<li><a href="/single-product">Single Product</a></li>
-									<li><a href="/cart">Cart</a></li>
-								</ul>
-								</li>
-								<li>
-									{{#if userId}}
-									<!-- Show Log Out button if user is logged in -->
-									<form method="post" action="/logout">
-										<button class="a" type="submit"
-											style="color:white; background: none; border: none; cursor: pointer; font-weight: bold">
-											Log Out
-										</button>
-									</form>
-									{{else}}
-									<!-- Show Log In button if no user is logged in -->
-									<a href="/login" style="color:white; font-weight: bold;">Log In</a>
-									{{/if}}
-								</li>
-
-								<li>
-									<div class="header-icons">
-										<a href="/wishlist" class="love-icon">
-											<i class="fas fa-heart"></i>
-										</a>
-										<a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
-
-										<a class="shopping-cart" href="/profile"><i class="fas fa-user"></i></a>
-									</div>
-								</li>
-
-							</ul>
-						</nav>
-
-
-						<a class="mobile-show search-bar-icon" href="#"><i class="fas fa-search"></i></a>
-						<div class="mobile-menu"></div>
-
-
-						<!-- menu end -->
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- end header -->
-
-	<!-- search area -->
-	<div class="search-area">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-12">
-					<span class="close-btn"><i class="fas fa-window-close"></i></span>
-					<div class="search-bar">
-						<div class="search-bar-tablecell">
-							<h3>Search For:</h3>
-							<input type="text" placeholder="Keywords">
-							<button type="submit">Search <i class="fas fa-search"></i></button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- end search area -->
-
-	<!-- home page slider -->
-	<div class="homepage-slider">
-		<!-- single home slider -->
-		<div class="single-homepage-slider homepage-bg-1">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-12 col-lg-7 offset-lg-1 offset-xl-0">
-						<div class="hero-text">
-							<div class="hero-text-tablecell">
-								<p class="subtitle">smart & style</p>
-								<h1>Smart choices, smarter watches</h1>
-								<div class="hero-btns">
-									<a href="/products" class="boxed-btn">New Collection</a>
-									<a href="/contact" class="bordered-btn">Contact Us</a>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- single home slider -->
-		<div class="single-homepage-slider homepage-bg-2">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-10 offset-lg-1 text-center">
-						<div class="hero-text">
-							<div class="hero-text-tablecell">
-								<p class="subtitle">Track & connect</p>
-								<h1>Wear the future, today</h1>
-								<div class="hero-btns">
-									<a href="/shop" class="boxed-btn">Visit Shop</a>
-									<a href="/contact" class="bordered-btn">Contact Us</a>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- single home slider -->
-		<div class="single-homepage-slider homepage-bg-3">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-10 offset-lg-1 text-right">
-						<div class="hero-text">
-							<div class="hero-text-tablecell">
-								<p class="subtitle">Mega Sale Going On!</p>
-								<h1>Get December Discount</h1>
-								<div class="hero-btns">
-									<a href="/shop" class="boxed-btn">Visit Shop</a>
-									<a href="/contactbs" class="bordered-btn">Contact Us</a>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- end home page slider -->
-	<div class="headers-icons">
-		<a style="color:rgb(255, 200, 0)" class="search-bar-icon" href="/profile"><i class="fas fa-user"></i></a>
-		<a style="color:rgb(255, 200, 0)" href="/wishlist" class="love-icon">
-			<i class="fas fa-heart"></i>
-		</a>
-		<a style="color:rgb(255, 200, 0)" class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
-	</div>
-	<!-- features list section -->
-	<div class="list-section pt-80 pb-80">
-		<div class="container">
-
-			<div class="row">
-				<div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
-					<div class="list-box d-flex align-items-center">
-						<div class="list-icon">
-							<i class="fas fa-shipping-fast"></i>
-						</div>
-						<div class="content">
-							<h3>Free Shipping</h3>
-							<p>When order over Rs 100</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
-					<div class="list-box d-flex align-items-center">
-						<div class="list-icon">
-							<i class="fas fa-phone-volume"></i>
-						</div>
-						<div class="content">
-							<h3>24/7 Support</h3>
-							<p>Get support all day</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-4 col-md-6">
-					<div class="list-box d-flex justify-content-start align-items-center">
-						<div class="list-icon">
-							<i class="fas fa-sync"></i>
-						</div>
-						<div class="content">
-							<h3>Refund</h3>
-							<p>Get refund within 3 days!</p>
-						</div>
-					</div>
-				</div>
-			</div>
-
-		</div>
-	</div>
-	<!-- end features list section -->
-
-	<!-- product section -->
-	<div class="product-section mt-150 mb-150">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-8 offset-lg-2 text-center">
-					<div class="section-title">
-						<h3><span class="orange-text">Our</span> Products</h3>
-						<p>Discover cutting-edge smartwatches that blend style, functionality, and innovation—perfect
-							for staying connected and elevating your lifestyle</p>
-					</div>
-				</div>
-			</div>
-
-			<div class="row">
-				{{#each products}}
-				<div class="col-lg-4 col-md-6 text-center">
-					<div class="single-product-item">
-						<div class="product-image">
-							<a href="/product/{{_id}}">
-								<img style="height: 270px;" src="/{{this.images.[0]}}" alt="{{this.name}}">
-							</a>
-						</div>
-						<h3>{{this.name}}</h3>
-						{{#if this.offerPrice}}
-						{{#if (neq this.offerPrice this.price)}}
-						<span class="price" style="text-decoration: line-through; color: red;">
-							₹{{this.price}}
-						</span>
-						<span class="offer-price" style="color: green; font-weight: bold; font-size:19px">
-							₹{{this.offerPrice}}
-						</span>
-						<span class="discount-tag" style="font-size:13px; color: rgb(255, 136, 0);">
-							({{this.discountValue}}{{#if (eq this.discountType "percentage")}} OFF{{else}} ₹
-							OFF{{/if}})
-						</span>
-						{{else}}
-						<span class="price" style="font-weight: bold; font-size:22px; color: black;">
-							₹{{this.price}} <!-- Original Price -->
-						</span>
-						{{/if}}
-						{{else}}
-						<span class="price" style="font-weight: bold; font-size:19px; color: black;">
-							₹{{this.price}}
-						</span>
-						{{/if}}
-						<form action="/addtocart" method="post">
-							<input type="hidden" name="productId" value="{{this._id}}">
-							<input type="hidden" name="quantity" value="1">
-							<div style="margin-left:30%">
-								<button
-									style="background-color: transparent;border: none;padding: 0;margin: 0;cursor: pointer;display: flex;align-items: center;font: inherit;color: inherit;outline:none "
-									type="submit" class="cart-btn">
-									<a class="cart-btn"><i style="margin-right: 10px;" class="fas fa-shopping-cart"></i>
-										Add to Cart</a>
-								</button>
-							</div>
-
-						</form>
-					</div>
-				</div>
-				{{/each}}
-
-			</div>
-		</div>
-	</div>
-	<!-- cart banner section -->
-	<section class="cart-banner pt-100 pb-100">
-		<div class="container">
-			<div class="row clearfix">
-				<!--Image Column-->
-				<div class="image-column col-lg-6">
-					<div class="image">
-						<div class="price-box">
-							<div class="inner-price">
-								<span class="price">
-									<strong>20%</strong> <br> on one product
-								</span>
-							</div>
-						</div>
-						<img src="https://engineeringproductdesign.com/wp-content/uploads/apple_watches_microphone.png"
-							alt="">
-					</div>
-				</div>
-				<!--Content Column-->
-				<div style="background-color: rgba(255, 210, 121, 0.553);padding:100px;border-radius:30px;box-shadow:
-				0 20px 80px rgba(0, 0, 0, 0.15),
-				inset 0 0 40px rgba(255, 255, 255, 0.2);
-" class="content-column col-lg-6">
-					<h3><span class="orange-text">Deal</span> of the month</h3>
-					<h4>Get 20% off on our best-selling smartwatches!</h4>
-					<div class="text">Upgrade your style and functionality while stocks last.
-						Free shipping on orders over $50!
-						Don't miss out—shop now and embrace the future!</div>
-					<!--Countdown Timer-->
-					<div class="time-counter">
-						<div class="time-countdown clearfix">
-							<div class="counter-column">
-								<div class="inner"><span class="count" id="days">00</span> Days</div>
-							</div>
-							<div class="counter-column">
-								<div class="inner"><span class="count" id="hours">00</span> Hours</div>
-							</div>
-							<div class="counter-column">
-								<div class="inner"><span class="count" id="minutes">00</span> Mins</div>
-							</div>
-							<div class="counter-column">
-								<div class="inner"><span class="count" id="seconds">00</span> Secs</div>
-							</div>
-						</div>
-					</div>
-					<a href="/cart" class="cart-btn mt-3"><i class="fas fa-shopping-cart"></i> Go to Cart</a>
-				</div>
-			</div>
-		</div>
-	</section>
-	<!-- end cart banner section -->
-
-
-	<div class="box">
-		<div class="content-wrapper">
-			<!-- Glow Elements -->
-			<div class="floating-glow"></div>
-			<div class="floating-glow glow2"></div>
-
-			<!-- Text Block -->
-			<div class="text-content">
-				<h1>The Future on Your <span>Wrist</span></h1>
-				<p>Experience cutting-edge technology with our smartwatches</p>
-				<a href="/products" class="cta-button">Shop Now</a>
-			</div>
-
-			<!-- Watch Showcase -->
-			<div class="watch-showcase">
-				<div class="watch-3d">
-					<div class="watch-face front"
-						style="background-image: url(https://www.fastrack.in/dw/image/v2/BKDD_PRD/on/demandware.static/-/Sites-titan-master-catalog/default/dw43dda5a9/images/Fastrack/Catalog/38074AP03_1.jpg?sw=600&sh=600);">
-					</div>
-					<div class="watch-face back"
-						style="background-image: url(https://m.media-amazon.com/images/I/61XESKwObcL.jpg);"></div>
-					<div class="watch-face right"
-						style="background-image: url(https://rukminim2.flixcart.com/image/850/1000/xif0q/smartwatch/f/5/c/1-33-android-ios-yuy-244y-t800-ultra-smartwatch-1-9-hd-display-original-imagppngdqwucrum.jpeg?q=90&crop=false);">
-					</div>
-					<div class="watch-face left"
-						style="background-image: url(https://www.zebrs.com/uploads/zebrs/products/untitled-design-402111_l.jpg);">
-					</div>
-					<div class="watch-face top"
-						style="background-image: url(https://www.jarir.com/cdn-cgi/image/fit=contain,width=350,height=auto,quality=85,metadata=none/https://ak-asset.jarir.com/akeneo-prod/asset/m1/delta/558306.jpg);">
-					</div>
-					<div class="watch-face bottom"
-						style="background-image: url(https://rukminim2.flixcart.com/image/850/1000/xif0q/smartwatch/y/q/1/-original-imagmwgxvhfv7hdt.jpeg?q=90&crop=false);">
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
+	
 	<style>
+		.list-section {
+			perspective: 1500px;
+			/* for 3D effect */
+			padding: 80px 0;
+			background: #f0f0f0;
+		}
+
+		.list-box {
+			background: #fff;
+			border-radius: 20px;
+			padding: 30px;
+			box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+			transform-style: preserve-3d;
+			transition: transform 0.5s ease, box-shadow 0.5s ease;
+			cursor: pointer;
+		}
+
+		.list-box:hover {
+			box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+		}
+
+		.list-icon {
+			font-size: 50px;
+			margin-right: 20px;
+			color: #4CAF50;
+			transform: translateZ(30px);
+		}
+
+		.content h3 {
+			margin-bottom: 5px;
+			transform: translateZ(20px);
+		}
+
+		.content p {
+			color: #666;
+			transform: translateZ(10px);
+		}
+
+		/* Optional: float animation for cards */
+		.card-float {
+			animation: floatAnim 6s ease-in-out infinite;
+		}
+
+		@keyframes floatAnim {
+
+			0%,
+			100% {
+				transform: translateY(0px);
+			}
+
+			50% {
+				transform: translateY(-15px);
+			}
+		}
+
+		.hero-text {
+			color: white;
+			text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+			transform-style: preserve-3d;
+		}
+
+		.hero-text h1 {
+			font-size: 3rem;
+			font-weight: 800;
+			line-height: 1.2;
+		}
+
+		.hero-text .subtitle {
+			font-size: 1.2rem;
+			letter-spacing: 2px;
+			color: #ffb347;
+			text-transform: uppercase;
+		}
+
+		.hero-btns a {
+			transition: all 0.4s ease;
+		}
+
+		.hero-btns a:hover {
+			transform: translateY(-3px);
+			box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+		}
+
+		/* Background fade for a smooth reveal */
+		.single-homepage-slider {
+			position: relative;
+			overflow: hidden;
+			background-size: cover;
+			background-position: center;
+		} 
+		.list-section {
+			perspective: 1500px;
+			/* for 3D effect */
+			padding: 80px 0;
+			background: #f0f0f0;
+		}
+
+		.list-box {
+			background: #fff;
+			border-radius: 20px;
+			padding: 30px;
+			box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+			transform-style: preserve-3d;
+			transition: transform 0.5s ease, box-shadow 0.5s ease;
+			cursor: pointer;
+		}
+
+		.list-box:hover {
+			box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+		}
+
+		.list-icon {
+			font-size: 50px;
+			margin-right: 20px;
+			color: #4CAF50;
+			transform: translateZ(30px);
+		}
+
+		.content h3 {
+			margin-bottom: 5px;
+			transform: translateZ(20px);
+		}
+
+		.content p {
+			color: #666;
+			transform: translateZ(10px);
+		}
+
+		/* Optional: float animation for cards */
+		.card-float {
+			animation: floatAnim 6s ease-in-out infinite;
+		}
+
+		@keyframes floatAnim {
+
+			0%,
+			100% {
+				transform: translateY(0px);
+			}
+
+			50% {
+				transform: translateY(-15px);
+			}
+		}
+
+
 		/* Center Glassmorphism Box */
 		.box {
 			width: 85%;
@@ -545,12 +306,12 @@
 			display: inline-block;
 			padding: 14px 40px;
 			border-radius: 50px;
-		 	color: rgb(233, 157, 7);
+			color: rgb(233, 157, 7);
 			font-weight: 700;
 			font-size: 1.1rem;
 			text-decoration: none;
 			box-shadow: 0 8px 25px rgba(255, 140, 0, 0.4);
-			transition: all 0.6s ease; 
+			transition: all 0.6s ease;
 		}
 
 		/* Watch 3D Cube */
@@ -623,90 +384,253 @@
 				transform: rotateX(360deg) rotateY(360deg);
 			}
 		}
-	</style>
+		.section-title h3 {
+			font-size: 36px;
+			font-weight: 700;
+			color: #333;
+			margin-bottom: 10px;
+		}
 
+		.section-title .orange-text {
+			color: #ff8800;
+		}
 
+		.section-title p {
+			font-size: 16px;
+			color: #555;
+		}
 
-	<script>
-		const targetDate = new Date("2025/10/31 00:00:00").getTime();
+		/* Product Card Styles */
+		.single-product-item {
+			background: rgba(255, 255, 255, 0.15);
+			border-radius: 20px;
+			padding: 20px;
+			margin: 20px 0;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+			backdrop-filter: blur(10px);
+			-webkit-backdrop-filter: blur(10px);
+			border: 1px solid rgba(255, 255, 255, 0.3);
+			transform-style: preserve-3d;
+			transition: transform 0.5s ease, box-shadow 0.5s ease;
+			cursor: pointer;
+		}
 
-		function updateCountdown() {
-			const now = new Date().getTime();
-			const timeRemaining = targetDate - now;
+		.single-product-item:hover {
+			box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+		}
 
-			const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 20));
-			const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-			const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-			const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+		/* Image Hover Effect */
+		.product-image img {
+			border-radius: 15px;
+			width: 100%;
+			height: 270px;
+			object-fit: cover;
+			transition: transform 0.5s ease, box-shadow 0.5s ease;
+		}
 
-			document.getElementById("days").innerText = days;
-			document.getElementById("hours").innerText = hours;
-			document.getElementById("minutes").innerText = minutes;
-			document.getElementById("seconds").innerText = seconds;
+		.single-product-item:hover img {
+			transform: scale(1.05) rotate(1deg);
+			box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+		}
 
-			if (timeRemaining < 0) {
-				clearInterval(countdownInterval);
-				document.getElementById("days").innerText = "00";
-				document.getElementById("hours").innerText = "00";
-				document.getElementById("minutes").innerText = "00";
-				document.getElementById("seconds").innerText = "00";
-				alert("Countdown has ended!");
+		/* Product Info */
+		.single-product-item h3 {
+			margin: 15px 0 10px;
+			color: #000000;
+			font-size: 22px;
+		}
+
+		.price,
+		.offer-price,
+		.discount-tag {
+			display: inline-block;
+			margin: 5px 5px 5px 0;
+			font-weight: bold;
+		}
+
+		.price {
+			color: #ff4d4d;
+			text-decoration: line-through;
+		}
+
+		.offer-price {
+			color: #4CAF50;
+			font-size: 20px;
+		}
+
+		.discount-tag {
+			font-size: 13px;
+			color: #ff8800;
+		}
+
+		/* Add to Cart Button */
+		.cart-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			background: #ff8800;
+			color: #fff;
+			padding: 10px 20px;
+			border-radius: 12px;
+			margin-top: 10px;
+			font-weight: 600;
+			transition: all 0.3s ease;
+		}
+
+		.cart-btn:hover {
+			background: #ff6600;
+			transform: scale(1.05);
+		}
+
+		/* Floating Animation */
+		.card-float {
+			animation: floatAnim 5s ease-in-out infinite;
+		}
+
+		@keyframes floatAnim {
+
+			0%,
+			100% {
+				transform: translateY(0px);
+			}
+
+			50% {
+				transform: translateY(-10px);
 			}
 		}
 
-		const countdownInterval = setInterval(updateCountdown, 1000);
-	</script>
-	<!-- testimonail-section -->
-	{{!-- <div class="testimonail-section mt-150 mb-150">
+		/* Responsive Grid Fix */
+		@media(max-width: 992px) {
+			.single-product-item {
+				margin: 20px auto;
+			}
+		}
+	</style>
+	
+</head>
+<body>
+	<!--PreLoader-->
+	<div class="loader">
+		<div class="loader-inner">
+			<div class="circle"></div>
+		</div>
+	</div>
+	<!--PreLoader Ends-->
+	<!-- header -->
+	<div class="top-header-area" id="sticker">
 		<div class="container">
 			<div class="row">
-				<div class="col-lg-10 offset-lg-1 text-center">
-					<div class="testimonial-sliders">
-						<div class="single-testimonial-slider">
-							<div class="client-avater">
-								<img src="/assets/img/avaters/avatar1.png" alt="">
-							</div>
-							<div class="client-meta">
-								<h3>Saira Hakim <span>Local shop owner</span></h3>
-								<p class="testimonial-body">
-									" Sed ut perspiciatis unde omnis iste natus error veritatis et quasi architecto
-									beatae vitae dict eaque ipsa quae ab illo inventore Sed ut perspiciatis unde omnis
-									iste natus error sit voluptatem accusantium "
-								</p>
-								<div class="last-icon">
-									<i class="fas fa-quote-right"></i>
-								</div>
-							</div>
+				<div class="col-lg-12 col-sm-12 text-center">
+					<div class="main-menu-wrap">
+						<!-- logo -->
+						<div class="site-logo">
+							<a href="/">
+								<p
+									style="font-size:28px; color:white;margin-top:-5px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
+									NEXTIC<span style="font-weight: bold;color:rgb(238, 149, 15)">K</span></p>
+							</a>
 						</div>
-						<div class="single-testimonial-slider">
-							<div class="client-avater">
-								<img src="/assets/img/avaters/avatar2.png" alt="">
-							</div>
-							<div class="client-meta">
-								<h3>David Niph <span>Local shop owner</span></h3>
-								<p class="testimonial-body">
-									" Sed ut perspiciatis unde omnis iste natus error veritatis et quasi architecto
-									beatae vitae dict eaque ipsa quae ab illo inventore Sed ut perspiciatis unde omnis
-									iste natus error sit voluptatem accusantium "
-								</p>
-								<div class="last-icon">
-									<i class="fas fa-quote-right"></i>
-								</div>
-							</div>
+						<!-- logo -->
+
+						<!-- menu start -->
+						<nav class="main-menu">
+
+							<ul>
+								<li class="current-list-item"><a href="/">Home</a>
+								</li>
+								<li><a href="/about">About</a></li>
+								<li><a href="/products">Products</a></li>
+
+								<ul class="sub-menu">
+									<li><a href="/news">News</a></li>
+									<li><a href="/single-news">Single News</a></li>
+								</ul>
+								</li>
+								<li><a href="/contact">Contact</a></li>
+
+								<ul class="sub-menu">
+									<li>
+										<form class="a" method="get" action="/shop">Shop</form>
+									</li>
+									<li><a href="/checkout">Check Out</a></li>
+									<li><a href="/single-product">Single Product</a></li>
+									<li><a href="/cart">Cart</a></li>
+								</ul>
+								</li>
+								<li>
+									{{#if userId}}
+									<!-- Show Log Out button if user is logged in -->
+									<form method="post" action="/logout">
+										<button class="a" type="submit"
+											style="color:white; background: none; border: none; cursor: pointer; font-weight: bold">
+											Log Out
+										</button>
+									</form>
+									{{else}}
+									<!-- Show Log In button if no user is logged in -->
+									<a href="/login" style="color:white; font-weight: bold;">Log In</a>
+									{{/if}}
+								</li>
+
+								<li>
+									<div class="header-icons">
+										<a href="/wishlist" class="love-icon">
+											<i class="fas fa-heart"></i>
+										</a>
+										<a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
+
+										<a class="shopping-cart" href="/profile"><i class="fas fa-user"></i></a>
+									</div>
+								</li>
+
+							</ul>
+						</nav>
+
+
+						<a class="mobile-show search-bar-icon" href="#"><i class="fas fa-search"></i></a>
+						<div class="mobile-menu"></div>
+
+
+						<!-- menu end -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end header -->
+	<!-- search area -->
+	<div class="search-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<span class="close-btn"><i class="fas fa-window-close"></i></span>
+					<div class="search-bar">
+						<div class="search-bar-tablecell">
+							<h3>Search For:</h3>
+							<input type="text" placeholder="Keywords">
+							<button type="submit">Search <i class="fas fa-search"></i></button>
 						</div>
-						<div class="single-testimonial-slider">
-							<div class="client-avater">
-								<img src="/assets/img/avaters/avatar3.png" alt="">
-							</div>
-							<div class="client-meta">
-								<h3>Jacob Sikim <span>Local shop owner</span></h3>
-								<p class="testimonial-body">
-									" Sed ut perspiciatis unde omnis iste natus error veritatis et quasi architecto
-									beatae vitae dict eaque ipsa quae ab illo inventore Sed ut perspiciatis unde omnis
-									iste natus error sit voluptatem accusantium "
-								</p>
-								<div class="last-icon">
-									<i class="fas fa-quote-right"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end search area -->
+
+	<!-- home page slider -->
+	<div class="homepage-slider">
+		<!-- single home slider -->
+		<div class="single-homepage-slider homepage-bg-1">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12 col-lg-7 offset-lg-1 offset-xl-0">
+						<div class="hero-text">
+							<div class="hero-text-tablecell">
+								<p class="subtitle">smart & style</p>
+								<h1>Smart choices, smarter watches</h1>
+								<div class="hero-btns">
+									<a href="/products" class="boxed-btn">New Collection</a>
+									<a href="/contact" class="bordered-btn">Contact Us</a>
 								</div>
 							</div>
 						</div>
@@ -714,8 +638,239 @@
 				</div>
 			</div>
 		</div>
+
+		<!-- single home slider -->
+		<div class="single-homepage-slider homepage-bg-2">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-10 offset-lg-1 text-center">
+						<div class="hero-text">
+							<div class="hero-text-tablecell">
+								<p class="subtitle">Track & connect</p>
+								<h1>Wear the future, today</h1>
+								<div class="hero-btns">
+									<a href="/shop" class="boxed-btn">Visit Shop</a>
+									<a href="/contact" class="bordered-btn">Contact Us</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- single home slider -->
+		<div class="single-homepage-slider homepage-bg-3">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-10 offset-lg-1 text-right">
+						<div class="hero-text">
+							<div class="hero-text-tablecell">
+								<p class="subtitle">Mega Sale Going On!</p>
+								<h1>Get December Discount</h1>
+								<div class="hero-btns">
+									<a href="/shop" class="boxed-btn">Visit Shop</a>
+									<a href="/contactbs" class="bordered-btn">Contact Us</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end home page slider -->
+
+	{{!-- <div class="headers-icons">
+		<a style="color:rgb(255, 200, 0)" class="search-bar-icon" href="/profile"><i class="fas fa-user"></i></a>
+		<a style="color:rgb(255, 200, 0)" href="/wishlist" class="love-icon">
+			<i class="fas fa-heart"></i>
+		</a>
+		<a style="color:rgb(255, 200, 0)" class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
 	</div> --}}
-	<!-- end testimonail-section -->
+	
+	<!-- features list section --> 
+
+	<div class="list-section">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+					<div class="list-box card-float">
+						<div class="list-icon">
+							<i class="fas fa-shipping-fast"></i>
+						</div>
+						<div class="content">
+							<h3>Free Shipping</h3>
+							<p>When order over Rs 100</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+					<div class="list-box card-float">
+						<div class="list-icon">
+							<i class="fas fa-phone-volume"></i>
+						</div>
+						<div class="content">
+							<h3>24/7 Support</h3>
+							<p>Get support all day</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-6">
+					<div class="list-box card-float">
+						<div class="list-icon">
+							<i class="fas fa-sync"></i>
+						</div>
+						<div class="content">
+							<h3>Refund</h3>
+							<p>Get refund within 3 days!</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end features list section -->
+	<div class="product-section">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 offset-lg-2 text-center">
+					<div class="section-title">
+						<h3 style="margin-top: 40px;"><span class="orange-text">Our</span> Products</h3>
+						<p>Discover cutting-edge smartwatches that blend style, functionality, and innovation—perfect
+							for staying connected and elevating your lifestyle</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				{{#each products}}
+				<div class="col-lg-4 col-md-6 text-center">
+					<div class="single-product-item card-float">
+						<div class="product-image">
+							<a href="/product/{{_id}}">
+								<img src="/{{this.images.[0]}}" alt="{{this.name}}">
+							</a>
+						</div>
+						<h3>{{this.name}}</h3>
+						{{#if this.offerPrice}}
+						{{#if (neq this.offerPrice this.price)}}
+						<span class="price">₹{{this.price}}</span>
+						<span class="offer-price">₹{{this.offerPrice}}</span>
+						<span class="discount-tag">
+							({{this.discountValue}}{{#if (eq this.discountType "percentage")}} OFF{{else}} ₹ OFF{{/if}})
+						</span>
+						{{else}}
+						<span class="offer-price">₹{{this.price}}</span>
+						{{/if}}
+						{{else}}
+						<span class="offer-price">₹{{this.price}}</span>
+						{{/if}}
+						<form action="/addtocart" style="margin-left: -20px;" method="post">
+							<input type="hidden" name="productId" value="{{this._id}}">
+							<input type="hidden" name="quantity" value="1">
+							<div style="margin-left:30%">
+								<button
+									style="background-color: transparent;border: none;padding: 0;margin: 0;cursor: pointer;display: flex;align-items: center;font: inherit;color: inherit;outline:none "
+									type="submit" class="cart-btn">
+									<a class="cart-btn"><i style="margin-right: 10px;" class="fas fa-shopping-cart"></i>
+										Add to Cart</a>
+								</button>
+							</div>
+
+						</form>
+					</div>
+				</div>
+				{{/each}}
+			</div>
+		</div>
+	</div>
+	<!-- cart banner section -->
+	<section class="cart-banner pt-100 pb-100">
+		<div class="container">
+			<div class="row clearfix">
+				<!--Image Column-->
+				<div class="image-column col-lg-6">
+					<div class="image">
+						<div class="price-box">
+							<div class="inner-price">
+								<span class="price">
+									<strong>20%</strong> <br> on one product
+								</span>
+							</div>
+						</div>
+						<img src="https://engineeringproductdesign.com/wp-content/uploads/apple_watches_microphone.png"
+							alt="">
+					</div>
+				</div>
+				<!--Content Column-->
+				<div style="background-color: rgba(255, 210, 121, 0.553);padding:100px;border-radius:30px;box-shadow:
+				0 20px 80px rgba(0, 0, 0, 0.15),
+				inset 0 0 40px rgba(255, 255, 255, 0.2);" class="content-column col-lg-6">
+					<h3><span class="orange-text">Deal</span> of the month</h3>
+					<h4>Get 20% off on our best-selling smartwatches!</h4>
+					<div class="text">Upgrade your style and functionality while stocks last.
+						Free shipping on orders over $50!
+						Don't miss out—shop now and embrace the future!</div>
+					<!--Countdown Timer-->
+					<div class="time-counter">
+						<div class="time-countdown clearfix">
+							<div class="counter-column">
+								<div class="inner"><span class="count" id="days">00</span> Days</div>
+							</div>
+							<div class="counter-column">
+								<div class="inner"><span class="count" id="hours">00</span> Hours</div>
+							</div>
+							<div class="counter-column">
+								<div class="inner"><span class="count" id="minutes">00</span> Mins</div>
+							</div>
+							<div class="counter-column">
+								<div class="inner"><span class="count" id="seconds">00</span> Secs</div>
+							</div>
+						</div>
+					</div>
+					<a href="/cart" class="cart-btn mt-3"><i class="fas fa-shopping-cart"></i> Go to Cart</a>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- end cart banner section -->
+	<div class="box">
+		<div class="content-wrapper">
+			<!-- Glow Elements -->
+			<div class="floating-glow"></div>
+			<div class="floating-glow glow2"></div>
+
+			<!-- Text Block -->
+			<div class="text-content">
+				<h1>The Future on Your <span>Wrist</span></h1>
+				<p>Experience cutting-edge technology with our smartwatches</p>
+				<a href="/products" class="cta-button">Shop Now</a>
+			</div>
+
+			<!-- Watch Showcase -->
+			<div class="watch-showcase">
+				<div class="watch-3d">
+					<div class="watch-face front"
+						style="background-image: url(https://www.fastrack.in/dw/image/v2/BKDD_PRD/on/demandware.static/-/Sites-titan-master-catalog/default/dw43dda5a9/images/Fastrack/Catalog/38074AP03_1.jpg?sw=600&sh=600);">
+					</div>
+					<div class="watch-face back"
+						style="background-image: url(https://m.media-amazon.com/images/I/61XESKwObcL.jpg);"></div>
+					<div class="watch-face right"
+						style="background-image: url(https://rukminim2.flixcart.com/image/850/1000/xif0q/smartwatch/f/5/c/1-33-android-ios-yuy-244y-t800-ultra-smartwatch-1-9-hd-display-original-imagppngdqwucrum.jpeg?q=90&crop=false);">
+					</div>
+					<div class="watch-face left"
+						style="background-image: url(https://www.zebrs.com/uploads/zebrs/products/untitled-design-402111_l.jpg);">
+					</div>
+					<div class="watch-face top"
+						style="background-image: url(https://www.jarir.com/cdn-cgi/image/fit=contain,width=350,height=auto,quality=85,metadata=none/https://ak-asset.jarir.com/akeneo-prod/asset/m1/delta/558306.jpg);">
+					</div>
+					<div class="watch-face bottom"
+						style="background-image: url(https://rukminim2.flixcart.com/image/850/1000/xif0q/smartwatch/y/q/1/-original-imagmwgxvhfv7hdt.jpeg?q=90&crop=false);">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<!-- advertisement section -->
 	<div class="abt-section mb-150">
@@ -744,23 +899,9 @@
 		</div>
 	</div>
 	<!-- end advertisement section -->
-
-	<!-- shop banner -->
-	{{!-- <section
-		style="background-image: url(https://www.colmi.info/cdn/shop/files/COLMi_C81_Smartwatch_banner_01_pc_5e182dd4-b341-411a-a78c-f9c50d881a61.jpg?v=1683619723&width=3840);"
-		class="shop-banner">
-		<div class="container">
-			<h3>December sale is on! <br> with big <span class="orange-text">Discount...</span></h3>
-			<div class="sale-percent"><span>Sale! <br> Upto</span>20% <span>off</span></div>
-			<a href="/shop" class="cart-btn btn-lg">Shop Now</a>
-		</div>
-	</section> --}}
-	<!-- end shop banner -->
-
 	<!-- latest news -->
 	<div class="latest-news pt-150 pb-150">
 		<div class="container">
-
 			<div class="row">
 				<div class="col-lg-8 offset-lg-2 text-center">
 					<div class="section-title">
@@ -932,7 +1073,8 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-6 col-md-12">
-					<p>Copyrights &copy; 2019 - <a href="https://www.linkedin.com/in/muhammed-uvais-t-aab0a5320/">muhammed uvais</a>, All
+					<p>Copyrights &copy; 2019 - <a
+							href="https://www.linkedin.com/in/muhammed-uvais-t-aab0a5320/">muhammed uvais</a>, All
 						Rights
 						Reserved.<br>
 						Distributed By - <a href="/">nextick.store</a>
@@ -974,6 +1116,10 @@
 	<script src="/assets/js/sticker.js"></script>
 	<!-- main js -->
 	<script src="/assets/js/main.js"></script>
+    <!-- ✅ Add this inside your <head> -->
+	<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+	<!-- GSAP for 3D hover tilt -->
+	<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/gsap.min.js"></script>
 
 	<script>
 		document.addEventListener('DOMContentLoaded', () => {
@@ -1058,8 +1204,124 @@
 			});
 		});
 	</script>
+	<script>
+		const targetDate = new Date("2025/10/31 00:00:00").getTime();
 
+		function updateCountdown() {
+			const now = new Date().getTime();
+			const timeRemaining = targetDate - now;
 
+			const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 20));
+			const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+			const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+			const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+			document.getElementById("days").innerText = days;
+			document.getElementById("hours").innerText = hours;
+			document.getElementById("minutes").innerText = minutes;
+			document.getElementById("seconds").innerText = seconds;
+
+			if (timeRemaining < 0) {
+				clearInterval(countdownInterval);
+				document.getElementById("days").innerText = "00";
+				document.getElementById("hours").innerText = "00";
+				document.getElementById("minutes").innerText = "00";
+				document.getElementById("seconds").innerText = "00";
+				alert("Countdown has ended!");
+			}
+		}
+
+		const countdownInterval = setInterval(updateCountdown, 1000);
+	</script>
+	<script>
+		const productCards = document.querySelectorAll('.single-product-item');
+
+		productCards.forEach(card => {
+			card.addEventListener('mousemove', e => {
+				const rect = card.getBoundingClientRect();
+				const x = e.clientX - rect.left;
+				const y = e.clientY - rect.top;
+				const cx = rect.width / 2;
+				const cy = rect.height / 2;
+				const dx = x - cx;
+				const dy = y - cy;
+				const tiltX = dy / cy * 8; // adjust tilt
+				const tiltY = -dx / cx * 8;
+
+				gsap.to(card, {
+					rotationX: tiltX,
+					rotationY: tiltY,
+					transformPerspective: 800,
+					transformOrigin: "center",
+					duration: 0.3
+				});
+			});
+
+			card.addEventListener('mouseleave', e => {
+				gsap.to(card, { rotationX: 0, rotationY: 0, duration: 0.5 });
+			});
+		});
+	</script>
+	<script>
+		const boxes = document.querySelectorAll('.list-box');
+
+		boxes.forEach(box => {
+			box.addEventListener('mousemove', e => {
+				const rect = box.getBoundingClientRect();
+				const x = e.clientX - rect.left;
+				const y = e.clientY - rect.top;
+				const cx = rect.width / 2;
+				const cy = rect.height / 2;
+				const dx = x - cx;
+				const dy = y - cy;
+				const tiltX = dy / cy * 10; // tilt angle
+				const tiltY = -dx / cx * 10;
+
+				gsap.to(box, {
+					rotationX: tiltX,
+					rotationY: tiltY,
+					transformPerspective: 1000,
+					transformOrigin: "center",
+					duration: 0.3
+				});
+			});
+
+			box.addEventListener('mouseleave', e => {
+				gsap.to(box, { rotationX: 0, rotationY: 0, duration: 0.5 });
+			});
+		});
+	</script>
+	<script>
+		document.querySelectorAll('.single-homepage-slider').forEach((section, index) => {
+			const subtitle = section.querySelector('.subtitle');
+			const title = section.querySelector('h1');
+			const buttons = section.querySelectorAll('.hero-btns a');
+
+			gsap.set([subtitle, title, buttons], { opacity: 0, y: 50 });
+			const observer = new IntersectionObserver(entries => {
+				entries.forEach(entry => {
+					if (entry.isIntersecting) {
+						const tl = gsap.timeline({ defaults: { ease: "power4.out", duration: 1 } });
+						tl.to(subtitle, { opacity: 1, y: 0 })
+							.to(title, { opacity: 1, y: 0, scale: 1.05 }, "-=0.4")
+							.to(buttons, { opacity: 1, y: 0, stagger: 0.2 }, "-=0.3");
+
+						observer.unobserve(section); // Run once
+					}
+				});
+			}, { threshold: 0.5 });
+
+			observer.observe(section);
+		});
+
+		gsap.to("h1", {
+			textShadow: "0px 0px 25px rgba(255,255,255,0.3)",
+			repeat: -1,
+			yoyo: true,
+			duration: 2.5,
+			ease: "sine.inOut"
+		});
+	</script>
 </body>
 
 </html>
